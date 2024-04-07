@@ -34,7 +34,7 @@ class VisualManager {
     if (reqData.categoryName) lvl = 2;
     if (reqData.subcategoryName) lvl = 3;
 
-    let params: string = "/Visual";
+    let params: string = "/Visual/true";
     switch (lvl) {
       case 1:
         params = `/${reqData.departmentName}/Visual/true`;
