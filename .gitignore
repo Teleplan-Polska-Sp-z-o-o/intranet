@@ -1,0 +1,11 @@
+/.env
+/notes.txt
+
+/vue/dist
+/vue/node_modules
+/vue/package-lock.json
+
+/node/dist
+/node/uploads
+/node/node_modules
+/node/package-lock.json

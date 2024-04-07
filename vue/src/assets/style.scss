@@ -1,0 +1,38 @@
+@import "./colors.scss";
+@import "./ckeditor.scss";
+
+html,
+body {
+  background-color: transparent !important;
+}
+#app {
+  width: 100%;
+}
+
+$bar-height: 64px;
+$breadcrumb-height: 84px;
+$footer-height: 32px;
+$margin-bottom: 32px;
+$padding: 8px;
+
+.layout {
+  &-app-bar {
+    height: $bar-height !important;
+  }
+
+  &-breadcrumbs {
+    height: $breadcrumb-height !important;
+  }
+
+  &-view-container {
+    height: auto;
+    margin-bottom: calc($breadcrumb-height + $footer-height) !important;
+  }
+
+  &-footer {
+    height: $footer-height !important;
+    padding: 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+  }
+}
