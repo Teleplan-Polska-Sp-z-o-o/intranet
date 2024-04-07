@@ -6,7 +6,7 @@
 
 ## Medium Priority
 
-- Deleting this document will also affect all of its associated files.
+-
 
 ## Low Priority
 
