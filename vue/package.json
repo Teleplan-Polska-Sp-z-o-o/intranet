@@ -51,6 +51,7 @@
     "vuetify": "^3.5.2"
   },
   "devDependencies": {
+    "@types/node": "^20.12.5",
     "@types/uuid": "^9.0.8",
     "@types/vue": "^2.0.0",
     "@vitejs/plugin-vue": "^4.5.2",

@@ -1,9 +1,11 @@
 /.env
 /notes.txt
+/toAdjust.env
 
 /vue/dist
 /vue/node_modules
 /vue/package-lock.json
+/vue/src/config/env.ts
 
 /node/dist
 /node/uploads

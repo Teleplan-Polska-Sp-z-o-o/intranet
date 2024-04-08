@@ -4,26 +4,25 @@ services:
   node:
     build:
       context: .
-      dockerfile: /node/Dockerfile
+      dockerfile: ./node/Dockerfile
     container_name: node
     ports:
       - ${NODE_PORT}:${NODE_PORT}
-    restart: no
+    restart: "no"
     volumes:
       - ./node/uploads:/usr/src/app/uploads
     depends_on:
       - postgres
 
   vue:
-    # image: nginx:1.25
     build:
       context: .
-      dockerfile: /vue/Dockerfile
+      dockerfile: ./vue/Dockerfile
     container_name: vue
     ports:
       - 80:80
       - 443:443
-    restart: no
+    restart: "no"
     volumes:
       - ./vue/dist:/usr/share/nginx/html
     depends_on:
@@ -34,7 +33,7 @@ services:
     container_name: postgres
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    restart: no
+    restart: "no"
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -45,7 +44,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
-    restart: no
+    restart: "no"
     ports:
       - ${PGADMIN_PORT}:80
     environment:
