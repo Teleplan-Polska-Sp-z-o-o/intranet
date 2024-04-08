@@ -7,6 +7,7 @@ const uaT = {
       cancel: "Скасувати",
       save: "Зберегти",
       ok: "OK",
+      search: "Пошук",
       deleteItemConfirmation: "Видалення цього елемента також вплине на всі його дочірні елементи.",
       deleteDocumentConfirmation:
         "Видалення цього документа також призведе до видалення всіх його пов'язаних файлів.",
@@ -23,7 +24,6 @@ const uaT = {
           name: "МОЇ ДОКУМЕНТИ",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -31,7 +31,6 @@ const uaT = {
           name: "МОЇ УЛЮБЛЕНІ",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -39,7 +38,6 @@ const uaT = {
           name: "ВСІ ІНСТРУКЦІЇ",
           table: {
             toolbar: "Інструкції",
-            search: "Пошук",
             select_lang: "Вибрати мову",
             header: {
               name: "Назва",
@@ -52,7 +50,6 @@ const uaT = {
           name: "УСІ ВІЗУАЛЬНІ МАТЕРІАЛИ",
           table: {
             toolbar: "Візуальні матеріали",
-            search: "Пошук",
             select_lang: "Вибрати мову",
             header: {
               name: "Назва",
@@ -65,7 +62,6 @@ const uaT = {
           name: "ОСТАННІ ПЕРЕГЛЯДИ",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -82,7 +78,6 @@ const uaT = {
               workstations: "Робочі місця",
               programs: "Програми",
             },
-            search: "Пошук",
             header: {
               name: "Назва",
               actions: "Дії",
@@ -93,7 +88,6 @@ const uaT = {
           name: "ДОКУМЕНТИ",
           table: {
             toolbar: "Документи",
-            search: "Пошук",
             header: {
               name: "Назва",
               type: "Тип",
@@ -113,7 +107,6 @@ const uaT = {
           name: "Дозволи",
           table: {
             toolbar: "Дозволи",
-            search: "Пошук",
             header: {
               username: "Ім'я користувача",
               domain: "Домен",
@@ -126,7 +119,6 @@ const uaT = {
           name: "Новини",
           table: {
             toolbar: "Новини",
-            search: "Пошук",
             header: {
               title: "Заголовок",
               subtitle: "Підзаголовок",
@@ -135,6 +127,9 @@ const uaT = {
           },
         },
       },
+    },
+    change: {
+      name: "Зміна",
     },
   },
 };

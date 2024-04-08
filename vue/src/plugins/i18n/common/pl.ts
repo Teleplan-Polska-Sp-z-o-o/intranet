@@ -22,6 +22,9 @@ const plC = {
           },
           matrix: "Macierz",
           admin: "Administrator",
+          change: {
+            browse: "Zmiana",
+          },
         },
       },
       pages: {
@@ -39,8 +42,8 @@ const plC = {
             title: "Szkolenie",
             text: "Rozwijanie umiejętności i certyfikacji wśród operatorów.",
           },
-          cn: {
-            title: "CN",
+          change: {
+            title: "Zmiana",
             text: "Tworzenie i zatwierdzanie komunikatów o zmianie.",
           },
           matrix: {

@@ -9,6 +9,11 @@ import DocumentsView from "../../views/tools/DocumentsView.vue";
 import MatrixView from "../../views/tools/MatrixView.vue";
 import DocumentView from "../../views/DocumentView.vue";
 import AdminView from "../../views/tools/AdminView.vue";
+
+// change
+import ChangeView from "../../views/tools/change/ChangeView.vue";
+import ChangeTableView from "../../views/tools/change/ChangeTableView.vue";
+
 import { RouteLocationNormalized } from "vue-router";
 
 // 2. Define routes
@@ -184,8 +189,8 @@ const routes = [
         component: AdminView,
         meta: {
           read: true,
-          write: false,
-          control: false,
+          write: true,
+          control: true,
           breadcrumbs: {
             include: true,
             parent: "tool",
@@ -199,8 +204,8 @@ const routes = [
         name: "matrix",
         component: MatrixView,
         meta: {
-          reaD: true,
-          write: false,
+          read: true,
+          write: true,
           control: false,
           breadcrumbs: {
             include: true,
@@ -209,6 +214,55 @@ const routes = [
             path: "",
           },
         },
+      },
+      {
+        path: "change",
+        name: "change",
+        component: ChangeView,
+        redirect: { name: "browseChanges" },
+        meta: {
+          read: true,
+          write: true,
+          control: false,
+          breadcrumbs: {
+            include: true,
+            parent: "tool.change",
+            name: "browse",
+            path: "",
+          },
+        },
+        children: [
+          {
+            path: "browse",
+            name: "browseChanges",
+            component: ChangeTableView,
+            meta: {
+              read: true,
+              write: true,
+              control: false,
+              breadcrumbs: {
+                include: false,
+              },
+            },
+          },
+          {
+            path: "x",
+            name: "x",
+            component: ChangeTableView,
+            meta: {
+              read: true,
+              write: true,
+              control: false,
+              breadcrumbs: {
+                include: true,
+                parent: "tool.change",
+                name: "x",
+                path: "",
+                disabled: true,
+              },
+            },
+          },
+        ],
       },
     ],
   },

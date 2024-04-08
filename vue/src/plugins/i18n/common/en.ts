@@ -22,6 +22,9 @@ const enC = {
           },
           matrix: "Matrix",
           admin: "Admin",
+          change: {
+            browse: "Change",
+          },
         },
       },
       pages: {
@@ -39,8 +42,8 @@ const enC = {
             title: "Training",
             text: "Enhancing skills and certifications.",
           },
-          cn: {
-            title: "CN",
+          change: {
+            title: "Change",
             text: "Creation and approval of change notices.",
           },
           matrix: {

@@ -92,7 +92,7 @@ const headers: any = [
 ];
 
 const toolbarTitle = t(`${tPath}.toolbar`);
-const searchTitle = t(`${tPath}.search`);
+const searchTitle = t(`tools.common.search`);
 const selectLanguage = t(`${tPath}.select_lang`);
 
 const navigateToRoute = (file: Array<string>) => {

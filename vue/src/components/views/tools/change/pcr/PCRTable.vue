@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";
-import CrudTable from "../../../../components/tools/CrudTable.vue";
-import { NewsManager } from "../../../../models/editor/NewsManager";
-import NewsStepper from "./NewsStepper.vue";
+import CrudTable from "../../../../../components/tools/CrudTable.vue";
+import { PCRManager } from "../../../../../models/change/pcr/PCRManager";
 import { useI18n } from "vue-i18n";
-import { IResponseStatus } from "../../../../interfaces/common/IResponseStatus";
+import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -15,7 +14,7 @@ const props = defineProps<{
 const { t } = useI18n();
 const tab = ref<string>(props.tab);
 watchEffect(() => (tab.value = props.tab));
-const tPath = `tools.admin.tabs.${tab.value}.table`;
+const tPath = `tools.change.tabs.${tab.value}.table`;
 
 const headers: any = [
   { title: t(`${tPath}.header.title`), align: "start", key: "title" },
@@ -31,23 +30,10 @@ const reqData = ref<any>(null);
 const handleSaveData = (data: any) => {
   if (!data) return;
 
-  const base = {
-    ref: data.ref,
-    permission: data.permission,
-    title: data.title,
-    subtitle: data.subtitle,
-    content: data.content,
-  };
-  const bgImage: File = data.bgImage.at(0);
-
-  const formData: any = new FormData();
-  formData.append("base", JSON.stringify(base));
-  formData.append("bgImage", bgImage);
-
-  reqData.value = formData;
+  console.log(data);
 };
 
-const manager = new NewsManager();
+const manager = new PCRManager();
 
 const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
@@ -65,7 +51,7 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableAdd="true"
     :tableDelete="true"
     :tableEdit="true"
-    :tableDialogComponent="NewsStepper"
+    :tableDialogComponent="'NewsStepper'"
     :tableDialogComponentProps="{}"
     @responseStatus="handleResponseStatus"
   >

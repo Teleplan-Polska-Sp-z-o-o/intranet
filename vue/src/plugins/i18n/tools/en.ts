@@ -7,6 +7,7 @@ const enT = {
       cancel: "Cancel",
       save: "Save",
       ok: "OK",
+      search: "Search",
       deleteItemConfirmation: "Deleting this item will also affect all of its associated children.",
       deleteDocumentConfirmation:
         "Deleting this document will also affect all of its associated files.",
@@ -23,7 +24,6 @@ const enT = {
           name: "MY DOCUMENTS",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -31,7 +31,6 @@ const enT = {
           name: "MY FAVORITES",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -39,7 +38,6 @@ const enT = {
           name: "ALL INSTRUCTIONS",
           table: {
             toolbar: "Instructions",
-            search: "Search",
             select_lang: "Select Language",
             header: {
               name: "Name",
@@ -52,7 +50,6 @@ const enT = {
           name: "ALL VISUAL AIDS",
           table: {
             toolbar: "Visual Aids",
-            search: "Search",
             select_lang: "Select Language",
             header: {
               name: "Name",
@@ -65,7 +62,6 @@ const enT = {
           name: "RECENTLY BROWSED",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -82,7 +78,6 @@ const enT = {
               workstations: "Workstations",
               programs: "Programs",
             },
-            search: "Search",
             header: {
               name: "Name",
               actions: "Actions",
@@ -93,7 +88,6 @@ const enT = {
           name: "DOCUMENTS",
           table: {
             toolbar: "Documents",
-            search: "Search",
             header: {
               name: "Name",
               type: "Type",
@@ -118,7 +112,6 @@ const enT = {
           name: "Permissions",
           table: {
             toolbar: "Permissions",
-            search: "Search",
             header: {
               username: "Username",
               domain: "Domain",
@@ -131,13 +124,30 @@ const enT = {
           name: "News",
           table: {
             toolbar: "News",
-            search: "Search",
             header: {
               title: "Title",
               subtitle: "Subtitle",
               actions: "Actions",
             },
           },
+        },
+      },
+    },
+    change: {
+      name: "Change",
+      tabs: {
+        pcr: {
+          name: "Process Change Request",
+          table: {
+            toolbar: "Requests",
+            header: {},
+          },
+        },
+        pcn: {
+          name: "Process Change Notice",
+        },
+        dcn: {
+          name: "Document Change Notice",
         },
       },
     },

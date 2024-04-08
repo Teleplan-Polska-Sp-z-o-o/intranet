@@ -50,7 +50,7 @@ const headers: any = [
 ];
 
 const toolbarTitle = t(`${tPath}.toolbar`);
-const searchTitle = t(`${tPath}.search`);
+const searchTitle = t(`tools.common.search`);
 
 const handleSaveData = (data: any) => {
   const base = new DocumentEntity();

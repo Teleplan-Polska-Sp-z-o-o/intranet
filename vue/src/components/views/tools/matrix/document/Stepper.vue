@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref, watch, watchEffect } from "vue";
 import VerifyTables from "./VerifyTables.vue";
 import FilesForm from "./FilesForm.vue";
 import { IFileItem } from "../../../../../interfaces/document/IFileItem";
@@ -72,6 +72,10 @@ const hasFiles = computed<boolean>(() => files.value.length > 0);
 const handleFiles = (filesData: Array<IFileItem>) => {
   files.value = filesData;
 };
+
+watch(files, (newV) => {
+  files.value = newV;
+});
 
 const newDocData = computed(() => {
   return {

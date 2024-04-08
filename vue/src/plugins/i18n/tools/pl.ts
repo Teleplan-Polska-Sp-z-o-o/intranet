@@ -7,6 +7,7 @@ const plT = {
       cancel: "Anuluj",
       save: "Zapisz",
       ok: "OK",
+      search: "Szukaj",
       deleteItemConfirmation:
         "Usunięcie tego elementu wpłynie również na wszystkie jego elementy podrzędne.",
       deleteDocumentConfirmation:
@@ -24,7 +25,6 @@ const plT = {
           name: "MOJE DOKUMENTY",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -32,7 +32,6 @@ const plT = {
           name: "MOJE ULUBIONE",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -40,7 +39,6 @@ const plT = {
           name: "WSZYSTKIE INSTRUKCJE",
           table: {
             toolbar: "Instrukcje",
-            search: "Szukaj",
             select_lang: "Wybierz język",
             header: {
               name: "Nazwa",
@@ -53,7 +51,6 @@ const plT = {
           name: "WSZYSTKIE POMOCE WIZUALNE",
           table: {
             toolbar: "Pomoce wizualne",
-            search: "Szukaj",
             select_lang: "Wybierz język",
             header: {
               name: "Nazwa",
@@ -66,7 +63,6 @@ const plT = {
           name: "OSTATNIO PRZEGLĄDANE",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -83,7 +79,6 @@ const plT = {
               workstations: "Stanowiska pracy",
               programs: "Programy",
             },
-            search: "Szukaj",
             header: {
               name: "Nazwa",
               actions: "Akcje",
@@ -94,7 +89,6 @@ const plT = {
           name: "DOKUMENTY",
           table: {
             toolbar: "Dokumenty",
-            search: "Szukaj",
             header: {
               name: "Nazwa",
               type: "Typ",
@@ -119,7 +113,6 @@ const plT = {
           name: "Uprawnienia",
           table: {
             toolbar: "Uprawnienia",
-            search: "Szukaj",
             header: {
               username: "Nazwa użytkownika",
               domain: "Domena",
@@ -132,7 +125,6 @@ const plT = {
           name: "Wiadomości",
           table: {
             toolbar: "Wiadomości",
-            search: "Szukaj",
             header: {
               title: "Tytuł",
               subtitle: "Podtytuł",
@@ -141,6 +133,9 @@ const plT = {
           },
         },
       },
+    },
+    change: {
+      name: "Zmiana",
     },
   },
 };
