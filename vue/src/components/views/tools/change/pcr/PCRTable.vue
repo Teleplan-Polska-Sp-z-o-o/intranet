@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
-import { PCRManager } from "../../../../../models/change/pcr/PCRManager";
+import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { useI18n } from "vue-i18n";
 import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 
@@ -17,8 +17,24 @@ watchEffect(() => (tab.value = props.tab));
 const tPath = `tools.change.tabs.${tab.value}.table`;
 
 const headers: any = [
-  { title: t(`${tPath}.header.title`), align: "start", key: "title" },
-  { title: t(`${tPath}.header.subtitle`), key: "subtitle" },
+  { title: t(`${tPath}.header.numberOfRequest`), align: "start", key: "numberOfRequest" },
+  { title: t(`${tPath}.header.requestDate`), key: "requestDate" },
+  { title: t(`${tPath}.header.internalOrExternal`), key: "internalOrExternal" },
+  { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
+  { title: t(`${tPath}.header.dedicatedDepartment`), key: "dedicatedDepartment" },
+  { title: t(`${tPath}.header.program`), key: "program" },
+  { title: t(`${tPath}.header.projectOfProgram`), key: "projectOfProgram" },
+  { title: t(`${tPath}.header.dateNeeded`), key: "dateNeeded" },
+  { title: t(`${tPath}.header.assessment`), key: "assessment" },
+  { title: t(`${tPath}.header.approvedOrRejectedBy`), key: "approvedOrRejectedBy" },
+  { title: t(`${tPath}.header.closureDate`), key: "closureDate" },
+  { title: t(`${tPath}.header.viewPcr`), key: "viewPcr", sortable: false, filterable: false },
+  {
+    title: t(`${tPath}.header.numberOfNotice`),
+    key: "numberOfNotice",
+    sortable: false,
+    filterable: false,
+  },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
 
@@ -33,7 +49,7 @@ const handleSaveData = (data: any) => {
   console.log(data);
 };
 
-const manager = new PCRManager();
+const manager = new ProcessChangeRequestManager();
 
 const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
@@ -41,8 +57,16 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
 <template>
   <crud-table
     :headers="headers"
-    :sortBy="[{ key: 'title', order: 'asc' }]"
-    :searchBy="['title', 'subtitle']"
+    :sortBy="[{ key: 'numberOfRequest', order: 'asc' }]"
+    :searchBy="[
+      'numberOfRequest',
+      'reconextOwner',
+      'dedicatedDepartment',
+      'program',
+      'projectOfProgram',
+      'assessment',
+      'approvedOrRejectedBy',
+    ]"
     :toolbarTitle="toolbarTitle"
     :searchTitle="searchTitle"
     :manager="manager"
@@ -51,9 +75,15 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableAdd="true"
     :tableDelete="true"
     :tableEdit="true"
-    :tableDialogComponent="'NewsStepper'"
+    :tableDialogComponent="'Something'"
     :tableDialogComponentProps="{}"
     @responseStatus="handleResponseStatus"
   >
+    <template v-slot:table-key-slot="{ item }">
+      <span v-show="false">{{ item }}</span>
+    </template>
+    <template v-slot:table-key-slot-2="{ item }">
+      <span v-show="false">{{ item }}</span>
+    </template>
   </crud-table>
 </template>

@@ -13,12 +13,15 @@ app.use(cors(corsOptionsDelegate));
 import { userRoutes } from "./routes/userRoutes";
 import { documentRoutes } from "./routes/documentRoutes";
 import { editorRoutes } from "./routes/editorRoutes";
+import { changeRoutes } from "./routes/changeRoutes";
+
 import path from "path";
 
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 app.use("/api/user", userRoutes);
 app.use("/api/document", documentRoutes);
 app.use("/api/editor", editorRoutes);
+app.use("/api/change", changeRoutes);
 
 // DataSource instance initialize
 import { dataSource } from "./config/orm/dataSource";

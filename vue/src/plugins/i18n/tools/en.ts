@@ -140,7 +140,22 @@ const enT = {
           name: "Process Change Request",
           table: {
             toolbar: "Requests",
-            header: {},
+            header: {
+              numberOfRequest: "No",
+              requestDate: "Request Date",
+              internalOrExternal: "Source",
+              reconextOwner: "Owner",
+              dedicatedDepartment: "Department",
+              program: "Program",
+              projectOfProgram: "Project",
+              dateNeeded: "Target Date",
+              assessment: "Assessment",
+              approvedOrRejectedBy: "Closed By",
+              closureDate: "Closure Date",
+              viewPcr: "View PCR",
+              numberOfNotice: "Notice No",
+              actions: "Actions",
+            },
           },
         },
         pcn: {

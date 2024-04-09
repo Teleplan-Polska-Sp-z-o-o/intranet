@@ -15,6 +15,9 @@ enum Endpoints {
 
   // editor
   News = "/api/editor/news",
+
+  // change
+  ChangeRequest = "/api/change/request",
 }
 
 export { Endpoints };
