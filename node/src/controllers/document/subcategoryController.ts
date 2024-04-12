@@ -31,7 +31,7 @@ const addSubcategory = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error adding subcategory: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to add subcategory.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -62,7 +62,7 @@ const editSubcategory = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error updating subcategory: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to update subcategory.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -91,7 +91,7 @@ const removeSubcategory = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error removing subcategory: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to remove subcategory.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -129,7 +129,7 @@ const getSubcategories = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error retrieving subcategories: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve subcategories.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

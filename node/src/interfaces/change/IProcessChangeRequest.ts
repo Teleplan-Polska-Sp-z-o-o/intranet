@@ -21,7 +21,7 @@ interface IProcessChangeRequest {
   dateNeeded: string; // Input (date): Date when the change is needed in format: day/month/year
   costOfImplementation: string; // Input (string): Cost of implementation (time or money)
   program: string; // Select (options): Program from tree
-  projectOfProgram: string; // Input (string): project of program from tree
+  // projectOfProgram: string; // Input (string): project of program from tree
   modelOrProcessImpacted: string; // Input (string): Name of the model or process impacted
   changeReason: string; // Input (string): Reason for the change
   changeDescription: string; // Input (string): Description of the change
@@ -35,7 +35,7 @@ interface IProcessChangeRequest {
   status: "Open" | "Closed"; // auto generated: "Open" or "Closed" - Current status of the request
   closureDate: string | null; // auto generated: Date when the request was closed in format: day/month/year
 
-  _formatDate: (date: Date) => string;
+  // private formatDate: (date: Date) => string;
   setRequestNo: (countOfRequestsInYear: number) => void;
   setRequestInfo: (base: IProcessChangeRequestBase) => void;
   closeRequest: (assessment: "Implementation" | "Rejection", approvedOrRejectedBy: IUser) => void;

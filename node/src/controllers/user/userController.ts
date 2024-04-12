@@ -28,7 +28,7 @@ const getUser = async (req: Request, res: Response) => {
       .json({ user, message: "User found.", statusMessage: HttpResponseMessage.GET_SUCCESS });
   } catch (err) {
     console.error("Error retrieving user:", err);
-    res.status(404).json({
+    res.status(500).json({
       err,
       message: "Unknown error occurred. Failed to retrieve user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
@@ -36,11 +36,33 @@ const getUser = async (req: Request, res: Response) => {
   }
 };
 
-const getUsers = async (_req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response) => {
   try {
-    const users: Array<UserEntity> = await dataSource
+    const { equalOrAbovePermission } = req.params;
+
+    let queryBuilder = dataSource
       .getRepository(UserEntity)
-      .find({ relations: ["permission", "settings"] });
+      .createQueryBuilder("user")
+      .leftJoinAndSelect("user.permission", "permission")
+      .leftJoinAndSelect("user.settings", "settings");
+
+    if (equalOrAbovePermission) {
+      switch (equalOrAbovePermission) {
+        case "moderator":
+          queryBuilder = queryBuilder.andWhere("permission.write = :write", { write: true });
+          break;
+
+        case "admin":
+          queryBuilder = queryBuilder.andWhere("permission.control = :control", { control: true });
+          break;
+      }
+    }
+
+    const users: Array<UserEntity> = await queryBuilder.getMany();
+
+    // const users: Array<UserEntity> = await dataSource
+    //   .getRepository(UserEntity)
+    //   .find({ relations: ["permission", "settings"] });
 
     if (!users)
       res
@@ -52,7 +74,7 @@ const getUsers = async (_req: Request, res: Response) => {
       .json({ users, message: "Users found.", statusMessage: HttpResponseMessage.GET_SUCCESS });
   } catch (err) {
     console.error("Error retrieving user:", err);
-    res.status(404).json({
+    res.status(500).json({
       err,
       message: "Unknown error occurred. Failed to retrieve user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
@@ -115,7 +137,7 @@ const userAuth = async (req: Request, res: Response) => {
     }
   } catch (err) {
     console.error("Error authenticating user: ", err);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to authenticate user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

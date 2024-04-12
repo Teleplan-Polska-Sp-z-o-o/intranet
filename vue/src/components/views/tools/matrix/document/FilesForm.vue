@@ -13,9 +13,9 @@ const props = defineProps<{
 const files = ref<Array<IFileItem>>([]);
 const hasFiles = computed(() => files.value.length > 0);
 
-let nextId = 0;
+let currId = props.retrieved.length > 0 ? props.retrieved.length - 1 : 0;
 const addFile = () => {
-  files.value.push(new FileItem(++nextId));
+  files.value.push(new FileItem(++currId));
 };
 
 const handleFileChange = (fileData: IFileItem) => {
@@ -49,7 +49,9 @@ watch(
   { deep: true }
 );
 
-files.value = props.retrieved ?? [];
+if (props.retrieved.length > 0) {
+  files.value = props.retrieved;
+}
 </script>
 
 <template>
@@ -87,4 +89,3 @@ files.value = props.retrieved ?? [];
     >
   </div>
 </template>
-../../../../../interfaces/document/IFileItem

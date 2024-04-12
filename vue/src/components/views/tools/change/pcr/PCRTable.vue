@@ -4,6 +4,9 @@ import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { useI18n } from "vue-i18n";
 import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
+import PCRStepper from "./PCRStepper.vue";
+import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IProcessChangeRequestBase";
+import { IUser } from "../../../../../interfaces/user/IUser";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -23,30 +26,41 @@ const headers: any = [
   { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
   { title: t(`${tPath}.header.dedicatedDepartment`), key: "dedicatedDepartment" },
   { title: t(`${tPath}.header.program`), key: "program" },
-  { title: t(`${tPath}.header.projectOfProgram`), key: "projectOfProgram" },
+  // { title: t(`${tPath}.header.projectOfProgram`), key: "projectOfProgram" },
   { title: t(`${tPath}.header.dateNeeded`), key: "dateNeeded" },
   { title: t(`${tPath}.header.assessment`), key: "assessment" },
   { title: t(`${tPath}.header.approvedOrRejectedBy`), key: "approvedOrRejectedBy" },
   { title: t(`${tPath}.header.closureDate`), key: "closureDate" },
-  { title: t(`${tPath}.header.viewPcr`), key: "viewPcr", sortable: false, filterable: false },
   {
     title: t(`${tPath}.header.numberOfNotice`),
     key: "numberOfNotice",
     sortable: false,
     filterable: false,
   },
+  { title: t(`${tPath}.header.viewPcr`), key: "viewPcr", sortable: false, filterable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
 
 const toolbarTitle = t(`${tPath}.toolbar`);
 const searchTitle = t(`tools.common.search`);
 
-const reqData = ref<any>(null);
+const reqData = ref<FormData | null>(null);
 
-const handleSaveData = (data: any) => {
+const handleSaveData = (
+  data: IProcessChangeRequestBase & { requestedBy: IUser } & { requestId: number }
+) => {
   if (!data) return;
+  const { requestId, requestedBy, ...rest } = data;
+  const base: IProcessChangeRequestBase = rest;
+  const baseForJson = { ...base, dateNeeded: base.dateNeeded?.toString() };
 
-  console.log(data);
+  const formData: FormData = new FormData();
+
+  formData.append("base", JSON.stringify(baseForJson));
+  formData.append("requestedBy", JSON.stringify(requestedBy));
+  formData.append("requestId", JSON.stringify(requestId));
+
+  reqData.value = formData;
 };
 
 const manager = new ProcessChangeRequestManager();
@@ -75,7 +89,7 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableAdd="true"
     :tableDelete="true"
     :tableEdit="true"
-    :tableDialogComponent="'Something'"
+    :tableDialogComponent="PCRStepper"
     :tableDialogComponentProps="{}"
     @responseStatus="handleResponseStatus"
   >

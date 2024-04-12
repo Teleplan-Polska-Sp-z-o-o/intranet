@@ -3,6 +3,7 @@ import { computed, nextTick, ref, watch, watchEffect } from "vue";
 import TableDialog from "./TableDialog.vue";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../models/common/ResponseStatus";
+import CopyToClipboard from "../common/CopyToClipboard.vue";
 
 const props = defineProps<{
   headers: any;
@@ -25,6 +26,8 @@ const props = defineProps<{
 
   tableDialogComponent?: any;
   tableDialogComponentProps?: any;
+
+  doNotCopy?: true;
 }>();
 
 const emit = defineEmits(["save-data", "emit-table-change", "responseStatus"]);
@@ -164,6 +167,7 @@ const deleteItemConfirm = async () => {
 const save = async () => {
   try {
     const data: any = reqData.value;
+
     dialogLoading.value = true;
     if (editedIndex.value > -1) responseStatus.value = await manager.value.put(data, true);
     else responseStatus.value = await manager.value.post(data, true);
@@ -214,6 +218,8 @@ const handleSaveData = (data: any) => emit("save-data", data);
             single-line
             :rounded="true"
           ></v-text-field>
+          <copy-to-clipboard v-if="!doNotCopy" :filtered="filtered"></copy-to-clipboard>
+
           <v-divider v-if="props.tableAdd" class="mx-4" inset vertical></v-divider>
 
           <table-dialog

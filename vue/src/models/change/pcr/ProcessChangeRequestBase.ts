@@ -9,7 +9,7 @@ class ProcessChangeRequestBase implements IProcessChangeRequestBase {
   dateNeeded: Date | undefined;
   costOfImplementation: string;
   program: string;
-  projectOfProgram: string;
+  // projectOfProgram: string;
   modelOrProcessImpacted: string;
   changeReason: string;
   changeDescription: string;
@@ -26,7 +26,7 @@ class ProcessChangeRequestBase implements IProcessChangeRequestBase {
     this.dateNeeded = undefined;
     this.costOfImplementation = "";
     this.program = "";
-    this.projectOfProgram = "";
+    // this.projectOfProgram = "";
     this.modelOrProcessImpacted = "";
     this.changeReason = "";
     this.changeDescription = "";

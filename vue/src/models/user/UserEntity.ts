@@ -1,4 +1,6 @@
-export class UserEntity {
+import { IUserEntity } from "../../interfaces/user/IUserEntity";
+
+export class UserEntity implements IUserEntity {
   domain: string;
   id: number;
   permission: {
@@ -15,10 +17,10 @@ export class UserEntity {
   username: string;
 
   constructor() {
-    (this.domain = ""),
-      (this.id = 0),
-      (this.permission = { read: true, write: false, control: false, id: 0 }),
-      (this.settings = { theme: "", language: "", id: 0 }),
-      (this.username = "");
+    this.domain = "";
+    this.id = 0;
+    this.permission = { read: true, write: false, control: false, id: 0 };
+    this.settings = { theme: "", language: "", id: 0 };
+    this.username = "";
   }
 }

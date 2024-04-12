@@ -17,7 +17,7 @@ interface IProcessChangeRequest {
   dateNeeded: string; // Input (date): Date when the change is needed in format: day/month/year
   costOfImplementation: string; // Input (string): Cost of implementation (time or money)
   program: string; // Select (options): Program from tree
-  projectOfProgram: string; // Input (string): project of program from tree
+  // projectOfProgram: string; // Input (string): project of program from tree
   modelOrProcessImpacted: string; // Input (string): Name of the model or process impacted
   changeReason: string; // Input (string): Reason for the change
   changeDescription: string; // Input (string): Description of the change

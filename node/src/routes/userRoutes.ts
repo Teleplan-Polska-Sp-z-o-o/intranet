@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Define routes
 router.get("/one", getUser);
-router.get("/all", getUsers);
+router.get("/all/:equalOrAbovePermission?", getUsers);
 router.post("/auth", userAuth);
 
 router.put("/settings/theme", setSettingsTheme);

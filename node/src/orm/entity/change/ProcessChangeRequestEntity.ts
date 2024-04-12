@@ -50,9 +50,6 @@ class ProcessChangeRequest implements IProcessChangeRequest {
   program: string;
 
   @Column()
-  projectOfProgram: string;
-
-  @Column()
   modelOrProcessImpacted: string;
 
   @Column()
@@ -82,59 +79,100 @@ class ProcessChangeRequest implements IProcessChangeRequest {
   @Column({ nullable: true })
   closureDate: string | null;
 
-  _formatDate = (date: Date): string => {
-    const day: number = date.getDate();
-    const month: number = date.getMonth() + 1; // Note: Month is zero-based, so we add 1
-    const year: number = date.getFullYear();
+  private formatDate = (date: Date | string): string => {
+    let dateObj: Date;
+
+    const getMonthIndex = (month: string): number => {
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      return monthNames.indexOf(month);
+    };
+
+    if (typeof date === "string") {
+      const [, month, day, year] = date.split(" ");
+      dateObj = new Date(Date.UTC(Number(year), getMonthIndex(month), Number(day)));
+    } else {
+      dateObj = date;
+    }
+
+    const day: string = (dateObj?.getDate() || 1).toString().padStart(2, "0");
+    const month: string = (dateObj?.getMonth() + 1 || 1).toString().padStart(2, "0");
+    const year: string = (dateObj?.getFullYear() || 1).toString().padStart(2, "0");
 
     const formattedDate: string = `${day}/${month}/${year}`;
     return formattedDate;
   };
 
-  setRequestNo = (countOfRequestsInYear: number): void => {
-    const paddedIndex = countOfRequestsInYear.toString().padStart(3, "0");
-    const type = "PCR";
-    const year = this.year;
+  public setRequestNo = (countOfRequestsInYear: number): void => {
+    try {
+      const paddedIndex = countOfRequestsInYear.toString().padStart(3, "0");
+      const type = "PCR";
+      const year = this.year;
 
-    if (this.numberOfRequest === null) this.numberOfRequest = `${paddedIndex}/${type}/${year}`;
+      if (this.numberOfRequest === null) this.numberOfRequest = `${paddedIndex}/${type}/${year}`;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  setRequestInfo = (base: IProcessChangeRequestBase): void => {
-    this.internalOrExternal = base.internalOrExternal;
-    this.customerContactPerson = base.customerContactPerson;
-    this.customerContactEmail = base.customerContactEmail;
-    this.reconextContactPerson = base.reconextContactPerson;
-    this.reconextOwner = base.reconextOwner;
-    this.dateNeeded = this._formatDate(base.dateNeeded);
-    this.costOfImplementation = base.costOfImplementation;
-    this.program = base.program;
-    this.projectOfProgram = base.projectOfProgram;
-    this.modelOrProcessImpacted = base.modelOrProcessImpacted;
-    this.changeReason = base.changeReason;
-    this.changeDescription = base.changeDescription;
-    this.impacts = base.impacts;
-    this.dedicatedDepartment = base.dedicatedDepartment;
-    this.riskAnalysis = base.riskAnalysis ? base.riskAnalysis : null;
+  public setRequestInfo = (base: IProcessChangeRequestBase): void => {
+    try {
+      if (base) {
+        this.internalOrExternal = base.internalOrExternal;
+        this.customerContactPerson = base.customerContactPerson;
+        this.customerContactEmail = base.customerContactEmail;
+        this.reconextContactPerson = base.reconextContactPerson;
+        this.reconextOwner = base.reconextOwner;
+        this.dateNeeded = this.formatDate(base.dateNeeded);
+        this.costOfImplementation = base.costOfImplementation;
+        this.program = base.program;
+        // this.projectOfProgram = base.projectOfProgram;
+        this.modelOrProcessImpacted = base.modelOrProcessImpacted;
+        this.changeReason = base.changeReason;
+        this.changeDescription = base.changeDescription;
+        this.impacts = base.impacts;
+        this.dedicatedDepartment = base.dedicatedDepartment;
+        this.riskAnalysis = base.riskAnalysis ? base.riskAnalysis : null;
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  closeRequest(
+  public closeRequest(
     assessment: "Implementation" | "Rejection",
     approvedOrRejectedBy: IUser,
     processChangeNotice: ProcessChangeNotice | null = null
   ): void {
-    if (this.status === "Open") {
-      this.assessment = assessment;
-      this.approvedOrRejectedBy = approvedOrRejectedBy.username;
-      this.status = "Closed";
-      this.closureDate = this._formatDate(new Date());
+    try {
+      if (this.status === "Open") {
+        this.assessment = assessment;
+        this.approvedOrRejectedBy = approvedOrRejectedBy.username;
+        this.status = "Closed";
+        this.closureDate = this.formatDate(new Date());
 
-      if (assessment === "Implementation") {
-        if (!processChangeNotice)
-          throw new Error(
-            `Assessment is 'Implementation' but ProcessChangeNotice is null, please provide ProcessChangeNotice entity to closeRequest function`
-          );
-        this.processChangeNotice = processChangeNotice;
+        if (assessment === "Implementation") {
+          if (!processChangeNotice)
+            throw new Error(
+              `Assessment is 'Implementation' but ProcessChangeNotice is null, please provide ProcessChangeNotice entity to closeRequest function`
+            );
+          this.processChangeNotice = processChangeNotice;
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -142,8 +180,8 @@ class ProcessChangeRequest implements IProcessChangeRequest {
     this.processChangeNotice = null;
     this.year = new Date().getFullYear();
     this.numberOfRequest = null;
-    this.requestDate = this._formatDate(new Date());
-    this.requestedBy = requestedBy.username;
+    this.requestDate = this.formatDate(new Date());
+    this.requestedBy = requestedBy?.username;
 
     this.setRequestInfo(base);
 

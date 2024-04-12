@@ -3,6 +3,7 @@ import { ref, computed, ComputedRef } from "vue";
 import { useUserStore } from "../../../stores/userStore";
 import { IUser } from "../../../interfaces/user/IUser";
 import { useI18n } from "vue-i18n";
+import NavigationDrawerNotifications from "./NavigationDrawerNotifications.vue";
 
 const props = defineProps(["drawerVisible"]);
 
@@ -62,7 +63,10 @@ const hello = computed(() => t("common.default_layout.drawer.hello"));
     <v-list>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title class="text-h6"> {{ `${hello} ${username}` }} </v-list-item-title>
+          <v-list-item-title class="text-h6">
+            {{ `${hello} ${username}` }}
+            <navigation-drawer-notifications></navigation-drawer-notifications>
+          </v-list-item-title>
           <!-- <v-list-item-subtitle> </v-list-item-subtitle> -->
         </v-list-item-content>
       </v-list-item>

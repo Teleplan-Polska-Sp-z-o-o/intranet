@@ -14,8 +14,9 @@ export class Change1712662752635 implements MigrationInterface {
             generationStrategy: "increment",
           },
           {
-            name: "noticeId",
+            name: "processChangeNoticeId",
             type: "int",
+            isNullable: true,
           },
           {
             name: "year",
@@ -65,10 +66,6 @@ export class Change1712662752635 implements MigrationInterface {
           },
           {
             name: "program",
-            type: "varchar",
-          },
-          {
-            name: "programOfProject",
             type: "varchar",
           },
           {
@@ -140,7 +137,7 @@ export class Change1712662752635 implements MigrationInterface {
     await queryRunner.createForeignKey(
       "process_change_request",
       new TableForeignKey({
-        columnNames: ["noticeId"],
+        columnNames: ["processChangeNoticeId"],
         referencedColumnNames: ["id"],
         referencedTableName: "process_change_notice",
         onDelete: "CASCADE",

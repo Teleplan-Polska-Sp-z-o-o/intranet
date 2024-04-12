@@ -107,7 +107,7 @@ const addNews = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error adding news:", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to add news.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -157,7 +157,7 @@ const editNews = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error adding news:", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to add news.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -196,7 +196,7 @@ const getNews = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error retrieving news:", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve news.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -241,7 +241,7 @@ const removeNews = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error removing news: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Failed to remove news.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

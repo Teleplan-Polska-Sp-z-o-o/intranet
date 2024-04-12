@@ -49,10 +49,12 @@ watchEffect(() => {
   index.value = props.index;
   loading.value = props.loading;
 });
+
+//
 </script>
 
 <template>
-  <v-dialog max-width="700px">
+  <v-dialog max-width="60vw" max-height="80vh">
     <template v-if="variant === 'Save'" v-slot:activator="{ props }">
       <v-btn
         class="bg-primary text-on-primary mr-4 rounded-xl"

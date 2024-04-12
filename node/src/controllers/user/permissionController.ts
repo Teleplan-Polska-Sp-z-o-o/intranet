@@ -44,7 +44,7 @@ const editPermission = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error setting permission:", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to update subcategory.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

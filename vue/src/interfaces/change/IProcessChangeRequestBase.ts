@@ -7,7 +7,7 @@ interface IProcessChangeRequestBase {
   dateNeeded: Date | undefined;
   costOfImplementation: string;
   program: string;
-  projectOfProgram: string;
+  // projectOfProgram: string;
   modelOrProcessImpacted: string;
   changeReason: string;
   changeDescription: string;

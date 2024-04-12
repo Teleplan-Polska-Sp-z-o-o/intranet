@@ -45,10 +45,10 @@ const addRequest = async (req: Request, res: Response) => {
 
 const editRequest = async (req: Request, res: Response) => {
   try {
-    const { id }: { id: number } = req.params;
     const body = req.body;
 
     const base: IProcessChangeRequestBase = JSON.parse(body.base);
+    const id: number = JSON.parse(body.requestId);
 
     let request: ProcessChangeRequest = await dataSource
       .getRepository(ProcessChangeRequest)

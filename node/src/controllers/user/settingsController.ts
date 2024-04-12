@@ -47,7 +47,7 @@ const setSettingsTheme = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error setting theme:", error);
-    return res.status(404).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to update theme.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -84,7 +84,7 @@ const setSettingsLanguage = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error setting theme:", error);
-    return res.status(404).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to update language.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

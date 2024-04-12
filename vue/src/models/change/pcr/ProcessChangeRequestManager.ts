@@ -30,11 +30,10 @@ class ProcessChangeRequestManager {
 
   public put = async (
     formData: FormData,
-    id: number,
     status: boolean = false
   ): Promise<Array<IProcessChangeRequest> | IResponseStatus> => {
     const response = await axios.put(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${id}`,
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}`,
       formData
     );
     if (status) {
