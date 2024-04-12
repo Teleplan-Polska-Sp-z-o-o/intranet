@@ -5,6 +5,7 @@ import { ProcessChangeRequest } from "../../orm/entity/change/ProcessChangeReque
 import { IProcessChangeRequestBase } from "../../interfaces/change/IProcessChangeRequestBase";
 import { IUser } from "../../interfaces/user/IUser";
 import { ProcessChangeNotice } from "../../orm/entity/change/ProcessChangeNoticeEntity";
+import { getWebSocketConnections } from "../websocket/websocketController";
 
 const addRequest = async (req: Request, res: Response) => {
   try {
@@ -27,6 +28,15 @@ const addRequest = async (req: Request, res: Response) => {
       request.setRequestNo(count);
 
       request = await dataSource.getRepository(ProcessChangeRequest).save(request);
+
+      const websocketConnections = getWebSocketConnections();
+      const approver = request.reconextOwner.toLocaleLowerCase().replace(" ", ".");
+      const foundApproverConnection = websocketConnections.find(
+        (connection) => connection.user.username === approver
+      );
+      if (foundApproverConnection) {
+        foundApproverConnection.ws.send("new PCR");
+      }
     });
 
     res.status(201).json({
@@ -64,6 +74,16 @@ const editRequest = async (req: Request, res: Response) => {
     request.setRequestInfo(base);
 
     request = await dataSource.getRepository(ProcessChangeRequest).save(request);
+
+    const websocketConnections = getWebSocketConnections();
+    const approver = request.reconextOwner.toLocaleLowerCase().replace(" ", ".");
+    const foundApproverConnection = websocketConnections.find(
+      (connection) => connection.user.username === approver
+    );
+
+    if (foundApproverConnection) {
+      foundApproverConnection.ws.send("edited PCR");
+    }
 
     res.status(200).json({
       edited: request,

@@ -5,15 +5,12 @@ import "reflect-metadata";
 // create and setup express app
 import { corsOptionsDelegate } from "./config/cors";
 
+import expressWs from "express-ws";
 const app = express();
+expressWs(app);
+
 app.use(express.json());
 app.use(cors(corsOptionsDelegate));
-
-import WebSocket from "ws";
-import http from "http";
-
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
 
 // Routes
 import { userRoutes } from "./routes/userRoutes";
@@ -32,30 +29,29 @@ app.use("/api/change", changeRoutes);
 // DataSource instance initialize
 import { dataSource } from "./config/orm/dataSource";
 import { serverConfig } from "./config/server";
+import { storeWebSocketConnections } from "./controllers/websocket/websocketController";
 
 dataSource
   .initialize()
   .then(() => {
     console.log("Data Source has been initialized!");
+
+    // app.ws("/", function (ws: any, _req: Request) {
+    //   console.log("Client connected");
+    //   //an event listener is set up for incoming WebSocket messages.
+    //   ws.on("message", function (msg: string) {
+    //     console.log(msg);
+    //     // Send a message to the client
+    //   });
+
+    //   ws.send("Hello from the server!");
+    // });
+
+    app.ws("/", storeWebSocketConnections);
+
     app.listen(serverConfig.port, () =>
       console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
     );
-
-    wss.on("connection", (ws: WebSocket) => {
-      console.log("Client connected");
-
-      ws.on("message", (message: string) => {
-        console.log("Received message:", message);
-        // You can handle incoming messages here and respond accordingly
-      });
-
-      // Send a message to the client
-      ws.send("Hello from the server!");
-    });
-
-    server.listen(serverConfig.port, () => {
-      console.log(`Server listens at ${serverConfig.origin}:${serverConfig.port}`);
-    });
   })
   .catch((err) => {
     console.error("Error during Data Source initialization", err);

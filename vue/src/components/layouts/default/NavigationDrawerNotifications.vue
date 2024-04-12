@@ -1,32 +1,44 @@
 <script setup lang="ts">
-import { nodeConfig } from "../../../config/env";
+import { IUser } from "../../../interfaces/user/IUser";
+import { usePermissionStore } from "../../../stores/permissionStore";
+import { useUserStore } from "../../../stores/userStore";
+import { useWebsocketStore } from "../../../stores/websocketStore";
 
-const translateOrigin = (v: string | undefined): string => {
-  if (typeof v === "string") {
-    return v.replace("http", "ws");
-  }
-  throw new Error("Origin resolves to undefined");
-};
+const websocketStore = useWebsocketStore();
 
-const socket = new WebSocket(`${translateOrigin(nodeConfig.origin)}:${nodeConfig.port}`);
+let socket = websocketStore.getSocket();
+if (socket === null) {
+  websocketStore.initSocket();
+  socket = websocketStore.getSocket();
+}
 
-socket.onopen = () => {
-  console.log("Connected to WebSocket server");
-};
+const userStore = useUserStore();
+const user: IUser | false = userStore.info();
 
-socket.onmessage = (event) => {
-  console.log("Received message:", event.data);
-};
+const permissionStore = usePermissionStore();
+const permission = permissionStore.getPermissionCode() as "user" | "moderator" | "admin";
 
-socket.onerror = (error) => {
-  console.error("WebSocket error:", error.message);
-};
+if (permission !== "user" && socket !== null) {
+  socket.onopen = () => {
+    socket?.send(JSON.stringify({ user }));
+  };
 
-socket.onclose = () => {
-  console.log("WebSocket connection closed");
-};
+  socket.onmessage = (event: MessageEvent) => {
+    console.log("Received message:", event.data);
+  };
+
+  socket.onerror = (error) => {
+    console.error("WebSocket error:", (error as ErrorEvent).message);
+  };
+
+  socket.onclose = () => {
+    socket?.send(JSON.stringify({ userToRemove: user }));
+  };
+}
 </script>
 
 <template>
-  <v-chip prepend-icon="mdi-bell" variant="text" color="primary"> {{ 1 }} </v-chip>
+  <v-chip prepend-icon="mdi-bell" variant="outlined" color="primary" class="ml-auto">
+    {{ 1 }}
+  </v-chip>
 </template>
