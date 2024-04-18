@@ -74,7 +74,7 @@ const routes = [
         },
       },
       {
-        path: "settings",
+        path: "settings/:currentTab",
         name: "settings",
         component: SettingsView,
         meta: {

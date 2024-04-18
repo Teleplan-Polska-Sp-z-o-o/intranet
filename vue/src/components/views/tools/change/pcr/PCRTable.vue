@@ -7,6 +7,7 @@ import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatu
 import PCRStepper from "./PCRStepper.vue";
 import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IProcessChangeRequestBase";
 import { IUser } from "../../../../../interfaces/user/IUser";
+import PCRView from "./PCRView.vue";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -37,7 +38,7 @@ const headers: any = [
     sortable: false,
     filterable: false,
   },
-  { title: t(`${tPath}.header.viewPcr`), key: "viewPcr", sortable: false, filterable: false },
+  { title: t(`${tPath}.header.viewPcr`), key: "custom2", sortable: false, filterable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
 
@@ -92,12 +93,14 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableDialogComponent="PCRStepper"
     :tableDialogComponentProps="{}"
     @responseStatus="handleResponseStatus"
+    :copy="true"
+    flow="PCRFlow"
   >
     <template v-slot:table-key-slot="{ item }">
       <span v-show="false">{{ item }}</span>
     </template>
     <template v-slot:table-key-slot-2="{ item }">
-      <span v-show="false">{{ item }}</span>
+      <p-c-r-view :item="item"></p-c-r-view>
     </template>
   </crud-table>
 </template>

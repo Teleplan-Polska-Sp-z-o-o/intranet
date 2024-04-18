@@ -2,32 +2,44 @@ import { IUser } from "../../interfaces/user/IUser";
 import { ISocketConnection } from "../../interfaces/websocket/ISocketConnection";
 
 class WebsocketConnections {
-  static connections: Array<ISocketConnection> = [];
+  private static instance: WebsocketConnections;
+  private connections: Array<ISocketConnection> = [];
 
-  constructor() {}
+  private constructor() {}
 
-  public addConnection = (conn: ISocketConnection) => {
-    WebsocketConnections.connections.push(conn);
+  public static getInstance(): WebsocketConnections {
+    if (!WebsocketConnections.instance) {
+      WebsocketConnections.instance = new WebsocketConnections();
+    }
+    return WebsocketConnections.instance;
+  }
+
+  public addConnection = (conn: ISocketConnection): void => {
+    this.connections.push(conn);
   };
 
-  public replaceConnection = (existingIndex: number, conn: ISocketConnection) => {
-    WebsocketConnections.connections[existingIndex] = conn;
+  public replaceConnection = (existingIndex: number, conn: ISocketConnection): void => {
+    if (this.connections[existingIndex].ws.readyState !== 1) {
+      this.connections[existingIndex] = conn;
+    }
   };
 
   public findIndexOfConnection = (parsedMsg: { user: IUser }): number => {
-    return WebsocketConnections.connections.findIndex((connection) => {
+    return this.connections.findIndex((connection) => {
       return connection.user.username === parsedMsg.user.username;
     });
   };
 
-  public removeConnection = (parsedMsg: { userToRemove: IUser }) => {
-    const indexToRemove = this.findIndexOfConnection({ user: { ...parsedMsg.userToRemove } });
+  public removeClosedConnection = (): void => {
+    const indexToRemove = this.connections.findIndex((connection) => {
+      return connection.ws.readyState !== 1; // if not OPEN
+    });
     if (indexToRemove !== -1) {
-      WebsocketConnections.connections.splice(indexToRemove, 1);
+      this.connections.splice(indexToRemove, 1);
     }
   };
 
-  public getConnections = () => WebsocketConnections.connections;
+  public getConnections = (): Array<ISocketConnection> => this.connections;
 }
 
 export { WebsocketConnections };

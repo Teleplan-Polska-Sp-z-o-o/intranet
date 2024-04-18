@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "./routes.ts";
 import { usePermissionStore } from "./../../stores/permissionStore.ts";
+import { useUserStore } from "../../stores/userStore.ts";
+import { IUser } from "../../interfaces/user/IUser.ts";
 
 // 3. Create the router instance and pass the `routes` option
 
@@ -8,6 +10,17 @@ const router = createRouter({
   // history: createWebHashHistory(),
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((_to, _from, next) => {
+  const userStore = useUserStore();
+  const isUser: false | IUser = userStore.info();
+
+  if (!isUser) {
+    next("/"); // Proceed to
+  } else {
+    next(); // Proceed with the navigation
+  }
 });
 
 router.beforeEach((to, _from, next) => {

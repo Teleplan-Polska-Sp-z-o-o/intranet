@@ -74,6 +74,9 @@ const plC = {
               ukrainian: "Ukraiński",
             },
           },
+          notification: {
+            name: "CENTRUM POWIADOMIEŃ",
+          },
           user: {
             name: "UŻYTKOWNIK",
           },

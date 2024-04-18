@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
 import { UserPermission } from "./UserPermissionEntity";
 import { UserSettings } from "./UserSettingsEntity";
+import { UserNotification } from "./UserNotificationEntity";
 
 @Entity()
 export class User {
@@ -18,6 +19,9 @@ export class User {
   @OneToOne(() => UserSettings)
   @JoinColumn()
   settings: UserSettings;
+
+  @OneToMany(() => UserNotification, (notification) => notification.user)
+  notification: Array<UserNotification>;
 
   constructor(
     username: string,

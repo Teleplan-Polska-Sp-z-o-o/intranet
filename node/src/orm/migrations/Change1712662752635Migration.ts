@@ -14,6 +14,10 @@ export class Change1712662752635 implements MigrationInterface {
             generationStrategy: "increment",
           },
           {
+            name: "processChangeRequestUpdatesId",
+            type: "int",
+          },
+          {
             name: "processChangeNoticeId",
             type: "int",
             isNullable: true,
@@ -21,6 +25,10 @@ export class Change1712662752635 implements MigrationInterface {
           {
             name: "year",
             type: "int",
+          },
+          {
+            name: "updatable",
+            type: "boolean",
           },
           {
             name: "numberOfRequest",
@@ -117,7 +125,36 @@ export class Change1712662752635 implements MigrationInterface {
         ],
       })
     );
-
+    await queryRunner.createTable(
+      new Table({
+        name: "process_change_request_updates",
+        columns: [
+          {
+            name: "id",
+            type: "int",
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: "increment",
+          },
+          {
+            name: "updateBy",
+            type: "varchar",
+          },
+          {
+            name: "updateDate",
+            type: "varchar",
+          },
+          {
+            name: "updateFields",
+            type: "varchar",
+          },
+          {
+            name: "updateDescription",
+            type: "varchar",
+          },
+        ],
+      })
+    );
     await queryRunner.createTable(
       new Table({
         name: "process_change_notice",
@@ -133,7 +170,6 @@ export class Change1712662752635 implements MigrationInterface {
         ],
       })
     );
-
     await queryRunner.createForeignKey(
       "process_change_request",
       new TableForeignKey({
@@ -146,7 +182,7 @@ export class Change1712662752635 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable("process_change_request");
-    await queryRunner.dropTable("process_change_notice");
+    // await queryRunner.dropTable("process_change_request");
+    // await queryRunner.dropTable("process_change_notice");
   }
 }

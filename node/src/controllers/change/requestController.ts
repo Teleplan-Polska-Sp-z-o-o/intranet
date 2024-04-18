@@ -5,7 +5,48 @@ import { ProcessChangeRequest } from "../../orm/entity/change/ProcessChangeReque
 import { IProcessChangeRequestBase } from "../../interfaces/change/IProcessChangeRequestBase";
 import { IUser } from "../../interfaces/user/IUser";
 import { ProcessChangeNotice } from "../../orm/entity/change/ProcessChangeNoticeEntity";
-import { getWebSocketConnections } from "../websocket/websocketController";
+import { getWebSocketConnections } from "../common/websocketController";
+import { NotificationBuilder } from "../../orm/entity/user/NotificationBuilder";
+import { ENotificationSource } from "../../interfaces/user/notification/ENotificationSource";
+import { ENotificationAction } from "../../interfaces/user/notification/ENotificationAction";
+import { User } from "../../orm/entity/user/UserEntity";
+import { saveNotification } from "../common/notificationController";
+import { EntityManager } from "typeorm";
+
+const notification = async (
+  entityManager: EntityManager,
+  req: ProcessChangeRequest,
+  { title, subtitle, link }: { title: string; subtitle: string; link: string }
+) => {
+  const approver = req.reconextOwner.toLocaleLowerCase().replace(" ", ".");
+
+  const userOptions = {
+    where: { username: approver },
+  };
+  const userEntity = await entityManager.getRepository(User).findOne(userOptions);
+
+  const userNotification = new NotificationBuilder(
+    ENotificationSource.PCR,
+    ENotificationAction.AcceptOrReject
+  )
+    .setUser(userEntity)
+    .setTitle(title)
+    .setSubtitle(subtitle)
+    .setLink(link)
+    .build();
+
+  saveNotification(userNotification);
+
+  const websocketConnections = getWebSocketConnections();
+
+  const foundApproverConnection = websocketConnections.find(
+    (connection) => connection.user.username === approver
+  );
+
+  if (foundApproverConnection) {
+    foundApproverConnection.ws.send(JSON.stringify(userNotification));
+  }
+};
 
 const addRequest = async (req: Request, res: Response) => {
   try {
@@ -19,7 +60,7 @@ const addRequest = async (req: Request, res: Response) => {
     await dataSource.transaction(async (transactionalEntityManager) => {
       request = new ProcessChangeRequest(requestedBy, base);
 
-      request = await dataSource.getRepository(ProcessChangeRequest).save(request);
+      request = await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
 
       const count = await transactionalEntityManager
         .getRepository(ProcessChangeRequest)
@@ -27,16 +68,13 @@ const addRequest = async (req: Request, res: Response) => {
 
       request.setRequestNo(count);
 
-      request = await dataSource.getRepository(ProcessChangeRequest).save(request);
+      request = await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
 
-      const websocketConnections = getWebSocketConnections();
-      const approver = request.reconextOwner.toLocaleLowerCase().replace(" ", ".");
-      const foundApproverConnection = websocketConnections.find(
-        (connection) => connection.user.username === approver
-      );
-      if (foundApproverConnection) {
-        foundApproverConnection.ws.send("new PCR");
-      }
+      notification(transactionalEntityManager, request, {
+        title: `New PCR`,
+        subtitle: `You are now the owner of request ${request.numberOfRequest}. You will be notified when it's ready for approval.`,
+        link: `/tool/change/browse`,
+      });
     });
 
     res.status(201).json({
@@ -60,30 +98,32 @@ const editRequest = async (req: Request, res: Response) => {
     const base: IProcessChangeRequestBase = JSON.parse(body.base);
     const id: number = JSON.parse(body.requestId);
 
-    let request: ProcessChangeRequest = await dataSource
-      .getRepository(ProcessChangeRequest)
-      .findOne({ where: { id } });
+    let request: ProcessChangeRequest;
 
-    if (!request) {
-      return res.status(404).json({
-        message: "Request not found",
-        statusMessage: HttpResponseMessage.PUT_ERROR,
-      });
-    }
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      request = await transactionalEntityManager
+        .getRepository(ProcessChangeRequest)
+        .findOne({ where: { id } });
 
-    request.setRequestInfo(base);
+      if (!request) {
+        return res.status(404).json({
+          message: "Request not found",
+          statusMessage: HttpResponseMessage.PUT_ERROR,
+        });
+      }
 
-    request = await dataSource.getRepository(ProcessChangeRequest).save(request);
+      request.setRequestInfo(base);
 
-    const websocketConnections = getWebSocketConnections();
-    const approver = request.reconextOwner.toLocaleLowerCase().replace(" ", ".");
-    const foundApproverConnection = websocketConnections.find(
-      (connection) => connection.user.username === approver
-    );
+      request = await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
 
-    if (foundApproverConnection) {
-      foundApproverConnection.ws.send("edited PCR");
-    }
+      const allFieldsFilled = Object.values(base).every((value) => !!value);
+      if (allFieldsFilled)
+        notification(transactionalEntityManager, request, {
+          title: `PCR Ready for Approval`,
+          subtitle: `${request.numberOfRequest} has been completed and is ready for your approval.`,
+          link: `/tool/change/browse`,
+        });
+    });
 
     res.status(200).json({
       edited: request,

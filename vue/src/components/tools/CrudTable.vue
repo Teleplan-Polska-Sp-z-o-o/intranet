@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch, watchEffect } from "vue";
 import TableDialog from "./TableDialog.vue";
+import TableFlow from "./TableFlow.vue";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../models/common/ResponseStatus";
-import CopyToClipboard from "../common/CopyToClipboard.vue";
+import CopyToClipboard from "./CopyToClipboard.vue";
 
 const props = defineProps<{
   headers: any;
@@ -27,7 +28,8 @@ const props = defineProps<{
   tableDialogComponent?: any;
   tableDialogComponentProps?: any;
 
-  doNotCopy?: true;
+  copy?: true;
+  flow?: string; // pdf name
 }>();
 
 const emit = defineEmits(["save-data", "emit-table-change", "responseStatus"]);
@@ -206,7 +208,12 @@ const handleSaveData = (data: any) => emit("save-data", data);
     >
       <template v-slot:top>
         <v-toolbar flat density="compact" class="bg-surface-2 pa-n4">
-          <v-toolbar-title class="bg-surface-2 ml-0">{{ toolbarTitle }}</v-toolbar-title>
+          <v-toolbar-title class="bg-surface-2 ml-0">
+            {{ toolbarTitle }}
+          </v-toolbar-title>
+
+          <table-flow v-if="props.flow" :name="props.flow"></table-flow>
+
           <v-text-field
             v-model="search"
             :label="searchTitle"
@@ -218,7 +225,8 @@ const handleSaveData = (data: any) => emit("save-data", data);
             single-line
             :rounded="true"
           ></v-text-field>
-          <copy-to-clipboard v-if="!doNotCopy" :filtered="filtered"></copy-to-clipboard>
+
+          <copy-to-clipboard v-if="props.copy" :filtered="filtered"></copy-to-clipboard>
 
           <v-divider v-if="props.tableAdd" class="mx-4" inset vertical></v-divider>
 
@@ -269,25 +277,35 @@ const handleSaveData = (data: any) => emit("save-data", data);
       </template>
 
       <template v-slot:item.actions="{ item }">
-        <v-btn
-          v-if="props.tableEdit"
-          variant="tonal"
-          color="primary"
-          size="small"
-          @click="editItem(item)"
-          icon="mdi-pencil"
-          class="ma-2"
-        />
+        <v-tooltip text="Edit this record.">
+          <template v-slot:activator="{ props: tooltip }">
+            <v-btn
+              v-if="props.tableEdit"
+              variant="tonal"
+              color="primary"
+              size="small"
+              v-bind="tooltip"
+              @click="editItem(item)"
+              icon="mdi-pencil"
+              class="ma-2"
+            />
+          </template>
+        </v-tooltip>
 
-        <v-btn
-          v-if="props.tableDelete"
-          variant="tonal"
-          color="primary"
-          size="small"
-          @click="deleteItem(item)"
-          icon="mdi-delete"
-          class="ma-2"
-        />
+        <v-tooltip text="Remove this record.">
+          <template v-slot:activator="{ props: tooltip }">
+            <v-btn
+              v-if="props.tableDelete"
+              variant="tonal"
+              color="primary"
+              size="small"
+              v-bind="tooltip"
+              @click="deleteItem(item)"
+              icon="mdi-delete"
+              class="ma-2"
+            />
+          </template>
+        </v-tooltip>
       </template>
     </v-data-table>
   </v-card>

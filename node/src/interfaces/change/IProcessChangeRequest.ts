@@ -1,13 +1,16 @@
 import { IUser } from "../user/IUser";
 import { IProcessChangeNotice } from "./IProcessChangeNotice";
 import { IProcessChangeRequestBase } from "./IProcessChangeRequestBase";
+import { IProcessChangeRequestUpdates } from "./IProcessChangeRequestUpdates";
 
 interface IProcessChangeRequest {
   id: number; // auto generated: identifier
 
   // generateRequestBase function
+  processChangeRequestUpdates: IProcessChangeRequestUpdates;
   processChangeNotice: IProcessChangeNotice; // relation with pcn
   year: number; // auto generated: number year
+  updatable: boolean; // trigger update section
   numberOfRequest: string | null; // auto generated (from class function): Format: e.g., "001/PCR/2024"
   requestDate: string; // auto generated: string when the request was made in format: day/month/year
   requestedBy: string; // auto generated: active directory login in format

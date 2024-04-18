@@ -20,5 +20,5 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "../vue/src/models/common/PDFHelper.ts"]
 }

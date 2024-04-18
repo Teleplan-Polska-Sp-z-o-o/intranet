@@ -18,6 +18,9 @@ enum Endpoints {
 
   // change
   ChangeRequest = "/api/change/request",
+
+  //notification
+  Notification = "/api/notification",
 }
 
 export { Endpoints };

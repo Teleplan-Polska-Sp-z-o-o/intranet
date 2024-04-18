@@ -115,7 +115,6 @@ const addToFavorites = (item: any) => {
     :searchTitle="searchTitle"
     :manager="manager"
     :chips="props.chips"
-    :doNotCopy="true"
   >
     <template v-slot:table-key-slot="{ item }">
       <v-select

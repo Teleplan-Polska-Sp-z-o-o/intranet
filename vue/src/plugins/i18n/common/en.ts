@@ -74,6 +74,9 @@ const enC = {
               ukrainian: "Ukrainian",
             },
           },
+          notification: {
+            name: "NOTIFICATION CENTER",
+          },
           user: {
             name: "USER",
           },

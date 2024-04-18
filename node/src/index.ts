@@ -17,6 +17,7 @@ import { userRoutes } from "./routes/userRoutes";
 import { documentRoutes } from "./routes/documentRoutes";
 import { editorRoutes } from "./routes/editorRoutes";
 import { changeRoutes } from "./routes/changeRoutes";
+import { notificationRoutes } from "./routes/notificationRoutes";
 
 import path from "path";
 
@@ -25,11 +26,12 @@ app.use("/api/user", userRoutes);
 app.use("/api/document", documentRoutes);
 app.use("/api/editor", editorRoutes);
 app.use("/api/change", changeRoutes);
+app.use("/api/notification", notificationRoutes);
 
 // DataSource instance initialize
 import { dataSource } from "./config/orm/dataSource";
 import { serverConfig } from "./config/server";
-import { storeWebSocketConnections } from "./controllers/websocket/websocketController";
+import { storeWebSocketConnections } from "./controllers/common/websocketController";
 
 dataSource
   .initialize()

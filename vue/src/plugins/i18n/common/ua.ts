@@ -74,6 +74,9 @@ const uaC = {
               ukrainian: "Українська",
             },
           },
+          notification: {
+            name: "ЦЕНТР ПОВІДОМЛЕНЬ",
+          },
           user: {
             name: "КОРИСТУВАЧ",
           },

@@ -144,30 +144,30 @@ const newRequestData = computed<
   };
 });
 
-const customerContactPersonRule = [
-  (v: string) => !!v || "Customer Contact Person field is required.",
-  (v: string) =>
-    /^[a-zA-Z]+ [a-zA-Z]+$/.test(v) ||
-    "Please enter both a name and a surname separated by a space.",
-];
-const reconextContactPersonRule = [
-  (v: string) => !!v || "Reconext Contact Person field is required",
-];
-const reconextOwnerRule = [(v: string) => !!v || "Reconext Owner field is required"];
-const modelOrProcessImpactedRule = [
-  (v: string) => !!v || "Model or Process Impacted field is required.",
-];
-const costOfImplementationRule = [
-  (v: string) => !!v || "Cost of Implementation field is required.",
-];
-const changeReasonRule = [(v: string) => !!v || "Change Reason field is required."];
-const changeDescriptionRule = [(v: string) => !!v || "Change Description field is required."];
-const impactsRule = [(v: string) => !!v || "Impacts field is required."];
+// const customerContactPersonRule = [
+//   (v: string) => !!v || "Customer Contact Person field is required.",
+//   (v: string) =>
+//     /^[a-zA-Z]+ [a-zA-Z]+$/.test(v) ||
+//     "Please enter both a name and a surname separated by a space.",
+// ];
+// const reconextContactPersonRule = [
+//   (v: string) => !!v || "Reconext Contact Person field is required",
+// ];
+// const reconextOwnerRule = [(v: string) => !!v || "Reconext Owner field is required"];
+// const modelOrProcessImpactedRule = [
+//   (v: string) => !!v || "Model or Process Impacted field is required.",
+// ];
+// const costOfImplementationRule = [
+//   (v: string) => !!v || "Cost of Implementation field is required.",
+// ];
+// const changeReasonRule = [(v: string) => !!v || "Change Reason field is required."];
+// const changeDescriptionRule = [(v: string) => !!v || "Change Description field is required."];
+// const impactsRule = [(v: string) => !!v || "Impacts field is required."];
 
-const customerContactEmailRule = [
-  (v: string) => !!v || "Customer Contact Email field is required.",
-  (v: string) => /.+@.+\..+/.test(v) || "Email must be valid.",
-];
+// const customerContactEmailRule = [
+//   (v: string) => !!v || "Customer Contact Email field is required.",
+//   (v: string) => /.+@.+\..+/.test(v) || "Email must be valid.",
+// ];
 
 type Completed = { step1: boolean; step2: boolean; step3: boolean; step4: boolean };
 const completed = computed<Completed>(() => {
@@ -175,8 +175,8 @@ const completed = computed<Completed>(() => {
 
   const step1 = !!req.reconextOwner && !!req.dedicatedDepartment && !!req.program;
   const step2 =
-    /^[a-zA-Z]+ [a-zA-Z]+$/.test(req.customerContactPerson) &&
-    /.+@.+\..+/.test(req.customerContactEmail) &&
+    // /^[a-zA-Z]+ [a-zA-Z]+$/.test(req.customerContactPerson) &&
+    // /.+@.+\..+/.test(req.customerContactEmail) &&
     !!req.reconextContactPerson;
   const step3 = !!req.dateNeeded;
   const step4 =
@@ -194,14 +194,20 @@ const completed = computed<Completed>(() => {
   };
 });
 
+const tests = computed<boolean>(() => {
+  const req = request.value;
+  const testCustomerContactPerson: boolean = req.customerContactPerson
+    ? /^[a-zA-Z]+ [a-zA-Z]+$/.test(req.customerContactPerson)
+    : true;
+  const testCustomerContactEmail: boolean = req.customerContactEmail
+    ? /.+@.+\..+/.test(req.customerContactEmail)
+    : true;
+
+  return testCustomerContactPerson && testCustomerContactEmail;
+});
+
 watchEffect(() => {
-  if (
-    completed.value.step1 &&
-    completed.value.step2 &&
-    completed.value.step3 &&
-    completed.value.step4 &&
-    activeStep.value === 5
-  ) {
+  if (activeStep.value === 5) {
     emit("verified", false);
     emit("save-data", newRequestData.value);
   } else {
@@ -221,7 +227,7 @@ watchEffect(() => {
     <v-stepper-header class="rounded-xl">
       <v-stepper-item
         color="secondary"
-        :error="activeStep > 1 && !completed.step1"
+        :editable="activeStep > 1 && !completed.step1"
         :complete="activeStep > 1 && completed.step1"
         :value="1"
         title="Base Info"
@@ -229,7 +235,8 @@ watchEffect(() => {
       <v-divider></v-divider>
       <v-stepper-item
         color="secondary"
-        :error="activeStep > 2 && !completed.step2"
+        :editable="activeStep > 2 && !completed.step2"
+        :error="!tests"
         :complete="activeStep > 2 && completed.step2"
         :value="2"
         title="Contact Info"
@@ -237,7 +244,7 @@ watchEffect(() => {
       <v-divider></v-divider>
       <v-stepper-item
         color="secondary"
-        :error="activeStep > 3 && !completed.step3"
+        :editable="activeStep > 3 && !completed.step3"
         :complete="activeStep > 3 && completed.step3"
         :value="3"
         title="Need Date"
@@ -245,7 +252,7 @@ watchEffect(() => {
       <v-divider></v-divider>
       <v-stepper-item
         color="secondary"
-        :error="activeStep > 4 && !completed.step4"
+        :editable="activeStep > 4 && !completed.step4"
         :complete="activeStep > 4 && completed.step4"
         :value="4"
         title="Descriptive Info"
@@ -280,8 +287,8 @@ watchEffect(() => {
             variant="underlined"
             label="Reconext Owner"
             :items="reconextUsers"
-            :rules="reconextOwnerRule"
           ></v-autocomplete>
+          <!-- :rules="reconextOwnerRule" -->
         </v-card>
       </v-stepper-window-item>
 
@@ -291,21 +298,22 @@ watchEffect(() => {
             v-model="request.customerContactPerson"
             variant="underlined"
             label="Customer Contact Person"
-            :rules="customerContactPersonRule"
           ></v-text-field>
+          <!-- :rules="customerContactPersonRule" -->
+
           <v-text-field
             v-model="request.customerContactEmail"
             variant="underlined"
             label="Customer Contact Email"
-            :rules="customerContactEmailRule"
           ></v-text-field>
+          <!-- :rules="customerContactEmailRule" -->
           <v-autocomplete
             v-model="request.reconextContactPerson"
             variant="underlined"
             label="Reconext Contact Person"
             :items="reconextUsers"
-            :rules="reconextContactPersonRule"
           ></v-autocomplete>
+          <!-- :rules="reconextContactPersonRule" -->
         </v-card>
       </v-stepper-window-item>
 
@@ -327,36 +335,37 @@ watchEffect(() => {
             v-model="request.modelOrProcessImpacted"
             variant="underlined"
             label="Model or Process Impacted"
-            :rules="modelOrProcessImpactedRule"
           ></v-text-field>
+          <!-- :rules="modelOrProcessImpactedRule" -->
+
           <v-text-field
             v-model="request.costOfImplementation"
             variant="underlined"
             label="Cost of Implementation"
-            :rules="costOfImplementationRule"
           ></v-text-field>
+          <!-- :rules="costOfImplementationRule" -->
           <v-textarea
             v-model="request.changeReason"
             variant="underlined"
             label="Change Reason"
-            :rules="changeReasonRule"
           ></v-textarea>
+          <!-- :rules="changeReasonRule" -->
           <v-textarea
             v-model="request.changeDescription"
             variant="underlined"
             label="Change Description"
-            :rules="changeDescriptionRule"
           ></v-textarea>
+          <!-- :rules="changeDescriptionRule" -->
           <v-text-field
             v-model="request.impacts"
             variant="underlined"
             label="Impacts"
-            :rules="impactsRule"
           ></v-text-field>
+          <!-- :rules="impactsRule" -->
           <v-textarea
             v-model="request.riskAnalysis"
             variant="underlined"
-            label="Optional: Risk Analysis"
+            label="Risk Analysis"
           ></v-textarea>
         </v-card>
       </v-stepper-window-item>
