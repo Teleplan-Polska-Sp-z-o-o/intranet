@@ -11,7 +11,6 @@ const corsOptions = {
 };
 
 const corsOptionsDelegate = (req, callback) => {
-  console.log(req.headers);
   if (req?.query["api-key"] === serverConfig.apiKey) callback(null, corsOptions);
   else if (whitelist.includes(req.headers.origin)) callback(null, { origin: true });
   else if (whitelist.includes(req.headers.referer.slice(0, -1))) callback(null, { origin: true });

@@ -102,23 +102,21 @@ class ProcessChangeRequest implements IProcessChangeRequest {
 
   public setRequestInfo = (base: IProcessChangeRequestBase): void => {
     try {
-      if (base) {
-        this.internalOrExternal = base.internalOrExternal;
-        this.customerContactPerson = base.customerContactPerson;
-        this.customerContactEmail = base.customerContactEmail;
-        this.reconextContactPerson = base.reconextContactPerson;
-        this.reconextOwner = base.reconextOwner;
-        this.dateNeeded = Helper.formatDate(base.dateNeeded);
-        this.costOfImplementation = base.costOfImplementation;
-        this.program = base.program;
-        // this.projectOfProgram = base.projectOfProgram;
-        this.modelOrProcessImpacted = base.modelOrProcessImpacted;
-        this.changeReason = base.changeReason;
-        this.changeDescription = base.changeDescription;
-        this.impacts = base.impacts;
-        this.dedicatedDepartment = base.dedicatedDepartment;
-        this.riskAnalysis = base.riskAnalysis ? base.riskAnalysis : null;
-      }
+      this.internalOrExternal = base.internalOrExternal;
+      this.customerContactPerson = base.customerContactPerson;
+      this.customerContactEmail = base.customerContactEmail;
+      this.reconextContactPerson = base.reconextContactPerson;
+      this.reconextOwner = base.reconextOwner;
+      this.dateNeeded = Helper.formatDate(base.dateNeeded);
+      this.costOfImplementation = base.costOfImplementation;
+      this.program = base.program;
+      // this.projectOfProgram = base.projectOfProgram;
+      this.modelOrProcessImpacted = base.modelOrProcessImpacted;
+      this.changeReason = base.changeReason;
+      this.changeDescription = base.changeDescription;
+      this.impacts = base.impacts;
+      this.dedicatedDepartment = base.dedicatedDepartment;
+      this.riskAnalysis = base.riskAnalysis ? base.riskAnalysis : null;
     } catch (error) {
       console.log(error);
     }
@@ -164,13 +162,41 @@ class ProcessChangeRequest implements IProcessChangeRequest {
     }
   }
 
-  constructor(requestedBy: IUser, base: IProcessChangeRequestBase) {
+  public compare = (base: IProcessChangeRequestBase): Array<string> => {
+    const updatedFields: Array<string> = [];
+
+    // Iterate over the keys of the base object
+    Object.keys(base).forEach((key) => {
+      // Skip the updateDescription field
+      if (key === "updateDescription") {
+        return;
+      }
+
+      // Compare the values of the base object with the current object
+      if (key === "dateNeeded" && base.dateNeeded) {
+        const formattedDate = Helper.formatDate(base.dateNeeded);
+        if (this.dateNeeded !== formattedDate) {
+          updatedFields.push(key);
+        }
+      } else {
+        if (this[key] !== base[key]) {
+          updatedFields.push(key);
+        }
+      }
+    });
+
+    return updatedFields;
+  };
+
+  constructor() {}
+
+  public build = (requestedBy: IUser, base: IProcessChangeRequestBase): ProcessChangeRequest => {
     this.processChangeNotice = null;
     this.year = new Date().getFullYear();
     this.updatable = false;
     this.numberOfRequest = null;
     this.requestDate = Helper.formatDate(new Date());
-    this.requestedBy = requestedBy?.username;
+    this.requestedBy = requestedBy.username;
 
     this.setRequestInfo(base);
 
@@ -178,7 +204,9 @@ class ProcessChangeRequest implements IProcessChangeRequest {
     this.approvedOrRejectedBy = null;
     this.status = "Open";
     this.closureDate = null;
-  }
+
+    return this;
+  };
 }
 
 export { ProcessChangeRequest };

@@ -94,6 +94,7 @@ const uaT = {
               description: "Опис",
               language: "Мови (файли)",
               revision: "Ревізія",
+              subcategory: "Підкатегорія",
               actions: "Дії",
             },
           },

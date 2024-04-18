@@ -12,6 +12,7 @@ import { ENotificationAction } from "../../interfaces/user/notification/ENotific
 import { User } from "../../orm/entity/user/UserEntity";
 import { saveNotification } from "../common/notificationController";
 import { EntityManager } from "typeorm";
+import { ProcessChangeRequestUpdates } from "../../orm/entity/change/ProcessChangeRequestUpdatesEntity";
 
 const notification = async (
   entityManager: EntityManager,
@@ -58,7 +59,7 @@ const addRequest = async (req: Request, res: Response) => {
     let request: ProcessChangeRequest;
 
     await dataSource.transaction(async (transactionalEntityManager) => {
-      request = new ProcessChangeRequest(requestedBy, base);
+      request = new ProcessChangeRequest().build(requestedBy, base);
 
       request = await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
 
@@ -96,6 +97,7 @@ const editRequest = async (req: Request, res: Response) => {
     const body = req.body;
 
     const base: IProcessChangeRequestBase = JSON.parse(body.base);
+    const requestedBy: IUser = JSON.parse(body.requestedBy);
     const id: number = JSON.parse(body.requestId);
 
     let request: ProcessChangeRequest;
@@ -110,6 +112,29 @@ const editRequest = async (req: Request, res: Response) => {
           message: "Request not found",
           statusMessage: HttpResponseMessage.PUT_ERROR,
         });
+      }
+
+      const statusClosed = request.status === "Closed";
+      if (statusClosed) {
+        request.openRequest();
+      }
+
+      const updatable = request.updatable;
+      if (updatable) {
+        let requestUpdates = new ProcessChangeRequestUpdates();
+        const updateFields = request.compare(base);
+        requestUpdates.build(requestedBy, JSON.stringify(updateFields), base.updateDescription);
+
+        requestUpdates = await transactionalEntityManager
+          .getRepository(ProcessChangeRequestUpdates)
+          .save(requestUpdates);
+
+        if (!requestUpdates) {
+          return res.status(400).json({
+            message: "Request Updates not saved",
+            statusMessage: HttpResponseMessage.PUT_ERROR,
+          });
+        }
       }
 
       request.setRequestInfo(base);
@@ -141,10 +166,10 @@ const editRequest = async (req: Request, res: Response) => {
 
 const closeRequest = async (req: Request, res: Response) => {
   try {
-    const { id, assessment }: { id: number; assessment: "Implementation" | "Rejection" } =
-      req.params;
+    const { assessment }: { assessment: "Implementation" | "Rejection" } = req.params;
     const body = req.body;
 
+    const id: number = JSON.parse(body.requestId);
     const approvedOrRejectedBy: IUser = JSON.parse(body.approvedOrRejectedBy);
 
     let processChangeNotice: ProcessChangeNotice | null;

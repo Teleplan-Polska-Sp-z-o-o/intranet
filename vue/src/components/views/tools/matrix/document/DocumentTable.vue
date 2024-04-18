@@ -46,6 +46,7 @@ const headers: any = [
   { title: t(`${tPath}.header.description`), key: "description" },
   { title: t(`${tPath}.header.language`), key: "custom", sortable: false },
   { title: t(`${tPath}.header.revision`), key: "revision", sortable: false },
+  { title: t(`${tPath}.header.subcategory`), key: "custom2", sortable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
 
@@ -143,6 +144,9 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
       <v-list-item class="pl-0" density="compact" v-for="(lang, i) in languages(item)" :key="i">
         <v-list-item-title class="text-body-2"> {{ `${i + 1}) ${lang.title}` }}</v-list-item-title>
       </v-list-item>
+    </template>
+    <template v-slot:table-key-slot-2="{ item }">
+      {{ item.subcategory.name }}
     </template>
   </crud-table>
 </template>

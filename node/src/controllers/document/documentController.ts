@@ -222,7 +222,7 @@ const getDocuments = async (req: Request, res: Response) => {
     const { type, reduce } = req.params;
 
     let docOptions: IDocOptions = {
-      relations: ["languages"],
+      relations: ["languages", "subcategory"],
     };
 
     if (type !== "all") {
@@ -258,6 +258,7 @@ const getDocuments = async (req: Request, res: Response) => {
       return {
         ...document,
         languages: document.languages.map((language) => language.name),
+        subcategory: document.subcategory,
       };
     });
 
@@ -301,7 +302,7 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
           },
         },
       },
-      relations: ["languages"],
+      relations: ["languages", "subcategory"],
     };
 
     if (type !== "all") {
@@ -341,6 +342,7 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
       return {
         ...document,
         languages: document.languages.map((language) => language.name),
+        subcategory: document.subcategory,
       };
     });
 
@@ -405,7 +407,7 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
       where: {
         subcategory: In(subcategoryIds),
       },
-      relations: ["languages"],
+      relations: ["languages", "subcategory"],
     };
 
     if (type !== "all") {
@@ -441,6 +443,7 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
       return {
         ...document,
         languages: document.languages.map((language) => language.name),
+        subcategory: document.subcategory,
       };
     });
 
@@ -508,7 +511,7 @@ const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
       where: {
         subcategory: subcategoryEntity,
       },
-      relations: ["languages"],
+      relations: ["languages", "subcategory"],
     };
 
     if (type !== "all") {
@@ -544,6 +547,7 @@ const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
       return {
         ...document,
         languages: document.languages.map((language) => language.name),
+        subcategory: document.subcategory,
       };
     });
 

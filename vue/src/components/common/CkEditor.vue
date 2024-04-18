@@ -11,27 +11,78 @@ const editor = Editor;
 
 const editorStore = useEditorStore();
 
-const editorData = ref<string>(editorStore.get());
+const props = defineProps<{
+  endpoint?: Endpoints;
+  editorKey: string;
+}>();
+
+const editorData = ref<string>(editorStore.get(props.editorKey));
 
 const eRef = editorStore.getRef();
 
-const editorConfig = {
-  ...editor.defaultConfig,
-  simpleUpload: {
-    uploadUrl: `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.News}`,
-    headers: {
-      ckeditor: "true",
-      ref: eRef,
+let editorConfig: any;
+if (props.endpoint) {
+  editorConfig = {
+    ...editor.defaultConfig,
+    simpleUpload: {
+      uploadUrl: `${nodeConfig.origin}:${nodeConfig.port}${props.endpoint}`,
+      headers: {
+        ckeditor: "true",
+        ref: eRef,
+      },
     },
-  },
-};
+  };
+} else {
+  editorConfig = {
+    ...editor.defaultConfig,
+    toolbar: {
+      items: [
+        "undo",
+        "redo",
+        "|",
+        "alignment",
+        "outdent",
+        "indent",
+        "bulletedList",
+        "numberedList",
+        "pageBreak",
+        "horizontalLine",
+        "|",
+        "heading",
+        "fontFamily",
+        "fontSize",
+        "fontColor",
+        "fontBackgroundColor",
+        "highlight",
+        "|",
+        "bold",
+        "italic",
+        "underline",
+        "strikethrough",
+        "|",
+        "link",
+        "blockQuote",
+        "insertTable",
+        // "mediaEmbed",
+        "|",
+        "findAndReplace",
+        "showBlocks",
+        "removeFormat",
+        "selectAll",
+        "specialCharacters",
+      ],
+      shouldNotGroupWhenFull: true,
+    },
+  };
+}
 
 emit("ref", eRef);
 
 // div.ck-override-vuetify-styles is the preceding styling element for ck output - see ckeditor.scss
 watch(editorData, (newV) => {
   editorStore.save(
-    `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content">${newV}</div>`
+    `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content">${newV}</div>`,
+    props.editorKey
   );
 });
 </script>

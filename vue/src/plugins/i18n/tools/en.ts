@@ -94,6 +94,7 @@ const enT = {
               description: "Description",
               language: "Languages (files)",
               revision: "Revision",
+              subcategory: "Subcategory",
               actions: "Actions",
             },
           },

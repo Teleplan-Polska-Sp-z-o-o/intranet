@@ -16,6 +16,7 @@ class ProcessChangeRequestBase implements IProcessChangeRequestBase {
   impacts: string;
   dedicatedDepartment: string;
   riskAnalysis: string | undefined;
+  updateDescription: string | undefined;
 
   constructor() {
     this.internalOrExternal = "Internal";
@@ -33,6 +34,7 @@ class ProcessChangeRequestBase implements IProcessChangeRequestBase {
     this.impacts = "";
     this.dedicatedDepartment = "";
     this.riskAnalysis = undefined;
+    this.updateDescription = undefined;
   }
 }
 

@@ -15,7 +15,7 @@ const decodeFormData = multer().none();
 // Define routes
 router.post("/request", decodeFormData, addRequest);
 router.put("/request", decodeFormData, editRequest);
-router.put("/request/:id/:assessment", decodeFormData, closeRequest);
+router.put("/request/:assessment", decodeFormData, closeRequest);
 router.delete("/request/:id", removeRequest);
 router.get("/request", getRequests);
 

@@ -47,12 +47,11 @@ class ProcessChangeRequestManager {
 
   public close = async (
     formData: FormData,
-    id: number,
     assessment: "Implementation" | "Rejection",
     status: boolean = false
   ): Promise<Array<IProcessChangeRequest> | IResponseStatus> => {
     const response = await axios.put(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${id}/${assessment}`,
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${assessment}`,
       formData
     );
     if (status) {

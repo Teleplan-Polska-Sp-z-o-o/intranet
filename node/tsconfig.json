@@ -18,7 +18,8 @@
     "checkJs": true, // Enable type checking for JavaScript files
     "resolveJsonModule": true, // Enable importing JSON files
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true
   },
-  "include": ["src/**/*", "../vue/src/models/common/PDFHelper.ts"]
+  "include": ["src/**/*"]
 }

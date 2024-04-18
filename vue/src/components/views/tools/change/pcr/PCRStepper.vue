@@ -10,6 +10,8 @@ import { IChips } from "../../../../../interfaces/document/IChips";
 import { Chips } from "../../../../../models/document/Chips";
 import { IUserEntity } from "../../../../../interfaces/user/IUserEntity";
 import { UserManager } from "../../../../../models/user/UserManager";
+import CkEditor from "../../../../common/CkEditor.vue";
+import { useEditorStore } from "../../../../../stores/editorStore";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -34,6 +36,23 @@ const prevable = computed(() => activeStep.value > 1);
 const nextable = computed(() => activeStep.value < 5);
 
 const requestId = props.componentProps.editedItem.id;
+const requestUpdatable = props.componentProps.editedItem.updatable;
+
+const editorStore = useEditorStore();
+
+const changeReason = props.componentProps.editedItem.changeReason;
+const changeDescription = props.componentProps.editedItem.changeDescription;
+editorStore.save(
+  changeReason ? changeReason : '<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>',
+  "change-reason"
+);
+editorStore.save(
+  changeDescription
+    ? changeDescription
+    : '<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>',
+  "change-description"
+);
+
 const request = ref<IProcessChangeRequestBase>({
   internalOrExternal: props.componentProps.editedItem.internalOrExternal,
   customerContactPerson: props.componentProps.editedItem.customerContactPerson,
@@ -44,15 +63,19 @@ const request = ref<IProcessChangeRequestBase>({
   costOfImplementation: props.componentProps.editedItem.costOfImplementation,
   program: props.componentProps.editedItem.program,
   modelOrProcessImpacted: props.componentProps.editedItem.modelOrProcessImpacted,
-  changeReason: props.componentProps.editedItem.changeReason,
-  changeDescription: props.componentProps.editedItem.changeDescription,
+  changeReason: editorStore.get("change-reason"),
+  changeDescription: editorStore.get("change-description"),
   impacts: props.componentProps.editedItem.impacts,
   dedicatedDepartment: props.componentProps.editedItem.dedicatedDepartment,
   riskAnalysis: props.componentProps.editedItem.riskAnalysis,
+  updateDescription: undefined,
 });
 
 watchEffect(() => {
-  request.value = props.componentProps.editedItem;
+  request.value = {
+    ...props.componentProps.editedItem,
+    updateDescription: undefined,
+  };
 });
 
 const departments = ref<Array<string>>([]);
@@ -131,10 +154,11 @@ const newRequestData = computed<
 
     modelOrProcessImpacted: req.modelOrProcessImpacted.trim(),
     costOfImplementation: req.costOfImplementation.trim(),
-    changeReason: req.changeReason.trim(),
-    changeDescription: req.changeDescription.trim(),
+    changeReason: editorStore.get("change-reason"),
+    changeDescription: editorStore.get("change-description"),
     impacts: req.impacts.trim(),
     riskAnalysis: req.riskAnalysis?.trim(),
+    updateDescription: req.updateDescription?.trim(),
   };
 
   return {
@@ -203,13 +227,22 @@ const tests = computed<boolean>(() => {
     ? /.+@.+\..+/.test(req.customerContactEmail)
     : true;
 
-  return testCustomerContactPerson && testCustomerContactEmail;
+  const testUpdateDescription: boolean = requestUpdatable
+    ? !!request.value.updateDescription
+    : true;
+
+  return testCustomerContactPerson && testCustomerContactEmail && testUpdateDescription;
 });
 
 watchEffect(() => {
   if (activeStep.value === 5) {
-    emit("verified", false);
-    emit("save-data", newRequestData.value);
+    if (requestUpdatable === true && request.value.updateDescription) {
+      emit("verified", false);
+      emit("save-data", newRequestData.value);
+    } else if (requestUpdatable === false) {
+      emit("verified", false);
+      emit("save-data", newRequestData.value);
+    }
   } else {
     emit("verified", true);
   }
@@ -322,10 +355,16 @@ watchEffect(() => {
           <v-date-picker
             color="primary"
             width="100%"
-            title="Implementation Need Date"
             v-model="request.dateNeeded"
             show-adjacent-months
-          ></v-date-picker>
+          >
+            <!-- title="Implementation Need Date" -->
+            <template v-slot:title>
+              <v-btn variant="tonal" class="rounded-xl" @click="request.dateNeeded = undefined"
+                >Clear Implementation Need Date</v-btn
+              >
+            </template>
+          </v-date-picker>
         </v-card>
       </v-stepper-window-item>
 
@@ -344,17 +383,19 @@ watchEffect(() => {
             label="Cost of Implementation"
           ></v-text-field>
           <!-- :rules="costOfImplementationRule" -->
-          <v-textarea
+          <!-- <v-textarea
             v-model="request.changeReason"
             variant="underlined"
             label="Change Reason"
-          ></v-textarea>
+          ></v-textarea> -->
+          <ck-editor class="pt-5 pb-1" editorKey="change-reason"></ck-editor>
           <!-- :rules="changeReasonRule" -->
-          <v-textarea
+          <!-- <v-textarea
             v-model="request.changeDescription"
             variant="underlined"
             label="Change Description"
-          ></v-textarea>
+          ></v-textarea> -->
+          <ck-editor class="pt-5 pb-1" editorKey="change-description"></ck-editor>
           <!-- :rules="changeDescriptionRule" -->
           <v-text-field
             v-model="request.impacts"
@@ -366,6 +407,12 @@ watchEffect(() => {
             v-model="request.riskAnalysis"
             variant="underlined"
             label="Risk Analysis"
+          ></v-textarea>
+          <v-textarea
+            v-if="requestUpdatable"
+            v-model="request.updateDescription"
+            variant="underlined"
+            label="Update Description"
           ></v-textarea>
         </v-card>
       </v-stepper-window-item>

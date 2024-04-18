@@ -14,6 +14,7 @@ interface IProcessChangeRequestBase {
   impacts: string;
   dedicatedDepartment: string;
   riskAnalysis: string | undefined;
+  updateDescription: string | undefined;
 }
 
 export type { IProcessChangeRequestBase };

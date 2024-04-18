@@ -182,7 +182,8 @@ export class Change1712662752635 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // await queryRunner.dropTable("process_change_request");
-    // await queryRunner.dropTable("process_change_notice");
+    await queryRunner.dropTable("process_change_request");
+    await queryRunner.dropTable("process_change_request_updates");
+    await queryRunner.dropTable("process_change_notice");
   }
 }

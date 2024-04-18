@@ -15,6 +15,7 @@ enum Endpoints {
 
   // editor
   News = "/api/editor/news",
+  Request = "/api/editor/request",
 
   // change
   ChangeRequest = "/api/change/request",

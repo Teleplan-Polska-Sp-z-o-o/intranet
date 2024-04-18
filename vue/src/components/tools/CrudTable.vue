@@ -72,7 +72,9 @@ const editedIndex = ref<number>(-1);
 
 const chips = ref<any>(props.chips);
 
-(async () => (items.value = await manager.value.get(chips.value)))();
+(async () => {
+  items.value = await manager.value.get(chips.value);
+})();
 
 const reqData = ref<any>(props.reqData);
 

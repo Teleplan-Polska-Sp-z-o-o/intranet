@@ -3,16 +3,27 @@ import { v4 as uuidv4 } from "uuid";
 import { ref } from "vue";
 
 export const useEditorStore = defineStore("editor", () => {
-  const editor = ref<string>(
-    `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content"></div>`
-  );
+  // const editor = ref<string>(
+  //   `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content"></div>`
+  // );
+  const editor = ref<Record<string, string>>({});
   const eRef = ref<string>("");
 
-  const save = (value: string): void => {
-    editor.value = value;
+  const save = (value: string, key: string): void => {
+    editor.value = {
+      ...editor.value,
+      [key]: value,
+    };
+    console.log(editor.value);
   };
 
-  const get = (): string => editor.value;
+  const get = (key: string): string => {
+    if (editor.value.hasOwnProperty(key)) {
+      return editor.value[key];
+    } else {
+      throw new Error(`Invalid editor key: ${key}`);
+    }
+  };
 
   const getRef = (): string => {
     if (!eRef.value) return uuidv4();

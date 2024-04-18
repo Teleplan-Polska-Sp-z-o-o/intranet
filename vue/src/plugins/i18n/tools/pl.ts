@@ -95,6 +95,7 @@ const plT = {
               description: "Opis",
               language: "Języki (pliki)",
               revision: "Wersja",
+              subcategory: "Podkategoria",
               actions: "Akcje",
             },
           },
