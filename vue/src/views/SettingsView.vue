@@ -16,7 +16,7 @@ const route = useRoute();
 
 const currentTab = ref<number>(1);
 
-switch (route.params.currentTab) {
+switch (route.params.tab) {
   case "application":
     currentTab.value = 1;
     break;

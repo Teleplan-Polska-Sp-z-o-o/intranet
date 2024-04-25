@@ -32,6 +32,8 @@ app.use("/api/notification", notificationRoutes);
 import { dataSource } from "./config/orm/dataSource";
 import { serverConfig } from "./config/server";
 import { storeWebSocketConnections } from "./controllers/common/websocketController";
+import * as fs from "fs";
+import https from "https";
 
 dataSource
   .initialize()
@@ -51,7 +53,21 @@ dataSource
 
     app.ws("/", storeWebSocketConnections);
 
-    app.listen(serverConfig.port, () =>
+    // app.listen(serverConfig.port, () =>
+    //   console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
+    // );
+
+    // Read SSL certificate and private key
+    const privateKey = fs.readFileSync("./_.reconext.com.2024.pem", "utf8");
+    const certificate = fs.readFileSync("./_.reconext.com.2024.pem", "utf8");
+
+    const credentials = { key: privateKey, cert: certificate };
+
+    // Create HTTPS server
+    const httpsServer = https.createServer(credentials, app);
+
+    // Listen on specified port for HTTPS
+    httpsServer.listen(serverConfig.port, () =>
       console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
     );
   })

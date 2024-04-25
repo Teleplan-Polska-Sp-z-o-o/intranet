@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, watchEffect } from "vue";
+import { computed, ref, watch } from "vue";
 import PCRVerifyTables from "./PCRVerifyTable.vue";
 import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IProcessChangeRequestBase";
 import { IUser } from "../../../../../interfaces/user/IUser";
@@ -22,6 +22,7 @@ const props = defineProps<{
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const activeStep = ref<number>(1);
+emit("verified", true);
 const prevStep = () => {
   if (activeStep.value > 1) {
     activeStep.value--;
@@ -69,13 +70,6 @@ const request = ref<IProcessChangeRequestBase>({
   dedicatedDepartment: props.componentProps.editedItem.dedicatedDepartment,
   riskAnalysis: props.componentProps.editedItem.riskAnalysis,
   updateDescription: undefined,
-});
-
-watchEffect(() => {
-  request.value = {
-    ...props.componentProps.editedItem,
-    updateDescription: undefined,
-  };
 });
 
 const departments = ref<Array<string>>([]);
@@ -152,10 +146,11 @@ const newRequestData = computed<
 
     dateNeeded: req.dateNeeded,
 
+    changeReason: req.changeReason,
+    changeDescription: req.changeDescription,
+
     modelOrProcessImpacted: req.modelOrProcessImpacted.trim(),
     costOfImplementation: req.costOfImplementation.trim(),
-    changeReason: editorStore.get("change-reason"),
-    changeDescription: editorStore.get("change-description"),
     impacts: req.impacts.trim(),
     riskAnalysis: req.riskAnalysis?.trim(),
     updateDescription: req.updateDescription?.trim(),
@@ -163,6 +158,8 @@ const newRequestData = computed<
 
   return {
     ...object,
+    changeReason: editorStore.get("change-reason"),
+    changeDescription: editorStore.get("change-description"),
     requestedBy: user,
     requestId,
   };
@@ -227,19 +224,26 @@ const tests = computed<boolean>(() => {
     ? /.+@.+\..+/.test(req.customerContactEmail)
     : true;
 
-  const testUpdateDescription: boolean = requestUpdatable
-    ? !!request.value.updateDescription
-    : true;
-
-  return testCustomerContactPerson && testCustomerContactEmail && testUpdateDescription;
+  return testCustomerContactPerson && testCustomerContactEmail;
 });
 
-watchEffect(() => {
-  if (activeStep.value === 5) {
+watch(activeStep, (newActiveStep) => {
+  if (newActiveStep === 5) {
+    request.value = {
+      ...request.value,
+      changeReason: editorStore.get("change-reason"),
+      changeDescription: editorStore.get("change-description"),
+    };
+    // const saveData = {
+    //   ...newRequestData.value,
+    //   changeReason: editorStore.get("change-reason"),
+    //   changeDescription: editorStore.get("change-description"),
+    // };
+
     if (requestUpdatable === true && request.value.updateDescription) {
       emit("verified", false);
       emit("save-data", newRequestData.value);
-    } else if (requestUpdatable === false) {
+    } else if (!requestUpdatable) {
       emit("verified", false);
       emit("save-data", newRequestData.value);
     }
@@ -260,33 +264,33 @@ watchEffect(() => {
     <v-stepper-header class="rounded-xl">
       <v-stepper-item
         color="secondary"
-        :editable="activeStep > 1 && !completed.step1"
-        :complete="activeStep > 1 && completed.step1"
+        :editable="!completed.step1"
+        :complete="completed.step1"
         :value="1"
         title="Base Info"
       ></v-stepper-item>
       <v-divider></v-divider>
       <v-stepper-item
         color="secondary"
-        :editable="activeStep > 2 && !completed.step2"
+        :editable="!completed.step2"
         :error="!tests"
-        :complete="activeStep > 2 && completed.step2"
+        :complete="completed.step2"
         :value="2"
         title="Contact Info"
       ></v-stepper-item>
       <v-divider></v-divider>
       <v-stepper-item
         color="secondary"
-        :editable="activeStep > 3 && !completed.step3"
-        :complete="activeStep > 3 && completed.step3"
+        :editable="!completed.step3"
+        :complete="completed.step3"
         :value="3"
         title="Need Date"
       ></v-stepper-item>
       <v-divider></v-divider>
       <v-stepper-item
         color="secondary"
-        :editable="activeStep > 4 && !completed.step4"
-        :complete="activeStep > 4 && completed.step4"
+        :editable="!completed.step4"
+        :complete="completed.step4"
         :value="4"
         title="Descriptive Info"
       ></v-stepper-item>
@@ -321,7 +325,6 @@ watchEffect(() => {
             label="Reconext Owner"
             :items="reconextUsers"
           ></v-autocomplete>
-          <!-- :rules="reconextOwnerRule" -->
         </v-card>
       </v-stepper-window-item>
 
@@ -332,21 +335,18 @@ watchEffect(() => {
             variant="underlined"
             label="Customer Contact Person"
           ></v-text-field>
-          <!-- :rules="customerContactPersonRule" -->
 
           <v-text-field
             v-model="request.customerContactEmail"
             variant="underlined"
             label="Customer Contact Email"
           ></v-text-field>
-          <!-- :rules="customerContactEmailRule" -->
           <v-autocomplete
             v-model="request.reconextContactPerson"
             variant="underlined"
             label="Reconext Contact Person"
             :items="reconextUsers"
           ></v-autocomplete>
-          <!-- :rules="reconextContactPersonRule" -->
         </v-card>
       </v-stepper-window-item>
 
@@ -358,7 +358,6 @@ watchEffect(() => {
             v-model="request.dateNeeded"
             show-adjacent-months
           >
-            <!-- title="Implementation Need Date" -->
             <template v-slot:title>
               <v-btn variant="tonal" class="rounded-xl" @click="request.dateNeeded = undefined"
                 >Clear Implementation Need Date</v-btn
@@ -370,39 +369,20 @@ watchEffect(() => {
 
       <v-stepper-window-item :value="4">
         <v-card flat>
-          <v-text-field
+          <v-textarea
             v-model="request.modelOrProcessImpacted"
             variant="underlined"
             label="Model or Process Impacted"
-          ></v-text-field>
-          <!-- :rules="modelOrProcessImpactedRule" -->
+          ></v-textarea>
 
-          <v-text-field
+          <v-textarea
             v-model="request.costOfImplementation"
             variant="underlined"
             label="Cost of Implementation"
-          ></v-text-field>
-          <!-- :rules="costOfImplementationRule" -->
-          <!-- <v-textarea
-            v-model="request.changeReason"
-            variant="underlined"
-            label="Change Reason"
-          ></v-textarea> -->
-          <ck-editor class="pt-5 pb-1" editorKey="change-reason"></ck-editor>
-          <!-- :rules="changeReasonRule" -->
-          <!-- <v-textarea
-            v-model="request.changeDescription"
-            variant="underlined"
-            label="Change Description"
-          ></v-textarea> -->
-          <ck-editor class="pt-5 pb-1" editorKey="change-description"></ck-editor>
-          <!-- :rules="changeDescriptionRule" -->
-          <v-text-field
-            v-model="request.impacts"
-            variant="underlined"
-            label="Impacts"
-          ></v-text-field>
-          <!-- :rules="impactsRule" -->
+          ></v-textarea>
+          <ck-editor editorKey="change-reason"></ck-editor>
+          <ck-editor editorKey="change-description"></ck-editor>
+          <v-textarea v-model="request.impacts" variant="underlined" label="Impacts"></v-textarea>
           <v-textarea
             v-model="request.riskAnalysis"
             variant="underlined"

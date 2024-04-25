@@ -3,7 +3,7 @@ import { IProcessChangeNotice } from "./IProcessChangeNotice";
 interface IProcessChangeRequest {
   id: number; // auto generated: identifier
 
-  processChangeNotice: IProcessChangeNotice; // relation with pcn
+  processChangeNotice: IProcessChangeNotice | null; // relation with pcn
   year: number; // auto generated: number year
   numberOfRequest: string | null; // auto generated (from class function): Format: e.g., "001/PCR/2024"
   requestDate: string; // auto generated: string when the request was made in format: day/month/year

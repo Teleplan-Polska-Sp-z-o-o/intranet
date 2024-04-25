@@ -35,23 +35,35 @@ const camelCaseToTitleCase = (str: string) => {
   return titleCase;
 };
 
-const disallowedKeys = ["id", "year", "requestedBy"];
+const disallowedKeys = ["id", "year", "requestedBy", "updatable"];
+
+const testReasonAndDescription = (value: Date | string, key: string) => {
+  if ((typeof value === "string" && key === "changeReason") || key === "changeDescription") {
+    const changeReasonDefault = '<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>';
+    const changeDescriptionDefault =
+      '<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>';
+
+    if (value === changeReasonDefault || value === changeDescriptionDefault) return false;
+  }
+
+  return true;
+};
 </script>
 
 <template>
   <v-sheet border class="rounded-xl mb-4">
     <template v-for="(value, key, index) in request" :key="key">
       <v-card
-        v-if="value && !disallowedKeys.includes(key)"
+        v-if="value && testReasonAndDescription(value, key) && !disallowedKeys.includes(key)"
         color="transparent"
         elevation="0"
         outlined="false"
         class="pa-2"
       >
         <v-card-subtitle>{{ camelCaseToTitleCase(key) }}</v-card-subtitle>
-        <v-card-text>{{
-          value instanceof Date ? formatDate(value) : value.toString()
-        }}</v-card-text>
+        <v-card-text
+          v-html="value instanceof Date ? formatDate(value) : value.toString()"
+        ></v-card-text>
       </v-card>
       <v-divider
         class="mx-4"

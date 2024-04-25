@@ -27,7 +27,6 @@ class ProcessChangeRequestBase implements IProcessChangeRequestBase {
     this.dateNeeded = undefined;
     this.costOfImplementation = "";
     this.program = "";
-    // this.projectOfProgram = "";
     this.modelOrProcessImpacted = "";
     this.changeReason = "";
     this.changeDescription = "";

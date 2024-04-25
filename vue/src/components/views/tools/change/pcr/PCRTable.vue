@@ -13,6 +13,7 @@ const emit = defineEmits(["responseStatus"]);
 
 const props = defineProps<{
   tab: string;
+  no: string | undefined;
 }>();
 
 const { t } = useI18n();
@@ -27,7 +28,6 @@ const headers: any = [
   { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
   { title: t(`${tPath}.header.dedicatedDepartment`), key: "dedicatedDepartment" },
   { title: t(`${tPath}.header.program`), key: "program" },
-  // { title: t(`${tPath}.header.projectOfProgram`), key: "projectOfProgram" },
   { title: t(`${tPath}.header.dateNeeded`), key: "dateNeeded" },
   { title: t(`${tPath}.header.assessment`), key: "assessment" },
   { title: t(`${tPath}.header.approvedOrRejectedBy`), key: "approvedOrRejectedBy" },
@@ -54,7 +54,6 @@ const handleSaveData = (
   const { requestId, requestedBy, ...rest } = data;
   const base: IProcessChangeRequestBase = rest;
   const baseForJson = { ...base, dateNeeded: base.dateNeeded?.toString() };
-
   const formData: FormData = new FormData();
 
   formData.append("base", JSON.stringify(baseForJson));

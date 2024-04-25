@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany } from "typeorm";
 import { IProcessChangeRequest } from "../../../interfaces/change/IProcessChangeRequest";
 import { ProcessChangeNotice } from "./ProcessChangeNoticeEntity";
 import { IUser } from "../../../interfaces/user/IUser";
@@ -11,9 +11,11 @@ class ProcessChangeRequest implements IProcessChangeRequest {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => ProcessChangeRequestUpdates)
+  @OneToMany(() => ProcessChangeRequestUpdates, (updates) => updates.processChangeRequest, {
+    nullable: true,
+  })
   @JoinColumn()
-  processChangeRequestUpdates: ProcessChangeRequestUpdates;
+  processChangeRequestUpdates: Array<ProcessChangeRequestUpdates> | null;
 
   @OneToOne(() => ProcessChangeNotice, { nullable: true })
   @JoinColumn()
@@ -100,8 +102,13 @@ class ProcessChangeRequest implements IProcessChangeRequest {
     }
   };
 
-  public setRequestInfo = (base: IProcessChangeRequestBase): void => {
+  public setRequestInfo = (
+    base: IProcessChangeRequestBase
+    // processChangeRequestUpdates: ProcessChangeRequestUpdates | null = null
+  ): void => {
     try {
+      // this.processChangeRequestUpdates = processChangeRequestUpdates;
+
       this.internalOrExternal = base.internalOrExternal;
       this.customerContactPerson = base.customerContactPerson;
       this.customerContactEmail = base.customerContactEmail;
@@ -110,7 +117,6 @@ class ProcessChangeRequest implements IProcessChangeRequest {
       this.dateNeeded = Helper.formatDate(base.dateNeeded);
       this.costOfImplementation = base.costOfImplementation;
       this.program = base.program;
-      // this.projectOfProgram = base.projectOfProgram;
       this.modelOrProcessImpacted = base.modelOrProcessImpacted;
       this.changeReason = base.changeReason;
       this.changeDescription = base.changeDescription;

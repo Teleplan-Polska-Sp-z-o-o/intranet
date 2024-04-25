@@ -1,13 +1,11 @@
 import { IUser } from "../user/IUser";
 import { IProcessChangeNotice } from "./IProcessChangeNotice";
 import { IProcessChangeRequestBase } from "./IProcessChangeRequestBase";
-import { IProcessChangeRequestUpdates } from "./IProcessChangeRequestUpdates";
 
 interface IProcessChangeRequest {
   id: number; // auto generated: identifier
 
   // generateRequestBase function
-  processChangeRequestUpdates: IProcessChangeRequestUpdates;
   processChangeNotice: IProcessChangeNotice; // relation with pcn
   year: number; // auto generated: number year
   updatable: boolean; // trigger update section

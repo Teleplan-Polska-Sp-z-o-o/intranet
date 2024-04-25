@@ -74,7 +74,7 @@ const addRequest = async (req: Request, res: Response) => {
       notification(transactionalEntityManager, request, {
         title: `New PCR`,
         subtitle: `You are now the owner of request ${request.numberOfRequest}. You will be notified when it's ready for approval.`,
-        link: `/tool/change/browse`,
+        link: `/tool/change/browse/pcr/${request.id}`,
       });
     });
 
@@ -123,7 +123,12 @@ const editRequest = async (req: Request, res: Response) => {
       if (updatable) {
         let requestUpdates = new ProcessChangeRequestUpdates();
         const updateFields = request.compare(base);
-        requestUpdates.build(requestedBy, JSON.stringify(updateFields), base.updateDescription);
+        requestUpdates.build(
+          request,
+          requestedBy,
+          JSON.stringify(updateFields),
+          base.updateDescription
+        );
 
         requestUpdates = await transactionalEntityManager
           .getRepository(ProcessChangeRequestUpdates)
@@ -146,7 +151,7 @@ const editRequest = async (req: Request, res: Response) => {
         notification(transactionalEntityManager, request, {
           title: `PCR Ready for Approval`,
           subtitle: `${request.numberOfRequest} has been completed and is ready for your approval.`,
-          link: `/tool/change/browse`,
+          link: `/tool/change/browse/pcr/${request.id}`,
         });
     });
 
@@ -256,4 +261,30 @@ const getRequests = async (_req: Request, res: Response) => {
   }
 };
 
-export { addRequest, editRequest, closeRequest, removeRequest, getRequests };
+const getRequest = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const options = {
+      where: { id },
+    };
+
+    const request: ProcessChangeRequest = await dataSource
+      .getRepository(ProcessChangeRequest)
+      .findOne(options);
+
+    res.status(200).json({
+      got: request,
+      message: "Request retrieved successfully",
+      statusMessage: HttpResponseMessage.GET_SUCCESS,
+    });
+  } catch (error) {
+    console.error("Error retrieving request: ", error);
+    res.status(500).json({
+      message: "Unknown error occurred. Failed to retrieve request.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
+export { addRequest, editRequest, closeRequest, removeRequest, getRequest, getRequests };

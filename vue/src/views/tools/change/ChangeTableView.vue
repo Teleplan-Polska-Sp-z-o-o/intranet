@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { DefineComponent } from "vue";
+import { ref, DefineComponent } from "vue";
 
 const props = defineProps<{
-  is: DefineComponent<{ tab: string }, any, any> | undefined;
+  is: DefineComponent<{ tab: string; no: string }, any, any> | undefined;
   tab: string;
+  no: string | undefined;
 }>();
+
+const no = ref<string | undefined>(props.no);
 </script>
 
 <template>
-  <component :is="props.is" :tab="props.tab"></component>
+  <component :is="props.is" :tab="props.tab" :no="no"></component>
 </template>

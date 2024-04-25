@@ -3,6 +3,7 @@ import { DefineComponent, computed, ref } from "vue";
 import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../../../components/common/alertResponseStatus.vue";
 import PCRTable from "../../../components/views/tools/change/pcr/PCRTable.vue";
+import { useRoute, useRouter } from "vue-router";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -27,12 +28,35 @@ const tabs = [
   },
 ];
 
+const router = useRouter();
+const route = useRoute();
+
 const currentTab = ref<number>(1);
+const no = ref<string | undefined>((route.params.no as string) || undefined);
+
+switch (route.params.tab) {
+  case "pcr":
+    currentTab.value = 1;
+    break;
+  case "pcn":
+    currentTab.value = 2;
+    break;
+  case "dcn":
+    currentTab.value = 3;
+    break;
+
+  default:
+    currentTab.value = 1;
+    break;
+}
+
 const currentTabName = computed<string>(() => {
   return tabs.find((tab) => tab.id === currentTab.value)?.name || "";
 });
 
-const tabTable = computed<DefineComponent<{ tab: string }, any, any> | undefined>(() => {
+const tabTable = computed<
+  DefineComponent<{ tab: string; no: string | undefined }, any, any> | undefined
+>(() => {
   return tabs.find((tab) => tab.id === currentTab.value)?.component;
 });
 
@@ -63,7 +87,13 @@ const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value 
                   class="ma-4"
                   :direction="smallScreen ? 'horizontal' : 'vertical'"
                 >
-                  <v-tab v-for="tab in tabs" :key="tab.id" :value="tab.id" class="rounded">
+                  <v-tab
+                    v-for="tab in tabs"
+                    :key="tab.id"
+                    :value="tab.id"
+                    class="rounded"
+                    @click="router.push({ path: `/tool/change/browse/${tab.name}` })"
+                  >
                     <v-icon size="28">{{ tab.icon }}</v-icon>
                     {{ smallScreen ? "" : $t(`tools.change.tabs.${tab.name}.name`) }}
                   </v-tab>
@@ -80,6 +110,7 @@ const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value 
                     :is="tabTable"
                     @responseStatus="handleResponseStatus"
                     :tab="currentTabName"
+                    :no="no"
                   ></router-view>
                 </v-window-item>
                 <v-window-item :value="2">
@@ -88,6 +119,7 @@ const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value 
                     :is="tabTable"
                     @responseStatus="handleResponseStatus"
                     :tab="currentTabName"
+                    :no="no"
                   ></router-view
                 ></v-window-item>
                 <v-window-item :value="3"
@@ -96,6 +128,7 @@ const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value 
                     :is="tabTable"
                     @responseStatus="handleResponseStatus"
                     :tab="currentTabName"
+                    :no="no"
                   ></router-view>
                 </v-window-item>
               </v-window>

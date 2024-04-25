@@ -5,6 +5,7 @@ import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../common/ResponseStatus";
 import { IProcessChangeRequest } from "../../../interfaces/change/IProcessChangeRequest";
 import { ProcessChangeRequestBase } from "./ProcessChangeRequestBase";
+import { IProcessChangeRequestUpdates } from "../../../interfaces/change/IProcessChangeRequestUpdates";
 
 class ProcessChangeRequestManager {
   constructor() {}
@@ -79,9 +80,23 @@ class ProcessChangeRequestManager {
     return response.data.deleted;
   };
 
-  public get = async (): Promise<Array<IProcessChangeRequest>> => {
+  public get = async (_blank: any): Promise<Array<IProcessChangeRequest>> => {
     const response = await axios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}`
+    );
+    return response.data.got;
+  };
+
+  public getRequest = async (id: number): Promise<IProcessChangeRequest> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${id}`
+    );
+    return response.data.got;
+  };
+
+  public getRequestUpdates = async (id: number): Promise<Array<IProcessChangeRequestUpdates>> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/updates/${id}`
     );
     return response.data.got;
   };

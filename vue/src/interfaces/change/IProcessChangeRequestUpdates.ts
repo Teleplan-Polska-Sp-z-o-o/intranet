@@ -1,8 +1,8 @@
-import { ProcessChangeRequest } from "../../orm/entity/change/ProcessChangeRequestEntity";
+import { IProcessChangeRequest } from "./IProcessChangeRequest";
 
 interface IProcessChangeRequestUpdates {
   id: number;
-  processChangeRequest: ProcessChangeRequest;
+  processChangeRequest: IProcessChangeRequest;
   updateBy: string;
   updateDate: string;
   updateFields: string;

@@ -13,10 +13,11 @@ export class Change1712662752635 implements MigrationInterface {
             isGenerated: true,
             generationStrategy: "increment",
           },
-          {
-            name: "processChangeRequestUpdatesId",
-            type: "int",
-          },
+          // {
+          //   name: "processChangeRequestUpdatesId",
+          //   type: "int",
+          //   isNullable: true,
+          // },
           {
             name: "processChangeNoticeId",
             type: "int",
@@ -137,6 +138,10 @@ export class Change1712662752635 implements MigrationInterface {
             generationStrategy: "increment",
           },
           {
+            name: "processChangeRequestId",
+            type: "int",
+          },
+          {
             name: "updateBy",
             type: "varchar",
           },
@@ -176,14 +181,22 @@ export class Change1712662752635 implements MigrationInterface {
         columnNames: ["processChangeNoticeId"],
         referencedColumnNames: ["id"],
         referencedTableName: "process_change_notice",
+      })
+    );
+    await queryRunner.createForeignKey(
+      "process_change_request_updates",
+      new TableForeignKey({
+        columnNames: ["processChangeRequestId"],
+        referencedColumnNames: ["id"],
+        referencedTableName: "process_change_request",
         onDelete: "CASCADE",
       })
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable("process_change_request");
     await queryRunner.dropTable("process_change_request_updates");
+    await queryRunner.dropTable("process_change_request");
     await queryRunner.dropTable("process_change_notice");
   }
 }

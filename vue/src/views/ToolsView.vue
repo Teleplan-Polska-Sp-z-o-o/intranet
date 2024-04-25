@@ -54,7 +54,7 @@ const tools = [
   {
     id: 3,
     name: "change",
-    href: "/tool/change",
+    href: "/tool/change/browse/pcr",
     icon: "file-document-edit",
     image: "../tools/change.png",
     permissions: {

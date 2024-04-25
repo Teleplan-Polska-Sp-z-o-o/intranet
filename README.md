@@ -73,6 +73,32 @@ To facilitate seamless development, it's important to note that Vue and Node app
 
 5. Once the Node service is rebuilt, changes are reflected.
 
+### GitHub
+
+1. Check the status:
+
+   ```bash
+   git status
+   ```
+
+   It will show which files have been modified or confirm that the changes have been staged (2.).
+
+2. Add changes to the staging area:
+
+   ```bash
+   git add .
+   ```
+
+   Or add specific files by replacing '.' with the filenames.
+
+3. Commit the changes:
+
+   Once you've staged the changes, commit them with a descriptive message.
+
+   ```bash
+   git commit -m "Your descriptive commit message here"
+   ```
+
 ## API
 
 To access exposed endpoints, you need to include an API key in the query parameters of your request. Here's how you can use the API key query parameter:

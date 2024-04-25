@@ -22,13 +22,14 @@
   ul,
   ol {
     display: block !important;
-    list-style-type: initial !important;
     margin: 1em 0 !important;
     padding-left: 40px !important;
   }
 }
 .ck-override-vuetify-styles + .ck {
   color: black !important;
+  padding-top: 20px !important;
+  padding-bottom: 4px !important;
 }
 
 // theirs
