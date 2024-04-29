@@ -51,10 +51,11 @@ watchEffect(() => {
 });
 
 //
+const smallScreen = ref<boolean>(window.innerWidth < 960);
 </script>
 
 <template>
-  <v-dialog max-width="60vw" max-height="80vh">
+  <v-dialog :max-width="smallScreen ? '90vw' : '60vw'" max-height="80vh">
     <template v-if="variant === 'Save'" v-slot:activator="{ props: dialog }">
       <v-tooltip text="Add new record.">
         <template v-slot:activator="{ props: tooltip }">
@@ -71,10 +72,10 @@ watchEffect(() => {
     </template>
 
     <v-card :loading="loading" color="primary" variant="outlined" class="bg-background rounded-xl">
-      <v-card-title class="px-10">
+      <v-card-title :class="smallScreen ? 'px-4' : 'px-10'">
         <span class="text-h5">{{ title }}</span>
       </v-card-title>
-      <v-card-text>
+      <v-card-text :class="smallScreen ? 'px-2' : 'px-10'">
         <v-container>
           <v-row>
             <v-col cols="12">
@@ -91,7 +92,7 @@ watchEffect(() => {
           </v-row>
         </v-container>
       </v-card-text>
-      <v-card-actions class="px-10">
+      <v-card-actions :class="smallScreen ? 'px-4' : 'px-10'">
         <v-spacer></v-spacer>
         <v-btn
           class="rounded-xl"

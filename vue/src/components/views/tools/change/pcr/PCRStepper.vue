@@ -104,7 +104,7 @@ watch(
 );
 
 (async () => {
-  const date = request.value.dateNeeded;
+  const date = request.value.dateNeeded || undefined;
   if (date) {
     const [day, month, year] = date.toString().split("/").map(Number);
     request.value.dateNeeded = new Date(year, month - 1, day);
@@ -165,12 +165,14 @@ const newRequestData = computed<
   };
 });
 
-// const customerContactPersonRule = [
-//   (v: string) => !!v || "Customer Contact Person field is required.",
-//   (v: string) =>
-//     /^[a-zA-Z]+ [a-zA-Z]+$/.test(v) ||
-//     "Please enter both a name and a surname separated by a space.",
-// ];
+const customerContactPersonRule = [
+  (v: string) =>
+    /^[a-zA-Z]+ [a-zA-Z]+$/.test(v) ||
+    "Please enter both a name and a surname separated by a space.",
+];
+
+const customerContactEmailRule = [(v: string) => /.+@.+\..+/.test(v) || "Email must be valid."];
+
 // const reconextContactPersonRule = [
 //   (v: string) => !!v || "Reconext Contact Person field is required",
 // ];
@@ -185,19 +187,14 @@ const newRequestData = computed<
 // const changeDescriptionRule = [(v: string) => !!v || "Change Description field is required."];
 // const impactsRule = [(v: string) => !!v || "Impacts field is required."];
 
-// const customerContactEmailRule = [
-//   (v: string) => !!v || "Customer Contact Email field is required.",
-//   (v: string) => /.+@.+\..+/.test(v) || "Email must be valid.",
-// ];
-
 type Completed = { step1: boolean; step2: boolean; step3: boolean; step4: boolean };
 const completed = computed<Completed>(() => {
   const req = request.value;
 
   const step1 = !!req.reconextOwner && !!req.dedicatedDepartment && !!req.program;
   const step2 =
-    // /^[a-zA-Z]+ [a-zA-Z]+$/.test(req.customerContactPerson) &&
-    // /.+@.+\..+/.test(req.customerContactEmail) &&
+    /^[a-zA-Z]+ [a-zA-Z]+$/.test(req.customerContactPerson) &&
+    /.+@.+\..+/.test(req.customerContactEmail) &&
     !!req.reconextContactPerson;
   const step3 = !!req.dateNeeded;
   const step4 =
@@ -234,11 +231,6 @@ watch(activeStep, (newActiveStep) => {
       changeReason: editorStore.get("change-reason"),
       changeDescription: editorStore.get("change-description"),
     };
-    // const saveData = {
-    //   ...newRequestData.value,
-    //   changeReason: editorStore.get("change-reason"),
-    //   changeDescription: editorStore.get("change-description"),
-    // };
 
     if (requestUpdatable === true && request.value.updateDescription) {
       emit("verified", false);
@@ -308,22 +300,28 @@ watch(activeStep, (newActiveStep) => {
             :items="['Internal', 'External']"
           ></v-select>
           <v-autocomplete
-            v-model="request.dedicatedDepartment"
             variant="underlined"
             label="Dedicated Department"
             :items="departments"
+            :modelValue="request.dedicatedDepartment"
+            @update:modelValue="(value: string | null) => (request.dedicatedDepartment = value || '')"
+            clearable
           ></v-autocomplete>
           <v-autocomplete
-            v-model="request.program"
             variant="underlined"
             label="Program"
             :items="programs"
+            clearable
+            :modelValue="request.program"
+            @update:modelValue="(value: string | null) => (request.program = value || '')"
           ></v-autocomplete>
           <v-autocomplete
-            v-model="request.reconextOwner"
             variant="underlined"
             label="Reconext Owner"
             :items="reconextUsers"
+            clearable
+            :modelValue="request.reconextOwner"
+            @update:modelValue="(value: string | null) => (request.reconextOwner = value || '')"
           ></v-autocomplete>
         </v-card>
       </v-stepper-window-item>
@@ -334,36 +332,43 @@ watch(activeStep, (newActiveStep) => {
             v-model="request.customerContactPerson"
             variant="underlined"
             label="Customer Contact Person"
+            :rules="customerContactPersonRule"
           ></v-text-field>
 
           <v-text-field
             v-model="request.customerContactEmail"
             variant="underlined"
             label="Customer Contact Email"
+            :rules="customerContactEmailRule"
           ></v-text-field>
           <v-autocomplete
-            v-model="request.reconextContactPerson"
             variant="underlined"
             label="Reconext Contact Person"
             :items="reconextUsers"
+            clearable
+            :modelValue="request.reconextContactPerson"
+            @update:modelValue="(value: string | null) => (request.reconextContactPerson = value || '')"
           ></v-autocomplete>
         </v-card>
       </v-stepper-window-item>
 
-      <v-stepper-window-item :value="3">
-        <v-card flat class="d-flex justify-center align-center">
-          <v-date-picker
-            color="primary"
-            width="100%"
-            v-model="request.dateNeeded"
-            show-adjacent-months
-          >
-            <template v-slot:title>
-              <v-btn variant="tonal" class="rounded-xl" @click="request.dateNeeded = undefined"
-                >Clear Implementation Need Date</v-btn
-              >
-            </template>
-          </v-date-picker>
+      <v-stepper-window-item :value="3" id="vdp">
+        <v-card flat class="d-flex justify-center align-center" min-width="362.69px">
+          <v-card-text>
+            <v-date-picker
+              color="primary"
+              width="100%"
+              @update:modelValue="(value : Date) => (request.dateNeeded = value)"
+              :modelValue="request.dateNeeded || undefined"
+              show-adjacent-months
+            >
+              <template v-slot:title>
+                <v-btn variant="tonal" class="rounded-xl" @click="request.dateNeeded = undefined"
+                  >Clear Implementation Need Date</v-btn
+                >
+              </template>
+            </v-date-picker>
+          </v-card-text>
         </v-card>
       </v-stepper-window-item>
 
@@ -427,3 +432,9 @@ watch(activeStep, (newActiveStep) => {
     </template>
   </v-stepper>
 </template>
+
+<style scoped>
+#vdp {
+  overflow-x: auto;
+}
+</style>

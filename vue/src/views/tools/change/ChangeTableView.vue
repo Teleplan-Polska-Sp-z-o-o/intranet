@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, DefineComponent } from "vue";
+import { ResponseStatus } from "../../../models/common/ResponseStatus";
+
+const emit = defineEmits(["responseStatus"]);
 
 const props = defineProps<{
   is: DefineComponent<{ tab: string; no: string }, any, any> | undefined;
@@ -8,8 +11,15 @@ const props = defineProps<{
 }>();
 
 const no = ref<string | undefined>(props.no);
+
+const handleResponseStatus = (status: ResponseStatus) => emit("responseStatus", status);
 </script>
 
 <template>
-  <component :is="props.is" :tab="props.tab" :no="no"></component>
+  <component
+    :is="props.is"
+    :tab="props.tab"
+    :no="no"
+    @responseStatus="handleResponseStatus"
+  ></component>
 </template>

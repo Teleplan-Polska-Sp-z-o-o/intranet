@@ -6,6 +6,12 @@ import { computed, ref, watch, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { IProcessChangeRequestUpdates } from "../../../../../interfaces/change/IProcessChangeRequestUpdates";
+import AcceptOrReject from "./AcceptOrReject.vue";
+import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
+
+const emit = defineEmits(["responseStatus", "loadItems"]);
+
+const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const props = defineProps<{
   item: IProcessChangeRequest;
@@ -22,14 +28,17 @@ const item = ref<IProcessChangeRequest>(props.item);
 const route = useRoute();
 const no = ref<string | undefined>((route.params.no as string) || undefined);
 
-watchEffect(() => (no.value = (route.params.no as string) || undefined));
+const openDialog = ref<boolean>(false);
 
-const openDialog = ref<boolean>(no.value ? parseInt(no.value) === item.value.id : false);
+watchEffect(() => {
+  no.value = (route.params.no as string) || undefined;
+  openDialog.value = no.value ? parseInt(no.value) === item.value.id : false;
+});
 
-watch(openDialog, async (newOpenDialog) => {
-  if (newOpenDialog) {
+watch(openDialog, async (newOpenDialog, oldOpenDialog) => {
+  if (oldOpenDialog !== true && newOpenDialog !== false) {
     item.value = await manager.getRequest(itemId);
-  } else {
+  } else if (oldOpenDialog === true && newOpenDialog === false) {
     router.push({ path: `/tool/change/browse/pcr` });
   }
 });
@@ -63,9 +72,20 @@ const custom = computed(() => {
 
 const updates = ref<Array<IProcessChangeRequestUpdates>>([]);
 
-(async () => {
+const getUpdates = async () => {
   updates.value = item.value.id ? await manager.getRequestUpdates(item.value.id) : [];
-})();
+};
+
+getUpdates();
+
+watch(
+  item,
+  () => {
+    getUpdates();
+  },
+  { deep: true }
+);
+
 const updateHistory = computed<
   Array<{
     col1: string;
@@ -201,10 +221,18 @@ const request = computed(() => {
 });
 
 const router = useRouter();
+
+const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChangeRequest }) => {
+  emit("responseStatus", closeData.response);
+  emit("loadItems");
+
+  item.value = closeData.closed;
+  openDialog.value = false;
+};
 </script>
 
 <template>
-  <v-dialog v-model="openDialog" max-width="60vw" max-height="80vh">
+  <v-dialog v-model="openDialog" :max-width="smallScreen ? '90vw' : '60vw'" max-height="80vh">
     <template v-slot:activator="{ props: activatorProps }">
       <v-tooltip text="View PCR">
         <template v-slot:activator="{ props: tooltip }">
@@ -224,22 +252,26 @@ const router = useRouter();
     </template>
     <template v-slot:default="{ isActive }">
       <v-card color="primary" variant="outlined" class="bg-background rounded-xl">
-        <v-card-title class="px-10">
+        <v-card-title :class="smallScreen ? 'px-4' : 'px-10'">
           <span class="text-h5">PCR</span>
         </v-card-title>
-        <v-card-text class="d-flex justify-center align-center">
+        <v-card-text
+          class="d-flex justify-center align-center"
+          :class="smallScreen ? 'px-2' : 'px-10'"
+        >
           <!-- width="595pt" height="842pt" -->
           <v-sheet id="pcr" width="595pt">
             <v-container fluid>
               <v-row
-                class="align-items-center border-s-md border-e-md border-t-md"
-                style="height: 62.19px"
+                class="align-items-center border-s-md border-e-md border-t-md overflow-hidden"
+                style="height: 56px"
+                justify="space-between"
               >
-                <v-col cols="9" class="text-h6">
-                  <div>PROCESS CHANGE REQUEST</div>
+                <v-col class="text-h6">
+                  <div class="text-no-wrap" style="height: 32px">PROCESS CHANGE REQUEST</div>
                 </v-col>
-                <v-col cols="3">
-                  <v-img :src="logoSource"></v-img>
+                <v-col class="flex-grow-0">
+                  <v-img :src="logoSource" height="32px" width="144px"></v-img>
                 </v-col>
               </v-row>
               <v-row v-for="row in request.base" class="border-s-md border-e-md border-t-md">
@@ -344,7 +376,7 @@ const router = useRouter();
               <v-row
                 v-for="(row, rowIndex) in updateHistory"
                 class="border-s-md border-e-md border-t-md"
-                :class="rowIndex === request.approvals.length - 1 ? 'border-b-md' : ''"
+                :class="rowIndex === updateHistory.length - 1 ? 'border-b-md' : ''"
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -358,21 +390,33 @@ const router = useRouter();
             </v-container>
           </v-sheet>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions :class="smallScreen ? 'px-4' : 'px-10'">
+          <accept-or-reject
+            variant="reject"
+            :pcrId="itemId"
+            @close="handleClose"
+          ></accept-or-reject>
+
+          <accept-or-reject
+            variant="accept"
+            :pcrId="itemId"
+            @close="handleClose"
+          ></accept-or-reject>
+
           <v-spacer></v-spacer>
 
           <v-btn
             class="rounded-xl"
             color="primary"
             variant="text"
-            text="CLOSE PREVIEW"
+            :text="smallScreen ? 'CLOSE' : 'CLOSE PREVIEW'"
             @click="isActive.value = false"
           />
           <!-- generate -->
           <v-btn
             class="bg-primary text-on-primary mr-4 rounded-xl"
             @click="PDFHelper.generatePDF('pcr', isActive)"
-            text="GENERATE PCR FROM PREVIEW"
+            :text="smallScreen ? 'PDF' : 'GENERATE PDF'"
           />
         </v-card-actions>
       </v-card>

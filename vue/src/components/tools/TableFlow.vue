@@ -14,7 +14,7 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
 </script>
 
 <template>
-  <v-dialog v-if="props.name" max-width="60vw" max-height="80vh">
+  <v-dialog v-if="props.name" :max-width="smallScreen ? '90vw' : '60vw'" max-height="80vh">
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
         v-if="!smallScreen"

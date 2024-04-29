@@ -148,7 +148,7 @@ const enT = {
               reconextOwner: "Owner",
               dedicatedDepartment: "Department",
               program: "Program",
-              // projectOfProgram: "Project",
+              modelOrProcessImpacted: "Impact On",
               dateNeeded: "Need Date",
               assessment: "Assessment",
               approvedOrRejectedBy: "Closed By",

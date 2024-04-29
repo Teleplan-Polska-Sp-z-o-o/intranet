@@ -5,49 +5,7 @@ import { ProcessChangeRequest } from "../../orm/entity/change/ProcessChangeReque
 import { IProcessChangeRequestBase } from "../../interfaces/change/IProcessChangeRequestBase";
 import { IUser } from "../../interfaces/user/IUser";
 import { ProcessChangeNotice } from "../../orm/entity/change/ProcessChangeNoticeEntity";
-import { getWebSocketConnections } from "../common/websocketController";
-import { NotificationBuilder } from "../../orm/entity/user/NotificationBuilder";
-import { ENotificationSource } from "../../interfaces/user/notification/ENotificationSource";
-import { ENotificationAction } from "../../interfaces/user/notification/ENotificationAction";
-import { User } from "../../orm/entity/user/UserEntity";
-import { saveNotification } from "../common/notificationController";
-import { EntityManager } from "typeorm";
 import { ProcessChangeRequestUpdates } from "../../orm/entity/change/ProcessChangeRequestUpdatesEntity";
-
-const notification = async (
-  entityManager: EntityManager,
-  req: ProcessChangeRequest,
-  { title, subtitle, link }: { title: string; subtitle: string; link: string }
-) => {
-  const approver = req.reconextOwner.toLocaleLowerCase().replace(" ", ".");
-
-  const userOptions = {
-    where: { username: approver },
-  };
-  const userEntity = await entityManager.getRepository(User).findOne(userOptions);
-
-  const userNotification = new NotificationBuilder(
-    ENotificationSource.PCR,
-    ENotificationAction.AcceptOrReject
-  )
-    .setUser(userEntity)
-    .setTitle(title)
-    .setSubtitle(subtitle)
-    .setLink(link)
-    .build();
-
-  saveNotification(userNotification);
-
-  const websocketConnections = getWebSocketConnections();
-
-  const foundApproverConnection = websocketConnections.find(
-    (connection) => connection.user.username === approver
-  );
-
-  if (foundApproverConnection) {
-    foundApproverConnection.ws.send(JSON.stringify(userNotification));
-  }
-};
 
 const addRequest = async (req: Request, res: Response) => {
   try {
@@ -57,6 +15,7 @@ const addRequest = async (req: Request, res: Response) => {
     const base: IProcessChangeRequestBase = JSON.parse(body.base);
 
     let request: ProcessChangeRequest;
+    const allFieldsFilled = Object.values(base).every((value) => !!value);
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       request = new ProcessChangeRequest().build(requestedBy, base);
@@ -70,12 +29,8 @@ const addRequest = async (req: Request, res: Response) => {
       request.setRequestNo(count);
 
       request = await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
-
-      notification(transactionalEntityManager, request, {
-        title: `New PCR`,
-        subtitle: `You are now the owner of request ${request.numberOfRequest}. You will be notified when it's ready for approval.`,
-        link: `/tool/change/browse/pcr/${request.id}`,
-      });
+      if (allFieldsFilled) request.notification(transactionalEntityManager, "assigned completed");
+      else request.notification(transactionalEntityManager, "assigned");
     });
 
     res.status(201).json({
@@ -101,6 +56,7 @@ const editRequest = async (req: Request, res: Response) => {
     const id: number = JSON.parse(body.requestId);
 
     let request: ProcessChangeRequest;
+    const allFieldsFilled = Object.values(base).every((value) => !!value);
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       request = await transactionalEntityManager
@@ -119,40 +75,76 @@ const editRequest = async (req: Request, res: Response) => {
         request.openRequest();
       }
 
+      const assignedOwner = request.reconextOwner ? true : false;
+      const baseContainsOwner = base.reconextOwner ? true : false;
+      const reassigned = request.reconextOwner !== base.reconextOwner;
+
       const updatable = request.updatable;
-      if (updatable) {
-        let requestUpdates = new ProcessChangeRequestUpdates();
-        const updateFields = request.compare(base);
-        requestUpdates.build(
-          request,
-          requestedBy,
-          JSON.stringify(updateFields),
-          base.updateDescription
-        );
 
-        requestUpdates = await transactionalEntityManager
-          .getRepository(ProcessChangeRequestUpdates)
-          .save(requestUpdates);
+      switch (updatable) {
+        case true:
+          const updateFields = request.compare(base);
+          if (updateFields.length === 0) {
+            return res.status(200).json({
+              message: "No fields require update",
+              statusMessage: HttpResponseMessage.PUT_SUCCESS,
+            });
+          }
 
-        if (!requestUpdates) {
-          return res.status(400).json({
-            message: "Request Updates not saved",
-            statusMessage: HttpResponseMessage.PUT_ERROR,
-          });
-        }
+          let requestUpdates = new ProcessChangeRequestUpdates();
+          requestUpdates.build(
+            request,
+            requestedBy,
+            JSON.stringify(updateFields),
+            base.updateDescription
+          );
+
+          requestUpdates = await transactionalEntityManager
+            .getRepository(ProcessChangeRequestUpdates)
+            .save(requestUpdates);
+
+          if (!requestUpdates) {
+            return res.status(400).json({
+              message: "Request Updates not saved",
+              statusMessage: HttpResponseMessage.PUT_ERROR,
+            });
+          } else {
+            if (reassigned) request.notification(transactionalEntityManager, "reassigned");
+
+            request.setRequestInfo(base);
+            request = await transactionalEntityManager
+              .getRepository(ProcessChangeRequest)
+              .save(request);
+
+            if (allFieldsFilled && !reassigned)
+              request.notification(transactionalEntityManager, "updated");
+            else if (!allFieldsFilled && !reassigned)
+              request.notification(transactionalEntityManager, "updated uncompleted");
+            else if (!allFieldsFilled && reassigned)
+              request.notification(transactionalEntityManager, "assigned");
+            else if (allFieldsFilled && reassigned)
+              request.notification(transactionalEntityManager, "assigned updated");
+
+            break;
+          }
+
+        default:
+          if (reassigned) request.notification(transactionalEntityManager, "reassigned");
+
+          request.setRequestInfo(base);
+          request = await transactionalEntityManager
+            .getRepository(ProcessChangeRequest)
+            .save(request);
+
+          if (allFieldsFilled && assignedOwner)
+            request.notification(transactionalEntityManager, "completed");
+          else if (allFieldsFilled && !assignedOwner && baseContainsOwner)
+            request.notification(transactionalEntityManager, "assigned completed");
+          else if (!allFieldsFilled && !assignedOwner && baseContainsOwner)
+            request.notification(transactionalEntityManager, "assigned");
+
+          break;
       }
-
-      request.setRequestInfo(base);
-
-      request = await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
-
-      const allFieldsFilled = Object.values(base).every((value) => !!value);
-      if (allFieldsFilled)
-        notification(transactionalEntityManager, request, {
-          title: `PCR Ready for Approval`,
-          subtitle: `${request.numberOfRequest} has been completed and is ready for your approval.`,
-          link: `/tool/change/browse/pcr/${request.id}`,
-        });
     });
 
     res.status(200).json({
@@ -178,27 +170,32 @@ const closeRequest = async (req: Request, res: Response) => {
     const approvedOrRejectedBy: IUser = JSON.parse(body.approvedOrRejectedBy);
 
     let processChangeNotice: ProcessChangeNotice | null;
-
-    if (assessment === "Implementation") {
-      processChangeNotice = await dataSource
-        .getRepository(ProcessChangeNotice)
-        .save(new ProcessChangeNotice());
-    } else processChangeNotice = null;
-
     let request: ProcessChangeRequest = await dataSource
       .getRepository(ProcessChangeRequest)
       .findOne({ where: { id } });
 
-    if (!request) {
-      return res.status(404).json({
-        message: "Request not found",
-        statusMessage: HttpResponseMessage.PUT_ERROR,
-      });
-    }
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      if (assessment === "Implementation") {
+        processChangeNotice = await transactionalEntityManager
+          .getRepository(ProcessChangeNotice)
+          .save(new ProcessChangeNotice());
+      } else processChangeNotice = null;
 
-    request.closeRequest(assessment, approvedOrRejectedBy, processChangeNotice);
+      if (!request) {
+        return res.status(404).json({
+          message: "Request not found",
+          statusMessage: HttpResponseMessage.PUT_ERROR,
+        });
+      }
 
-    request = await dataSource.getRepository(ProcessChangeRequest).save(request);
+      request.closeRequest(assessment, approvedOrRejectedBy, processChangeNotice);
+
+      request = await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
+
+      if (request.assessment) {
+        request.notification(transactionalEntityManager, "closed");
+      }
+    });
 
     res.status(200).json({
       closed: request,

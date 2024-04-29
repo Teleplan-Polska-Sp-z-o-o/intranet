@@ -7,9 +7,14 @@ class Helper {
     return withoutTimezone;
   };
 
-  public static formatDate = (date: Date | string): string => {
+  public static formatDate = (date: Date | string, place?: string): string => {
     if (!date) {
-      console.warn(`'date' passed to Helper.formatDate evaluated to ${date}`);
+      if (place !== "pcr set info")
+        console.warn(
+          `'date' passed to Helper.formatDate evaluated to ${date}${
+            place ? ` at stage: ${place} - date source: base.dateNeeded` : ""
+          }`
+        );
       return "";
     }
 

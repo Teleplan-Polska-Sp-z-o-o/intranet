@@ -87,7 +87,7 @@ const handleTable = (newValue: ILevel): void => {
           </v-row>
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
-              <v-window v-model="currentTab" class="w-100">
+              <v-window v-model="currentTab" class="w-100" :touch="false">
                 <v-window-item :value="1">
                   <!-- <my-docs-filters
                     @chips="handleChips"

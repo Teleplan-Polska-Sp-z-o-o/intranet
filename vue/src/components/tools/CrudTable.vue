@@ -6,6 +6,8 @@ import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../models/common/ResponseStatus";
 import CopyToClipboard from "./CopyToClipboard.vue";
 
+const smallScreen = ref<boolean>(window.innerWidth < 960);
+
 const props = defineProps<{
   headers: any;
   sortBy: Array<{ key: string; order?: boolean | "asc" | "desc" }>;
@@ -30,12 +32,15 @@ const props = defineProps<{
 
   copy?: true;
   flow?: string; // pdf name
+
+  loadItems?: boolean;
 }>();
 
 const emit = defineEmits(["save-data", "emit-table-change", "responseStatus"]);
 
 const headers = ref<any>(props.headers);
 const items = ref<Array<any>>([]);
+const loadItems = ref<boolean | undefined>(undefined);
 
 const toolbarTitle = ref<string>(props.toolbarTitle);
 const search = ref<string>("");
@@ -72,9 +77,16 @@ const editedIndex = ref<number>(-1);
 
 const chips = ref<any>(props.chips);
 
-(async () => {
+const load = async () => {
   items.value = await manager.value.get(chips.value);
-})();
+};
+
+load();
+
+watch(loadItems, () => {
+  console.log("loadItems");
+  if (loadItems.value !== undefined && loadItems.value === true) load();
+});
 
 const reqData = ref<any>(props.reqData);
 
@@ -211,7 +223,7 @@ const handleSaveData = (data: any) => emit("save-data", data);
       <template v-slot:top>
         <v-toolbar flat density="compact" class="bg-surface-2 pa-n4">
           <v-toolbar-title class="bg-surface-2 ml-0">
-            {{ toolbarTitle }}
+            {{ smallScreen ? "" : toolbarTitle }}
           </v-toolbar-title>
 
           <table-flow v-if="props.flow" :name="props.flow"></table-flow>
@@ -228,7 +240,10 @@ const handleSaveData = (data: any) => emit("save-data", data);
             :rounded="true"
           ></v-text-field>
 
-          <copy-to-clipboard v-if="props.copy" :filtered="filtered"></copy-to-clipboard>
+          <copy-to-clipboard
+            v-if="props.copy && !smallScreen"
+            :filtered="filtered"
+          ></copy-to-clipboard>
 
           <v-divider v-if="props.tableAdd" class="mx-4" inset vertical></v-divider>
 

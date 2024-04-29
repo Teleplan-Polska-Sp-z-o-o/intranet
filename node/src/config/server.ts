@@ -4,6 +4,7 @@ import { IServerConfig } from "../interfaces/config/IServerConfig";
 dotenv.config({ path: "./.env" });
 
 const serverConfig: IServerConfig = {
+  test: process.env.TEST === "true" ? true : false,
   host: process.env.HOST,
   origin: process.env.ORIGIN,
   port: parseInt(process.env.NODE_PORT),

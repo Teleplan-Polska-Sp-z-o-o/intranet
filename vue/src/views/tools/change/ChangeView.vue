@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { DefineComponent, computed, ref } from "vue";
-import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../../../components/common/alertResponseStatus.vue";
 import PCRTable from "../../../components/views/tools/change/pcr/PCRTable.vue";
 import { useRoute, useRouter } from "vue-router";
+import { ResponseStatus } from "../../../models/common/ResponseStatus";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -11,21 +11,21 @@ const tabs = [
   {
     id: 1,
     name: "pcr",
-    icon: "mdi-email-outline",
+    icon: "mdi-invoice-text-send-outline",
     component: PCRTable,
   },
-  {
-    id: 2,
-    name: "pcn",
-    icon: "mdi-bell-outline",
-    component: PCRTable,
-  },
-  {
-    id: 3,
-    name: "dcn",
-    icon: "mdi-bell-outline",
-    component: PCRTable,
-  },
+  // {
+  //   id: 2,
+  //   name: "pcn",
+  //   icon: "mdi-bell-outline",
+  //   component: PCRTable,
+  // },
+  // {
+  //   id: 3,
+  //   name: "dcn",
+  //   icon: "mdi-bell-outline",
+  //   component: PCRTable,
+  // },
 ];
 
 const router = useRouter();
@@ -60,8 +60,8 @@ const tabTable = computed<
   return tabs.find((tab) => tab.id === currentTab.value)?.component;
 });
 
-const responseStatus = ref<IResponseStatus | null>(null);
-const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value = status);
+const responseStatus = ref<ResponseStatus | null>(null);
+const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value = status);
 </script>
 
 <template>
@@ -103,7 +103,7 @@ const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value 
           </v-row>
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
-              <v-window v-model="currentTab" class="w-100">
+              <v-window v-model="currentTab" class="w-100" :touch="false">
                 <v-window-item :value="1">
                   <router-view
                     class="bg-surface-2 pa-4 ma-1"

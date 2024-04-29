@@ -25,6 +25,11 @@ const headers: any = [
   { title: t(`${tPath}.header.numberOfRequest`), align: "start", key: "numberOfRequest" },
   { title: t(`${tPath}.header.requestDate`), key: "requestDate" },
   { title: t(`${tPath}.header.internalOrExternal`), key: "internalOrExternal" },
+  {
+    title: t(`${tPath}.header.modelOrProcessImpacted`),
+    key: "modelOrProcessImpacted",
+    minWidth: 200,
+  },
   { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
   { title: t(`${tPath}.header.dedicatedDepartment`), key: "dedicatedDepartment" },
   { title: t(`${tPath}.header.program`), key: "program" },
@@ -66,6 +71,15 @@ const handleSaveData = (
 const manager = new ProcessChangeRequestManager();
 
 const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
+
+const loadItems = ref<true | false>(false);
+const handleLoadItems = () => {
+  loadItems.value = true;
+  setTimeout(() => {
+    loadItems.value = false;
+    console.log(loadItems.value);
+  }, 0);
+};
 </script>
 
 <template>
@@ -94,12 +108,13 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     @responseStatus="handleResponseStatus"
     :copy="true"
     flow="PCRFlow"
+    :loadItems="loadItems"
   >
     <template v-slot:table-key-slot="{ item }">
       <span v-show="false">{{ item }}</span>
     </template>
     <template v-slot:table-key-slot-2="{ item }">
-      <p-c-r-view :item="item"></p-c-r-view>
+      <p-c-r-view :item="item" @loadItems="handleLoadItems"></p-c-r-view>
     </template>
   </crud-table>
 </template>

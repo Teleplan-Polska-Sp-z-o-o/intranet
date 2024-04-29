@@ -38,38 +38,29 @@ import https from "https";
 dataSource
   .initialize()
   .then(() => {
-    console.log("Data Source has been initialized!");
-
-    // app.ws("/", function (ws: any, _req: Request) {
-    //   console.log("Client connected");
-    //   //an event listener is set up for incoming WebSocket messages.
-    //   ws.on("message", function (msg: string) {
-    //     console.log(msg);
-    //     // Send a message to the client
-    //   });
-
-    //   ws.send("Hello from the server!");
-    // });
+    console.log(`Data Source has been initialized!`);
 
     app.ws("/", storeWebSocketConnections);
 
-    // app.listen(serverConfig.port, () =>
-    //   console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
-    // );
+    if (serverConfig.test) {
+      app.listen(serverConfig.port, () =>
+        console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
+      );
+    } else {
+      // Read SSL certificate and private key
+      const privateKey = fs.readFileSync("./_.reconext.com.2024.pem", "utf8");
+      const certificate = fs.readFileSync("./_.reconext.com.2024.pem", "utf8");
 
-    // Read SSL certificate and private key
-    const privateKey = fs.readFileSync("./_.reconext.com.2024.pem", "utf8");
-    const certificate = fs.readFileSync("./_.reconext.com.2024.pem", "utf8");
+      const credentials = { key: privateKey, cert: certificate };
 
-    const credentials = { key: privateKey, cert: certificate };
+      // Create HTTPS server
+      const httpsServer = https.createServer(credentials, app);
 
-    // Create HTTPS server
-    const httpsServer = https.createServer(credentials, app);
-
-    // Listen on specified port for HTTPS
-    httpsServer.listen(serverConfig.port, () =>
-      console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
-    );
+      // Listen on specified port for HTTPS
+      httpsServer.listen(serverConfig.port, () =>
+        console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
+      );
+    }
   })
   .catch((err) => {
     console.error("Error during Data Source initialization", err);

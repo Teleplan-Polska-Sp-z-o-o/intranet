@@ -99,6 +99,20 @@ To facilitate seamless development, it's important to note that Vue and Node app
    git commit -m "Your descriptive commit message here"
    ```
 
+   Note: Staging changes is possible also via IDE.
+
+4. Push the changes:
+
+   Note: Fetching and pulling before pushing might be necessary (check GitHub documentation).
+
+   Note: Check if remote repository has been added (git remote -v).
+
+   ```bash
+   sudo git push origin
+   ```
+
+   Now enter GitHub username and key instead of password.
+
 ## API
 
 To access exposed endpoints, you need to include an API key in the query parameters of your request. Here's how you can use the API key query parameter:
