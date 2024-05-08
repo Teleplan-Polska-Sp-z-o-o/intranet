@@ -14,12 +14,12 @@ const tabs = [
     icon: "mdi-invoice-text-send-outline",
     component: PCRTable,
   },
-  // {
-  //   id: 2,
-  //   name: "pcn",
-  //   icon: "mdi-bell-outline",
-  //   component: PCRTable,
-  // },
+  {
+    id: 2,
+    name: "pcn",
+    icon: "mdi-bulletin-board",
+    component: PCRTable,
+  },
   // {
   //   id: 3,
   //   name: "dcn",

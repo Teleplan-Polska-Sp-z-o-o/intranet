@@ -15,7 +15,11 @@ const findUser = async (user: IUser): Promise<User> => {
 
 const editPermission = async (req: Request, res: Response) => {
   try {
-    const { user, permission }: { user: IUser; permission: IPermission } = req.body;
+    // const { user, permission }: { user: IUser; permission: IPermission } = req.body;
+    const body = req.body;
+
+    const user: IUser = JSON.parse(body.user);
+    const permission: IPermission = JSON.parse(body.permission);
 
     const userEntity: User = await findUser(user);
 

@@ -6,6 +6,8 @@ import { IProcessChangeRequestBase } from "../../interfaces/change/IProcessChang
 import { IUser } from "../../interfaces/user/IUser";
 import { ProcessChangeNotice } from "../../orm/entity/change/ProcessChangeNoticeEntity";
 import { ProcessChangeRequestUpdates } from "../../orm/entity/change/ProcessChangeRequestUpdatesEntity";
+import { EmailHandler } from "../../models/common/Email/EmailHandler";
+import { PCREmailOptions } from "../../models/common/Email/PCREmailOptions";
 
 const addRequest = async (req: Request, res: Response) => {
   try {
@@ -29,8 +31,15 @@ const addRequest = async (req: Request, res: Response) => {
       request.setRequestNo(count);
 
       request = await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
-      if (allFieldsFilled) request.notification(transactionalEntityManager, "assigned completed");
-      else request.notification(transactionalEntityManager, "assigned");
+
+      const emailHandler = EmailHandler.getInstance();
+      if (allFieldsFilled) {
+        request.notification(transactionalEntityManager, "assigned completed");
+        emailHandler.newEmail(new PCREmailOptions("assigned completed", request)).send();
+      } else {
+        request.notification(transactionalEntityManager, "assigned");
+        emailHandler.newEmail(new PCREmailOptions("assigned", request)).send();
+      }
     });
 
     res.status(201).json({
@@ -80,6 +89,7 @@ const editRequest = async (req: Request, res: Response) => {
       const reassigned = request.reconextOwner !== base.reconextOwner;
 
       const updatable = request.updatable;
+      const emailHandler = EmailHandler.getInstance();
 
       switch (updatable) {
         case true:
@@ -109,39 +119,54 @@ const editRequest = async (req: Request, res: Response) => {
               statusMessage: HttpResponseMessage.PUT_ERROR,
             });
           } else {
-            if (reassigned) request.notification(transactionalEntityManager, "reassigned");
+            if (reassigned) {
+              request.notification(transactionalEntityManager, "reassigned");
+              emailHandler.newEmail(new PCREmailOptions("reassigned", request)).send();
+            }
 
             request.setRequestInfo(base);
             request = await transactionalEntityManager
               .getRepository(ProcessChangeRequest)
               .save(request);
 
-            if (allFieldsFilled && !reassigned)
+            if (allFieldsFilled && !reassigned) {
               request.notification(transactionalEntityManager, "updated");
-            else if (!allFieldsFilled && !reassigned)
+              emailHandler.newEmail(new PCREmailOptions("updated", request)).send();
+            } else if (!allFieldsFilled && !reassigned) {
               request.notification(transactionalEntityManager, "updated uncompleted");
-            else if (!allFieldsFilled && reassigned)
+              emailHandler.newEmail(new PCREmailOptions("updated uncompleted", request)).send();
+            } else if (!allFieldsFilled && reassigned) {
               request.notification(transactionalEntityManager, "assigned");
-            else if (allFieldsFilled && reassigned)
+              emailHandler.newEmail(new PCREmailOptions("assigned", request)).send();
+            } else if (allFieldsFilled && reassigned) {
               request.notification(transactionalEntityManager, "assigned updated");
+              emailHandler.newEmail(new PCREmailOptions("assigned updated", request)).send();
+            }
 
             break;
           }
 
         default:
-          if (reassigned) request.notification(transactionalEntityManager, "reassigned");
+          if (reassigned) {
+            request.notification(transactionalEntityManager, "reassigned");
+            emailHandler.newEmail(new PCREmailOptions("reassigned", request)).send();
+          }
 
           request.setRequestInfo(base);
           request = await transactionalEntityManager
             .getRepository(ProcessChangeRequest)
             .save(request);
 
-          if (allFieldsFilled && assignedOwner)
+          if (allFieldsFilled && assignedOwner) {
             request.notification(transactionalEntityManager, "completed");
-          else if (allFieldsFilled && !assignedOwner && baseContainsOwner)
+            emailHandler.newEmail(new PCREmailOptions("completed", request)).send();
+          } else if (allFieldsFilled && !assignedOwner && baseContainsOwner) {
             request.notification(transactionalEntityManager, "assigned completed");
-          else if (!allFieldsFilled && !assignedOwner && baseContainsOwner)
+            emailHandler.newEmail(new PCREmailOptions("assigned completed", request)).send();
+          } else if (!allFieldsFilled && !assignedOwner && baseContainsOwner) {
             request.notification(transactionalEntityManager, "assigned");
+            emailHandler.newEmail(new PCREmailOptions("assigned", request)).send();
+          }
 
           break;
       }
@@ -176,9 +201,21 @@ const closeRequest = async (req: Request, res: Response) => {
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       if (assessment === "Implementation") {
+        const notice = new ProcessChangeNotice().build(request);
+
         processChangeNotice = await transactionalEntityManager
           .getRepository(ProcessChangeNotice)
-          .save(new ProcessChangeNotice());
+          .save(notice);
+
+        const count = await transactionalEntityManager
+          .getRepository(ProcessChangeNotice)
+          .count({ where: { year: processChangeNotice.year } });
+
+        processChangeNotice.setNoticeNo(count);
+
+        await transactionalEntityManager
+          .getRepository(ProcessChangeNotice)
+          .save(processChangeNotice);
       } else processChangeNotice = null;
 
       if (!request) {
@@ -192,8 +229,13 @@ const closeRequest = async (req: Request, res: Response) => {
 
       request = await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
 
+      const emailHandler = EmailHandler.getInstance();
+
       if (request.assessment) {
-        request.notification(transactionalEntityManager, "closed");
+        {
+          request.notification(transactionalEntityManager, "closed");
+          emailHandler.newEmail(new PCREmailOptions("closed", request)).send();
+        }
       }
     });
 

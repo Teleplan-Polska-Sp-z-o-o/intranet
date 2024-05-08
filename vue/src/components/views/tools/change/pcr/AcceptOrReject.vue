@@ -43,9 +43,9 @@ const acceptOrReject = async () => {
     formData,
     assessment
   );
-  emit("close", close);
-
   dialog.value = false;
+
+  emit("close", close);
 };
 
 const enableActions = async (): Promise<void> => {
@@ -55,14 +55,19 @@ const enableActions = async (): Promise<void> => {
   const filled = Object.entries(base)
     .filter(([key]) => key !== "riskAnalysis" && key !== "updateDescription")
     .every(([_, value]) => !!value);
+  const isClosed = request.status === "Closed";
   const isOwner = user.username === base.reconextOwner.toLocaleLowerCase().replace(" ", ".");
 
-  showActions.value = filled && isOwner;
+  showActions.value = filled && !isClosed && isOwner;
 };
 
 const showActions = ref<boolean>(false);
 
 enableActions();
+
+const click = () => {
+  dialog.value = true;
+};
 </script>
 
 <template>
@@ -70,7 +75,7 @@ enableActions();
     <template v-slot:activator>
       <v-btn
         v-if="showActions"
-        @click="dialog = true"
+        @click="click"
         class="rounded-xl"
         :color="variant === 'accept' ? 'success' : 'error'"
         :variant="variant === 'accept' ? 'tonal' : 'outlined'"

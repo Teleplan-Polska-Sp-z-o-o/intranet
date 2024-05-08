@@ -8,6 +8,7 @@ import PCRStepper from "./PCRStepper.vue";
 import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IProcessChangeRequestBase";
 import { IUser } from "../../../../../interfaces/user/IUser";
 import PCRView from "./PCRView.vue";
+import PCRTableFilters from "./PCRTableFilters.vue";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -77,7 +78,6 @@ const handleLoadItems = () => {
   loadItems.value = true;
   setTimeout(() => {
     loadItems.value = false;
-    console.log(loadItems.value);
   }, 0);
 };
 </script>
@@ -88,12 +88,17 @@ const handleLoadItems = () => {
     :sortBy="[{ key: 'numberOfRequest', order: 'asc' }]"
     :searchBy="[
       'numberOfRequest',
+      'requestDate',
+      'internalOrExternal',
+      'modelOrProcessImpacted',
       'reconextOwner',
       'dedicatedDepartment',
       'program',
-      'projectOfProgram',
+      'dateNeeded',
       'assessment',
       'approvedOrRejectedBy',
+      'closureDate',
+      'numberOfNotice',
     ]"
     :toolbarTitle="toolbarTitle"
     :searchTitle="searchTitle"
@@ -107,14 +112,22 @@ const handleLoadItems = () => {
     :tableDialogComponentProps="{}"
     @responseStatus="handleResponseStatus"
     :copy="true"
-    flow="PCRFlow"
+    flow="pcr-flow"
     :loadItems="loadItems"
+    :filters="true"
   >
+    <template v-slot:table-filters>
+      <p-c-r-table-filters></p-c-r-table-filters>
+    </template>
     <template v-slot:table-key-slot="{ item }">
       <span v-show="false">{{ item }}</span>
     </template>
     <template v-slot:table-key-slot-2="{ item }">
-      <p-c-r-view :item="item" @loadItems="handleLoadItems"></p-c-r-view>
+      <p-c-r-view
+        :item="item"
+        @loadItems="handleLoadItems"
+        @responseStatus="handleResponseStatus"
+      ></p-c-r-view>
     </template>
   </crud-table>
 </template>

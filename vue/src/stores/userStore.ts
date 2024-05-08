@@ -23,8 +23,13 @@ export const useUserStore = defineStore("user", () => {
 
   const info = (): IUser | false => {
     try {
+      if (!localStorage) {
+        return false;
+      }
+
       const json: string | null = localStorage.getItem("user");
-      if (!json) throw new Error("No user data found in localStorage");
+      if (!json) return false;
+      //throw new Error("No user data found in localStorage");
       const user: IUser = JSON.parse(json);
       return user;
     } catch (error) {

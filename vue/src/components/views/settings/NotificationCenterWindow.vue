@@ -62,9 +62,10 @@ const menu = ref<{
 }>(notificationStore.getNotificationMenu());
 
 watch(
-  () => notificationStore.getSignal,
+  () => notificationStore.getCenterSignal,
   () => {
     getNotifications(menu.value);
+    notificationStore.resetSignal("center");
   }
 );
 
@@ -77,8 +78,9 @@ watch(
   { deep: true }
 );
 
+const received = ref<Array<MessageEvent<any>>>(websocketStore.receivedMessages);
 watch(
-  () => websocketStore.receivedMessages,
+  received,
   () => {
     if (user) getNotifications(menu.value);
   },

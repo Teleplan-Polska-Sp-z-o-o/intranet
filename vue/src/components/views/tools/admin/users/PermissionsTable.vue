@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";
 // import EditTable from "../../../../components/tools/EditTable.vue";
-import CrudTable from "../../../../components/tools/CrudTable.vue";
-import DialogInput from "../../../tools/DialogInput.vue";
-import { UserPermissionManager } from "../../../../models/user/UserPermissionManager";
-import { IUser } from "../../../../interfaces/user/IUser";
-import { IPermission } from "../../../../interfaces/user/IPermission";
-import { Permission } from "../../../../models/user/Permission";
+import CrudTable from "../../../../../components/tools/CrudTable.vue";
+import DialogInput from "../../../../tools/DialogInput.vue";
+import { IUser } from "../../../../../interfaces/user/IUser";
+import { IPermission } from "../../../../../interfaces/user/IPermission";
+import { Permission } from "../../../../../models/user/Permission";
 import { useI18n } from "vue-i18n";
-import { IResponseStatus } from "../../../../interfaces/common/IResponseStatus";
+import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
+import { UserManager } from "../../../../../models/user/UserManager";
 
 const emit = defineEmits(["table", "responseStatus"]);
 
@@ -44,10 +44,18 @@ const handleSaveData = (data: any) => {
 
   const permission: IPermission = new Permission(data.model);
 
-  reqData.value = { user, permission };
+  const formData: FormData = new FormData();
+
+  formData.append("user", JSON.stringify(user));
+  formData.append("permission", JSON.stringify(permission));
+
+  let controller = "";
+  if (data.permission) controller = "permissionController";
+
+  reqData.value = { formData, controller };
 };
 
-const manager = new UserPermissionManager();
+const manager = new UserManager();
 
 const permission = (item: any) => {
   const { id, ...permissionWithoutId } = item.permission;
@@ -71,6 +79,7 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     @save-data="handleSaveData"
     :req-data="reqData"
     :tableEdit="true"
+    :tableDelete="true"
     :tableDialogComponent="DialogInput"
     :tableDialogComponentProps="{ label: 'Permission', items: ['User', 'Moderator', 'Admin'] }"
     @responseStatus="handleResponseStatus"

@@ -1,4 +1,5 @@
 interface IProcessChangeRequestBase {
+  [key: string]: any;
   internalOrExternal: "Internal" | "External";
   customerContactPerson: string;
   customerContactEmail: string;

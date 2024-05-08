@@ -19,6 +19,7 @@ enum Endpoints {
 
   // change
   ChangeRequest = "/api/change/request",
+  ChangeNotice = "/api/change/notice",
 
   //notification
   Notification = "/api/notification",

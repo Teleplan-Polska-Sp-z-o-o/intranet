@@ -84,7 +84,9 @@ const getUsers = async (req: Request, res: Response) => {
 
 const userAuth = async (req: Request, res: Response) => {
   try {
-    const user = new User(req.body);
+    let user = new User(req.body);
+
+    user.username.toLocaleLowerCase();
 
     // Wait for LDAP authentication to complete
     const authenticated = await user.ldapAuthenticate();
@@ -144,4 +146,40 @@ const userAuth = async (req: Request, res: Response) => {
   }
 };
 
-export { getUser, getUsers, userAuth };
+const removeUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const userToRemove = await transactionalEntityManager
+        .getRepository(UserEntity)
+        .findOne({ where: { id } });
+
+      if (!userToRemove) {
+        return res.status(404).json({
+          message: "User not found.",
+          statusMessage: HttpResponseMessage.DELETE_ERROR,
+        });
+      }
+
+      const removedUser = await transactionalEntityManager
+        .getRepository(UserEntity)
+        .remove(userToRemove);
+
+      res.status(200).json({
+        deleted: removedUser,
+        message: "User removed successfully",
+        statusMessage: HttpResponseMessage.DELETE_SUCCESS,
+      });
+    });
+  } catch (err) {
+    console.error("Error removing user:", err);
+    res.status(500).json({
+      err,
+      message: "Unknown error occurred. Failed to remove user.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
+export { getUser, getUsers, userAuth, removeUser };

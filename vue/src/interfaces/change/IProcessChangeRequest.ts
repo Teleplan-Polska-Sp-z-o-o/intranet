@@ -1,6 +1,7 @@
 import { IProcessChangeNotice } from "./IProcessChangeNotice";
 
 interface IProcessChangeRequest {
+  [key: string]: any;
   id: number; // auto generated: identifier
 
   processChangeNotice: IProcessChangeNotice | null; // relation with pcn

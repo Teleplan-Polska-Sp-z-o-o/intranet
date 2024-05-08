@@ -10,9 +10,7 @@ import { ENotificationState } from "../../../interfaces/user/notification/ENotif
 import { useNotificationStore } from "../../../stores/notificationStore";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
-
 const listWidth = computed((): string => (smallScreen.value ? "300px" : "400px"));
-
 const websocketStore = useWebsocketStore();
 
 const userStore = useUserStore();
@@ -34,17 +32,15 @@ const getNotifications = async (): Promise<void> => {
 const notificationStore = useNotificationStore();
 
 watch(
-  () => notificationStore.getSignal,
+  () => notificationStore.getBarSignal,
   () => {
     getNotifications();
+    notificationStore.resetSignal("bar");
   }
 );
 
-watch(
-  () => websocketStore.receivedMessages,
-  () => getNotifications(),
-  { deep: true }
-);
+const received = ref<Array<MessageEvent<any>>>(websocketStore.receivedMessages);
+watch(received, () => getNotifications(), { deep: true });
 
 const router = useRouter();
 

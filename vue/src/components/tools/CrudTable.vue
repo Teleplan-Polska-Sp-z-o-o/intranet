@@ -5,6 +5,7 @@ import TableFlow from "./TableFlow.vue";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../models/common/ResponseStatus";
 import CopyToClipboard from "./CopyToClipboard.vue";
+import TableFilters from "./TableFilters.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -34,20 +35,27 @@ const props = defineProps<{
   flow?: string; // pdf name
 
   loadItems?: boolean;
+
+  filters?: boolean;
 }>();
 
 const emit = defineEmits(["save-data", "emit-table-change", "responseStatus"]);
 
 const headers = ref<any>(props.headers);
 const items = ref<Array<any>>([]);
-const loadItems = ref<boolean | undefined>(undefined);
+
+const filtersCallback = ref<{ callback: Function } | null>(null);
 
 const toolbarTitle = ref<string>(props.toolbarTitle);
 const search = ref<string>("");
 const searchTitle = ref<string>(props.searchTitle ? props.searchTitle : "Search");
 const filtered = computed(() => {
+  const itemsFiltered = filtersCallback.value?.hasOwnProperty("callback")
+    ? (filtersCallback.value?.callback(items.value) as Array<any>)
+    : items.value;
+
   if (search.value) {
-    return items.value.filter((item: any) => {
+    return itemsFiltered.filter((item: any) => {
       for (const key of props.searchBy) {
         const value = item[key]?.toLowerCase();
         const searchTerm = search.value.toLowerCase();
@@ -57,7 +65,7 @@ const filtered = computed(() => {
       }
       return false;
     });
-  } else return items.value;
+  } else return itemsFiltered;
 });
 const dialog = ref<boolean>(false);
 const dialogLoading = ref<boolean>(false);
@@ -83,10 +91,13 @@ const load = async () => {
 
 load();
 
-watch(loadItems, () => {
-  console.log("loadItems");
-  if (loadItems.value !== undefined && loadItems.value === true) load();
-});
+watch(
+  () => props.loadItems,
+  (newLoad) => {
+    console.log("loadItems watch");
+    if (newLoad === true) load();
+  }
+);
 
 const reqData = ref<any>(props.reqData);
 
@@ -203,6 +214,10 @@ const save = async () => {
 const handleVerified = (v: boolean) => (verified.value = v);
 
 const handleSaveData = (data: any) => emit("save-data", data);
+
+const handleFilters = (filters: { callback: Function }) => {
+  filtersCallback.value = filters;
+};
 </script>
 
 <template>
@@ -283,6 +298,10 @@ const handleSaveData = (data: any) => emit("save-data", data);
           >
           </table-dialog>
         </v-toolbar>
+
+        <table-filters v-if="props.filters" @filters="handleFilters">
+          <slot name="table-filters"></slot>
+        </table-filters>
       </template>
 
       <template v-slot:item.custom="{ item }">

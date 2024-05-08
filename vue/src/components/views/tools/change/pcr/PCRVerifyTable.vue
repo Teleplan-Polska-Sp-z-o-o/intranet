@@ -54,20 +54,20 @@ const testReasonAndDescription = (value: Date | string, key: string) => {
   <v-sheet border class="rounded-xl mb-4">
     <template v-for="(value, key, index) in request" :key="key">
       <v-card
-        v-if="value && testReasonAndDescription(value, key) && !disallowedKeys.includes(key)"
+        v-if="value && testReasonAndDescription(value, key as string) && !disallowedKeys.includes(key as string)"
         color="transparent"
         elevation="0"
         outlined="false"
         class="pa-2"
       >
-        <v-card-subtitle>{{ camelCaseToTitleCase(key) }}</v-card-subtitle>
+        <v-card-subtitle>{{ camelCaseToTitleCase(key as string) }}</v-card-subtitle>
         <v-card-text
           v-html="value instanceof Date ? formatDate(value) : value.toString()"
         ></v-card-text>
       </v-card>
       <v-divider
         class="mx-4"
-        v-if="value && !disallowedKeys.includes(key) && index !== Object.keys(request).length - 1"
+        v-if="value && !disallowedKeys.includes(key as string) && index !== Object.keys(request).length - 1"
       ></v-divider>
     </template>
   </v-sheet>

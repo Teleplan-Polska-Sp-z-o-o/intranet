@@ -62,6 +62,20 @@ const enC = {
         settings: {
           application: {
             name: "APPLICATION",
+            list: {
+              "list-subheader": "General",
+              "list-item": {
+                "1": {
+                  title: "Themes",
+                  subtitle: "Choose between light and dark mode",
+                },
+                "2": {
+                  title: "Languages",
+                  subtitle:
+                    "Select the language for the interface. Note: While English is fully supported, other languages may have limited support.",
+                },
+              },
+            },
             theme: {
               name: "Theme",
               dark: "Dark",

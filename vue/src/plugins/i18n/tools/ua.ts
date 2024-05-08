@@ -11,6 +11,7 @@ const uaT = {
       deleteItemConfirmation: "Видалення цього елемента також вплине на всі його дочірні елементи.",
       deleteDocumentConfirmation:
         "Видалення цього документа також призведе до видалення всіх його пов'язаних файлів.",
+      filters: "Фільтрувати за допомогою розширених критеріїв",
     },
     chips: {
       departments: "Відділи",
@@ -131,6 +132,81 @@ const uaT = {
     },
     change: {
       name: "Зміна",
+      tabs: {
+        pcr: {
+          name: "Запит на зміну процесу",
+          table: {
+            toolbar: "Запити",
+            header: {
+              numberOfRequest: "№",
+              requestDate: "Дата запиту",
+              internalOrExternal: "Внутрішній/Зовнішній",
+              reconextOwner: "Власник",
+              dedicatedDepartment: "Відділ",
+              program: "Програма",
+              modelOrProcessImpacted: "Вплив на",
+              dateNeeded: "Дата необхідності",
+              assessment: "Оцінка",
+              approvedOrRejectedBy: "Закрито",
+              closureDate: "Дата закриття",
+              viewPcr: "Переглянути ЗРП",
+              numberOfNotice: "№ повідомлення",
+              actions: "Дії",
+            },
+          },
+          stepper: {
+            actions: {
+              prev: "Попередній",
+              next: "Наступний",
+            },
+            changeReason: "Причина зміни",
+            changeDescription: "Опис зміни",
+            customerContactPersonRule: "Будь ласка, введіть ім'я та прізвище, розділені пробілом.",
+            customerContactEmailRule: "Електронна адреса повинна бути дійсною.",
+            vStepperItem: {
+              "1": "Основна інформація",
+              "2": "Контактна інформація",
+              "3": "Дата необхідності",
+              "4": "Описова інформація",
+              "5": "Перевірити",
+            },
+            vStepperWindowItem: {
+              "1": {
+                internalOrExternal: "Внутрішній або Зовнішній",
+                dedicatedDepartment: "Відділ",
+                program: "Програма",
+                reconextOwner: "Власник Reconext",
+              },
+              "2": {
+                customerContactPerson: "Контактна особа клієнта",
+                customerContactEmail: "Електронна адреса клієнта",
+                reconextContactPerson: "Контактна особа Reconext",
+              },
+              "3": {
+                dateNeeded: "Очистити дату необхідної реалізації",
+              },
+              "4": {
+                modelOrProcessImpacted: "Вплив на модель або процес",
+                costOfImplementation: "Вартість впровадження",
+                impacts: "Впливи",
+                riskAnalysis: "Аналіз ризиків",
+                updateDescription: "Опис оновлення",
+              },
+            },
+            alerts: {
+              remainder: {
+                title: "Нагадування",
+                text: "Звертаємо увагу, що будь-яке оновлення закритого запиту автоматично спричинить його зновувідкриття для подальшого перегляду та дій.",
+                fields: "Попередній перегляд оновлених полів ключів.",
+              },
+              emptyUpdate: {
+                title: "Попередження",
+                text: "Зверніть увагу, що навіть у випадку, якщо фактичні редагування відсутні, продовження без внесення змін до закритого запиту все одно призведе до його повторного відкриття.",
+              },
+            },
+          },
+        },
+      },
     },
   },
 };

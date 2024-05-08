@@ -11,6 +11,7 @@ const enT = {
       deleteItemConfirmation: "Deleting this item will also affect all of its associated children.",
       deleteDocumentConfirmation:
         "Deleting this document will also affect all of its associated files.",
+      filters: "Filter by using advanced criteria",
     },
     chips: {
       departments: "Departments",
@@ -156,6 +157,58 @@ const enT = {
               viewPcr: "View PCR",
               numberOfNotice: "Notice No",
               actions: "Actions",
+            },
+          },
+          stepper: {
+            actions: {
+              prev: "Previous",
+              next: "Next",
+            },
+            changeReason: "Change Reason",
+            changeDescription: "Change Description",
+            customerContactPersonRule:
+              "Please enter both a name and a surname separated by a space.",
+            customerContactEmailRule: "Email must be valid.",
+            vStepperItem: {
+              "1": "Base Info",
+              "2": "Contact Info",
+              "3": "Need Date",
+              "4": "Descriptive Info",
+              "5": "Verify",
+            },
+            vStepperWindowItem: {
+              "1": {
+                internalOrExternal: "Internal or External",
+                dedicatedDepartment: "Dedicated Department",
+                program: "Program",
+                reconextOwner: "Reconext Owner",
+              },
+              "2": {
+                customerContactPerson: "Customer Contact Person",
+                customerContactEmail: "Customer Contact Email",
+                reconextContactPerson: "Reconext Contact Person",
+              },
+              "3": {
+                dateNeeded: "Clear Implementation Need Date",
+              },
+              "4": {
+                modelOrProcessImpacted: "Model or Process Impacted",
+                costOfImplementation: "Cost of Implementation",
+                impacts: "Impacts",
+                riskAnalysis: "Risk Analysis",
+                updateDescription: "Update Description",
+              },
+            },
+            alerts: {
+              remainder: {
+                title: "Reminder",
+                text: "Please be advised that any updates made to the closed request will automatically trigger its reopening for further review and action.",
+                fields: "Keys preview of updated fields.",
+              },
+              emptyUpdate: {
+                title: "Warning",
+                text: "Please note that proceeding without actually editing any fields in the closed request will still result in its reopening.",
+              },
             },
           },
         },

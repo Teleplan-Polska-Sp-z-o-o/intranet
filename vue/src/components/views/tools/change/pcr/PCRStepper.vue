@@ -12,6 +12,7 @@ import { IUserEntity } from "../../../../../interfaces/user/IUserEntity";
 import { UserManager } from "../../../../../models/user/UserManager";
 import CkEditor from "../../../../common/CkEditor.vue";
 import { useEditorStore } from "../../../../../stores/editorStore";
+import { useI18n } from "vue-i18n";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -20,6 +21,8 @@ const props = defineProps<{
 }>();
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
+
+const { t } = useI18n();
 
 const activeStep = ref<number>(1);
 emit("verified", true);
@@ -44,13 +47,19 @@ const editorStore = useEditorStore();
 const changeReason = props.componentProps.editedItem.changeReason;
 const changeDescription = props.componentProps.editedItem.changeDescription;
 editorStore.save(
-  changeReason ? changeReason : '<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>',
+  changeReason
+    ? changeReason
+    : `<p><span style="color:hsl(0, 0%, 60%);">${t(
+        "tools.change.tabs.pcr.stepper.changeReason"
+      )}</span></p>`,
   "change-reason"
 );
 editorStore.save(
   changeDescription
     ? changeDescription
-    : '<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>',
+    : `<p><span style="color:hsl(0, 0%, 60%);">${t(
+        "tools.change.tabs.pcr.stepper.changeDescription"
+      )}</span></p>`,
   "change-description"
 );
 
@@ -167,25 +176,12 @@ const newRequestData = computed<
 
 const customerContactPersonRule = [
   (v: string) =>
-    /^[a-zA-Z]+ [a-zA-Z]+$/.test(v) ||
-    "Please enter both a name and a surname separated by a space.",
+    /^[a-zA-Z]+ [a-zA-Z]+$/.test(v) || t("tools.change.tabs.pcr.stepper.customerContactPersonRule"),
 ];
 
-const customerContactEmailRule = [(v: string) => /.+@.+\..+/.test(v) || "Email must be valid."];
-
-// const reconextContactPersonRule = [
-//   (v: string) => !!v || "Reconext Contact Person field is required",
-// ];
-// const reconextOwnerRule = [(v: string) => !!v || "Reconext Owner field is required"];
-// const modelOrProcessImpactedRule = [
-//   (v: string) => !!v || "Model or Process Impacted field is required.",
-// ];
-// const costOfImplementationRule = [
-//   (v: string) => !!v || "Cost of Implementation field is required.",
-// ];
-// const changeReasonRule = [(v: string) => !!v || "Change Reason field is required."];
-// const changeDescriptionRule = [(v: string) => !!v || "Change Description field is required."];
-// const impactsRule = [(v: string) => !!v || "Impacts field is required."];
+const customerContactEmailRule = [
+  (v: string) => /.+@.+\..+/.test(v) || t("tools.change.tabs.pcr.stepper.customerContactEmailRule"),
+];
 
 type Completed = { step1: boolean; step2: boolean; step3: boolean; step4: boolean };
 const completed = computed<Completed>(() => {
@@ -243,6 +239,48 @@ watch(activeStep, (newActiveStep) => {
     emit("verified", true);
   }
 });
+
+const updatedFields = computed(() => {
+  const editedItem = props.componentProps.editedItem;
+  const fields: Array<string> = [];
+
+  for (const key in request.value) {
+    const formatDate = (date: Date | string | undefined): string => {
+      if (date) {
+        let dateObj: Date;
+
+        if (typeof date === "string") dateObj = new Date(date);
+        else dateObj = date;
+
+        const day: string = (dateObj?.getDate() || 1).toString().padStart(2, "0");
+        const month: string = (dateObj?.getMonth() + 1 || 1).toString().padStart(2, "0"); // Note: Month is zero-based, so we add 1
+        const year: string = (dateObj?.getFullYear() || 1).toString().padStart(2, "0");
+
+        const formattedDate: string = `${day}/${month}/${year}`;
+        return formattedDate;
+      } else return "Empty date";
+    };
+
+    switch (key) {
+      case "updateDescription":
+        continue;
+
+      case "dateNeeded":
+        if (formatDate(request.value[key]) !== editedItem[key]) {
+          fields.push(key);
+        }
+        continue;
+
+      default:
+        if (request.value[key] !== editedItem[key]) {
+          fields.push(key);
+        }
+        continue;
+    }
+  }
+
+  return fields;
+});
 </script>
 
 <template>
@@ -255,39 +293,43 @@ watch(activeStep, (newActiveStep) => {
   >
     <v-stepper-header class="rounded-xl">
       <v-stepper-item
-        color="secondary"
+        :color="!completed.step1 ? 'warning' : 'secondary'"
         :editable="!completed.step1"
         :complete="completed.step1"
         :value="1"
-        title="Base Info"
+        :title="$t(`tools.change.tabs.pcr.stepper.vStepperItem['1']`)"
       ></v-stepper-item>
       <v-divider></v-divider>
       <v-stepper-item
-        color="secondary"
+        :color="!completed.step2 ? 'warning' : 'secondary'"
         :editable="!completed.step2"
         :error="!tests"
         :complete="completed.step2"
         :value="2"
-        title="Contact Info"
+        :title="$t(`tools.change.tabs.pcr.stepper.vStepperItem['2']`)"
       ></v-stepper-item>
       <v-divider></v-divider>
       <v-stepper-item
-        color="secondary"
+        :color="!completed.step3 ? 'warning' : 'secondary'"
         :editable="!completed.step3"
         :complete="completed.step3"
         :value="3"
-        title="Need Date"
+        :title="$t(`tools.change.tabs.pcr.stepper.vStepperItem['3']`)"
+      ></v-stepper-item>
+      <v-divider></v-divider>
+      <v-stepper-item
+        :color="!completed.step4 ? 'warning' : 'secondary'"
+        :editable="!completed.step4"
+        :complete="completed.step4"
+        :value="4"
+        :title="$t(`tools.change.tabs.pcr.stepper.vStepperItem['4']`)"
       ></v-stepper-item>
       <v-divider></v-divider>
       <v-stepper-item
         color="secondary"
-        :editable="!completed.step4"
-        :complete="completed.step4"
-        :value="4"
-        title="Descriptive Info"
+        :value="5"
+        :title="$t(`tools.change.tabs.pcr.stepper.vStepperItem['5']`)"
       ></v-stepper-item>
-      <v-divider></v-divider>
-      <v-stepper-item color="secondary" :value="5" title="Verify"></v-stepper-item>
     </v-stepper-header>
 
     <v-stepper-window>
@@ -296,12 +338,12 @@ watch(activeStep, (newActiveStep) => {
           <v-select
             v-model="request.internalOrExternal"
             variant="underlined"
-            label="Internal or External"
+            :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['1'].internalOrExternal`)"
             :items="['Internal', 'External']"
           ></v-select>
           <v-autocomplete
             variant="underlined"
-            label="Dedicated Department"
+            :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['1'].dedicatedDepartment`)"
             :items="departments"
             :modelValue="request.dedicatedDepartment"
             @update:modelValue="(value: string | null) => (request.dedicatedDepartment = value || '')"
@@ -309,7 +351,7 @@ watch(activeStep, (newActiveStep) => {
           ></v-autocomplete>
           <v-autocomplete
             variant="underlined"
-            label="Program"
+            :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['1'].program`)"
             :items="programs"
             clearable
             :modelValue="request.program"
@@ -317,7 +359,7 @@ watch(activeStep, (newActiveStep) => {
           ></v-autocomplete>
           <v-autocomplete
             variant="underlined"
-            label="Reconext Owner"
+            :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['1'].reconextOwner`)"
             :items="reconextUsers"
             clearable
             :modelValue="request.reconextOwner"
@@ -331,19 +373,25 @@ watch(activeStep, (newActiveStep) => {
           <v-text-field
             v-model="request.customerContactPerson"
             variant="underlined"
-            label="Customer Contact Person"
+            :label="
+              $t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['2'].customerContactPerson`)
+            "
             :rules="customerContactPersonRule"
           ></v-text-field>
 
           <v-text-field
             v-model="request.customerContactEmail"
             variant="underlined"
-            label="Customer Contact Email"
+            :label="
+              $t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['2'].customerContactEmail`)
+            "
             :rules="customerContactEmailRule"
           ></v-text-field>
           <v-autocomplete
             variant="underlined"
-            label="Reconext Contact Person"
+            :label="
+              $t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['2'].reconextContactPerson`)
+            "
             :items="reconextUsers"
             clearable
             :modelValue="request.reconextContactPerson"
@@ -358,14 +406,14 @@ watch(activeStep, (newActiveStep) => {
             <v-date-picker
               color="primary"
               width="100%"
-              @update:modelValue="(value : Date) => (request.dateNeeded = value)"
+              @update:modelValue="(value: Date) => (request.dateNeeded = value)"
               :modelValue="request.dateNeeded || undefined"
               show-adjacent-months
             >
               <template v-slot:title>
-                <v-btn variant="tonal" class="rounded-xl" @click="request.dateNeeded = undefined"
-                  >Clear Implementation Need Date</v-btn
-                >
+                <v-btn variant="tonal" class="rounded-xl" @click="request.dateNeeded = undefined">{{
+                  $t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['3'].dateNeeded`)
+                }}</v-btn>
               </template>
             </v-date-picker>
           </v-card-text>
@@ -377,28 +425,66 @@ watch(activeStep, (newActiveStep) => {
           <v-textarea
             v-model="request.modelOrProcessImpacted"
             variant="underlined"
-            label="Model or Process Impacted"
+            :label="
+              $t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].modelOrProcessImpacted`)
+            "
           ></v-textarea>
 
           <v-textarea
             v-model="request.costOfImplementation"
             variant="underlined"
-            label="Cost of Implementation"
+            :label="
+              $t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].costOfImplementation`)
+            "
           ></v-textarea>
           <ck-editor editorKey="change-reason"></ck-editor>
           <ck-editor editorKey="change-description"></ck-editor>
-          <v-textarea v-model="request.impacts" variant="underlined" label="Impacts"></v-textarea>
+          <v-textarea
+            v-model="request.impacts"
+            variant="underlined"
+            :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].impacts`)"
+          ></v-textarea>
           <v-textarea
             v-model="request.riskAnalysis"
             variant="underlined"
-            label="Risk Analysis"
+            :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].riskAnalysis`)"
           ></v-textarea>
-          <v-textarea
-            v-if="requestUpdatable"
-            v-model="request.updateDescription"
-            variant="underlined"
-            label="Update Description"
-          ></v-textarea>
+          <template v-if="requestUpdatable && updatedFields.length > 0">
+            <v-alert
+              type="warning"
+              border="start"
+              :title="$t(`tools.change.tabs.pcr.stepper.alerts.remainder.title`)"
+              variant="tonal"
+            >
+              {{ $t(`tools.change.tabs.pcr.stepper.alerts.remainder.text`) }}
+            </v-alert>
+            <v-textarea
+              class="mt-2"
+              v-model="request.updateDescription"
+              variant="underlined"
+              :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].updateDescription`)"
+            ></v-textarea>
+            <div class="mb-2">
+              {{ $t(`tools.change.tabs.pcr.stepper.alerts.remainder.fields`) }}
+            </div>
+            <v-chip v-for="chip in updatedFields" class="mr-2"> {{ chip }} </v-chip>
+          </template>
+          <template v-if="requestUpdatable && updatedFields.length === 0">
+            <v-alert
+              type="warning"
+              border="start"
+              :title="$t(`tools.change.tabs.pcr.stepper.alerts.emptyUpdate.title`)"
+              variant="tonal"
+            >
+              {{ $t(`tools.change.tabs.pcr.stepper.alerts.emptyUpdate.text`) }}
+            </v-alert>
+            <v-textarea
+              class="mt-2"
+              v-model="request.updateDescription"
+              variant="underlined"
+              :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].updateDescription`)"
+            ></v-textarea>
+          </template>
         </v-card>
       </v-stepper-window-item>
 
@@ -417,7 +503,7 @@ watch(activeStep, (newActiveStep) => {
           variant="text"
           class="rounded-xl"
           :disabled="!prevable"
-          >Previous</v-btn
+          >{{ $t("tools.change.tabs.pcr.stepper.actions.prev") }}</v-btn
         >
         <v-spacer></v-spacer>
         <v-btn
@@ -426,7 +512,7 @@ watch(activeStep, (newActiveStep) => {
           variant="text"
           class="rounded-xl"
           :disabled="!nextable"
-          >Next</v-btn
+          >{{ $t("tools.change.tabs.pcr.stepper.actions.next") }}</v-btn
         >
       </v-card-actions>
     </template>

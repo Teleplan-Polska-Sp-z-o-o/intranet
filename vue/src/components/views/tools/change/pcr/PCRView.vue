@@ -222,18 +222,28 @@ const request = computed(() => {
 
 const router = useRouter();
 
+const showAOR = ref<boolean>(true);
 const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChangeRequest }) => {
   emit("responseStatus", closeData.response);
   emit("loadItems");
 
   item.value = closeData.closed;
+
+  router.push({ path: `/tool/change/browse/pcr` });
   openDialog.value = false;
+
+  showAOR.value = false;
+};
+
+const open = () => {
+  router.push({ path: `/tool/change/browse/pcr/${item.value.id}` });
+  openDialog.value = true;
 };
 </script>
 
 <template>
   <v-dialog v-model="openDialog" :max-width="smallScreen ? '90vw' : '60vw'" max-height="80vh">
-    <template v-slot:activator="{ props: activatorProps }">
+    <template v-slot:activator>
       <v-tooltip text="View PCR">
         <template v-slot:activator="{ props: tooltip }">
           <!-- :id="item.value.numberOfRequest" -->
@@ -242,8 +252,8 @@ const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChan
             variant="tonal"
             class="rounded-lg"
             :size="56"
-            v-bind="{ ...activatorProps, ...tooltip }"
-            @click="router.push({ path: `/tool/change/browse/pcr/${item.id}` })"
+            v-bind="{ ...tooltip }"
+            @click="open"
           >
             <v-icon icon="mdi-file-pdf-box" :size="24" />
           </v-btn>
@@ -392,12 +402,14 @@ const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChan
         </v-card-text>
         <v-card-actions :class="smallScreen ? 'px-4' : 'px-10'">
           <accept-or-reject
+            v-if="showAOR"
             variant="reject"
             :pcrId="itemId"
             @close="handleClose"
           ></accept-or-reject>
 
           <accept-or-reject
+            v-if="showAOR"
             variant="accept"
             :pcrId="itemId"
             @close="handleClose"
