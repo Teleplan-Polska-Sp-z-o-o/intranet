@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref, toRef, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { useUserStore } from "../../../../../stores/userStore";
@@ -7,9 +7,10 @@ import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { IProcessChangeRequest } from "../../../../../interfaces/change/IProcessChangeRequest";
 import { ProcessChangeRequestBase } from "../../../../../models/change/pcr/ProcessChangeRequestBase";
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["resetActions", "close"]);
 
 const props = defineProps<{
+  checkActions: true | null;
   variant: "accept" | "reject";
   pcrId: number;
 }>();
@@ -63,7 +64,18 @@ const enableActions = async (): Promise<void> => {
 
 const showActions = ref<boolean>(false);
 
-enableActions();
+onMounted(() => {
+  enableActions();
+});
+
+const checkActions = toRef(() => props.checkActions);
+
+watchEffect(() => {
+  if (checkActions.value === true) {
+    enableActions();
+    emit("resetActions");
+  }
+});
 
 const click = () => {
   dialog.value = true;

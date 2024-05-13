@@ -13,6 +13,11 @@ interface IUserEntity {
     id: number;
   };
   username: string;
+  info: {
+    position: string | null;
+    department: string | null;
+    decisionMaker: boolean | null;
+  };
 }
 
 export type { IUserEntity };

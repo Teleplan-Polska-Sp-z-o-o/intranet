@@ -40,7 +40,7 @@ const headers: any = [
   { title: t(`${tPath}.header.closureDate`), key: "closureDate" },
   {
     title: t(`${tPath}.header.numberOfNotice`),
-    key: "numberOfNotice",
+    key: "processChangeNotice.numberOfNotice",
     sortable: false,
     filterable: false,
   },
@@ -85,7 +85,7 @@ const handleLoadItems = () => {
 <template>
   <crud-table
     :headers="headers"
-    :sortBy="[{ key: 'numberOfRequest', order: 'asc' }]"
+    :sortBy="[{ key: 'id', order: 'asc' }]"
     :searchBy="[
       'numberOfRequest',
       'requestDate',
@@ -98,7 +98,7 @@ const handleLoadItems = () => {
       'assessment',
       'approvedOrRejectedBy',
       'closureDate',
-      'numberOfNotice',
+      'processChangeNotice.numberOfNotice',
     ]"
     :toolbarTitle="toolbarTitle"
     :searchTitle="searchTitle"

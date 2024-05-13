@@ -4,11 +4,12 @@ interface IProcessChangeNotice {
   numberOfRequest: string; // pull
   year: number; // auto
   status: string;
+  closureDate: string;
   departmentApprovals: string | null;
-  requestApproveNoticeDate: string; // pull
-  requestReconextOwner: string; // pull
-  requestModelOrProcessImpacted: string; // pull
-  requestChangeReason: string; // pull
+  // requestApproveNoticeDate: string; // pull
+  // requestReconextOwner: string; // pull
+  // requestModelOrProcessImpacted: string; // pull
+  // requestChangeReason: string; // pull
   // first window item (Description)
   changeDescription: string | null; // new
   // second window item (Documentation)
@@ -17,8 +18,8 @@ interface IProcessChangeNotice {
   isNewDocumentationRequired: boolean | null; // new
   listOfDocumentationToCreate: string | null; // new
   // third window item (Customer)
-  requestCustomerContactPerson: string; // pull
-  requestCustomerContactEmail: string; // pull
+  // requestCustomerContactPerson: string; // pull
+  // requestCustomerContactEmail: string; // pull
   isCustomerApprovalRequired: boolean | null; // new => add Customer Approve section in ViewPCN
   // fourth window item (Approval)
   departmentsRequiredForApproval: string | null; // new

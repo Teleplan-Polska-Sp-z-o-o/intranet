@@ -15,6 +15,11 @@ export class UserEntity implements IUserEntity {
     id: number;
   };
   username: string;
+  info: {
+    position: null;
+    department: null;
+    decisionMaker: null;
+  };
 
   constructor() {
     this.domain = "";
@@ -22,5 +27,6 @@ export class UserEntity implements IUserEntity {
     this.permission = { read: true, write: false, control: false, id: 0 };
     this.settings = { theme: "", language: "", id: 0 };
     this.username = "";
+    this.info = { position: null, department: null, decisionMaker: null };
   }
 }

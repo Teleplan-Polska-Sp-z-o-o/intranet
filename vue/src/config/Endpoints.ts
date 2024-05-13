@@ -1,6 +1,7 @@
 enum Endpoints {
+  Users = "/api/user",
+
   User = "/api/user/one",
-  Users = "/api/user/all",
   UserAuth = "/api/user/auth",
   UserSettingsTheme = "/api/user/settings/theme",
   UserSettingsLanguage = "/api/user/settings/language",

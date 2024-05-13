@@ -118,6 +118,9 @@ const enT = {
               username: "Username",
               domain: "Domain",
               permission: "Permission",
+              position: "Position",
+              department: "Department",
+              decisionMaker: "Decision Maker",
               actions: "Actions",
             },
           },
@@ -214,6 +217,23 @@ const enT = {
         },
         pcn: {
           name: "Process Change Notice",
+          table: {
+            toolbar: "Notices",
+            header: {
+              numberOfNotice: "No",
+              numberOfRequest: "No Request",
+              reconextOwner: "Applicant",
+              noticeDate: "Notice Date",
+              modelOrProcessImpacted: "Impact On",
+              areDocumentationChangesRequired: "Doc Changes Req",
+              isNewDocumentationRequired: "New Doc Req",
+              isCustomerApprovalRequired: "Customer Approve Req",
+              status: "Status",
+              closureDate: "Closure Date",
+              viewPcn: "View PCN",
+              actions: "Actions",
+            },
+          },
         },
         dcn: {
           name: "Document Change Notice",

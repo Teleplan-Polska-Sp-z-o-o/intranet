@@ -2,6 +2,7 @@
 import { DefineComponent, computed, ref } from "vue";
 import alertResponseStatus from "../../../components/common/alertResponseStatus.vue";
 import PCRTable from "../../../components/views/tools/change/pcr/PCRTable.vue";
+import PCNTable from "../../../components/views/tools/change/pcn/PCNTable.vue";
 import { useRoute, useRouter } from "vue-router";
 import { ResponseStatus } from "../../../models/common/ResponseStatus";
 
@@ -18,7 +19,7 @@ const tabs = [
     id: 2,
     name: "pcn",
     icon: "mdi-bulletin-board",
-    component: PCRTable,
+    component: PCNTable,
   },
   // {
   //   id: 3,

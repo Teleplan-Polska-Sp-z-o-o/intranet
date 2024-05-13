@@ -21,7 +21,7 @@ export class User {
   @JoinColumn()
   settings: UserSettings;
 
-  @OneToOne(() => UserInfo, { nullable: true })
+  @OneToOne(() => UserInfo)
   @JoinColumn()
   info: UserInfo;
 
@@ -32,11 +32,13 @@ export class User {
     username: string,
     domain: string,
     permission: UserPermission,
-    settings: UserSettings
+    settings: UserSettings,
+    info: UserInfo
   ) {
     this.username = username;
     this.domain = domain;
     this.permission = permission;
     this.settings = settings;
+    this.info = info;
   }
 }

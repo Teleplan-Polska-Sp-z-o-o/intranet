@@ -9,9 +9,8 @@ export class UserInfo {
   @Column()
   position: string | null;
 
-  @OneToOne(() => Department)
-  @JoinColumn()
-  department: Department | null;
+  @Column()
+  department: string | null;
 
   @Column()
   decisionMaker: boolean | null;
@@ -22,5 +21,7 @@ export class UserInfo {
     this.position = info.position;
     this.department = info.department;
     this.decisionMaker = info.decisionMaker;
+
+    return this;
   };
 }

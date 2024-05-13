@@ -33,7 +33,7 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
         variant="outlined"
         class="bg-background rounded-xl"
       >
-        <v-img :src="pdfSource"></v-img>
+        <v-img class="mx-auto" :width="smallScreen ? '100%' : '75%'" :src="pdfSource"></v-img>
 
         <v-card-actions>
           <v-spacer></v-spacer>

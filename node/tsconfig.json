@@ -1,13 +1,4 @@
 {
-  // "compilerOptions": {
-  //   "module": "NodeNext",
-  //   "moduleResolution": "NodeNext",
-  //   "target": "ES2021",
-  //   "sourceMap": true,
-  //   "outDir": "dist",
-  //   "experimentalDecorators": true,
-  //   "emitDecoratorMetadata": true
-  // },
   "compilerOptions": {
     "module": "CommonJS", // Set the module system to CommonJS for interoperability with both TypeScript and JavaScript
     "target": "ES2021",
@@ -23,3 +14,13 @@
   },
   "include": ["src/**/*"]
 }
+
+// "compilerOptions": {
+//   "module": "NodeNext",
+//   "moduleResolution": "NodeNext",
+//   "target": "ES2021",
+//   "sourceMap": true,
+//   "outDir": "dist",
+//   "experimentalDecorators": true,
+//   "emitDecoratorMetadata": true
+// },

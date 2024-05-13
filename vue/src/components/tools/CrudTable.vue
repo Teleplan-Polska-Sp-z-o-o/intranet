@@ -87,6 +87,7 @@ const chips = ref<any>(props.chips);
 
 const load = async () => {
   items.value = await manager.value.get(chips.value);
+  console.log(items.value);
 };
 
 load();

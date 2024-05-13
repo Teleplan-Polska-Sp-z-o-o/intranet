@@ -4,4 +4,4 @@ interface IUserInfo {
   decisionMaker: boolean | null;
 }
 
-export { IUserInfo };
+export type { IUserInfo };

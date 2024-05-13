@@ -6,6 +6,10 @@ import { UserPermission } from "../../orm/entity/user/UserPermissionEntity";
 import { UserSettings } from "../../orm/entity/user/UserSettingsEntity";
 import { adminsConfig } from "../../config/admins";
 import { HttpResponseMessage } from "../../enums/response";
+import { UserInfo } from "../../orm/entity/user/UserInfoEntity";
+import { IUser } from "../../interfaces/user/IUser";
+import { IPermission } from "../../interfaces/user/IPermission";
+import { UserInformation } from "../../models/user/UserInformation";
 
 const findUser = async (username: string): Promise<UserEntity> => {
   return dataSource.getRepository(UserEntity).findOne({
@@ -44,7 +48,8 @@ const getUsers = async (req: Request, res: Response) => {
       .getRepository(UserEntity)
       .createQueryBuilder("user")
       .leftJoinAndSelect("user.permission", "permission")
-      .leftJoinAndSelect("user.settings", "settings");
+      .leftJoinAndSelect("user.settings", "settings")
+      .leftJoinAndSelect("user.info", "info");
 
     if (equalOrAbovePermission) {
       switch (equalOrAbovePermission) {
@@ -119,9 +124,11 @@ const userAuth = async (req: Request, res: Response) => {
 
       const settings = await dataSource.getRepository(UserSettings).save(new UserSettings());
 
+      const info = await dataSource.getRepository(UserInfo).save(new UserInfo().build());
+
       await dataSource
         .getRepository(UserEntity)
-        .save(new UserEntity(user.username, user.domain, permission, settings));
+        .save(new UserEntity(user.username, user.domain, permission, settings, info));
 
       userExist = await findUser(user.username);
 
@@ -131,6 +138,14 @@ const userAuth = async (req: Request, res: Response) => {
         statusMessage: HttpResponseMessage.POST_SUCCESS,
       });
     } else {
+      if (!userExist.info) {
+        const info = await dataSource.getRepository(UserInfo).save(new UserInfo().build());
+
+        userExist.info = info;
+
+        await dataSource.getRepository(UserEntity).save(userExist);
+      }
+
       res.status(200).json({
         userExist,
         message: "Authentication successful.",
@@ -141,6 +156,64 @@ const userAuth = async (req: Request, res: Response) => {
     console.error("Error authenticating user: ", err);
     res.status(500).json({
       message: "Unknown error occurred. Failed to authenticate user.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
+const editUser = async (req: Request, res: Response) => {
+  try {
+    const body = req.body;
+    const userId: number = JSON.parse(body.user).id;
+    const permission: IPermission = JSON.parse(body.permission);
+    const info: UserInformation = JSON.parse(body.info);
+
+    let user: UserEntity;
+
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      if (permission) {
+        const newPermission: UserPermission = new UserPermission(permission);
+
+        const userPermission = await transactionalEntityManager
+          .getRepository(UserPermission)
+          .findOne({
+            where: { id: userId },
+          });
+
+        userPermission.write = newPermission.write;
+        userPermission.control = newPermission.control;
+
+        await transactionalEntityManager.getRepository(UserPermission).save(userPermission);
+      }
+
+      if (info) {
+        const userInfo: UserInfo = await transactionalEntityManager
+          .getRepository(UserInfo)
+          .findOne({
+            where: { id: userId },
+          });
+
+        userInfo.build(new UserInformation(info));
+
+        await transactionalEntityManager.getRepository(UserInfo).save(userInfo);
+      }
+
+      user = await transactionalEntityManager.getRepository(UserEntity).findOne({
+        where: { id: userId },
+        relations: ["permission", "settings", "info"],
+      });
+    });
+
+    res.status(200).json({
+      edited: user,
+      message: "Request updated successfully",
+      statusMessage: HttpResponseMessage.PUT_SUCCESS,
+    });
+  } catch (err) {
+    console.error("Error editing user:", err);
+    res.status(500).json({
+      err,
+      message: "Unknown error occurred. Failed to remove user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
   }
@@ -182,4 +255,4 @@ const removeUser = async (req: Request, res: Response) => {
   }
 };
 
-export { getUser, getUsers, userAuth, removeUser };
+export { getUser, getUsers, userAuth, editUser, removeUser };

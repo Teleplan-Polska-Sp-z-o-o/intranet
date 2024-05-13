@@ -35,9 +35,16 @@ watchEffect(() => {
   openDialog.value = no.value ? parseInt(no.value) === item.value.id : false;
 });
 
+const showAOR = ref<boolean>(true);
+
+const checkActions = ref<true | null>(null);
+const handleResetActions = () => (checkActions.value = null);
+
 watch(openDialog, async (newOpenDialog, oldOpenDialog) => {
   if (oldOpenDialog !== true && newOpenDialog !== false) {
     item.value = await manager.getRequest(itemId);
+    showAOR.value = true;
+    checkActions.value = true;
   } else if (oldOpenDialog === true && newOpenDialog === false) {
     router.push({ path: `/tool/change/browse/pcr` });
   }
@@ -222,7 +229,6 @@ const request = computed(() => {
 
 const router = useRouter();
 
-const showAOR = ref<boolean>(true);
 const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChangeRequest }) => {
   emit("responseStatus", closeData.response);
   emit("loadItems");
@@ -406,6 +412,8 @@ const open = () => {
             variant="reject"
             :pcrId="itemId"
             @close="handleClose"
+            :checkActions="checkActions"
+            @resetActions="handleResetActions"
           ></accept-or-reject>
 
           <accept-or-reject
@@ -413,6 +421,8 @@ const open = () => {
             variant="accept"
             :pcrId="itemId"
             @close="handleClose"
+            :checkActions="checkActions"
+            @resetActions="handleResetActions"
           ></accept-or-reject>
 
           <v-spacer></v-spacer>

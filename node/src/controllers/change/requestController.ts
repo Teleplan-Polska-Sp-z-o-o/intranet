@@ -284,7 +284,9 @@ const removeRequest = async (req: Request, res: Response) => {
 
 const getRequests = async (_req: Request, res: Response) => {
   try {
-    const requests = await dataSource.getRepository(ProcessChangeRequest).find();
+    const requests = await dataSource.getRepository(ProcessChangeRequest).find({
+      relations: ["processChangeNotice"],
+    });
 
     res.status(200).json({
       got: requests,
@@ -306,6 +308,7 @@ const getRequest = async (req: Request, res: Response) => {
 
     const options = {
       where: { id },
+      relations: ["processChangeNotice"],
     };
 
     const request: ProcessChangeRequest = await dataSource

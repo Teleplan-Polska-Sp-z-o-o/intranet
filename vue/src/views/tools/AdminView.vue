@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import PermissionsTable from "../../components/views/tools/admin/PermissionsTable.vue";
+import PermissionsTable from "../../components/views/tools/admin/users/PermissionsTable.vue";
 import NewsTable from "../../components/views/tools/admin/NewsTable.vue";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../../components/common/alertResponseStatus.vue";

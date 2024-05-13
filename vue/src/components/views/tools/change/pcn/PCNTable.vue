@@ -1,14 +1,10 @@
-<!-- <script setup lang="ts">
+<script setup lang="ts">
 import { ref, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
-import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { useI18n } from "vue-i18n";
 import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
-import PCRStepper from "./PCRStepper.vue";
-import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IProcessChangeRequestBase";
-import { IUser } from "../../../../../interfaces/user/IUser";
-import PCRView from "./PCRView.vue";
-import PCRTableFilters from "./PCRTableFilters.vue";
+import PCNStepper from "./PCNStepper.vue";
+import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -23,28 +19,40 @@ watchEffect(() => (tab.value = props.tab));
 const tPath = `tools.change.tabs.${tab.value}.table`;
 
 const headers: any = [
-  { title: t(`${tPath}.header.numberOfRequest`), align: "start", key: "numberOfRequest" },
-  { title: t(`${tPath}.header.requestDate`), key: "requestDate" },
-  { title: t(`${tPath}.header.internalOrExternal`), key: "internalOrExternal" },
+  {
+    title: t(`${tPath}.header.numberOfNotice`),
+    align: "start",
+    key: "processChangeNotice.numberOfNotice",
+  },
+  { title: t(`${tPath}.header.numberOfRequest`), key: "numberOfRequest" },
+  { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
+  {
+    title: t(`${tPath}.header.noticeDate`),
+    key: "noticeDate",
+  },
   {
     title: t(`${tPath}.header.modelOrProcessImpacted`),
     key: "modelOrProcessImpacted",
     minWidth: 200,
   },
-  { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
-  { title: t(`${tPath}.header.dedicatedDepartment`), key: "dedicatedDepartment" },
-  { title: t(`${tPath}.header.program`), key: "program" },
-  { title: t(`${tPath}.header.dateNeeded`), key: "dateNeeded" },
-  { title: t(`${tPath}.header.assessment`), key: "assessment" },
-  { title: t(`${tPath}.header.approvedOrRejectedBy`), key: "approvedOrRejectedBy" },
-  { title: t(`${tPath}.header.closureDate`), key: "closureDate" },
   {
-    title: t(`${tPath}.header.numberOfNotice`),
-    key: "numberOfNotice",
-    sortable: false,
-    filterable: false,
+    title: t(`${tPath}.header.areDocumentationChangesRequired`),
+    key: "processChangeNotice.areDocumentationChangesRequired",
   },
-  { title: t(`${tPath}.header.viewPcr`), key: "custom2", sortable: false, filterable: false },
+  {
+    title: t(`${tPath}.header.isNewDocumentationRequired`),
+    key: "processChangeNotice.isNewDocumentationRequired",
+  },
+  {
+    title: t(`${tPath}.header.isCustomerApprovalRequired`),
+    key: "processChangeNotice.isCustomerApprovalRequired",
+  },
+  { title: t(`${tPath}.header.status`), key: "processChangeNotice.status" },
+  {
+    title: t(`${tPath}.header.closureDate`),
+    key: "processChangeNotice.closureDate",
+  },
+  { title: t(`${tPath}.header.viewPcn`), key: "custom2", sortable: false, filterable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
 
@@ -53,33 +61,31 @@ const searchTitle = t(`tools.common.search`);
 
 const reqData = ref<FormData | null>(null);
 
-const handleSaveData = (
-  data: IProcessChangeRequestBase & { requestedBy: IUser } & { requestId: number }
-) => {
+const handleSaveData = (data: any) => {
   if (!data) return;
-  const { requestId, requestedBy, ...rest } = data;
-  const base: IProcessChangeRequestBase = rest;
-  const baseForJson = { ...base, dateNeeded: base.dateNeeded?.toString() };
-  const formData: FormData = new FormData();
 
-  formData.append("base", JSON.stringify(baseForJson));
-  formData.append("requestedBy", JSON.stringify(requestedBy));
-  formData.append("requestId", JSON.stringify(requestId));
+  console.log(data);
+  // const { requestId, requestedBy, ...rest } = data;
+  // const base: IProcessChangeRequestBase = rest;
+  // const baseForJson = { ...base, dateNeeded: base.dateNeeded?.toString() };
+  // const formData: FormData = new FormData();
 
-  reqData.value = formData;
+  // formData.append("base", JSON.stringify(baseForJson));
+  // formData.append("requestedBy", JSON.stringify(requestedBy));
+  // formData.append("requestId", JSON.stringify(requestId));
+
+  // reqData.value = formData;
 };
 
-const manager = new ProcessChangeRequestManager();
+const manager = new ProcessChangeNoticeManager();
 
 const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 
 const loadItems = ref<true | false>(false);
 const handleLoadItems = () => {
   loadItems.value = true;
-  console.log("time", loadItems.value);
   setTimeout(() => {
     loadItems.value = false;
-    console.log("out", loadItems.value);
   }, 0);
 };
 </script>
@@ -87,34 +93,25 @@ const handleLoadItems = () => {
 <template>
   <crud-table
     :headers="headers"
-    :sortBy="[{ key: 'numberOfRequest', order: 'asc' }]"
+    :sortBy="[{ key: 'id', order: 'asc' }]"
     :searchBy="[
-      'numberOfRequest',
-      'requestDate',
-      'internalOrExternal',
-      'modelOrProcessImpacted',
-      'reconextOwner',
-      'dedicatedDepartment',
-      'program',
-      'dateNeeded',
-      'assessment',
-      'approvedOrRejectedBy',
-      'closureDate',
+      'processChangeNotice.numberOfNotice',
       'numberOfNotice',
+      'reconextOwner',
+      'closureDate',
+      'modelOrProcessImpacted',
     ]"
     :toolbarTitle="toolbarTitle"
     :searchTitle="searchTitle"
     :manager="manager"
     @save-data="handleSaveData"
     :reqData="reqData"
-    :tableAdd="true"
-    :tableDelete="true"
     :tableEdit="true"
-    :tableDialogComponent="PCRStepper"
+    :tableDialogComponent="PCNStepper"
     :tableDialogComponentProps="{}"
     @responseStatus="handleResponseStatus"
     :copy="true"
-    flow="pcr-flow"
+    flow="pcn-flow"
     :loadItems="loadItems"
     :filters="true"
   >
@@ -132,4 +129,4 @@ const handleLoadItems = () => {
       ></p-c-r-view>
     </template>
   </crud-table>
-</template> -->
+</template>

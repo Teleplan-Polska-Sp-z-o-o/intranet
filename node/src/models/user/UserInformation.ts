@@ -1,9 +1,8 @@
 import { IUserInfo } from "../../interfaces/user/IUserInfo";
-import { Department } from "../../orm/entity/document/DepartmentEntity";
 
 class UserInformation implements IUserInfo {
   position: string;
-  department: Department;
+  department: string;
   decisionMaker: boolean;
 
   constructor(info: IUserInfo = undefined) {

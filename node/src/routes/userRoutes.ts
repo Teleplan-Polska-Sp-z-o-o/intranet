@@ -1,4 +1,10 @@
-import { getUser, getUsers, removeUser, userAuth } from "../controllers/user/userController";
+import {
+  editUser,
+  getUser,
+  getUsers,
+  removeUser,
+  userAuth,
+} from "../controllers/user/userController";
 import { setSettingsLanguage, setSettingsTheme } from "../controllers/user/settingsController";
 import { editPermission } from "../controllers/user/permissionController";
 
@@ -18,5 +24,7 @@ router.put("/settings/theme", setSettingsTheme);
 router.put("/settings/language", setSettingsLanguage);
 
 router.put("/permission", decodeFormData, editPermission);
+
+router.put("/", decodeFormData, editUser);
 
 export { router as userRoutes };
