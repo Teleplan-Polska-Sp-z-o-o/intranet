@@ -5,7 +5,9 @@ interface IProcessChangeNoticeFields {
   isNewDocumentationRequired: boolean;
   listOfDocumentationToCreate: string;
   isCustomerApprovalRequired: boolean;
-  departmentsRequiredForApproval: string;
+  // departmentsRequiredForApproval: string;
+  engineeringDepartmentName: string;
+  qualityDepartmentName: string;
 }
 
 export type { IProcessChangeNoticeFields };

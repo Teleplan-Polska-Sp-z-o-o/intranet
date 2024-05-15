@@ -213,6 +213,10 @@ const plT = {
                 title: "Ostrzeżenie",
                 text: "Prosimy zauważyć, że kontynuowanie bez faktycznej edycji jakichkolwiek pól w zamkniętym zgłoszeniu nadal spowoduje jego ponowne otwarcie.",
               },
+              removalOfNotice: {
+                title: "Ostrzeżenie",
+                text: "Proszę pamiętać, że kontynuacja spowoduje usunięcie powiązanego powiadomienia o zmianie.",
+              },
             },
           },
         },

@@ -14,8 +14,8 @@ const emit = defineEmits(["responseStatus"]);
 
 const props = defineProps<{
   tab: string;
-  no: string | undefined;
 }>();
+// no: string | undefined;
 
 const { t } = useI18n();
 const tab = ref<string>(props.tab);
@@ -73,11 +73,11 @@ const manager = new ProcessChangeRequestManager();
 
 const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 
-const loadItems = ref<true | false>(false);
+const loadItems = ref<true | undefined>(undefined);
 const handleLoadItems = () => {
   loadItems.value = true;
   setTimeout(() => {
-    loadItems.value = false;
+    loadItems.value = undefined;
   }, 0);
 };
 </script>

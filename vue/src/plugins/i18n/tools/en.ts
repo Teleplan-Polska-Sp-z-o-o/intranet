@@ -212,9 +212,14 @@ const enT = {
                 title: "Warning",
                 text: "Please note that proceeding without actually editing any fields in the closed request will still result in its reopening.",
               },
+              removalOfNotice: {
+                title: "Warning",
+                text: "Please be aware that proceeding will result in the deletion of its related notice.",
+              },
             },
           },
         },
+
         pcn: {
           name: "Process Change Notice",
           table: {
@@ -232,6 +237,49 @@ const enT = {
               closureDate: "Closure Date",
               viewPcn: "View PCN",
               actions: "Actions",
+            },
+          },
+          stepper: {
+            actions: {
+              prev: "Previous",
+              next: "Next",
+            },
+            changeDescription: "Change Description",
+            vStepperItem: {
+              "1": "Change Description",
+              "2": "Documentation",
+              "3": "Approvals",
+              "4": "Verify",
+            },
+            vStepperWindowItem: {
+              "2": {
+                areDocumentationChangesRequired: "Are Documentation Changes Required",
+                listOfDocumentationToChange: "List Of Documentation To Change",
+                isNewDocumentationRequired: "Is New Documentation Required",
+                listOfDocumentationToCreate: "List Of Documentation To Create",
+              },
+              "3": {
+                isCustomerApprovalRequired: "Is Customer Approval Required",
+                engineeringDepartmentName: "Engineering Department Name",
+                qualityDepartmentName: "Quality Department Name",
+              },
+            },
+            alerts: {
+              departmentsRequiredForApproval: {
+                title: "Streamlined PCN Approval Process",
+                initial: {
+                  title: "Initialization",
+                  text: "The PCN form requires specifying the relevant Engineering and Quality departments to identify their decision-makers. Once all fields within the PCN are completed, the system automatically initiates the approval process.",
+                },
+                "required-review": {
+                  title: "Engineering and Quality Review",
+                  text: "If one Engineering decision-maker approves, the PCN automatically closes and moves to the Quality department for review.",
+                },
+                "optional-review": {
+                  title: "Dedicated Department Review (Optional)",
+                  text: "If the PCR dedicated department pertains to a specific area outside Engineering and Quality, the system also routes the request for approval to the designated decision-maker(s) within that department.",
+                },
+              },
             },
           },
         },

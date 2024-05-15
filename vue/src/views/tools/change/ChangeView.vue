@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { DefineComponent, computed, ref } from "vue";
+// DefineComponent, computed,
+import { ref } from "vue";
 import alertResponseStatus from "../../../components/common/alertResponseStatus.vue";
 import PCRTable from "../../../components/views/tools/change/pcr/PCRTable.vue";
 import PCNTable from "../../../components/views/tools/change/pcn/PCNTable.vue";
@@ -33,7 +34,7 @@ const router = useRouter();
 const route = useRoute();
 
 const currentTab = ref<number>(1);
-const no = ref<string | undefined>((route.params.no as string) || undefined);
+// const no = ref<string | undefined>((route.params.no as string) || undefined);
 
 switch (route.params.tab) {
   case "pcr":
@@ -51,15 +52,13 @@ switch (route.params.tab) {
     break;
 }
 
-const currentTabName = computed<string>(() => {
-  return tabs.find((tab) => tab.id === currentTab.value)?.name || "";
-});
-
-const tabTable = computed<
-  DefineComponent<{ tab: string; no: string | undefined }, any, any> | undefined
->(() => {
-  return tabs.find((tab) => tab.id === currentTab.value)?.component;
-});
+// const currentTabName = computed<string>(() => {
+//   return tabs.find((tab) => tab.id === currentTab.value)?.name || "";
+// });
+//no: string | undefined in defineComp
+// const tabTable = computed<DefineComponent<{ tab: string }, any, any> | undefined>(() => {
+//   return tabs.find((tab) => tab.id === currentTab.value)?.component;
+// });
 
 const responseStatus = ref<ResponseStatus | null>(null);
 const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value = status);
@@ -106,31 +105,43 @@ const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value =
             <v-col class="h-100">
               <v-window v-model="currentTab" class="w-100" :touch="false">
                 <v-window-item :value="1">
-                  <router-view
+                  <!-- <router-view
                     class="bg-surface-2 pa-4 ma-1"
                     :is="tabTable"
                     @responseStatus="handleResponseStatus"
                     :tab="currentTabName"
                     :no="no"
-                  ></router-view>
+                  ></router-view> -->
+                  <p-c-r-table
+                    class="bg-surface-2 pa-4 ma-1"
+                    @responseStatus="handleResponseStatus"
+                    tab="pcr"
+                  ></p-c-r-table>
+                  <!-- :no="no" -->
                 </v-window-item>
                 <v-window-item :value="2">
-                  <router-view
+                  <!-- <router-view
                     class="bg-surface-2 pa-4 ma-1"
                     :is="tabTable"
                     @responseStatus="handleResponseStatus"
                     :tab="currentTabName"
                     :no="no"
-                  ></router-view
-                ></v-window-item>
-                <v-window-item :value="3"
-                  ><router-view
+                  ></router-view> -->
+                  <p-c-n-table
+                    class="bg-surface-2 pa-4 ma-1"
+                    @responseStatus="handleResponseStatus"
+                    tab="pcn"
+                  ></p-c-n-table>
+                  <!-- :no="no" -->
+                </v-window-item>
+                <v-window-item :value="3">
+                  <!-- <router-view
                     class="bg-surface-2 pa-4 ma-1"
                     :is="tabTable"
                     @responseStatus="handleResponseStatus"
                     :tab="currentTabName"
                     :no="no"
-                  ></router-view>
+                  ></router-view> -->
                 </v-window-item>
               </v-window>
             </v-col>

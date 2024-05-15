@@ -1,11 +1,12 @@
 interface IProcessChangeNoticeFields {
-  changeDescription: string;
-  areDocumentationChangesRequired: boolean;
-  listOfDocumentationToChange: string;
-  isNewDocumentationRequired: boolean;
-  listOfDocumentationToCreate: string;
-  isCustomerApprovalRequired: boolean;
-  departmentsRequiredForApproval: string;
+  changeDescription: string | null;
+  areDocumentationChangesRequired: boolean | null;
+  listOfDocumentationToChange: string | null;
+  isNewDocumentationRequired: boolean | null;
+  listOfDocumentationToCreate: string | null;
+  isCustomerApprovalRequired: boolean | null;
+  engineeringDepartmentName: string | null;
+  qualityDepartmentName: string | null;
 }
 
 export type { IProcessChangeNoticeFields };

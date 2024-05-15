@@ -41,6 +41,7 @@ const nextable = computed(() => activeStep.value < 5);
 
 const requestId = props.componentProps.editedItem.id;
 const requestUpdatable = props.componentProps.editedItem.updatable;
+const requestNotice = props.componentProps.editedItem.processChangeNotice;
 
 const editorStore = useEditorStore();
 
@@ -60,7 +61,7 @@ editorStore.save(
     : `<p><span style="color:hsl(0, 0%, 60%);">${t(
         "tools.change.tabs.pcr.stepper.changeDescription"
       )}</span></p>`,
-  "change-description"
+  "request-change-description"
 );
 
 const request = ref<IProcessChangeRequestBase>({
@@ -74,7 +75,7 @@ const request = ref<IProcessChangeRequestBase>({
   program: props.componentProps.editedItem.program,
   modelOrProcessImpacted: props.componentProps.editedItem.modelOrProcessImpacted,
   changeReason: editorStore.get("change-reason"),
-  changeDescription: editorStore.get("change-description"),
+  changeDescription: editorStore.get("request-change-description"),
   impacts: props.componentProps.editedItem.impacts,
   dedicatedDepartment: props.componentProps.editedItem.dedicatedDepartment,
   riskAnalysis: props.componentProps.editedItem.riskAnalysis,
@@ -168,7 +169,7 @@ const newRequestData = computed<
   return {
     ...object,
     changeReason: editorStore.get("change-reason"),
-    changeDescription: editorStore.get("change-description"),
+    changeDescription: editorStore.get("request-change-description"),
     requestedBy: user,
     requestId,
   };
@@ -225,7 +226,7 @@ watch(activeStep, (newActiveStep) => {
     request.value = {
       ...request.value,
       changeReason: editorStore.get("change-reason"),
-      changeDescription: editorStore.get("change-description"),
+      changeDescription: editorStore.get("request-change-description"),
     };
 
     if (requestUpdatable === true && request.value.updateDescription) {
@@ -449,6 +450,17 @@ const updatedFields = computed(() => {
             variant="underlined"
             :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].riskAnalysis`)"
           ></v-textarea>
+          <v-alert
+            v-if="requestUpdatable && requestNotice"
+            color="error"
+            icon="$warning"
+            border="start"
+            :title="$t(`tools.change.tabs.pcr.stepper.alerts.removalOfNotice.title`)"
+            variant="tonal"
+            class="mb-2"
+          >
+            {{ $t(`tools.change.tabs.pcr.stepper.alerts.removalOfNotice.text`) }}
+          </v-alert>
           <template v-if="requestUpdatable && updatedFields.length > 0">
             <v-alert
               type="warning"

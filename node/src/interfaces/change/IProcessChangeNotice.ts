@@ -5,7 +5,19 @@ interface IProcessChangeNotice {
   year: number; // auto
   status: string;
   closureDate: string;
-  departmentApprovals: string | null;
+
+  engineeringDepartmentName: string | null; // added
+  engineeringDepartmentApproval: boolean | null; // added
+  engineeringDepartmentApprovalDate: string | null; // added
+  qualityDepartmentName: string | null;
+  qualityDepartmentApproval: boolean | null; // added
+  qualityDepartmentApprovalDate: string | null; // added
+  dedicatedDepartmentApproval: boolean | null; // added
+  dedicatedDepartmentApprovalDate: string | null; // added
+  personDesignatedForImplementation: string | null; // added
+
+  //X departmentApprovals: string | null;
+
   // requestApproveNoticeDate: string; // pull
   // requestReconextOwner: string; // pull
   // requestModelOrProcessImpacted: string; // pull
@@ -22,7 +34,9 @@ interface IProcessChangeNotice {
   // requestCustomerContactEmail: string; // pull
   isCustomerApprovalRequired: boolean | null; // new => add Customer Approve section in ViewPCN
   // fourth window item (Approval)
-  departmentsRequiredForApproval: string | null; // new
+
+  //X departmentsRequiredForApproval: string | null;
+
   // fifth window item (Verify)
 }
 

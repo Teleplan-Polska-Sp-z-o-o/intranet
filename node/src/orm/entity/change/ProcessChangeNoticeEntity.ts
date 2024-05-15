@@ -25,7 +25,34 @@ class ProcessChangeNotice implements IProcessChangeNotice {
   closureDate: string | null;
 
   @Column()
-  departmentApprovals: string | null;
+  engineeringDepartmentName: string | null;
+
+  @Column()
+  engineeringDepartmentApproval: boolean | null; // added
+
+  @Column()
+  engineeringDepartmentApprovalDate: string | null; // added
+
+  @Column()
+  qualityDepartmentName: string | null;
+
+  @Column()
+  qualityDepartmentApproval: boolean | null; // added
+
+  @Column()
+  qualityDepartmentApprovalDate: string | null; // added
+
+  @Column()
+  dedicatedDepartmentApproval: boolean | null; // added
+
+  @Column()
+  dedicatedDepartmentApprovalDate: string | null; // added
+
+  @Column()
+  personDesignatedForImplementation: string | null; // added
+
+  // @Column()
+  // departmentApprovals: string | null;
 
   // @Column()
   // requestApproveNoticeDate: string;
@@ -63,8 +90,8 @@ class ProcessChangeNotice implements IProcessChangeNotice {
   @Column()
   isCustomerApprovalRequired: boolean | null;
 
-  @Column()
-  departmentsRequiredForApproval: string | null;
+  // @Column()
+  // departmentsRequiredForApproval: string | null;
 
   constructor() {}
 
@@ -74,7 +101,18 @@ class ProcessChangeNotice implements IProcessChangeNotice {
     this.year = new Date().getFullYear();
     this.status = "Open";
     this.closureDate = null;
-    this.departmentApprovals = null;
+
+    this.engineeringDepartmentName = null;
+    this.engineeringDepartmentApproval = null;
+    this.engineeringDepartmentApprovalDate = null;
+    this.qualityDepartmentName = null;
+    this.qualityDepartmentApproval = null;
+    this.qualityDepartmentApprovalDate = null;
+    this.dedicatedDepartmentApproval = null;
+    this.dedicatedDepartmentApprovalDate = null;
+    this.personDesignatedForImplementation = null;
+
+    // this.departmentApprovals = null;
     // this.requestApproveNoticeDate = request.closureDate;
     // this.requestReconextOwner = request.reconextOwner;
     // this.requestModelOrProcessImpacted = request.modelOrProcessImpacted;
@@ -91,7 +129,7 @@ class ProcessChangeNotice implements IProcessChangeNotice {
     // this.requestCustomerContactEmail = request.customerContactEmail;
     this.isCustomerApprovalRequired = null;
 
-    this.departmentsRequiredForApproval = null;
+    // this.departmentsRequiredForApproval = null;
 
     return this;
   };
@@ -118,16 +156,18 @@ class ProcessChangeNotice implements IProcessChangeNotice {
       this.isNewDocumentationRequired = fields.isNewDocumentationRequired ?? null;
       this.listOfDocumentationToCreate = fields.listOfDocumentationToCreate ?? null;
       this.isCustomerApprovalRequired = fields.isCustomerApprovalRequired ?? null;
-      this.departmentsRequiredForApproval = fields.departmentsRequiredForApproval ?? null;
+      this.engineeringDepartmentName = fields.engineeringDepartmentName ?? null;
+      this.qualityDepartmentName = fields.qualityDepartmentName ?? null;
+      // this.departmentsRequiredForApproval = fields.departmentsRequiredForApproval ?? null;
 
-      if (this.departmentsRequiredForApproval) {
-        const departmentsArray: Array<number> = JSON.parse(this.departmentsRequiredForApproval);
-        const map: Map<number, null | "approve" | "rejection"> = new Map();
-        departmentsArray.forEach((number) => {
-          map.set(number, null);
-        });
-        this.departmentApprovals = JSON.stringify(map);
-      }
+      // if (this.departmentsRequiredForApproval) {
+      //   const departmentsArray: Array<number> = JSON.parse(this.departmentsRequiredForApproval);
+      //   const map: Map<number, null | "approve" | "rejection"> = new Map();
+      //   departmentsArray.forEach((number) => {
+      //     map.set(number, null);
+      //   });
+      //   this.departmentApprovals = JSON.stringify(map);
+      // }
 
       return this;
     } catch (error) {
@@ -137,6 +177,11 @@ class ProcessChangeNotice implements IProcessChangeNotice {
 
   public close = (): ProcessChangeNotice => {
     try {
+      if (this.status === "Closed")
+        throw new Error(
+          `Cannot close Notice that is already closed at ProcessChangeNotice at open.`
+        );
+
       this.status = "Closed";
       this.closureDate = Helper.formatDate(new Date(), "pcn close");
 
@@ -150,8 +195,17 @@ class ProcessChangeNotice implements IProcessChangeNotice {
 
   public open = (): ProcessChangeNotice => {
     try {
+      if (this.status === "Open")
+        throw new Error(`Cannot open Notice that is already open at ProcessChangeNotice at open.`);
       this.status = "Open";
-      this.departmentApprovals = null;
+
+      this.engineeringDepartmentApproval = null;
+      this.engineeringDepartmentApprovalDate = null;
+      this.qualityDepartmentApproval = null;
+      this.qualityDepartmentApprovalDate = null;
+      this.dedicatedDepartmentApproval = null;
+      this.dedicatedDepartmentApprovalDate = null;
+      // this.departmentApprovals = null;
 
       return this;
     } catch (error) {
@@ -160,12 +214,34 @@ class ProcessChangeNotice implements IProcessChangeNotice {
   };
 
   public assessByDepartment = (
-    department: number,
+    request: ProcessChangeRequest,
+    department: string,
     assessment: "approve" | "rejection"
   ): ProcessChangeNotice => {
     try {
-      const map: Map<number, null | "approve" | "rejection"> = JSON.parse(this.departmentApprovals);
-      this.departmentApprovals = JSON.stringify(map.set(department, assessment));
+      const decision = assessment === "approve" ? true : false;
+      const decisionDateString = Helper.formatDate(new Date(), "pcn assessment");
+
+      switch (department) {
+        case this.engineeringDepartmentName:
+          this.engineeringDepartmentApproval = decision;
+          this.engineeringDepartmentApprovalDate = decisionDateString;
+        case this.qualityDepartmentName:
+          this.qualityDepartmentApproval = decision;
+          this.qualityDepartmentApprovalDate = decisionDateString;
+        case request.dedicatedDepartment:
+          this.dedicatedDepartmentApproval = decision;
+          this.dedicatedDepartmentApprovalDate = decisionDateString;
+          break;
+
+        default:
+          throw new Error(
+            `'department' doesn't match any of available switch cases at ProcessChangeNotice at assessByDepartment.`
+          );
+      }
+
+      // const map: Map<number, null | "approve" | "rejection"> = JSON.parse(this.departmentApprovals);
+      // this.departmentApprovals = JSON.stringify(map.set(department, assessment));
 
       return this;
     } catch (error) {

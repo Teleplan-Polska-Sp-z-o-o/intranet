@@ -34,7 +34,7 @@ const props = defineProps<{
   copy?: true;
   flow?: string; // pdf name
 
-  loadItems?: boolean;
+  loadItems?: true;
 
   filters?: boolean;
 }>();
@@ -42,7 +42,20 @@ const props = defineProps<{
 const emit = defineEmits(["save-data", "emit-table-change", "responseStatus"]);
 
 const headers = ref<any>(props.headers);
+
 const items = ref<Array<any>>([]);
+const manager = ref<any>(props.manager);
+const chips = ref<any>(props.chips);
+
+const load = async (log?: boolean) => {
+  items.value = await manager.value.get(chips.value);
+  if (log) console.log(items.value);
+};
+
+// onMounted(() => load(true));
+if (items.value.length === 0) {
+  load(true);
+}
 
 const filtersCallback = ref<{ callback: Function } | null>(null);
 
@@ -65,14 +78,15 @@ const filtered = computed(() => {
       }
       return false;
     });
-  } else return itemsFiltered;
+  } else {
+    return itemsFiltered;
+  }
 });
 const dialog = ref<boolean>(false);
 const dialogLoading = ref<boolean>(false);
 const dialogDelete = ref<boolean>(false);
 const dialogDeleteLoading = ref<boolean>(false);
 
-const manager = ref<any>(props.manager);
 const item = ref<any>({ ...manager.value.new() });
 const editedItem = ref<any>({ ...item.value });
 const ComponentProps = computed(() => {
@@ -83,22 +97,13 @@ const ComponentProps = computed(() => {
 });
 const editedIndex = ref<number>(-1);
 
-const chips = ref<any>(props.chips);
+const loadItems = computed(() => !!props.loadItems);
 
-const load = async () => {
-  items.value = await manager.value.get(chips.value);
-  console.log(items.value);
-};
-
-load();
-
-watch(
-  () => props.loadItems,
-  (newLoad) => {
-    console.log("loadItems watch");
-    if (newLoad === true) load();
+watch(loadItems, (newLoad) => {
+  if (newLoad === true) {
+    load(true);
   }
-);
+});
 
 const reqData = ref<any>(props.reqData);
 
@@ -139,7 +144,7 @@ watch(
   async ([newManager, newChips]) => {
     manager.value = newManager;
     chips.value = newChips;
-    items.value = await manager.value.get(chips.value);
+    load();
   },
   { deep: true }
 );
@@ -179,7 +184,7 @@ const deleteItemConfirm = async () => {
     dialogDeleteLoading.value = true;
     responseStatus.value = await manager.value.delete(editedItem.value.id, true);
     if (props.emitTableChange) emit("emit-table-change");
-    items.value = await manager.value.get(chips.value);
+    load();
   } catch (error: any) {
     console.log(error);
     responseStatus.value = new ResponseStatus({
@@ -206,7 +211,7 @@ const save = async () => {
       message: error.response.data.statusMessage,
     });
   } finally {
-    items.value = await manager.value.get(chips.value);
+    load();
     if (props.emitTableChange) emit("emit-table-change");
     close();
   }

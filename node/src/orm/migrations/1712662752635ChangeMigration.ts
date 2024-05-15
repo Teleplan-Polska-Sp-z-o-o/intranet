@@ -188,11 +188,7 @@ export class Change1712662752635 implements MigrationInterface {
             type: "varchar",
             isNullable: true,
           },
-          {
-            name: "departmentApprovals",
-            type: "varchar",
-            isNullable: true,
-          },
+
           {
             name: "changeDescription",
             type: "varchar",
@@ -201,6 +197,51 @@ export class Change1712662752635 implements MigrationInterface {
           {
             name: "areDocumentationChangesRequired",
             type: "boolean",
+            isNullable: true,
+          },
+          {
+            name: "engineeringDepartmentName",
+            type: "varchar",
+            isNullable: true,
+          },
+          {
+            name: "engineeringDepartmentApproval",
+            type: "boolean",
+            isNullable: true,
+          },
+          {
+            name: "engineeringDepartmentApprovalDate",
+            type: "varchar",
+            isNullable: true,
+          },
+          {
+            name: "qualityDepartmentName",
+            type: "varchar",
+            isNullable: true,
+          },
+          {
+            name: "qualityDepartmentApproval",
+            type: "boolean",
+            isNullable: true,
+          },
+          {
+            name: "qualityDepartmentApprovalDate",
+            type: "varchar",
+            isNullable: true,
+          },
+          {
+            name: "dedicatedDepartmentApproval",
+            type: "boolean",
+            isNullable: true,
+          },
+          {
+            name: "dedicatedDepartmentApprovalDate",
+            type: "varchar",
+            isNullable: true,
+          },
+          {
+            name: "personDesignatedForImplementation",
+            type: "varchar",
             isNullable: true,
           },
           {
@@ -223,11 +264,6 @@ export class Change1712662752635 implements MigrationInterface {
             type: "boolean",
             isNullable: true,
           },
-          {
-            name: "departmentsRequiredForApproval",
-            type: "varchar",
-            isNullable: true,
-          },
         ],
       })
     );
@@ -237,6 +273,7 @@ export class Change1712662752635 implements MigrationInterface {
         columnNames: ["processChangeNoticeId"],
         referencedColumnNames: ["id"],
         referencedTableName: "process_change_notice",
+        onDelete: "CASCADE",
       })
     );
     await queryRunner.createForeignKey(

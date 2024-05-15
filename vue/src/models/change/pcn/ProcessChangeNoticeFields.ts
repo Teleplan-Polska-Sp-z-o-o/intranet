@@ -1,22 +1,26 @@
 import { IProcessChangeNoticeFields } from "../../../interfaces/change/IProcessChangeNoticeFields";
 
 class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
-  changeDescription: string;
-  areDocumentationChangesRequired: boolean;
-  listOfDocumentationToChange: string;
-  isNewDocumentationRequired: boolean;
-  listOfDocumentationToCreate: string;
-  isCustomerApprovalRequired: boolean;
-  departmentsRequiredForApproval: string;
+  changeDescription: string | null;
+  areDocumentationChangesRequired: boolean | null;
+  listOfDocumentationToChange: string | null;
+  isNewDocumentationRequired: boolean | null;
+  listOfDocumentationToCreate: string | null;
+  isCustomerApprovalRequired: boolean | null;
+  departmentsRequiredForApproval: string | null;
+  engineeringDepartmentName: string | null;
+  qualityDepartmentName: string | null;
 
   constructor() {
-    this.changeDescription = "";
-    this.areDocumentationChangesRequired = false;
-    this.listOfDocumentationToChange = "";
-    this.isNewDocumentationRequired = false;
-    this.listOfDocumentationToCreate = "";
-    this.isCustomerApprovalRequired = false;
-    this.departmentsRequiredForApproval = "";
+    this.changeDescription = null;
+    this.areDocumentationChangesRequired = null;
+    this.listOfDocumentationToChange = null;
+    this.isNewDocumentationRequired = null;
+    this.listOfDocumentationToCreate = null;
+    this.isCustomerApprovalRequired = null;
+    this.departmentsRequiredForApproval = null;
+    this.engineeringDepartmentName = null;
+    this.qualityDepartmentName = null;
   }
 }
 

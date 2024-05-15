@@ -40,12 +40,12 @@ const addRequest = async (req: Request, res: Response) => {
         request.notification(transactionalEntityManager, "assigned");
         emailHandler.newEmail(new PCREmailOptions("assigned", request)).send();
       }
-    });
 
-    res.status(201).json({
-      added: request,
-      message: "Request added successfully",
-      statusMessage: HttpResponseMessage.POST_SUCCESS,
+      res.status(201).json({
+        added: request,
+        message: "Request added successfully",
+        statusMessage: HttpResponseMessage.POST_SUCCESS,
+      });
     });
   } catch (error) {
     console.error("Error adding request: ", error);
@@ -70,17 +70,39 @@ const editRequest = async (req: Request, res: Response) => {
     await dataSource.transaction(async (transactionalEntityManager) => {
       request = await transactionalEntityManager
         .getRepository(ProcessChangeRequest)
-        .findOne({ where: { id } });
+        .findOne({ where: { id }, relations: ["processChangeNotice"] });
 
       if (!request) {
         return res.status(404).json({
-          message: "Request not found",
+          message: "Request not found at request controller",
           statusMessage: HttpResponseMessage.PUT_ERROR,
         });
       }
 
-      const statusClosed = request.status === "Closed";
-      if (statusClosed) {
+      if (request.status === "Closed") {
+        const noticeId = request.processChangeNotice?.id;
+
+        if (noticeId) {
+          const notice = await transactionalEntityManager
+            .getRepository(ProcessChangeNotice)
+            .findOne({ where: { id: noticeId } });
+
+          if (!notice) {
+            return res.status(404).json({
+              message: "Notice not found at request controller",
+              statusMessage: HttpResponseMessage.PUT_ERROR,
+            });
+          }
+
+          request.processChangeNotice = null;
+
+          request = await transactionalEntityManager
+            .getRepository(ProcessChangeRequest)
+            .save(request);
+
+          await transactionalEntityManager.getRepository(ProcessChangeNotice).remove(notice);
+        }
+
         request.openRequest();
       }
 
@@ -170,12 +192,12 @@ const editRequest = async (req: Request, res: Response) => {
 
           break;
       }
-    });
 
-    res.status(200).json({
-      edited: request,
-      message: "Request updated successfully",
-      statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      res.status(200).json({
+        edited: request,
+        message: "Request updated successfully",
+        statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      });
     });
   } catch (error) {
     console.error("Error updating request: ", error);
@@ -237,12 +259,12 @@ const closeRequest = async (req: Request, res: Response) => {
           emailHandler.newEmail(new PCREmailOptions("closed", request)).send();
         }
       }
-    });
 
-    res.status(200).json({
-      closed: request,
-      message: "Request closed successfully",
-      statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      res.status(200).json({
+        closed: request,
+        message: "Request closed successfully",
+        statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      });
     });
   } catch (error) {
     console.error("Error closing request: ", error);
@@ -257,21 +279,31 @@ const removeRequest = async (req: Request, res: Response) => {
   try {
     const { id }: { id: number } = req.params;
 
-    const request = await dataSource.getRepository(ProcessChangeRequest).findOne({ where: { id } });
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const request = await transactionalEntityManager
+        .getRepository(ProcessChangeRequest)
+        .findOne({ where: { id }, relations: ["processChangeNotice"] });
 
-    if (!request) {
-      return res.status(404).json({
-        message: "Request not found",
-        statusMessage: HttpResponseMessage.DELETE_ERROR,
+      if (!request) {
+        return res.status(404).json({
+          message: "Request not found",
+          statusMessage: HttpResponseMessage.DELETE_ERROR,
+        });
+      }
+
+      const notice = request.processChangeNotice;
+      request.processChangeNotice = null;
+      await transactionalEntityManager.getRepository(ProcessChangeRequest).save(request);
+      await transactionalEntityManager.getRepository(ProcessChangeNotice).remove(notice);
+      const delRequest = await transactionalEntityManager
+        .getRepository(ProcessChangeRequest)
+        .remove(request);
+
+      res.status(200).json({
+        deleted: delRequest,
+        message: "Request removed successfully",
+        statusMessage: HttpResponseMessage.DELETE_SUCCESS,
       });
-    }
-
-    await dataSource.getRepository(ProcessChangeRequest).remove(request);
-
-    res.status(200).json({
-      deleted: request,
-      message: "Request removed successfully",
-      statusMessage: HttpResponseMessage.DELETE_SUCCESS,
     });
   } catch (error) {
     console.error("Error removing request: ", error);
@@ -284,9 +316,9 @@ const removeRequest = async (req: Request, res: Response) => {
 
 const getRequests = async (_req: Request, res: Response) => {
   try {
-    const requests = await dataSource.getRepository(ProcessChangeRequest).find({
-      relations: ["processChangeNotice"],
-    });
+    const requests = await dataSource
+      .getRepository(ProcessChangeRequest)
+      .find({ relations: ["processChangeNotice"] });
 
     res.status(200).json({
       got: requests,

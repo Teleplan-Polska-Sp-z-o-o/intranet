@@ -7,6 +7,7 @@ import { IUser } from "../../interfaces/user/IUser";
 import { User } from "../../orm/entity/user/UserEntity";
 import { Department } from "../../orm/entity/document/DepartmentEntity";
 import { ProcessChangeRequest } from "../../orm/entity/change/ProcessChangeRequestEntity";
+import { IsNull, Not } from "typeorm";
 
 const editNotice = async (req: Request, res: Response) => {
   try {
@@ -39,12 +40,12 @@ const editNotice = async (req: Request, res: Response) => {
       notice = await transactionalEntityManager
         .getRepository(ProcessChangeNotice)
         .save(notice.setNoticeFields(fields));
-    });
 
-    res.status(200).json({
-      edited: notice,
-      message: "Notice updated successfully",
-      statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      res.status(200).json({
+        edited: notice,
+        message: "Notice updated successfully",
+        statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      });
     });
   } catch (error) {
     console.error("Error updating notice: ", error);
@@ -80,12 +81,12 @@ const closeNotice = async (req: Request, res: Response) => {
           .getRepository(ProcessChangeNotice)
           .save(notice.close());
       }
-    });
 
-    res.status(200).json({
-      closed: notice,
-      message: "Notice closed successfully",
-      statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      res.status(200).json({
+        closed: notice,
+        message: "Notice closed successfully",
+        statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      });
     });
   } catch (error) {
     console.error("Error closing notice: ", error);
@@ -139,12 +140,12 @@ const assessNotice = async (req: Request, res: Response) => {
           .getRepository(ProcessChangeNotice)
           .save(notice.assessByDepartment(department.id, assessment));
       }
-    });
 
-    res.status(200).json({
-      assessed: notice,
-      message: "Notices retrieved successfully",
-      statusMessage: HttpResponseMessage.GET_SUCCESS,
+      res.status(200).json({
+        assessed: notice,
+        message: "Notices retrieved successfully",
+        statusMessage: HttpResponseMessage.GET_SUCCESS,
+      });
     });
   } catch (error) {
     console.error("Error assessing notice: ", error);
@@ -156,26 +157,13 @@ const assessNotice = async (req: Request, res: Response) => {
 };
 
 const getNotices = async (_req: Request, res: Response) => {
-  // try {
-  //   const notices = await dataSource.getRepository(ProcessChangeNotice).find();
-
-  //   res.status(200).json({
-  //     got: notices,
-  //     message: "Notices retrieved successfully",
-  //     statusMessage: HttpResponseMessage.GET_SUCCESS,
-  //   });
-  // } catch (error) {
-  //   console.error("Error retrieving notices: ", error);
-  //   res.status(500).json({
-  //     message: "Unknown error occurred. Failed to retrieve notices.",
-  //     statusMessage: HttpResponseMessage.UNKNOWN,
-  //   });
-  // }
-
   try {
-    const requests = await dataSource.getRepository(ProcessChangeRequest).find({
+    const objectConfig = {
+      where: { processChangeNotice: Not(IsNull()) },
       relations: ["processChangeNotice"],
-    });
+    };
+
+    const requests = await dataSource.getRepository(ProcessChangeRequest).find(objectConfig);
 
     res.status(200).json({
       got: requests,
