@@ -6,7 +6,6 @@ import DocumentView from "../../views/DocumentView.vue";
 import AdminView from "../../views/tools/AdminView.vue";
 
 import ChangeView from "../../views/tools/change/ChangeView.vue";
-import ChangeTableView from "../../views/tools/change/ChangeTableView.vue";
 
 import { RouteLocationNormalized } from "vue-router";
 
@@ -128,7 +127,7 @@ export const toolRoutes = {
         {
           path: "browse/:tab/:no?",
           name: "browseChanges",
-          component: ChangeTableView,
+          component: ChangeView,
           meta: {
             read: true,
             write: true,
@@ -141,7 +140,7 @@ export const toolRoutes = {
         {
           path: "x",
           name: "x",
-          component: ChangeTableView,
+          component: ChangeView,
           meta: {
             read: true,
             write: true,

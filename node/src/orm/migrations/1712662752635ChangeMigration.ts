@@ -210,6 +210,11 @@ export class Change1712662752635 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: "engineeringDepartmentApproverUsername",
+            type: "varchar",
+            isNullable: true,
+          },
+          {
             name: "engineeringDepartmentApprovalDate",
             type: "varchar",
             isNullable: true,
@@ -225,6 +230,11 @@ export class Change1712662752635 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: "qualityDepartmentApproverUsername",
+            type: "varchar",
+            isNullable: true,
+          },
+          {
             name: "qualityDepartmentApprovalDate",
             type: "varchar",
             isNullable: true,
@@ -232,6 +242,11 @@ export class Change1712662752635 implements MigrationInterface {
           {
             name: "dedicatedDepartmentApproval",
             type: "boolean",
+            isNullable: true,
+          },
+          {
+            name: "dedicatedDepartmentApproverUsername",
+            type: "varchar",
             isNullable: true,
           },
           {

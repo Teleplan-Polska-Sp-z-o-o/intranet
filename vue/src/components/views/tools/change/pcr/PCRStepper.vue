@@ -48,21 +48,18 @@ const editorStore = useEditorStore();
 const changeReason = props.componentProps.editedItem.changeReason;
 const changeDescription = props.componentProps.editedItem.changeDescription;
 editorStore.save(
-  changeReason
-    ? changeReason
-    : `<p><span style="color:hsl(0, 0%, 60%);">${t(
-        "tools.change.tabs.pcr.stepper.changeReason"
-      )}</span></p>`,
+  changeReason ? changeReason : `<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>`,
   "change-reason"
 );
 editorStore.save(
   changeDescription
     ? changeDescription
-    : `<p><span style="color:hsl(0, 0%, 60%);">${t(
-        "tools.change.tabs.pcr.stepper.changeDescription"
-      )}</span></p>`,
+    : `<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>`,
   "request-change-description"
 );
+
+const baseChangeReason: string = editorStore.getDefault("change-reason");
+const baseChangeDescription: string = editorStore.getDefault("change-description");
 
 const request = ref<IProcessChangeRequestBase>({
   internalOrExternal: props.componentProps.editedItem.internalOrExternal,
@@ -197,8 +194,8 @@ const completed = computed<Completed>(() => {
   const step4 =
     !!req.modelOrProcessImpacted &&
     !!req.costOfImplementation &&
-    !!req.changeReason &&
-    !!req.changeDescription &&
+    req.changeReason !== baseChangeReason &&
+    req.changeDescription !== baseChangeDescription &&
     !!req.impacts;
 
   return {
@@ -439,7 +436,7 @@ const updatedFields = computed(() => {
             "
           ></v-textarea>
           <ck-editor editorKey="change-reason"></ck-editor>
-          <ck-editor editorKey="change-description"></ck-editor>
+          <ck-editor editorKey="request-change-description"></ck-editor>
           <v-textarea
             v-model="request.impacts"
             variant="underlined"

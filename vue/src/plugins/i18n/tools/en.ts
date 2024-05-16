@@ -244,6 +244,7 @@ const enT = {
               prev: "Previous",
               next: "Next",
             },
+            qualityDepartmentRule: "Quality and Engineering departments must differ.",
             changeDescription: "Change Description",
             vStepperItem: {
               "1": "Change Description",
@@ -266,14 +267,14 @@ const enT = {
             },
             alerts: {
               departmentsRequiredForApproval: {
-                title: "Streamlined PCN Approval Process",
+                title: "PCN Approval Process",
                 initial: {
                   title: "Initialization",
-                  text: "The PCN form requires specifying the relevant Engineering and Quality departments to identify their decision-makers. Once all fields within the PCN are completed, the system automatically initiates the approval process.",
+                  text: "The PCN form requires specifying the relevant Engineering and Quality departments for Intranet to identify their decision-makers. Once all fields within the PCN are completed, the system automatically informs recipients about the upcoming action they may take to begin approval process.",
                 },
                 "required-review": {
                   title: "Engineering and Quality Review",
-                  text: "If one Engineering decision-maker approves, the PCN automatically closes and moves to the Quality department for review.",
+                  text: "The PCN will first be routed to the Engineering department for review. Once approval is received from any of the Engineering decision-makers, the PCN will automatically close and proceed to the Quality department for further review.",
                 },
                 "optional-review": {
                   title: "Dedicated Department Review (Optional)",

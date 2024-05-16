@@ -9,7 +9,12 @@ import {
 
 import { getRequestUpdates } from "../controllers/change/requestUpdatesController";
 
-import { editNotice, closeNotice, getNotices } from "../controllers/change/noticeController";
+import {
+  editNotice,
+  closeNotice,
+  getNotice,
+  getNotices,
+} from "../controllers/change/noticeController";
 
 import express from "express";
 import multer from "multer";
@@ -30,6 +35,7 @@ router.get("/request/updates/:id", getRequestUpdates);
 router.put("/notice", decodeFormData, editNotice);
 router.put("/notice/close/:id", closeNotice);
 router.put("/notice/:assessment", decodeFormData, closeNotice);
+router.get("/notice/:id", getNotice);
 router.get("/notice", getNotices);
 
 export { router as changeRoutes };

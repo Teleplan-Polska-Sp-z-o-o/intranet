@@ -71,19 +71,12 @@ class ProcessChangeNoticeManager {
     return response.data.got;
   };
 
-  //   public getRequest = async (id: number): Promise<IProcessChangeRequest> => {
-  //     const response = await axios.get(
-  //       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${id}`
-  //     );
-  //     return response.data.got;
-  //   };
-
-  //   public getRequestUpdates = async (id: number): Promise<Array<IProcessChangeRequestUpdates>> => {
-  //     const response = await axios.get(
-  //       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/updates/${id}`
-  //     );
-  //     return response.data.got;
-  //   };
+  public getNotice = async (id: number): Promise<IProcessChangeRequest> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/${id}`
+    );
+    return response.data.got;
+  };
 }
 
 export { ProcessChangeNoticeManager };

@@ -15,7 +15,7 @@ const router = express.Router();
 const decodeFormData = multer().none();
 
 // Define routes
-router.get("/one", getUser);
+router.get("/one/:username", getUser);
 router.get("/all/:equalOrAbovePermission?", getUsers);
 router.post("/auth", userAuth);
 router.delete("/:id", removeUser);

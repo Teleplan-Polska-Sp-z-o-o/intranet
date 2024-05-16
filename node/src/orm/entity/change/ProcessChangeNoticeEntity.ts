@@ -31,10 +31,13 @@ class ProcessChangeNotice implements IProcessChangeNotice {
   engineeringDepartmentApproval: boolean | null; // added
 
   @Column()
+  engineeringDepartmentApproverUsername: string | null;
+
+  @Column()
   engineeringDepartmentApprovalDate: string | null; // added
 
   @Column()
-  qualityDepartmentName: string | null;
+  qualityDepartmentName: string | null; // added
 
   @Column()
   qualityDepartmentApproval: boolean | null; // added
@@ -43,7 +46,13 @@ class ProcessChangeNotice implements IProcessChangeNotice {
   qualityDepartmentApprovalDate: string | null; // added
 
   @Column()
+  qualityDepartmentApproverUsername: string | null; // added
+
+  @Column()
   dedicatedDepartmentApproval: boolean | null; // added
+
+  @Column()
+  dedicatedDepartmentApproverUsername: string | null; // added
 
   @Column()
   dedicatedDepartmentApprovalDate: string | null; // added
@@ -104,11 +113,14 @@ class ProcessChangeNotice implements IProcessChangeNotice {
 
     this.engineeringDepartmentName = null;
     this.engineeringDepartmentApproval = null;
+    this.engineeringDepartmentApproverUsername = null;
     this.engineeringDepartmentApprovalDate = null;
     this.qualityDepartmentName = null;
     this.qualityDepartmentApproval = null;
+    this.qualityDepartmentApproverUsername = null;
     this.qualityDepartmentApprovalDate = null;
     this.dedicatedDepartmentApproval = null;
+    this.dedicatedDepartmentApproverUsername = null;
     this.dedicatedDepartmentApprovalDate = null;
     this.personDesignatedForImplementation = null;
 

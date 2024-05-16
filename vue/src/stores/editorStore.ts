@@ -21,10 +21,28 @@ export const useEditorStore = defineStore("editor", () => {
     }
   };
 
+  const getDefault = (key: string, withBase: boolean = true): string => {
+    const formString = (value: string) => {
+      if (withBase)
+        return `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content">${value}</div>`;
+      else return value;
+    };
+
+    switch (key) {
+      case "change-reason":
+        return formString('<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>');
+      case "change-description":
+        return formString('<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>');
+
+      default:
+        throw new Error(`Default key for ${key} not set.`);
+    }
+  };
+
   const getRef = (): string => {
     if (!eRef.value) return uuidv4();
     return eRef.value;
   };
 
-  return { save, get, getRef };
+  return { save, get, getDefault, getRef };
 });

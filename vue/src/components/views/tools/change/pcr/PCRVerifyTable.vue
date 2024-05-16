@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { watchEffect } from "vue";
 import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IProcessChangeRequestBase";
+import { useEditorStore } from "../../../../../stores/editorStore";
 
 const props = defineProps<{
   eRequest: IProcessChangeRequestBase;
@@ -39,9 +40,13 @@ const disallowedKeys = ["id", "year", "requestedBy", "updatable"];
 
 const testReasonAndDescription = (value: Date | string, key: string) => {
   if ((typeof value === "string" && key === "changeReason") || key === "changeDescription") {
-    const changeReasonDefault = '<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>';
-    const changeDescriptionDefault =
-      '<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>';
+    // const changeReasonDefault = '<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>';
+    // const changeDescriptionDefault =
+    //   '<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>';
+    const editorStore = useEditorStore();
+
+    const changeReasonDefault: string = editorStore.getDefault("change-reason");
+    const changeDescriptionDefault: string = editorStore.getDefault("change-description");
 
     if (value === changeReasonDefault || value === changeDescriptionDefault) return false;
   }

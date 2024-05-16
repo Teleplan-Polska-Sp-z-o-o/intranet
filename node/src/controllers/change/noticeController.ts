@@ -57,100 +57,110 @@ const editNotice = async (req: Request, res: Response) => {
 };
 
 const closeNotice = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-
-    let notice: ProcessChangeNotice;
-
-    await dataSource.transaction(async (transactionalEntityManager) => {
-      notice = await transactionalEntityManager
-        .getRepository(ProcessChangeNotice)
-        .findOne({ where: { id } });
-
-      if (!notice) {
-        return res.status(404).json({
-          message: "Notice not found",
-          statusMessage: HttpResponseMessage.PUT_ERROR,
-        });
-      }
-
-      if (notice.status !== "Closed") {
-        //   const emailHandler = EmailHandler.getInstance();
-
-        notice = await transactionalEntityManager
-          .getRepository(ProcessChangeNotice)
-          .save(notice.close());
-      }
-
-      res.status(200).json({
-        closed: notice,
-        message: "Notice closed successfully",
-        statusMessage: HttpResponseMessage.PUT_SUCCESS,
-      });
-    });
-  } catch (error) {
-    console.error("Error closing notice: ", error);
-    res.status(500).json({
-      message: "Unknown error occurred. Failed to close notice.",
-      statusMessage: HttpResponseMessage.UNKNOWN,
-    });
-  }
+  // try {
+  //   const { id } = req.params;
+  //   let notice: ProcessChangeNotice;
+  //   await dataSource.transaction(async (transactionalEntityManager) => {
+  //     notice = await transactionalEntityManager
+  //       .getRepository(ProcessChangeNotice)
+  //       .findOne({ where: { id } });
+  //     if (!notice) {
+  //       return res.status(404).json({
+  //         message: "Notice not found",
+  //         statusMessage: HttpResponseMessage.PUT_ERROR,
+  //       });
+  //     }
+  //     if (notice.status !== "Closed") {
+  //       //   const emailHandler = EmailHandler.getInstance();
+  //       notice = await transactionalEntityManager
+  //         .getRepository(ProcessChangeNotice)
+  //         .save(notice.close());
+  //     }
+  //     res.status(200).json({
+  //       closed: notice,
+  //       message: "Notice closed successfully",
+  //       statusMessage: HttpResponseMessage.PUT_SUCCESS,
+  //     });
+  //   });
+  // } catch (error) {
+  //   console.error("Error closing notice: ", error);
+  //   res.status(500).json({
+  //     message: "Unknown error occurred. Failed to close notice.",
+  //     statusMessage: HttpResponseMessage.UNKNOWN,
+  //   });
+  // }
 };
 
 const assessNotice = async (req: Request, res: Response) => {
+  // try {
+  //   const body = req.body;
+  //   const assesser: IUser = JSON.parse(body.assesser);
+  //   const id: number = JSON.parse(body.noticeId);
+  //   const { assessment }: { assessment: "approve" | "rejection" } = req.params;
+  //   let notice: ProcessChangeNotice;
+  //   await dataSource.transaction(async (transactionalEntityManager) => {
+  //     notice = await transactionalEntityManager
+  //       .getRepository(ProcessChangeNotice)
+  //       .findOne({ where: { id } });
+  //     if (!notice) {
+  //       return res.status(404).json({
+  //         message: "Notice not found",
+  //         statusMessage: HttpResponseMessage.PUT_ERROR,
+  //       });
+  //     }
+  //     const user = await transactionalEntityManager
+  //       .getRepository(User)
+  //       .findOne({ where: { id: assesser.id }, relations: ["info"] });
+  //     if (!user) {
+  //       return res.status(404).json({
+  //         message: "User not found",
+  //         statusMessage: HttpResponseMessage.PUT_ERROR,
+  //       });
+  //     }
+  //     const department = await transactionalEntityManager
+  //       .getRepository(Department)
+  //       .findOne({ where: { name: user.info.department } });
+  //     if (notice.status === "Closed" && user.info.decisionMaker) {
+  //       //   const emailHandler = EmailHandler.getInstance();
+  //       notice = await transactionalEntityManager
+  //         .getRepository(ProcessChangeNotice)
+  //         .save(notice.assessByDepartment(department.id, assessment));
+  //     }
+  //     res.status(200).json({
+  //       assessed: notice,
+  //       message: "Notices retrieved successfully",
+  //       statusMessage: HttpResponseMessage.GET_SUCCESS,
+  //     });
+  //   });
+  // } catch (error) {
+  //   console.error("Error assessing notice: ", error);
+  //   res.status(500).json({
+  //     message: "Unknown error occurred. Failed to assess notice.",
+  //     statusMessage: HttpResponseMessage.UNKNOWN,
+  //   });
+  // }
+};
+
+const getNotice = async (req: Request, res: Response) => {
   try {
-    const body = req.body;
-    const assesser: IUser = JSON.parse(body.assesser);
-    const id: number = JSON.parse(body.noticeId);
-    const { assessment }: { assessment: "approve" | "rejection" } = req.params;
+    const { id }: { id: number } = req.params;
 
-    let notice: ProcessChangeNotice;
+    const objectConfig = {
+      where: { id, processChangeNotice: Not(IsNull()) },
+      relations: ["processChangeNotice"],
+    };
 
-    await dataSource.transaction(async (transactionalEntityManager) => {
-      notice = await transactionalEntityManager
-        .getRepository(ProcessChangeNotice)
-        .findOne({ where: { id } });
+    const request = await dataSource.getRepository(ProcessChangeRequest).findOne(objectConfig);
 
-      if (!notice) {
-        return res.status(404).json({
-          message: "Notice not found",
-          statusMessage: HttpResponseMessage.PUT_ERROR,
-        });
-      }
-
-      const user = await transactionalEntityManager
-        .getRepository(User)
-        .findOne({ where: { id: assesser.id }, relations: ["info"] });
-
-      if (!user) {
-        return res.status(404).json({
-          message: "User not found",
-          statusMessage: HttpResponseMessage.PUT_ERROR,
-        });
-      }
-
-      const department = await transactionalEntityManager
-        .getRepository(Department)
-        .findOne({ where: { name: user.info.department } });
-
-      if (notice.status === "Closed" && user.info.decisionMaker) {
-        //   const emailHandler = EmailHandler.getInstance();
-
-        notice = await transactionalEntityManager
-          .getRepository(ProcessChangeNotice)
-          .save(notice.assessByDepartment(department.id, assessment));
-      }
-
-      res.status(200).json({
-        assessed: notice,
-        message: "Notices retrieved successfully",
-        statusMessage: HttpResponseMessage.GET_SUCCESS,
-      });
+    res.status(200).json({
+      got: request,
+      message: "Notice retrieved successfully",
+      statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
-    console.error("Error assessing notice: ", error);
+    console.error("Error retrieving notice: ", error);
     res.status(500).json({
-      message: "Unknown error occurred. Failed to assess notice.",
+      message: "Unknown error occurred. Failed to retrieve notice.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
   }
@@ -179,4 +189,4 @@ const getNotices = async (_req: Request, res: Response) => {
   }
 };
 
-export { editNotice, closeNotice, getNotices, assessNotice };
+export { editNotice, closeNotice, getNotice, getNotices, assessNotice };

@@ -20,6 +20,13 @@ class UserManager {
     return response.data.users;
   };
 
+  public getOne = async (username: string): Promise<IUserEntity> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/one/${username}`
+    );
+    return response.data.user;
+  };
+
   public put = async (
     reqData: FormData,
     status: boolean = false

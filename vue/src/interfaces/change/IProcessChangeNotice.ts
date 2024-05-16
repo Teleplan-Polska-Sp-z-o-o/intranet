@@ -8,11 +8,14 @@ interface IProcessChangeNotice {
 
   engineeringDepartmentName: string | null; // added
   engineeringDepartmentApproval: boolean | null; // added
+  engineeringDepartmentApproverUsername: string | null;
   engineeringDepartmentApprovalDate: string | null; // added
   qualityDepartmentName: string | null;
   qualityDepartmentApproval: boolean | null; // added
+  qualityDepartmentApproverUsername: string | null;
   qualityDepartmentApprovalDate: string | null; // added
   dedicatedDepartmentApproval: boolean | null; // added
+  dedicatedDepartmentApproverUsername: string | null;
   dedicatedDepartmentApprovalDate: string | null; // added
   personDesignatedForImplementation: string | null; // added
 

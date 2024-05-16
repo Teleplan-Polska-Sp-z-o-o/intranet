@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, watch, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { useI18n } from "vue-i18n";
@@ -9,6 +9,7 @@ import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IPro
 import { IUser } from "../../../../../interfaces/user/IUser";
 import PCRView from "./PCRView.vue";
 import PCRTableFilters from "./PCRTableFilters.vue";
+import { useRoute } from "vue-router";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -80,6 +81,14 @@ const handleLoadItems = () => {
     loadItems.value = undefined;
   }, 0);
 };
+
+const route = useRoute();
+watch(
+  () => route.params.tab,
+  (newRoute) => {
+    if (newRoute === "pcr") handleLoadItems();
+  }
+);
 </script>
 
 <template>

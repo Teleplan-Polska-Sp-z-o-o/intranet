@@ -43,11 +43,11 @@ const changeDescription = props.componentProps.editedItem.processChangeNotice.ch
 editorStore.save(
   changeDescription
     ? changeDescription
-    : `<p><span style="color:hsl(0, 0%, 60%);">${t(
-        "tools.change.tabs.pcr.stepper.changeDescription"
-      )}</span></p>`,
+    : `<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>`,
   "notice-change-description"
 );
+
+const baseChangeDescription: string = editorStore.getDefault("change-description");
 
 const notice = ref<IProcessChangeNoticeFields>({
   changeDescription: props.componentProps.editedItem.processChangeNotice.changeDescription,
@@ -113,7 +113,7 @@ type Completed = { step1: boolean; step2: boolean; step3: boolean };
 const completed = computed<Completed>(() => {
   const noti = notice.value;
 
-  const step1 = !!noti.changeDescription;
+  const step1 = !!noti.changeDescription && noti.changeDescription !== baseChangeDescription;
   const step2 =
     noti.areDocumentationChangesRequired !== null &&
     (!!noti.areDocumentationChangesRequired
@@ -125,8 +125,8 @@ const completed = computed<Completed>(() => {
       : true);
   const step3 =
     noti.isCustomerApprovalRequired !== null &&
-    noti.engineeringDepartmentName !== null &&
-    noti.qualityDepartmentName !== null;
+    noti.engineeringDepartmentName !== undefined &&
+    noti.qualityDepartmentName !== undefined;
 
   return {
     step1,
@@ -135,12 +135,33 @@ const completed = computed<Completed>(() => {
   };
 });
 
+const departmentsTest = computed<boolean>(() => {
+  if (
+    notice.value.engineeringDepartmentName !== undefined &&
+    notice.value.qualityDepartmentName !== undefined
+  ) {
+    return notice.value.engineeringDepartmentName !== notice.value.qualityDepartmentName;
+  } else return true;
+});
+const engineeringDepartmentRule = (value: string) => {
+  if (value && value !== notice.value.qualityDepartmentName) {
+    return true;
+  }
+  return t("tools.change.tabs.pcn.stepper.qualityDepartmentRule");
+};
+const qualityDepartmentRule = (value: string) => {
+  if (value && value !== notice.value.engineeringDepartmentName) {
+    return true;
+  }
+  return t("tools.change.tabs.pcn.stepper.qualityDepartmentRule");
+};
+
 watch(activeStep, (newActiveStep) => {
   notice.value = {
     ...notice.value,
     changeDescription: editorStore.get("notice-change-description"),
   };
-  if (newActiveStep === 4) {
+  if (newActiveStep === 4 && departmentsTest.value) {
     emit("verified", false);
     emit("save-data", newNoticeData.value);
   } else {
@@ -178,6 +199,7 @@ watch(activeStep, (newActiveStep) => {
         :color="!completed.step3 ? 'warning' : 'secondary'"
         :editable="!completed.step3"
         :complete="completed.step3"
+        :error="!departmentsTest"
         :value="3"
         :title="$t(`tools.change.tabs.pcn.stepper.vStepperItem['3']`)"
       ></v-stepper-item>
@@ -350,6 +372,7 @@ watch(activeStep, (newActiveStep) => {
               $t(`tools.change.tabs.pcn.stepper.vStepperWindowItem['3'].engineeringDepartmentName`)
             "
             :items="departments"
+            :rules="[engineeringDepartmentRule]"
           ></v-autocomplete>
           <v-autocomplete
             :modelValue="notice.qualityDepartmentName"
@@ -360,6 +383,7 @@ watch(activeStep, (newActiveStep) => {
               $t(`tools.change.tabs.pcn.stepper.vStepperWindowItem['3'].qualityDepartmentName`)
             "
             :items="departments"
+            :rules="[qualityDepartmentRule]"
           ></v-autocomplete>
         </v-card>
       </v-stepper-window-item>

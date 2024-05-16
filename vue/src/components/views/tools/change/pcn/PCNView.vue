@@ -4,12 +4,10 @@ import { nodeConfig } from "../../../../../config/env";
 import { PDFHelper } from "../../../../../models/common/PDFHelper";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
-import { IProcessChangeRequestUpdates } from "../../../../../interfaces/change/IProcessChangeRequestUpdates";
-import AcceptOrReject from "./AcceptOrReject.vue";
+// import AcceptOrReject from "./AcceptOrReject.vue";
 import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
+import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 import { useEditorStore } from "../../../../../stores/editorStore";
-import { UserManager } from "../../../../../models/user/UserManager";
 
 const emit = defineEmits(["responseStatus", "loadItems"]);
 
@@ -23,7 +21,7 @@ const backend = `${nodeConfig.origin}:${nodeConfig.port}/uploads/common/`;
 const logoSource = `${backend}reconext-logo.png`;
 
 const itemId: number = props.item.id;
-const manager = new ProcessChangeRequestManager();
+const manager = new ProcessChangeNoticeManager();
 
 const item = ref<IProcessChangeRequest>(props.item);
 
@@ -44,11 +42,11 @@ const handleResetActions = () => (checkActions.value = null);
 
 watch(openDialog, async (newOpenDialog, oldOpenDialog) => {
   if (oldOpenDialog !== true && newOpenDialog !== false) {
-    item.value = await manager.getRequest(itemId);
+    item.value = await manager.getNotice(itemId);
     showAOR.value = true;
     checkActions.value = true;
   } else if (oldOpenDialog === true && newOpenDialog === false) {
-    router.push({ path: `/tool/change/browse/pcr` });
+    router.push({ path: `/tool/change/browse/pcn` });
   }
 });
 
@@ -59,7 +57,7 @@ const formatRequestedBy = () => {
   return parts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
 };
 
-const formatReasonAndDescription = (value: string | undefined) => {
+const formatReasonAndDescription = (value: string | undefined | null) => {
   if (!item.value) return "";
 
   // const changeReasonDefault = `<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>`;
@@ -75,97 +73,122 @@ const formatReasonAndDescription = (value: string | undefined) => {
   return value;
 };
 
-const getOwnerTitle = async (formattedUsername: string): Promise<string> => {
-  const manager = new UserManager();
-  const username = formattedUsername.toLowerCase().split(" ").join(".");
-  const user = await manager.getOne(username);
-  const position = user.info.position?.toLowerCase();
-  const positionUpperCased = position ? position.charAt(0).toUpperCase() + position.slice(1) : "";
-  return positionUpperCased;
+const formatBooleans = (value: boolean | undefined | null) => {
+  if (!value) return "";
+  return value === true ? "Yes" : "No";
+};
+
+const isJSON = (value: string) => {
+  try {
+    JSON.parse(value);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+const formatLists = (value: string | undefined | null) => {
+  if (!value) return "";
+
+  if (isJSON(value)) {
+    const val = JSON.parse(value);
+    if (Array.isArray(val) && val.length > 0 && typeof val[0] === "string") {
+      return val.join(", ");
+    }
+  } else {
+    return "";
+  }
+};
+
+const formatApprover = (username: string | null | undefined) => {
+  if (!username) return "";
+
+  const [firstName, lastName] = username.split(".");
+  const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+  const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
+  return `${formattedFirstName} ${formattedLastName}`;
 };
 
 const custom = computed(() => {
   return {
     requestedBy: formatRequestedBy(),
     changeReason: formatReasonAndDescription(item.value.changeReason),
-    changeDescription: formatReasonAndDescription(item.value.changeDescription),
-    ownerTitle: getOwnerTitle(item.value.reconextOwner),
+    changeDescription: formatReasonAndDescription(
+      item.value.processChangeNotice?.changeDescription
+    ),
+    areDocumentationChangesRequired: formatBooleans(
+      item.value.processChangeNotice?.areDocumentationChangesRequired
+    ),
+    isNewDocumentationRequired: formatBooleans(
+      item.value.processChangeNotice?.isNewDocumentationRequired
+    ),
+    listOfDocumentationToChange: formatLists(
+      item.value.processChangeNotice?.listOfDocumentationToChange
+    ),
+    listOfDocumentationToCreate: formatLists(
+      item.value.processChangeNotice?.listOfDocumentationToCreate
+    ),
+    engineeringDepartmentApprover: formatApprover(
+      item.value.processChangeNotice?.engineeringDepartmentApproverUsername
+    ),
+    qualityDepartmentApprover: formatApprover(
+      item.value.processChangeNotice?.qualityDepartmentApproverUsername
+    ),
+    dedicatedDepartmentApprover: formatApprover(
+      item.value.processChangeNotice?.dedicatedDepartmentApproverUsername
+    ),
   };
 });
 
-const updates = ref<Array<IProcessChangeRequestUpdates>>([]);
+// const updates = ref<Array<IProcessChangeRequestUpdates>>([]);
 
-const getUpdates = async () => {
-  updates.value = item.value.id ? await manager.getRequestUpdates(item.value.id) : [];
-};
+// const getUpdates = async () => {
+//   updates.value = item.value.id ? await manager.getRequestUpdates(item.value.id) : [];
+// };
 
-getUpdates();
+// getUpdates();
 
-watch(
-  item,
-  () => {
-    getUpdates();
-  },
-  { deep: true }
-);
+// watch(
+//   item,
+//   () => {
+//     getUpdates();
+//   },
+//   { deep: true }
+// );
 
-const updateHistory = computed<
-  Array<{
-    col1: string;
-    col2: string;
-    col3: string;
-  }>
->(() =>
-  updates.value.map((update) => ({
-    col1: update.updateBy,
-    col2: update.updateDate,
-    col3: update.updateDescription,
-  }))
-);
+// const updateHistory = computed<
+//   Array<{
+//     col1: string;
+//     col2: string;
+//     col3: string;
+//   }>
+// >(() =>
+//   updates.value.map((update) => ({
+//     col1: update.updateBy,
+//     col2: update.updateDate,
+//     col3: update.updateDescription,
+//   }))
+// );
 
 const request = computed(() => {
   return {
     base: [
       {
-        col1: "Program / Project",
-        col2: item.value.program,
+        col1: "Applicant",
+        col2: item.value.reconextOwner,
         col3: "PCR Number",
-        col4: item.value.numberOfRequest,
+        col4: item.value.numberOfRequest ?? "",
       },
       {
-        col1: "Dedicated Department for Implementation",
-        col2: item.value.dedicatedDepartment,
+        col1: "Application Date",
+        col2: item.value.closureDate ?? "",
         col3: "PCN Number",
-        col4: item.value.processChangeNotice?.numberOfNotice,
-      },
-      {
-        col1: "Internal / External",
-        col2: item.value.internalOrExternal,
-        col3: "Request Date",
-        col4: item.value.requestDate,
-      },
-      {
-        col1: "Request By",
-        col2: custom.value.requestedBy,
-        col3: "Needed Date",
-        col4: item.value.dateNeeded,
-      },
-      {
-        col1: "Customer Contact Person",
-        col2: item.value.customerContactPerson,
-        col3: "Closure Date",
-        col4: item.value.closureDate,
-      },
-      {
-        col1: "Reconext Contact Person",
-        col2: item.value.reconextContactPerson,
-        col3: "Reconext Owner",
-        col4: item.value.reconextOwner,
+        col4: item.value.processChangeNotice?.numberOfNotice ?? "",
       },
     ],
     details: [
       {
-        col1: "REQUEST DETAILS",
+        col1: "NOTICE DETAILS",
       },
       {
         col1: "Model / Process Impacted",
@@ -179,26 +202,22 @@ const request = computed(() => {
         col1: "Change Description",
         col2: custom.value.changeDescription,
       },
-      {
-        col1: "Impacts",
-        col2: item.value.impacts,
-      },
-      {
-        col1: "Cost of Implementation",
-        col2: item.value.costOfImplementation,
-      },
     ],
-    risk: [
+    documentation: [
       {
-        col1: "RISK & ASSESSMENT",
+        col1: "DOCUMENTATION",
       },
       {
-        col1: "Risk Analysis",
-        col2: item.value.riskAnalysis,
+        col1: "Are Documentation Changes Required",
+        col2: custom.value.areDocumentationChangesRequired,
+        col3: "List Of Documents To Change",
+        col4: custom.value.listOfDocumentationToChange,
       },
       {
-        col1: "Implementation / Rejection",
-        col2: item.value.assessment,
+        col1: "Is New Documentation Required",
+        col2: custom.value.isNewDocumentationRequired,
+        col3: "List Of Documents To Create",
+        col4: custom.value.listOfDocumentationToCreate,
       },
     ],
     approvals: [
@@ -206,38 +225,22 @@ const request = computed(() => {
         col1: "APPROVALS",
       },
       {
-        col1: "Customer Approver",
-        col2: "",
-        col3: "Reconext Approver",
-        col4: item.value.assessment === "Implementation" ? item.value.reconextOwner : "",
-      },
-      {
-        col1: "Title",
-        col2: "",
-        col3: "Title",
-        col4: (async () => await custom.value.ownerTitle)(),
-      },
-      {
-        col1: "Date",
-        col2: "",
+        col1: "Engineering Department Approver",
+        col2: custom.value.engineeringDepartmentApprover,
         col3: "Date",
-        col4: item.value.assessment === "Implementation" ? item.value.closureDate : "",
+        col4: item.value.processChangeNotice?.engineeringDepartmentApprovalDate ?? "",
       },
       {
-        col1: "Signature",
-        col2: "",
-        col3: "Signature",
-        col4: "",
-      },
-    ],
-    history: [
-      {
-        col1: "UPDATE HISTORY",
+        col1: "Quality Department Approver",
+        col2: custom.value.qualityDepartmentApprover,
+        col3: "Date",
+        col4: item.value.processChangeNotice?.qualityDepartmentApprovalDate ?? "",
       },
       {
-        col1: "Update By",
-        col2: "Date",
-        col3: "Description",
+        col1: "Dedicated Department Approver",
+        col2: custom.value.dedicatedDepartmentApprover,
+        col3: "Date",
+        col4: item.value.processChangeNotice?.dedicatedDepartmentApprovalDate ?? "",
       },
     ],
   };
@@ -251,14 +254,14 @@ const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChan
 
   item.value = closeData.closed;
 
-  router.push({ path: `/tool/change/browse/pcr` });
+  router.push({ path: `/tool/change/browse/pcn` });
   openDialog.value = false;
 
   showAOR.value = false;
 };
 
 const open = () => {
-  router.push({ path: `/tool/change/browse/pcr/${item.value.id}` });
+  router.push({ path: `/tool/change/browse/pcn/${item.value.id}` });
   openDialog.value = true;
 };
 </script>
@@ -266,7 +269,7 @@ const open = () => {
 <template>
   <v-dialog v-model="openDialog" :max-width="smallScreen ? '90vw' : '60vw'" max-height="80vh">
     <template v-slot:activator>
-      <v-tooltip text="View PCR">
+      <v-tooltip text="View PCN">
         <template v-slot:activator="{ props: tooltip }">
           <!-- :id="item.value.numberOfRequest" -->
           <v-btn
@@ -285,14 +288,14 @@ const open = () => {
     <template v-slot:default="{ isActive }">
       <v-card color="primary" variant="outlined" class="bg-background rounded-xl">
         <v-card-title :class="smallScreen ? 'px-4' : 'px-10'">
-          <span class="text-h5">PCR</span>
+          <span class="text-h5">PCN</span>
         </v-card-title>
         <v-card-text
           class="d-flex justify-center align-center"
           :class="smallScreen ? 'px-2' : 'px-10'"
         >
           <!-- width="595pt" height="842pt" -->
-          <v-sheet id="pcr" width="595pt">
+          <v-sheet id="pcn" width="595pt">
             <v-container fluid>
               <v-row
                 class="align-items-center border-s-md border-e-md border-t-md overflow-hidden"
@@ -300,7 +303,7 @@ const open = () => {
                 justify="space-between"
               >
                 <v-col class="text-h6">
-                  <div class="text-no-wrap" style="height: 32px">PROCESS CHANGE REQUEST</div>
+                  <div class="text-no-wrap" style="height: 32px">PROCESS CHANGE NOTICE</div>
                 </v-col>
                 <v-col class="flex-grow-0">
                   <v-img :src="logoSource" height="32px" width="144px"></v-img>
@@ -341,28 +344,7 @@ const open = () => {
                 </template>
               </v-row>
               <v-row
-                v-for="(row, rowIndex) in request.risk"
-                class="border-s-md border-e-md border-t-md"
-              >
-                <template v-for="(col, colKey) in row">
-                  <v-col
-                    v-if="rowIndex === 0"
-                    cols="12"
-                    class="text-subtitle-1 text-center"
-                    v-html="col"
-                  />
-                  <v-col
-                    v-else
-                    :cols="colKey === 'col1' ? 3 : 9"
-                    class="text-body-2"
-                    :class="colKey !== 'col1' ? 'border-s-md' : ''"
-                    :style="colKey === 'col1' ? 'background-color: #e9e7e7' : ''"
-                    v-html="col"
-                  />
-                </template>
-              </v-row>
-              <v-row
-                v-for="(row, rowIndex) in request.approvals"
+                v-for="(row, rowIndex) in request.documentation"
                 class="border-s-md border-e-md border-t-md"
               >
                 <template v-for="(col, colKey) in row">
@@ -385,8 +367,9 @@ const open = () => {
                 </template>
               </v-row>
               <v-row
-                v-for="(row, rowIndex) in request.history"
+                v-for="(row, rowIndex) in request.approvals"
                 class="border-s-md border-e-md border-t-md"
+                :class="rowIndex === request.approvals.length - 1 ? 'border-b-md' : ''"
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -397,24 +380,12 @@ const open = () => {
                   />
                   <v-col
                     v-else
-                    :cols="colKey === 'col3' ? 6 : 3"
+                    cols="3"
                     class="text-body-2"
                     :class="colKey !== 'col1' ? 'border-s-md' : ''"
-                    style="background-color: #e9e7e7"
-                    v-html="col"
-                  />
-                </template>
-              </v-row>
-              <v-row
-                v-for="(row, rowIndex) in updateHistory"
-                class="border-s-md border-e-md border-t-md"
-                :class="rowIndex === updateHistory.length - 1 ? 'border-b-md' : ''"
-              >
-                <template v-for="(col, colKey) in row">
-                  <v-col
-                    :cols="colKey === 'col3' ? 6 : 3"
-                    class="text-body-2"
-                    :class="colKey !== 'col1' ? 'border-s-md' : ''"
+                    :style="
+                      colKey === 'col1' || colKey === 'col3' ? 'background-color: #e9e7e7' : ''
+                    "
                     v-html="col"
                   />
                 </template>
@@ -453,7 +424,7 @@ const open = () => {
           <!-- generate -->
           <v-btn
             class="bg-primary text-on-primary mr-4 rounded-xl"
-            @click="PDFHelper.generatePDF('pcr', isActive)"
+            @click="PDFHelper.generatePDF('pcn', isActive)"
             :text="smallScreen ? 'PDF' : 'GENERATE PDF'"
           />
         </v-card-actions>

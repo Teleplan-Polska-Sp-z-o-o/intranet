@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, watch, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import { useI18n } from "vue-i18n";
 import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import PCNStepper from "./PCNStepper.vue";
+import PCNView from "./PCNView.vue";
 import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
+import { IProcessChangeNoticeFields } from "../../../../../interfaces/change/IProcessChangeNoticeFields";
+import { IUser } from "../../../../../interfaces/user/IUser";
+import { useRoute } from "vue-router";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -18,6 +22,10 @@ const tab = ref<string>(props.tab);
 watchEffect(() => (tab.value = props.tab));
 const tPath = `tools.change.tabs.${tab.value}.table`;
 
+const formatBoolean = (value: any) => {
+  return value === true ? "Yes" : "No";
+};
+
 const headers: any = [
   {
     title: t(`${tPath}.header.numberOfNotice`),
@@ -28,7 +36,7 @@ const headers: any = [
   { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
   {
     title: t(`${tPath}.header.noticeDate`),
-    key: "noticeDate",
+    key: "closureDate",
   },
   {
     title: t(`${tPath}.header.modelOrProcessImpacted`),
@@ -38,14 +46,17 @@ const headers: any = [
   {
     title: t(`${tPath}.header.areDocumentationChangesRequired`),
     key: "processChangeNotice.areDocumentationChangesRequired",
+    value: formatBoolean,
   },
   {
     title: t(`${tPath}.header.isNewDocumentationRequired`),
     key: "processChangeNotice.isNewDocumentationRequired",
+    value: formatBoolean,
   },
   {
     title: t(`${tPath}.header.isCustomerApprovalRequired`),
     key: "processChangeNotice.isCustomerApprovalRequired",
+    value: formatBoolean,
   },
   { title: t(`${tPath}.header.status`), key: "processChangeNotice.status" },
   {
@@ -61,20 +72,19 @@ const searchTitle = t(`tools.common.search`);
 
 const reqData = ref<FormData | null>(null);
 
-const handleSaveData = (data: any) => {
+const handleSaveData = (
+  data: { fields: IProcessChangeNoticeFields } & { assesser: IUser } & { noticeId: number }
+) => {
   if (!data) return;
 
-  console.log(data);
-  // const { requestId, requestedBy, ...rest } = data;
-  // const base: IProcessChangeRequestBase = rest;
-  // const baseForJson = { ...base, dateNeeded: base.dateNeeded?.toString() };
-  // const formData: FormData = new FormData();
+  const { assesser, fields, noticeId } = data;
+  const formData: FormData = new FormData();
 
-  // formData.append("base", JSON.stringify(baseForJson));
-  // formData.append("requestedBy", JSON.stringify(requestedBy));
-  // formData.append("requestId", JSON.stringify(requestId));
+  formData.append("assesser", JSON.stringify(assesser));
+  formData.append("fields", JSON.stringify(fields));
+  formData.append("noticeId", JSON.stringify(noticeId));
 
-  // reqData.value = formData;
+  reqData.value = formData;
 };
 
 const manager = new ProcessChangeNoticeManager();
@@ -88,6 +98,14 @@ const handleLoadItems = () => {
     loadItems.value = undefined;
   }, 0);
 };
+
+const route = useRoute();
+watch(
+  () => route.params.tab,
+  (newRoute) => {
+    if (newRoute === "pcn") handleLoadItems();
+  }
+);
 </script>
 
 <template>
@@ -122,11 +140,11 @@ const handleLoadItems = () => {
       <span v-show="false">{{ item }}</span>
     </template>
     <template v-slot:table-key-slot-2="{ item }">
-      <p-c-r-view
+      <p-c-n-view
         :item="item"
         @loadItems="handleLoadItems"
         @responseStatus="handleResponseStatus"
-      ></p-c-r-view>
+      ></p-c-n-view>
     </template>
   </crud-table>
 </template>

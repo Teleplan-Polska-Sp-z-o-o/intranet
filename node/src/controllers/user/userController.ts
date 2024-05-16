@@ -14,13 +14,15 @@ import { UserInformation } from "../../models/user/UserInformation";
 const findUser = async (username: string): Promise<UserEntity> => {
   return dataSource.getRepository(UserEntity).findOne({
     where: { username },
-    relations: ["permission", "settings"],
+    relations: ["permission", "settings", "info"],
   });
 };
 
 const getUser = async (req: Request, res: Response) => {
   try {
-    const user: UserEntity = await findUser(req.body.username);
+    const { username } = req.params;
+
+    const user: UserEntity = await findUser(username);
 
     if (!user)
       res
