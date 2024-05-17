@@ -93,6 +93,9 @@ const custom = computed(() => {
   };
 });
 
+const ownerTitle = ref<string>('');
+(async () => ownerTitle.value = await custom.value.ownerTitle)();
+
 const updates = ref<Array<IProcessChangeRequestUpdates>>([]);
 
 const getUpdates = async () => {
@@ -215,7 +218,7 @@ const request = computed(() => {
         col1: "Title",
         col2: "",
         col3: "Title",
-        col4: (async () => await custom.value.ownerTitle)(),
+        col4: ownerTitle.value,
       },
       {
         col1: "Date",
@@ -364,6 +367,11 @@ const open = () => {
               <v-row
                 v-for="(row, rowIndex) in request.approvals"
                 class="border-s-md border-e-md border-t-md"
+                :class="
+                  rowIndex === request.approvals.length - 1 && updateHistory.length === 0
+                    ? 'border-b-md'
+                    : ''
+                "
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -385,6 +393,7 @@ const open = () => {
                 </template>
               </v-row>
               <v-row
+                v-if="updateHistory.length > 0"
                 v-for="(row, rowIndex) in request.history"
                 class="border-s-md border-e-md border-t-md"
               >

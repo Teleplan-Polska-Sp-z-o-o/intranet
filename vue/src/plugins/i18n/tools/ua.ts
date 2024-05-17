@@ -164,6 +164,7 @@ const uaT = {
             },
             changeReason: "Причина зміни",
             changeDescription: "Опис зміни",
+            updateDescriptionRule: "Опис оновлення обов'язковий.",
             customerContactPersonRule: "Будь ласка, введіть ім'я та прізвище, розділені пробілом.",
             customerContactEmailRule: "Електронна адреса повинна бути дійсною.",
             vStepperItem: {

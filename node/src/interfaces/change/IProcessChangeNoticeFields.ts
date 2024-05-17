@@ -8,6 +8,7 @@ interface IProcessChangeNoticeFields {
   // departmentsRequiredForApproval: string;
   engineeringDepartmentName: string;
   qualityDepartmentName: string;
+  updateDescription: string;
 }
 
 export type { IProcessChangeNoticeFields };

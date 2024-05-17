@@ -1,4 +1,5 @@
 interface IProcessChangeNoticeFields {
+  [key: string]: any;
   changeDescription: string | null;
   areDocumentationChangesRequired: boolean | null;
   listOfDocumentationToChange: string | null;
@@ -7,6 +8,7 @@ interface IProcessChangeNoticeFields {
   isCustomerApprovalRequired: boolean | null;
   engineeringDepartmentName: string | null;
   qualityDepartmentName: string | null;
+  updateDescription: string | null;
 }
 
 export type { IProcessChangeNoticeFields };

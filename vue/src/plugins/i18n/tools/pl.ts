@@ -170,6 +170,7 @@ const plT = {
             },
             changeReason: "Powód zmiany",
             changeDescription: "Opis zmiany",
+            updateDescriptionRule: "Opis aktualizacji jest wymagany.",
             customerContactPersonRule:
               "Proszę podać zarówno imię, jak i nazwisko, oddzielone spacją.",
             customerContactEmailRule: "Adres e-mail musi być poprawny.",

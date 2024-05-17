@@ -35,7 +35,7 @@ const prevable = computed(() => activeStep.value > 1);
 const nextable = computed(() => activeStep.value < 4);
 
 const noticeId = props.componentProps.editedItem.processChangeNotice.id;
-
+const noticeUpdatable: boolean = props.componentProps.editedItem.processChangeNotice.updatable;
 const editorStore = useEditorStore();
 
 const changeDescription = props.componentProps.editedItem.processChangeNotice.changeDescription;
@@ -50,7 +50,7 @@ editorStore.save(
 const baseChangeDescription: string = editorStore.getDefault("change-description");
 
 const notice = ref<IProcessChangeNoticeFields>({
-  changeDescription: props.componentProps.editedItem.processChangeNotice.changeDescription,
+  changeDescription: editorStore.get("notice-change-description"),
   areDocumentationChangesRequired:
     props.componentProps.editedItem.processChangeNotice.areDocumentationChangesRequired,
   listOfDocumentationToChange:
@@ -66,6 +66,7 @@ const notice = ref<IProcessChangeNoticeFields>({
   engineeringDepartmentName:
     props.componentProps.editedItem.processChangeNotice.engineeringDepartmentName,
   qualityDepartmentName: props.componentProps.editedItem.processChangeNotice.qualityDepartmentName,
+  updateDescription: null,
 });
 
 const departments = ref<Array<string>>([]);
@@ -100,6 +101,7 @@ const newNoticeData = computed<
     // departmentsRequiredForApproval: req.departmentsRequiredForApproval,
     engineeringDepartmentName: req.engineeringDepartmentName,
     qualityDepartmentName: req.qualityDepartmentName,
+    updateDescription: req.updateDescription,
   };
 
   return {
@@ -126,7 +128,8 @@ const completed = computed<Completed>(() => {
   const step3 =
     noti.isCustomerApprovalRequired !== null &&
     noti.engineeringDepartmentName !== undefined &&
-    noti.qualityDepartmentName !== undefined;
+    noti.qualityDepartmentName !== undefined &&
+    (noticeUpdatable ? !!notice.value.updateDescription : true);
 
   return {
     step1,
@@ -136,13 +139,20 @@ const completed = computed<Completed>(() => {
 });
 
 const departmentsTest = computed<boolean>(() => {
-  if (
-    notice.value.engineeringDepartmentName !== undefined &&
-    notice.value.qualityDepartmentName !== undefined
-  ) {
+  if (notice.value.engineeringDepartmentName && notice.value.qualityDepartmentName) {
     return notice.value.engineeringDepartmentName !== notice.value.qualityDepartmentName;
   } else return true;
 });
+
+const updateDescriptionError = ref<boolean>(false);
+const updateDescriptionRule = [
+  (v: string) => {
+    if (!v) updateDescriptionError.value = true;
+    else updateDescriptionError.value = false;
+    return !!v || t("tools.change.tabs.pcn.stepper.updateDescriptionRule");
+  },
+];
+
 const engineeringDepartmentRule = (value: string) => {
   if (value && value !== notice.value.qualityDepartmentName) {
     return true;
@@ -161,12 +171,38 @@ watch(activeStep, (newActiveStep) => {
     ...notice.value,
     changeDescription: editorStore.get("notice-change-description"),
   };
+
   if (newActiveStep === 4 && departmentsTest.value) {
-    emit("verified", false);
-    emit("save-data", newNoticeData.value);
+    if (noticeUpdatable && notice.value.updateDescription) {
+      emit("verified", false);
+      emit("save-data", newNoticeData.value);
+    } else if (!noticeUpdatable) {
+      emit("verified", false);
+      emit("save-data", newNoticeData.value);
+    }
   } else {
     emit("verified", true);
   }
+});
+
+const updatedFields = computed(() => {
+  const editedItem = props.componentProps.editedItem.processChangeNotice;
+  const fields: Array<string> = [];
+
+  for (const key in notice.value) {
+    switch (key) {
+      case "updateDescription":
+        continue;
+
+      default:
+        if (notice.value[key] !== editedItem[key]) {
+          fields.push(key);
+        }
+        continue;
+    }
+  }
+
+  return fields;
 });
 </script>
 
@@ -385,6 +421,45 @@ watch(activeStep, (newActiveStep) => {
             :items="departments"
             :rules="[qualityDepartmentRule]"
           ></v-autocomplete>
+
+          <template v-if="noticeUpdatable && updatedFields.length > 0">
+            <v-alert
+              type="warning"
+              border="start"
+              :title="$t(`tools.change.tabs.pcr.stepper.alerts.remainder.title`)"
+              variant="tonal"
+            >
+              {{ $t(`tools.change.tabs.pcr.stepper.alerts.remainder.text`) }}
+            </v-alert>
+            <v-textarea
+              class="mt-2"
+              v-model="notice.updateDescription"
+              variant="underlined"
+              :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].updateDescription`)"
+              :rules="updateDescriptionRule"
+            ></v-textarea>
+            <div class="mb-2">
+              {{ $t(`tools.change.tabs.pcr.stepper.alerts.remainder.fields`) }}
+            </div>
+            <v-chip v-for="chip in updatedFields" class="mr-2"> {{ chip }} </v-chip>
+          </template>
+          <template v-if="noticeUpdatable && updatedFields.length === 0">
+            <v-alert
+              type="warning"
+              border="start"
+              :title="$t(`tools.change.tabs.pcr.stepper.alerts.emptyUpdate.title`)"
+              variant="tonal"
+            >
+              {{ $t(`tools.change.tabs.pcr.stepper.alerts.emptyUpdate.text`) }}
+            </v-alert>
+            <v-textarea
+              class="mt-2"
+              v-model="notice.updateDescription"
+              variant="underlined"
+              :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].updateDescription`)"
+              :rules="updateDescriptionRule"
+            ></v-textarea>
+          </template>
         </v-card>
       </v-stepper-window-item>
 

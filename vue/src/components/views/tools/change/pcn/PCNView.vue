@@ -8,6 +8,7 @@ import { useRouter } from "vue-router";
 import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 import { useEditorStore } from "../../../../../stores/editorStore";
+import { IProcessChangeNoticeUpdates } from "../../../../../interfaces/change/IProcessChangeNoticeUpdates";
 
 const emit = defineEmits(["responseStatus", "loadItems"]);
 
@@ -74,7 +75,7 @@ const formatReasonAndDescription = (value: string | undefined | null) => {
 };
 
 const formatBooleans = (value: boolean | undefined | null) => {
-  if (!value) return "";
+  if (typeof value !== "boolean") return "";
   return value === true ? "Yes" : "No";
 };
 
@@ -140,35 +141,37 @@ const custom = computed(() => {
   };
 });
 
-// const updates = ref<Array<IProcessChangeRequestUpdates>>([]);
+const updates = ref<Array<IProcessChangeNoticeUpdates>>([]);
 
-// const getUpdates = async () => {
-//   updates.value = item.value.id ? await manager.getRequestUpdates(item.value.id) : [];
-// };
+const getUpdates = async () => {
+  updates.value = item.value.processChangeNotice?.id
+    ? await manager.getNoticeUpdates(item.value.processChangeNotice.id)
+    : [];
+};
 
-// getUpdates();
+getUpdates();
 
-// watch(
-//   item,
-//   () => {
-//     getUpdates();
-//   },
-//   { deep: true }
-// );
+watch(
+  item,
+  () => {
+    getUpdates();
+  },
+  { deep: true }
+);
 
-// const updateHistory = computed<
-//   Array<{
-//     col1: string;
-//     col2: string;
-//     col3: string;
-//   }>
-// >(() =>
-//   updates.value.map((update) => ({
-//     col1: update.updateBy,
-//     col2: update.updateDate,
-//     col3: update.updateDescription,
-//   }))
-// );
+const updateHistory = computed<
+  Array<{
+    col1: string;
+    col2: string;
+    col3: string;
+  }>
+>(() =>
+  updates.value.map((update) => ({
+    col1: update.updateBy,
+    col2: update.updateDate,
+    col3: update.updateDescription,
+  }))
+);
 
 const request = computed(() => {
   return {
@@ -241,6 +244,16 @@ const request = computed(() => {
         col2: custom.value.dedicatedDepartmentApprover,
         col3: "Date",
         col4: item.value.processChangeNotice?.dedicatedDepartmentApprovalDate ?? "",
+      },
+    ],
+    history: [
+      {
+        col1: "UPDATE HISTORY",
+      },
+      {
+        col1: "Update By",
+        col2: "Date",
+        col3: "Description",
       },
     ],
   };
@@ -369,7 +382,11 @@ const open = () => {
               <v-row
                 v-for="(row, rowIndex) in request.approvals"
                 class="border-s-md border-e-md border-t-md"
-                :class="rowIndex === request.approvals.length - 1 ? 'border-b-md' : ''"
+                :class="
+                  rowIndex === request.approvals.length - 1 && updateHistory.length === 0
+                    ? 'border-b-md'
+                    : ''
+                "
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -390,6 +407,42 @@ const open = () => {
                   />
                 </template>
               </v-row>
+              <v-row
+                v-if="updateHistory.length > 0"
+                v-for="(row, rowIndex) in request.history"
+                class="border-s-md border-e-md border-t-md"
+              >
+                <template v-for="(col, colKey) in row">
+                  <v-col
+                    v-if="rowIndex === 0"
+                    cols="12"
+                    class="text-subtitle-1 text-center"
+                    v-html="col"
+                  />
+                  <v-col
+                    v-else
+                    :cols="colKey === 'col3' ? 6 : 3"
+                    class="text-body-2"
+                    :class="colKey !== 'col1' ? 'border-s-md' : ''"
+                    style="background-color: #e9e7e7"
+                    v-html="col"
+                  />
+                </template>
+              </v-row>
+              <v-row
+                v-for="(row, rowIndex) in updateHistory"
+                class="border-s-md border-e-md border-t-md"
+                :class="rowIndex === updateHistory.length - 1 ? 'border-b-md' : ''"
+              >
+                <template v-for="(col, colKey) in row">
+                  <v-col
+                    :cols="colKey === 'col3' ? 6 : 3"
+                    class="text-body-2"
+                    :class="colKey !== 'col1' ? 'border-s-md' : ''"
+                    v-html="col"
+                  />
+                </template>
+              </v-row>
             </v-container>
           </v-sheet>
         </v-card-text>
@@ -397,7 +450,7 @@ const open = () => {
           <accept-or-reject
             v-if="showAOR"
             variant="reject"
-            :pcrId="itemId"
+            :pcnId="itemId"
             @close="handleClose"
             :checkActions="checkActions"
             @resetActions="handleResetActions"
@@ -406,7 +459,7 @@ const open = () => {
           <accept-or-reject
             v-if="showAOR"
             variant="accept"
-            :pcrId="itemId"
+            :pcnId="itemId"
             @close="handleClose"
             :checkActions="checkActions"
             @resetActions="handleResetActions"

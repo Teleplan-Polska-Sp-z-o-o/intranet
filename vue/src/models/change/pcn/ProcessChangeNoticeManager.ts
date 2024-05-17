@@ -5,6 +5,7 @@ import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../common/ResponseStatus";
 import { IProcessChangeRequest } from "../../../interfaces/change/IProcessChangeRequest";
 import { ProcessChangeNoticeFields } from "./ProcessChangeNoticeFields";
+import { IProcessChangeNoticeUpdates } from "../../../interfaces/change/IProcessChangeNoticeUpdates";
 
 class ProcessChangeNoticeManager {
   constructor() {}
@@ -28,12 +29,13 @@ class ProcessChangeNoticeManager {
     return response.data.edited;
   };
 
-  public close = async (
+  public assess = async (
     formData: FormData,
+    assessment: "approve" | "rejection",
     status: boolean = true
-  ): Promise<{ response: ResponseStatus; closed: IProcessChangeRequest }> => {
+  ): Promise<{ response: ResponseStatus; assessed: IProcessChangeRequest }> => {
     const response = await axios.put(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/close`,
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/${assessment}`,
       formData
     );
     if (status) {
@@ -42,10 +44,10 @@ class ProcessChangeNoticeManager {
           code: response.status,
           message: response.data.statusMessage,
         }),
-        closed: response.data.closed,
+        assessed: response.data.assessed,
       };
     }
-    return response.data.closed;
+    return response.data.assessed;
   };
 
   public delete = async (
@@ -74,6 +76,13 @@ class ProcessChangeNoticeManager {
   public getNotice = async (id: number): Promise<IProcessChangeRequest> => {
     const response = await axios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/${id}`
+    );
+    return response.data.got;
+  };
+
+  public getNoticeUpdates = async (id: number): Promise<Array<IProcessChangeNoticeUpdates>> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/updates/${id}`
     );
     return response.data.got;
   };

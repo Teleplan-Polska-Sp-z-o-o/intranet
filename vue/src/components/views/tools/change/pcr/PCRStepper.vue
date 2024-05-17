@@ -40,7 +40,7 @@ const prevable = computed(() => activeStep.value > 1);
 const nextable = computed(() => activeStep.value < 5);
 
 const requestId = props.componentProps.editedItem.id;
-const requestUpdatable = props.componentProps.editedItem.updatable;
+const requestUpdatable: boolean = props.componentProps.editedItem.updatable;
 const requestNotice = props.componentProps.editedItem.processChangeNotice;
 
 const editorStore = useEditorStore();
@@ -172,6 +172,10 @@ const newRequestData = computed<
   };
 });
 
+const updateDescriptionRule = [
+  (v: string) => !!v || t("tools.change.tabs.pcr.stepper.updateDescriptionRule"),
+];
+
 const customerContactPersonRule = [
   (v: string) =>
     /^[a-zA-Z]+ [a-zA-Z]+$/.test(v) || t("tools.change.tabs.pcr.stepper.customerContactPersonRule"),
@@ -196,7 +200,8 @@ const completed = computed<Completed>(() => {
     !!req.costOfImplementation &&
     req.changeReason !== baseChangeReason &&
     req.changeDescription !== baseChangeDescription &&
-    !!req.impacts;
+    !!req.impacts &&
+    (requestUpdatable ? !!request.value.updateDescription : true);
 
   return {
     step1,
@@ -472,6 +477,7 @@ const updatedFields = computed(() => {
               v-model="request.updateDescription"
               variant="underlined"
               :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].updateDescription`)"
+              :rules="updateDescriptionRule"
             ></v-textarea>
             <div class="mb-2">
               {{ $t(`tools.change.tabs.pcr.stepper.alerts.remainder.fields`) }}
@@ -492,6 +498,7 @@ const updatedFields = computed(() => {
               v-model="request.updateDescription"
               variant="underlined"
               :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].updateDescription`)"
+              :rules="updateDescriptionRule"
             ></v-textarea>
           </template>
         </v-card>

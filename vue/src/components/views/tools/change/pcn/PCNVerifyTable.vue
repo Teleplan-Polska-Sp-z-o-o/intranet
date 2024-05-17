@@ -28,9 +28,7 @@ const testDescription = (value: boolean | string, key: string) => {
     //   '<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>';
 
     const editorStore = useEditorStore();
-
     const changeDescriptionDefault: string = editorStore.getDefault("change-description");
-
     if (value === changeDescriptionDefault) return false;
   }
 

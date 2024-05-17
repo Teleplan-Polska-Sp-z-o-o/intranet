@@ -11,7 +11,6 @@ import { IProcessChangeRequest } from "../../../interfaces/change/IProcessChange
 import { ProcessChangeNotice } from "./ProcessChangeNoticeEntity";
 import { IUser } from "../../../interfaces/user/IUser";
 import { IProcessChangeRequestBase } from "../../../interfaces/change/IProcessChangeRequestBase";
-import { ProcessChangeRequestUpdates } from "./ProcessChangeRequestUpdatesEntity";
 import { Helper } from "../../../models/common/Helper";
 import { NotificationBuilder } from "../user/NotificationBuilder";
 import { ENotificationSource } from "../../../interfaces/user/notification/ENotificationSource";
@@ -19,6 +18,7 @@ import { ENotificationAction } from "../../../interfaces/user/notification/ENoti
 import { User } from "../user/UserEntity";
 import { saveNotification } from "../../../controllers/common/notificationController";
 import { getWebSocketConnections } from "../../../controllers/common/websocketController";
+import { ProcessChangeRequestUpdates } from "./ProcessChangeRequestUpdatesEntity";
 
 @Entity()
 class ProcessChangeRequest implements IProcessChangeRequest {

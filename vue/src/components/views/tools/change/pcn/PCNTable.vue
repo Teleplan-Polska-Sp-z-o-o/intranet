@@ -75,6 +75,7 @@ const reqData = ref<FormData | null>(null);
 const handleSaveData = (
   data: { fields: IProcessChangeNoticeFields } & { assesser: IUser } & { noticeId: number }
 ) => {
+  console.log(data);
   if (!data) return;
 
   const { assesser, fields, noticeId } = data;

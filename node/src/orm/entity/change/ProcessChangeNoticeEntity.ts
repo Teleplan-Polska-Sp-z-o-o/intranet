@@ -1,25 +1,35 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from "typeorm";
 import { ProcessChangeRequest } from "./ProcessChangeRequestEntity";
 import { IProcessChangeNotice } from "../../../interfaces/change/IProcessChangeNotice";
 import { IProcessChangeNoticeFields } from "../../../interfaces/change/IProcessChangeNoticeFields";
 import { Helper } from "../../../models/common/Helper";
+import { ProcessChangeNoticeUpdates } from "./ProcessChangeNoticeUpdatesEntity";
+import { Department } from "../document/DepartmentEntity";
+import { IUser } from "../../../interfaces/user/IUser";
 
 @Entity()
 class ProcessChangeNotice implements IProcessChangeNotice {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @OneToMany(() => ProcessChangeNoticeUpdates, (updates) => updates.processChangeNotice)
+  @JoinColumn()
+  processChangeNoticeUpdates: Array<ProcessChangeNoticeUpdates> | null;
+
   @Column()
   numberOfNotice: string | null;
 
   @Column()
-  numberOfRequest: string;
+  numberOfRequest: string | null;
 
   @Column()
-  year: number;
+  year: number | null;
 
   @Column()
-  status: string;
+  updatable: boolean | null;
+
+  @Column()
+  status: "Open" | "Closed" | null;
 
   @Column()
   closureDate: string | null;
@@ -109,6 +119,7 @@ class ProcessChangeNotice implements IProcessChangeNotice {
     this.numberOfRequest = request.numberOfRequest;
     this.year = new Date().getFullYear();
     this.status = "Open";
+    this.updatable = false;
     this.closureDate = null;
 
     this.engineeringDepartmentName = null;
@@ -196,6 +207,7 @@ class ProcessChangeNotice implements IProcessChangeNotice {
 
       this.status = "Closed";
       this.closureDate = Helper.formatDate(new Date(), "pcn close");
+      this.updatable = true;
 
       // approve chain
 
@@ -225,24 +237,28 @@ class ProcessChangeNotice implements IProcessChangeNotice {
     }
   };
 
-  public assessByDepartment = (
+  public assess = (
     request: ProcessChangeRequest,
-    department: string,
+    department: Department,
+    user: IUser,
     assessment: "approve" | "rejection"
   ): ProcessChangeNotice => {
     try {
       const decision = assessment === "approve" ? true : false;
       const decisionDateString = Helper.formatDate(new Date(), "pcn assessment");
 
-      switch (department) {
+      switch (department.name) {
         case this.engineeringDepartmentName:
           this.engineeringDepartmentApproval = decision;
+          this.engineeringDepartmentApproverUsername = user.username;
           this.engineeringDepartmentApprovalDate = decisionDateString;
         case this.qualityDepartmentName:
           this.qualityDepartmentApproval = decision;
+          this.qualityDepartmentApproverUsername = user.username;
           this.qualityDepartmentApprovalDate = decisionDateString;
         case request.dedicatedDepartment:
           this.dedicatedDepartmentApproval = decision;
+          this.dedicatedDepartmentApproverUsername = user.username;
           this.dedicatedDepartmentApprovalDate = decisionDateString;
           break;
 
@@ -259,6 +275,26 @@ class ProcessChangeNotice implements IProcessChangeNotice {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  public compare = (fields: IProcessChangeNoticeFields): Array<string> => {
+    const updatedFields: Array<string> = [];
+
+    // Iterate over the keys of the base object
+    Object.keys(fields).forEach((key) => {
+      // Skip the updateDescription field
+      if (key === "updateDescription") {
+        return;
+      }
+
+      // Compare the values of the base object with the current object
+
+      if (this[key] !== fields[key]) {
+        updatedFields.push(key);
+      }
+    });
+
+    return updatedFields;
   };
 }
 

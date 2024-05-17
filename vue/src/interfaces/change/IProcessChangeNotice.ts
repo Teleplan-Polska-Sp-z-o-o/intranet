@@ -1,10 +1,12 @@
 interface IProcessChangeNotice {
+  [key: string]: any;
   id: number; // auto
   numberOfNotice: string | null; // auto
-  numberOfRequest: string; // pull
-  year: number; // auto
-  status: string;
-  closureDate: string;
+  numberOfRequest: string | null; // pull
+  year: number | null; // auto
+  status: string | null;
+  updatable: boolean | null;
+  closureDate: string | null;
 
   engineeringDepartmentName: string | null; // added
   engineeringDepartmentApproval: boolean | null; // added

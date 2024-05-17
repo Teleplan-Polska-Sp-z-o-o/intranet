@@ -54,7 +54,7 @@ const load = async (log?: boolean) => {
 
 // onMounted(() => load(true));
 if (items.value.length === 0) {
-  load(true);
+  load();
 }
 
 const filtersCallback = ref<{ callback: Function } | null>(null);
@@ -101,7 +101,7 @@ const loadItems = computed(() => !!props.loadItems);
 
 watch(loadItems, (newLoad) => {
   if (newLoad === true) {
-    load(true);
+    load();
   }
 });
 

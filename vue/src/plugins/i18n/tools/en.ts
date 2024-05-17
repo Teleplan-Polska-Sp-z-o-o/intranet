@@ -169,6 +169,7 @@ const enT = {
             },
             changeReason: "Change Reason",
             changeDescription: "Change Description",
+            updateDescriptionRule: "Update description is required.",
             customerContactPersonRule:
               "Please enter both a name and a surname separated by a space.",
             customerContactEmailRule: "Email must be valid.",
@@ -244,6 +245,7 @@ const enT = {
               prev: "Previous",
               next: "Next",
             },
+            updateDescriptionRule: "Update description is required.",
             qualityDepartmentRule: "Quality and Engineering departments must differ.",
             changeDescription: "Change Description",
             vStepperItem: {
@@ -280,6 +282,15 @@ const enT = {
                   title: "Dedicated Department Review (Optional)",
                   text: "If the PCR dedicated department pertains to a specific area outside Engineering and Quality, the system also routes the request for approval to the designated decision-maker(s) within that department.",
                 },
+              },
+              remainder: {
+                title: "Reminder",
+                text: "Please be advised that any updates made to the closed notice will automatically trigger its reopening for further review and action.",
+                fields: "Keys preview of updated fields.",
+              },
+              emptyUpdate: {
+                title: "Warning",
+                text: "Please note that proceeding without actually editing any fields in the closed notice will still result in its reopening.",
               },
             },
           },

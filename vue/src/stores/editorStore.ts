@@ -21,7 +21,7 @@ export const useEditorStore = defineStore("editor", () => {
     }
   };
 
-  const getDefault = (key: string, withBase: boolean = true): string => {
+  const getDefault = (key: string, withBase: boolean = false): string => {
     const formString = (value: string) => {
       if (withBase)
         return `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content">${value}</div>`;
