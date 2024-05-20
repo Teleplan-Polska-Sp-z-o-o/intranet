@@ -8,6 +8,7 @@ interface IProcessChangeNoticeFields {
   isCustomerApprovalRequired: boolean | null;
   engineeringDepartmentName: string | null;
   qualityDepartmentName: string | null;
+  personDesignatedForImplementation: string | null;
   updateDescription: string | null;
 }
 

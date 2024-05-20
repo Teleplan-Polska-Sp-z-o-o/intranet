@@ -181,6 +181,7 @@ class ProcessChangeNotice implements IProcessChangeNotice {
       this.isCustomerApprovalRequired = fields.isCustomerApprovalRequired ?? null;
       this.engineeringDepartmentName = fields.engineeringDepartmentName ?? null;
       this.qualityDepartmentName = fields.qualityDepartmentName ?? null;
+      this.personDesignatedForImplementation = fields.personDesignatedForImplementation ?? null;
       // this.departmentsRequiredForApproval = fields.departmentsRequiredForApproval ?? null;
 
       // if (this.departmentsRequiredForApproval) {
@@ -225,11 +226,13 @@ class ProcessChangeNotice implements IProcessChangeNotice {
 
       this.engineeringDepartmentApproval = null;
       this.engineeringDepartmentApprovalDate = null;
+      this.engineeringDepartmentApproverUsername = null;
       this.qualityDepartmentApproval = null;
       this.qualityDepartmentApprovalDate = null;
+      this.qualityDepartmentApproverUsername = null;
       this.dedicatedDepartmentApproval = null;
       this.dedicatedDepartmentApprovalDate = null;
-      // this.departmentApprovals = null;
+      this.dedicatedDepartmentApproverUsername = null;
 
       return this;
     } catch (error) {
@@ -247,27 +250,44 @@ class ProcessChangeNotice implements IProcessChangeNotice {
       const decision = assessment === "approve" ? true : false;
       const decisionDateString = Helper.formatDate(new Date(), "pcn assessment");
 
-      switch (department.name) {
-        case this.engineeringDepartmentName:
-          this.engineeringDepartmentApproval = decision;
-          this.engineeringDepartmentApproverUsername = user.username;
-          this.engineeringDepartmentApprovalDate = decisionDateString;
-        case this.qualityDepartmentName:
-          this.qualityDepartmentApproval = decision;
-          this.qualityDepartmentApproverUsername = user.username;
-          this.qualityDepartmentApprovalDate = decisionDateString;
-        case request.dedicatedDepartment:
-          this.dedicatedDepartmentApproval = decision;
-          this.dedicatedDepartmentApproverUsername = user.username;
-          this.dedicatedDepartmentApprovalDate = decisionDateString;
-          break;
+      // switch (department.name) {
+      //   case this.engineeringDepartmentName:
+      //     this.engineeringDepartmentApproval = decision;
+      //     this.engineeringDepartmentApproverUsername = user.username;
+      //     this.engineeringDepartmentApprovalDate = decisionDateString;
+      //   case this.qualityDepartmentName:
+      //     this.qualityDepartmentApproval = decision;
+      //     this.qualityDepartmentApproverUsername = user.username;
+      //     this.qualityDepartmentApprovalDate = decisionDateString;
+      //   case request.dedicatedDepartment:
+      //     this.dedicatedDepartmentApproval = decision;
+      //     this.dedicatedDepartmentApproverUsername = user.username;
+      //     this.dedicatedDepartmentApprovalDate = decisionDateString;
+      //     break;
 
-        default:
-          throw new Error(
-            `'department' doesn't match any of available switch cases at ProcessChangeNotice at assessByDepartment.`
-          );
+      //   default:
+      //     throw new Error(
+      //       `'department' doesn't match any of available switch cases at ProcessChangeNotice at assessByDepartment.`
+      //     );
+      // }
+
+      if (this.engineeringDepartmentName === department.name) {
+        this.engineeringDepartmentApproval = decision;
+        this.engineeringDepartmentApproverUsername = user.username;
+        this.engineeringDepartmentApprovalDate = decisionDateString;
+      } else if (this.qualityDepartmentName) {
+        this.qualityDepartmentApproval = decision;
+        this.qualityDepartmentApproverUsername = user.username;
+        this.qualityDepartmentApprovalDate = decisionDateString;
+      } else if (request.dedicatedDepartment === department.name) {
+        this.dedicatedDepartmentApproval = decision;
+        this.dedicatedDepartmentApproverUsername = user.username;
+        this.dedicatedDepartmentApprovalDate = decisionDateString;
+      } else {
+        throw new Error(
+          `'department' doesn't match any of available switch cases at ProcessChangeNotice at assessByDepartment.`
+        );
       }
-
       // const map: Map<number, null | "approve" | "rejection"> = JSON.parse(this.departmentApprovals);
       // this.departmentApprovals = JSON.stringify(map.set(department, assessment));
 
@@ -278,23 +298,27 @@ class ProcessChangeNotice implements IProcessChangeNotice {
   };
 
   public compare = (fields: IProcessChangeNoticeFields): Array<string> => {
-    const updatedFields: Array<string> = [];
+    try {
+      const updatedFields: Array<string> = [];
 
-    // Iterate over the keys of the base object
-    Object.keys(fields).forEach((key) => {
-      // Skip the updateDescription field
-      if (key === "updateDescription") {
-        return;
-      }
+      // Iterate over the keys of the base object
+      Object.keys(fields).forEach((key) => {
+        // Skip the updateDescription field
+        if (key === "updateDescription") {
+          return;
+        }
 
-      // Compare the values of the base object with the current object
+        // Compare the values of the base object with the current object
 
-      if (this[key] !== fields[key]) {
-        updatedFields.push(key);
-      }
-    });
+        if (this[key] !== fields[key]) {
+          updatedFields.push(key);
+        }
+      });
 
-    return updatedFields;
+      return updatedFields;
+    } catch (error) {
+      console.log(error);
+    }
   };
 }
 

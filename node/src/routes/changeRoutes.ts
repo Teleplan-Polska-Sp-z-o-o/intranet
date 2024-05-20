@@ -34,8 +34,8 @@ router.get("/request", getRequests);
 
 router.get("/request/updates/:id", getRequestUpdates);
 
-router.put("/notice", decodeFormData, editNotice);
 router.put("/notice/:assessment", decodeFormData, assessNotice);
+router.put("/notice", decodeFormData, editNotice);
 
 router.get("/notice/:id", getNotice);
 router.get("/notice", getNotices);

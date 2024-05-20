@@ -318,7 +318,7 @@ const getRequests = async (_req: Request, res: Response) => {
   try {
     const requests = await dataSource
       .getRepository(ProcessChangeRequest)
-      .find({ relations: ["processChangeNotice"] });
+      .find({ relations: ["processChangeNotice"], order: { id: "DESC" as const } });
 
     res.status(200).json({
       got: requests,
@@ -333,6 +333,28 @@ const getRequests = async (_req: Request, res: Response) => {
     });
   }
 };
+
+// const getRequests = async (_req: Request, res: Response) => {
+//   try {
+//     const requests = await dataSource
+//       .createQueryBuilder(ProcessChangeRequest, "request")
+//       .leftJoinAndSelect("request.processChangeNotice", "processChangeNotice")
+//       .orderBy("request.id", "DESC")
+//       .getMany();
+
+//     res.status(200).json({
+//       got: requests,
+//       message: "Requests retrieved successfully",
+//       statusMessage: HttpResponseMessage.GET_SUCCESS,
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving requests: ", error);
+//     res.status(500).json({
+//       message: "Unknown error occurred. Failed to retrieve requests.",
+//       statusMessage: HttpResponseMessage.UNKNOWN,
+//     });
+//   }
+// };
 
 const getRequest = async (req: Request, res: Response) => {
   try {

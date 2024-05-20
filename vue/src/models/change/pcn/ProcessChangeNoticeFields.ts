@@ -2,6 +2,7 @@ import { IProcessChangeNotice } from "../../../interfaces/change/IProcessChangeN
 import { IProcessChangeNoticeFields } from "../../../interfaces/change/IProcessChangeNoticeFields";
 
 class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
+  [key: string]: any;
   changeDescription: string | null;
   areDocumentationChangesRequired: boolean | null;
   listOfDocumentationToChange: string | null;
@@ -11,6 +12,7 @@ class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
   departmentsRequiredForApproval: string | null;
   engineeringDepartmentName: string | null;
   qualityDepartmentName: string | null;
+  personDesignatedForImplementation: string | null;
   updateDescription: string | null;
 
   constructor() {
@@ -23,6 +25,7 @@ class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
     this.departmentsRequiredForApproval = null;
     this.engineeringDepartmentName = null;
     this.qualityDepartmentName = null;
+    this.personDesignatedForImplementation = null;
     this.updateDescription = null;
   }
 
@@ -36,6 +39,7 @@ class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
     this.departmentsRequiredForApproval = data.departmentsRequiredForApproval;
     this.engineeringDepartmentName = data.engineeringDepartmentName;
     this.qualityDepartmentName = data.qualityDepartmentName;
+    this.personDesignatedForImplementation = data.personDesignatedForImplementation;
     this.updateDescription = data.updateDescription;
 
     return this;

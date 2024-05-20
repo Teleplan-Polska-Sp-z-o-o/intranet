@@ -8,6 +8,8 @@ import CkEditor from "../../../../common/CkEditor.vue";
 import { useEditorStore } from "../../../../../stores/editorStore";
 import { useI18n } from "vue-i18n";
 import { IProcessChangeNoticeFields } from "../../../../../interfaces/change/IProcessChangeNoticeFields";
+import { UserManager } from "../../../../../models/user/UserManager";
+import { IUserEntity } from "../../../../../interfaces/user/IUserEntity";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -33,7 +35,7 @@ const nextStep = () => {
 };
 const prevable = computed(() => activeStep.value > 1);
 const nextable = computed(() => activeStep.value < 4);
-
+console.log(props.componentProps.editedItem.processChangeNotice);
 const noticeId = props.componentProps.editedItem.processChangeNotice.id;
 const noticeUpdatable: boolean = props.componentProps.editedItem.processChangeNotice.updatable;
 const editorStore = useEditorStore();
@@ -66,6 +68,8 @@ const notice = ref<IProcessChangeNoticeFields>({
   engineeringDepartmentName:
     props.componentProps.editedItem.processChangeNotice.engineeringDepartmentName,
   qualityDepartmentName: props.componentProps.editedItem.processChangeNotice.qualityDepartmentName,
+  personDesignatedForImplementation:
+    props.componentProps.editedItem.processChangeNotice.personDesignatedForImplementation,
   updateDescription: null,
 });
 
@@ -82,6 +86,19 @@ const fillDepartments = async () => {
 fillDepartments();
 
 const userStore = useUserStore();
+
+const reconextUsers = ref<Array<string>>([]);
+
+(async () => {
+  const userManager: UserManager = new UserManager();
+  const users: Array<IUserEntity> = await userManager.get("moderator");
+  const usernames: Array<string> = users.map((user) => user.username);
+  const selectOptions: Array<string> = usernames.map((username) => {
+    const parts: Array<string> = username.split(".");
+    return parts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+  });
+  reconextUsers.value = selectOptions;
+})();
 
 const newNoticeData = computed<
   { fields: IProcessChangeNoticeFields } & { assesser: IUser } & { noticeId: number }
@@ -101,6 +118,7 @@ const newNoticeData = computed<
     // departmentsRequiredForApproval: req.departmentsRequiredForApproval,
     engineeringDepartmentName: req.engineeringDepartmentName,
     qualityDepartmentName: req.qualityDepartmentName,
+    personDesignatedForImplementation: req.personDesignatedForImplementation,
     updateDescription: req.updateDescription,
   };
 
@@ -126,6 +144,7 @@ const completed = computed<Completed>(() => {
       ? !!noti.listOfDocumentationToCreate && noti.listOfDocumentationToCreate?.length > 0
       : true);
   const step3 =
+    noti.personDesignatedForImplementation !== null &&
     noti.isCustomerApprovalRequired !== null &&
     noti.engineeringDepartmentName !== undefined &&
     noti.qualityDepartmentName !== undefined &&
@@ -327,6 +346,19 @@ const updatedFields = computed(() => {
       </v-stepper-window-item>
       <v-stepper-window-item :value="3">
         <v-card flat>
+          <!-- personDesignatedForImplementation -->
+          <v-autocomplete
+            variant="underlined"
+            :label="
+              $t(
+                `tools.change.tabs.pcn.stepper.vStepperWindowItem['3'].personDesignatedForImplementation`
+              )
+            "
+            :items="reconextUsers"
+            clearable
+            :modelValue="notice.personDesignatedForImplementation"
+            @update:modelValue="(value: string | null) => (notice.personDesignatedForImplementation = value || null)"
+          ></v-autocomplete>
           <v-select
             v-model="notice.isCustomerApprovalRequired"
             variant="underlined"

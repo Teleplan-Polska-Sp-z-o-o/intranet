@@ -5,10 +5,12 @@ import { useI18n } from "vue-i18n";
 import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import PCNStepper from "./PCNStepper.vue";
 import PCNView from "./PCNView.vue";
+import PCNTableFilters from "./PCNTableFilters.vue";
 import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 import { IProcessChangeNoticeFields } from "../../../../../interfaces/change/IProcessChangeNoticeFields";
 import { IUser } from "../../../../../interfaces/user/IUser";
 import { useRoute } from "vue-router";
+import { usePCNStore } from "../../../../../stores/change/pcnStore";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -22,10 +24,6 @@ const tab = ref<string>(props.tab);
 watchEffect(() => (tab.value = props.tab));
 const tPath = `tools.change.tabs.${tab.value}.table`;
 
-const formatBoolean = (value: any) => {
-  return value === true ? "Yes" : "No";
-};
-
 const headers: any = [
   {
     title: t(`${tPath}.header.numberOfNotice`),
@@ -34,6 +32,10 @@ const headers: any = [
   },
   { title: t(`${tPath}.header.numberOfRequest`), key: "numberOfRequest" },
   { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
+  {
+    title: t(`${tPath}.header.personDesignatedForImplementation`),
+    key: "processChangeNotice.personDesignatedForImplementation",
+  },
   {
     title: t(`${tPath}.header.noticeDate`),
     key: "closureDate",
@@ -46,19 +48,28 @@ const headers: any = [
   {
     title: t(`${tPath}.header.areDocumentationChangesRequired`),
     key: "processChangeNotice.areDocumentationChangesRequired",
-    value: formatBoolean,
   },
   {
     title: t(`${tPath}.header.isNewDocumentationRequired`),
     key: "processChangeNotice.isNewDocumentationRequired",
-    value: formatBoolean,
   },
   {
     title: t(`${tPath}.header.isCustomerApprovalRequired`),
     key: "processChangeNotice.isCustomerApprovalRequired",
-    value: formatBoolean,
   },
   { title: t(`${tPath}.header.status`), key: "processChangeNotice.status" },
+  {
+    title: t(`${tPath}.header.engineeringDepartmentApproval`),
+    key: "processChangeNotice.engineeringDepartmentApproval",
+  },
+  {
+    title: t(`${tPath}.header.qualityDepartmentApproval`),
+    key: "processChangeNotice.qualityDepartmentApproval",
+  },
+  {
+    title: t(`${tPath}.header.dedicatedDepartmentApproval`),
+    key: "processChangeNotice.dedicatedDepartmentApproval",
+  },
   {
     title: t(`${tPath}.header.closureDate`),
     key: "processChangeNotice.closureDate",
@@ -107,18 +118,22 @@ watch(
     if (newRoute === "pcn") handleLoadItems();
   }
 );
+
+const pcnStore = usePCNStore();
 </script>
 
+<!-- :sortBy="[{ key: 'id', order: 'asc' }]" -->
 <template>
   <crud-table
     :headers="headers"
-    :sortBy="[{ key: 'id', order: 'asc' }]"
+    :sortBy="undefined"
     :searchBy="[
       'processChangeNotice.numberOfNotice',
       'numberOfNotice',
       'reconextOwner',
       'closureDate',
       'modelOrProcessImpacted',
+      'processChangeNotice.personDesignatedForImplementation',
     ]"
     :toolbarTitle="toolbarTitle"
     :searchTitle="searchTitle"
@@ -133,9 +148,10 @@ watch(
     flow="pcn-flow"
     :loadItems="loadItems"
     :filters="true"
+    :filtersCallback="pcnStore.callback"
   >
     <template v-slot:table-filters>
-      <p-c-r-table-filters></p-c-r-table-filters>
+      <p-c-n-table-filters></p-c-n-table-filters>
     </template>
     <template v-slot:table-key-slot="{ item }">
       <span v-show="false">{{ item }}</span>

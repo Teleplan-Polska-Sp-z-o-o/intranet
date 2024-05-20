@@ -10,6 +10,7 @@ import { IUser } from "../../../../../interfaces/user/IUser";
 import PCRView from "./PCRView.vue";
 import PCRTableFilters from "./PCRTableFilters.vue";
 import { useRoute } from "vue-router";
+import { usePCRStore } from "../../../../../stores/change/pcrStore";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -89,12 +90,15 @@ watch(
     if (newRoute === "pcr") handleLoadItems();
   }
 );
+
+const pcrStore = usePCRStore();
 </script>
 
+<!-- :sortBy="[{ key: 'id', order: 'asc' }]" -->
 <template>
   <crud-table
     :headers="headers"
-    :sortBy="[{ key: 'id', order: 'asc' }]"
+    :sortBy="undefined"
     :searchBy="[
       'numberOfRequest',
       'requestDate',
@@ -124,6 +128,7 @@ watch(
     flow="pcr-flow"
     :loadItems="loadItems"
     :filters="true"
+    :filtersCallback="pcrStore.callback"
   >
     <template v-slot:table-filters>
       <p-c-r-table-filters></p-c-r-table-filters>

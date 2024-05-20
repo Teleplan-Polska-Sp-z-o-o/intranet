@@ -55,11 +55,14 @@ const enableActions = async (): Promise<void> => {
   const notice: IProcessChangeNotice | null = request.processChangeNotice;
   if (!notice) throw new Error("processChangeNotice at AcceptOrReject.vue resolve to null.");
   const fields: ProcessChangeNoticeFields = new ProcessChangeNoticeFields().buildFromNotice(notice);
-
+  const isNotNullOrUndefined = (value: any): boolean => {
+    return value !== undefined && value !== null;
+  };
   const filled = Object.entries(fields)
     .filter(([key]) => key !== "updateDescription")
-    .every(([_, value]) => !!value);
-  const isClosed = notice.status === "Closed";
+    .every(([_, value]) => isNotNullOrUndefined(!!value));
+  // const isClosed = notice.status === "Closed";
+  const isClosed = notice.dedicatedDepartmentApproval === true;
 
   // user.username === base.reconextOwner.toLocaleLowerCase().replace(" ", ".");
   let isNextApprover: boolean = false;
@@ -91,6 +94,8 @@ const enableActions = async (): Promise<void> => {
     default:
       break;
   }
+
+  console.log(filled, !isClosed, isNextApprover);
 
   showActions.value = filled && !isClosed && isNextApprover;
 };

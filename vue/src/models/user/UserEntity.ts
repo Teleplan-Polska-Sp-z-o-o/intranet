@@ -16,9 +16,9 @@ export class UserEntity implements IUserEntity {
   };
   username: string;
   info: {
-    position: null;
-    department: null;
-    decisionMaker: null;
+    position: string | null;
+    department: string | null;
+    decisionMaker: boolean | null;
   };
 
   constructor() {
@@ -28,5 +28,16 @@ export class UserEntity implements IUserEntity {
     this.settings = { theme: "", language: "", id: 0 };
     this.username = "";
     this.info = { position: null, department: null, decisionMaker: null };
+  }
+
+  public buildFromIUserEntity(entity: IUserEntity): UserEntity {
+    this.domain = entity.domain;
+    this.id = entity.id;
+    this.permission = entity.permission;
+    this.settings = entity.settings;
+    this.username = entity.username;
+    this.info = entity.info;
+
+    return this;
   }
 }

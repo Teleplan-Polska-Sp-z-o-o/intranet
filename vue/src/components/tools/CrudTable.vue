@@ -11,7 +11,7 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const props = defineProps<{
   headers: any;
-  sortBy: Array<{ key: string; order?: boolean | "asc" | "desc" }>;
+  sortBy: Array<{ key: string; order?: boolean | "asc" | "desc" }> | undefined;
 
   searchBy: Array<string>; // header keys
   toolbarTitle: string;
@@ -37,6 +37,7 @@ const props = defineProps<{
   loadItems?: true;
 
   filters?: boolean;
+  filtersCallback?: Function;
 }>();
 
 const emit = defineEmits(["save-data", "emit-table-change", "responseStatus"]);
@@ -305,7 +306,11 @@ const handleFilters = (filters: { callback: Function }) => {
           </table-dialog>
         </v-toolbar>
 
-        <table-filters v-if="props.filters" @filters="handleFilters">
+        <table-filters
+          v-if="props.filters"
+          :callback="props.filtersCallback"
+          @filters="handleFilters"
+        >
           <slot name="table-filters"></slot>
         </table-filters>
       </template>

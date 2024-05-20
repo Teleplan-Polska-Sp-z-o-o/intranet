@@ -4,7 +4,7 @@ import { nodeConfig } from "../../../../../config/env";
 import { PDFHelper } from "../../../../../models/common/PDFHelper";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
-// import AcceptOrReject from "./AcceptOrReject.vue";
+import AcceptOrReject from "./AcceptOrReject.vue";
 import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 import { useEditorStore } from "../../../../../stores/editorStore";
