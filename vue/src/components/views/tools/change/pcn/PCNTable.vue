@@ -86,7 +86,6 @@ const reqData = ref<FormData | null>(null);
 const handleSaveData = (
   data: { fields: IProcessChangeNoticeFields } & { assesser: IUser } & { noticeId: number }
 ) => {
-  console.log(data);
   if (!data) return;
 
   const { assesser, fields, noticeId } = data;
@@ -101,7 +100,13 @@ const handleSaveData = (
 
 const manager = new ProcessChangeNoticeManager();
 
-const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
+const handleResponseStatus = (status: IResponseStatus) => {
+  try {
+    emit("responseStatus", status);
+  } catch (error) {
+    console.error(`PCNTable at handleResponseStatus, ${error}`);
+  }
+};
 
 const loadItems = ref<true | undefined>(undefined);
 const handleLoadItems = () => {

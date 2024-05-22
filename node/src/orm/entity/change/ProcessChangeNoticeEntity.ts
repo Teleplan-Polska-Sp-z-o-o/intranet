@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  JoinColumn,
+  EntityManager,
+} from "typeorm";
 import { ProcessChangeRequest } from "./ProcessChangeRequestEntity";
 import { IProcessChangeNotice } from "../../../interfaces/change/IProcessChangeNotice";
 import { IProcessChangeNoticeFields } from "../../../interfaces/change/IProcessChangeNoticeFields";
@@ -6,6 +13,13 @@ import { Helper } from "../../../models/common/Helper";
 import { ProcessChangeNoticeUpdates } from "./ProcessChangeNoticeUpdatesEntity";
 import { Department } from "../document/DepartmentEntity";
 import { IUser } from "../../../interfaces/user/IUser";
+import { User, User as UserEntity } from "../user/UserEntity";
+import { NotificationBuilder } from "../user/NotificationBuilder";
+import { ENotificationSource } from "../../../interfaces/user/notification/ENotificationSource";
+import { ENotificationAction } from "../../../interfaces/user/notification/ENotificationAction";
+import { saveNotification } from "../../../controllers/common/notificationController";
+import { getWebSocketConnections } from "../../../controllers/common/websocketController";
+import { ProcessChangeNoticeFields } from "../../../models/change/pcn/ProcessChangeNoticeFields";
 
 @Entity()
 class ProcessChangeNotice implements IProcessChangeNotice {
@@ -242,10 +256,10 @@ class ProcessChangeNotice implements IProcessChangeNotice {
 
   public assess = (
     request: ProcessChangeRequest,
-    department: Department,
-    user: IUser,
+    departmentName: Department["name"],
+    username: User["username"],
     assessment: "approve" | "rejection"
-  ): ProcessChangeNotice => {
+  ): { notice: ProcessChangeNotice; assessments: { eng: boolean; qua: boolean; ded: boolean } } => {
     try {
       const decision = assessment === "approve" ? true : false;
       const decisionDateString = Helper.formatDate(new Date(), "pcn assessment");
@@ -270,31 +284,296 @@ class ProcessChangeNotice implements IProcessChangeNotice {
       //       `'department' doesn't match any of available switch cases at ProcessChangeNotice at assessByDepartment.`
       //     );
       // }
+      let flags: { eng: boolean; qua: boolean; ded: boolean } = {
+        eng: false,
+        qua: false,
+        ded: false,
+      };
 
-      if (this.engineeringDepartmentName === department.name) {
+      if (
+        !this.engineeringDepartmentApproval &&
+        this.engineeringDepartmentName === departmentName
+      ) {
         this.engineeringDepartmentApproval = decision;
-        this.engineeringDepartmentApproverUsername = user.username;
+        this.engineeringDepartmentApproverUsername = username;
         this.engineeringDepartmentApprovalDate = decisionDateString;
-      } else if (this.qualityDepartmentName) {
+
+        flags.eng = true;
+
+        if (
+          (this.engineeringDepartmentName === departmentName && request.dedicatedDepartment) ===
+          departmentName
+        ) {
+          this.dedicatedDepartmentApproval = decision;
+          this.dedicatedDepartmentApproverUsername = username;
+          this.dedicatedDepartmentApprovalDate = decisionDateString;
+
+          flags.ded = true;
+        }
+      } else if (
+        this.engineeringDepartmentApproval &&
+        !this.qualityDepartmentApproval &&
+        this.qualityDepartmentName === departmentName
+      ) {
         this.qualityDepartmentApproval = decision;
-        this.qualityDepartmentApproverUsername = user.username;
+        this.qualityDepartmentApproverUsername = username;
         this.qualityDepartmentApprovalDate = decisionDateString;
-      } else if (request.dedicatedDepartment === department.name) {
+
+        flags.qua = true;
+
+        if (
+          (this.qualityDepartmentName === departmentName && request.dedicatedDepartment) ===
+          departmentName
+        ) {
+          this.dedicatedDepartmentApproval = decision;
+          this.dedicatedDepartmentApproverUsername = username;
+          this.dedicatedDepartmentApprovalDate = decisionDateString;
+
+          flags.ded = true;
+        }
+      } else if (
+        this.engineeringDepartmentApproval &&
+        this.qualityDepartmentApproval &&
+        request.dedicatedDepartment === departmentName
+      ) {
         this.dedicatedDepartmentApproval = decision;
-        this.dedicatedDepartmentApproverUsername = user.username;
+        this.dedicatedDepartmentApproverUsername = username;
         this.dedicatedDepartmentApprovalDate = decisionDateString;
+
+        flags.ded = true;
       } else {
         throw new Error(
-          `'department' doesn't match any of available switch cases at ProcessChangeNotice at assessByDepartment.`
+          `'department' doesn't match any of available if cases at ProcessChangeNotice at assessByDepartment.`
         );
       }
       // const map: Map<number, null | "approve" | "rejection"> = JSON.parse(this.departmentApprovals);
       // this.departmentApprovals = JSON.stringify(map.set(department, assessment));
 
-      return this;
+      return { notice: this, assessments: flags };
     } catch (error) {
       console.log(error);
     }
+  };
+
+  /*
+
+Approvals:
+
+1. Reassigned => designated person
+2. Assigned => designated person
+
+3. Completed => engineering dep
+4. Engineering Approval => quality dep
+5. Quality Approval (optional) => dedicated dep
+
+6. Updated Uncompleted => engineering dep
+7. Updated Completed => engineering dep
+8. Updated Engineering Approval => quality dep
+8. Updated Quality Approval => dedicated dep
+
+*/
+
+  public notification = async (
+    entityManager: EntityManager,
+    request: ProcessChangeRequest,
+    variant:
+      | "reassigned" // person designated removed => sent to old designated person
+      | "assigned" // person designated assigned => sent to new designated person
+      //
+      | "completed" // before eng approval => sent to engineering department
+      | "engineering approval" // after approval => sent to quality department
+      | "quality approval" // after approval => sent to dedicated department if differs from eng and qua deps.
+      | "updated completed" // after notice update and completion => sent to engineering department
+      | "updated uncompleted" // after notice update but uncompleted => sent to engineering department
+      | "updated engineering approval" // after eng approval and notice status updateable => sent to quality department
+      | "updated quality approval" // after quality approval and notice status updateable => sent to dedicated department if differs from eng and qua deps.
+  ): Promise<UserEntity | Array<UserEntity> | null> => {
+    let recipients: UserEntity | Array<UserEntity> | null = null;
+
+    const recipientDbFormat = (userNormalized: string): string => {
+      try {
+        return userNormalized.toLocaleLowerCase().replace(" ", ".");
+      } catch (error) {
+        console.error(
+          `ProcessChangeNoticeEntity at recipientDbFormat, recipient given: ${this.personDesignatedForImplementation}, ${error}`
+        );
+        return "";
+      }
+    };
+
+    const nextDepartmentToApprove = (): string => {
+      try {
+        if (!this.engineeringDepartmentApproval) return this.engineeringDepartmentName;
+        if (this.engineeringDepartmentApproval && !this.qualityDepartmentApproval)
+          return this.qualityDepartmentName;
+        if (this.qualityDepartmentApproval && !this.dedicatedDepartmentApproval)
+          return request.dedicatedDepartment;
+      } catch (error) {
+        console.error(`ProcessChangeNoticeEntity at nextDepartmentToApprove, ${error}`);
+        return "";
+      }
+    };
+
+    switch (variant) {
+      case "reassigned":
+      case "assigned":
+        const userOptions = {
+          where: { username: recipientDbFormat(this.personDesignatedForImplementation) },
+        };
+        recipients = await entityManager.getRepository(UserEntity).findOne(userOptions);
+
+        break;
+
+      default:
+        const queryBuilder = entityManager
+          .getRepository(UserEntity)
+          .createQueryBuilder("user")
+          .leftJoinAndSelect("user.permission", "permission")
+          .leftJoinAndSelect("user.settings", "settings")
+          .leftJoinAndSelect("user.info", "info")
+          .andWhere("permission.write = :write", { write: true })
+          .andWhere("permission.control = :control", {
+            control: true,
+          });
+
+        let users: Array<UserEntity> = await queryBuilder.getMany();
+
+        users.filter(
+          (user) => user.info.decisionMaker && user.info.department === nextDepartmentToApprove()
+        );
+
+        recipients = users;
+        break;
+    }
+
+    if (recipients === null) {
+      console.error(
+        `ProcessChangeNoticeEntity at if (recipients === null), recipients evaluate to null`
+      );
+      return;
+    }
+
+    let body: { title?: string; subtitle?: string; link?: string } = {};
+    switch (variant) {
+      case "reassigned":
+        body = {
+          title: `PCN Person Designated Change`,
+          subtitle: `You are no longer the person designated of notice ${this.numberOfNotice}.`,
+          link: `/tool/change/browse/pcn/${this.id}`,
+        };
+        break;
+      case "assigned":
+        body = {
+          title: `PCN Person Designated Change`,
+          subtitle: `You have been assigned as the person designated of notice ${this.numberOfNotice}.`,
+          link: `/tool/change/browse/pcn/${this.id}`,
+        };
+        break;
+      //
+      //
+      case "completed":
+        body = {
+          title: `PCN Completion`,
+          subtitle: `Notice ${this.numberOfNotice} has been completed and is awaiting your review.`,
+          link: `/tool/change/browse/pcn/${this.id}`,
+        };
+        break;
+      case "engineering approval":
+        body = {
+          title: `PCN Engineering Approval`,
+          subtitle: `Notice ${this.numberOfNotice} has been approved by the engineering department and is awaiting further review.`,
+          link: `/tool/change/browse/pcn/${this.id}`,
+        };
+        break;
+      case "quality approval":
+        body = {
+          title: `PCN Quality Approval`,
+          subtitle: `Notice ${this.numberOfNotice} has been approved by the quality department and is awaiting further review.`,
+          link: `/tool/change/browse/pcn/${this.id}`,
+        };
+        break;
+      case "updated completed":
+        body = {
+          title: `PCN Updated and Completed`,
+          subtitle: `Notice ${this.numberOfNotice} has been updated and completed. Please review the changes.`,
+          link: `/tool/change/browse/pcn/${this.id}`,
+        };
+        break;
+      case "updated uncompleted":
+        body = {
+          title: `PCN Update`,
+          subtitle: `Notice ${this.numberOfNotice} has been updated, but some fields remain incomplete. You will be notified when it's ready for review.`,
+          link: `/tool/change/browse/pcn/${this.id}`,
+        };
+        break;
+      case "updated engineering approval":
+        body = {
+          title: `PCN Updated and Engineering Approved`,
+          subtitle: `Notice ${this.numberOfNotice} has been updated and approved by engineering department. It is now awaiting further review.`,
+          link: `/tool/change/browse/pcn/${this.id}`,
+        };
+        break;
+      case "updated quality approval":
+        body = {
+          title: `PCN Updated and Quality Approved`,
+          subtitle: `Notice ${this.numberOfNotice} has been updated and approved by quality department. It is now awaiting further review.`,
+          link: `/tool/change/browse/pcn/${this.id}`,
+        };
+        break;
+    }
+
+    if (Object.keys(body).length === 0)
+      throw new Error(`Notification body at ProcessChangeNoticeEntity evaluates to empty object.`);
+
+    if (Array.isArray(recipients)) {
+      for (const recipient of recipients) {
+        const userNotification = new NotificationBuilder(
+          ENotificationSource.PCN,
+          ENotificationAction.AcceptOrReject
+        )
+          .setUser(recipient)
+          .setTitle(body.title)
+          .setSubtitle(body.subtitle)
+          .setLink(body.link)
+          .build();
+
+        saveNotification(userNotification);
+
+        const websocketConnections = getWebSocketConnections();
+
+        const foundRecipientConnection = websocketConnections.find(
+          (connection) => connection.user.username === recipient.username
+        );
+
+        if (foundRecipientConnection) {
+          foundRecipientConnection.ws.send(JSON.stringify(userNotification));
+        }
+      }
+    } else {
+      const userNotification = new NotificationBuilder(
+        ENotificationSource.PCN,
+        ENotificationAction.AcceptOrReject
+      )
+        .setUser(recipients)
+        .setTitle(body.title)
+        .setSubtitle(body.subtitle)
+        .setLink(body.link)
+        .build();
+
+      saveNotification(userNotification);
+
+      const websocketConnections = getWebSocketConnections();
+
+      const foundRecipientConnection = websocketConnections.find(
+        (connection) => connection.user.username === recipients.username
+      );
+
+      if (foundRecipientConnection) {
+        foundRecipientConnection.ws.send(JSON.stringify(userNotification));
+      }
+    }
+
+    return recipients;
   };
 
   public compare = (fields: IProcessChangeNoticeFields): Array<string> => {
@@ -319,6 +598,58 @@ class ProcessChangeNotice implements IProcessChangeNotice {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  public isReassigned = (
+    fields: IProcessChangeNoticeFields
+  ): { bool: boolean; oldPerson: string | null; newPerson: string | null } => {
+    const bool: boolean =
+      this.personDesignatedForImplementation &&
+      this.personDesignatedForImplementation !== fields.personDesignatedForImplementation;
+    const oldPerson: string | null = this.personDesignatedForImplementation;
+    const newPerson: string | null = fields.personDesignatedForImplementation;
+
+    return { bool, oldPerson, newPerson };
+  };
+
+  /* 
+  changeDescription: string;
+  areDocumentationChangesRequired: boolean;
+  listOfDocumentationToChange: string;
+  isNewDocumentationRequired: boolean;
+  listOfDocumentationToCreate: string;
+
+  isCustomerApprovalRequired: boolean;
+  // departmentsRequiredForApproval: string;
+  engineeringDepartmentName: string;
+  qualityDepartmentName: string;
+  personDesignatedForImplementation: string;
+
+  updateDescription: string; // it doesnt 
+
+  */
+  public isFilled = (): boolean => {
+    const isNotNullOrUndefined = (value: any): boolean => {
+      return value !== undefined && value !== null;
+    };
+
+    const fields: ProcessChangeNoticeFields = new ProcessChangeNoticeFields().build(this);
+
+    const filled = Object.entries(fields)
+      .filter(([key]) => key !== "updateDescription")
+      .every(([key, value]) => {
+        switch (key) {
+          case "listOfDocumentationToChange":
+            return this.areDocumentationChangesRequired ? isNotNullOrUndefined(value) : true;
+          case "listOfDocumentationToCreate":
+            return this.isNewDocumentationRequired ? isNotNullOrUndefined(value) : true;
+
+          default:
+            return isNotNullOrUndefined(value);
+        }
+      });
+
+    return filled;
   };
 }
 

@@ -93,8 +93,8 @@ const custom = computed(() => {
   };
 });
 
-const ownerTitle = ref<string>('');
-(async () => ownerTitle.value = await custom.value.ownerTitle)();
+const ownerTitle = ref<string>("");
+(async () => (ownerTitle.value = await custom.value.ownerTitle))();
 
 const updates = ref<Array<IProcessChangeRequestUpdates>>([]);
 
@@ -218,7 +218,7 @@ const request = computed(() => {
         col1: "Title",
         col2: "",
         col3: "Title",
-        col4: ownerTitle.value,
+        col4: item.value.assessment === "Implementation" ? ownerTitle.value : "",
       },
       {
         col1: "Date",

@@ -9,6 +9,7 @@ import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 import { useEditorStore } from "../../../../../stores/editorStore";
 import { IProcessChangeNoticeUpdates } from "../../../../../interfaces/change/IProcessChangeNoticeUpdates";
+import { IProcessChangeNotice } from "../../../../../interfaces/change/IProcessChangeNotice";
 
 const emit = defineEmits(["responseStatus", "loadItems"]);
 
@@ -21,10 +22,27 @@ const props = defineProps<{
 const backend = `${nodeConfig.origin}:${nodeConfig.port}/uploads/common/`;
 const logoSource = `${backend}reconext-logo.png`;
 
-const itemId: number = props.item.id;
+const requestId: number = props.item.id;
 const manager = new ProcessChangeNoticeManager();
 
 const item = ref<IProcessChangeRequest>(props.item);
+
+// const noticeId = computed<number>(() => {
+//   try {
+//     if (item.value.processChangeNotice) return item.value.processChangeNotice.id;
+//     else return 0;
+//   } catch (error) {
+//     console.log("noticeId", error);
+//     return 0;
+//   }
+// });
+const noticeId = props.item.processChangeNotice?.id as number;
+
+const updates = ref<Array<IProcessChangeNoticeUpdates>>([]);
+
+const getUpdates = async () => {
+  updates.value = noticeId ? await manager.getNoticeUpdates(noticeId) : [];
+};
 
 // const route = useRoute();
 // const no = ref<string | undefined>((route.params.no as string) || undefined);
@@ -42,41 +60,49 @@ const checkActions = ref<true | null>(null);
 const handleResetActions = () => (checkActions.value = null);
 
 watch(openDialog, async (newOpenDialog, oldOpenDialog) => {
-  if (oldOpenDialog !== true && newOpenDialog !== false) {
-    item.value = await manager.getNotice(itemId);
-    showAOR.value = true;
-    checkActions.value = true;
-  } else if (oldOpenDialog === true && newOpenDialog === false) {
-    router.push({ path: `/tool/change/browse/pcn` });
+  try {
+    if (oldOpenDialog !== true && newOpenDialog !== false) {
+      item.value = await manager.getNotice(requestId);
+      // getUpdates();
+      showAOR.value = true;
+      checkActions.value = true;
+    } else if (oldOpenDialog === true && newOpenDialog === false) {
+      router.push({ path: `/tool/change/browse/pcn` });
+    }
+  } catch (error) {
+    console.error(`watch openDialog ${error}`);
   }
 });
 
 // to format
-const formatRequestedBy = () => {
-  if (!item.value) return "";
-  const parts: Array<string> = item.value.requestedBy.split(".");
-  return parts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
-};
 
 const formatReasonAndDescription = (value: string | undefined | null) => {
-  if (!item.value) return "";
+  try {
+    if (!value) return "";
 
-  // const changeReasonDefault = `<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>`;
-  // const changeDescriptionDefault = `<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>`;
+    // const changeReasonDefault = `<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>`;
+    // const changeDescriptionDefault = `<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>`;
 
-  const editorStore = useEditorStore();
+    const editorStore = useEditorStore();
 
-  const changeReasonDefault: string = editorStore.getDefault("change-reason");
-  const changeDescriptionDefault: string = editorStore.getDefault("change-description");
+    const changeReasonDefault: string = editorStore.getDefault("change-reason");
+    const changeDescriptionDefault: string = editorStore.getDefault("change-description");
 
-  if (value === changeReasonDefault || value === changeDescriptionDefault) return "";
+    if (value === changeReasonDefault || value === changeDescriptionDefault) return "";
 
-  return value;
+    return value;
+  } catch (error) {
+    console.error(`formatReasonAndDescription ${error}`);
+  }
 };
 
 const formatBooleans = (value: boolean | undefined | null) => {
-  if (typeof value !== "boolean") return "";
-  return value === true ? "Yes" : "No";
+  try {
+    if (typeof value !== "boolean") return "";
+    return value === true ? "Yes" : "No";
+  } catch (error) {
+    console.error(`formatBooleans ${error}`);
+  }
 };
 
 const isJSON = (value: string) => {
@@ -89,72 +115,65 @@ const isJSON = (value: string) => {
 };
 
 const formatLists = (value: string | undefined | null) => {
-  if (!value) return "";
+  try {
+    if (!value) return "";
 
-  if (isJSON(value)) {
-    const val = JSON.parse(value);
-    if (Array.isArray(val) && val.length > 0 && typeof val[0] === "string") {
-      return val.join(", ");
+    if (isJSON(value)) {
+      const val = JSON.parse(value);
+      if (Array.isArray(val) && val.length > 0 && typeof val[0] === "string") {
+        return val.join(", ");
+      }
+    } else {
+      return "";
     }
-  } else {
-    return "";
+  } catch (error) {
+    console.error(`formatLists ${error}`);
   }
 };
 
-const formatApprover = (username: string | null | undefined) => {
-  if (!username) return "";
+const formatUser = (username: string | null | undefined) => {
+  try {
+    if (!username) return "";
+    if (!username.includes(".")) return username;
 
-  const [firstName, lastName] = username.split(".");
-  const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-  const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
-  return `${formattedFirstName} ${formattedLastName}`;
+    const [firstName, lastName] = username.split(".");
+    const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+    const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1);
+    return `${formattedFirstName} ${formattedLastName}`;
+  } catch (error) {
+    console.error(`formatUser ${error}`);
+  }
 };
 
 const custom = computed(() => {
-  return {
-    requestedBy: formatRequestedBy(),
-    changeReason: formatReasonAndDescription(item.value.changeReason),
-    changeDescription: formatReasonAndDescription(
-      item.value.processChangeNotice?.changeDescription
-    ),
-    areDocumentationChangesRequired: formatBooleans(
-      item.value.processChangeNotice?.areDocumentationChangesRequired
-    ),
-    isNewDocumentationRequired: formatBooleans(
-      item.value.processChangeNotice?.isNewDocumentationRequired
-    ),
-    listOfDocumentationToChange: formatLists(
-      item.value.processChangeNotice?.listOfDocumentationToChange
-    ),
-    listOfDocumentationToCreate: formatLists(
-      item.value.processChangeNotice?.listOfDocumentationToCreate
-    ),
-    engineeringDepartmentApprover: formatApprover(
-      item.value.processChangeNotice?.engineeringDepartmentApproverUsername
-    ),
-    qualityDepartmentApprover: formatApprover(
-      item.value.processChangeNotice?.qualityDepartmentApproverUsername
-    ),
-    dedicatedDepartmentApprover: formatApprover(
-      item.value.processChangeNotice?.dedicatedDepartmentApproverUsername
-    ),
-  };
+  let notice: IProcessChangeNotice | null;
+  try {
+    notice = item.value.processChangeNotice;
+    return {
+      requestedBy: formatUser(item.value.requestedBy),
+      changeReason: formatReasonAndDescription(item.value.changeReason),
+      changeDescription: formatReasonAndDescription(notice?.changeDescription),
+      areDocumentationChangesRequired: formatBooleans(notice?.areDocumentationChangesRequired),
+      isNewDocumentationRequired: formatBooleans(notice?.isNewDocumentationRequired),
+      listOfDocumentationToChange: formatLists(notice?.listOfDocumentationToChange),
+      listOfDocumentationToCreate: formatLists(notice?.listOfDocumentationToCreate),
+      engineeringDepartmentApprover: formatUser(notice?.engineeringDepartmentApproverUsername),
+      qualityDepartmentApprover: formatUser(notice?.qualityDepartmentApproverUsername),
+      dedicatedDepartmentApprover: formatUser(notice?.dedicatedDepartmentApproverUsername),
+      personDesignatedForImplementation: formatUser(notice?.personDesignatedForImplementation),
+    };
+  } catch (error) {
+    notice = item.value.processChangeNotice;
+    throw new Error(
+      `item.value.processChangeNotice evaluates to ${notice} at PCNView.. error: ${error}`
+    );
+  }
 });
-
-const updates = ref<Array<IProcessChangeNoticeUpdates>>([]);
-
-const getUpdates = async () => {
-  updates.value = item.value.processChangeNotice?.id
-    ? await manager.getNoticeUpdates(item.value.processChangeNotice.id)
-    : [];
-};
-
-getUpdates();
 
 watch(
   item,
   () => {
-    getUpdates();
+    if (item) getUpdates();
   },
   { deep: true }
 );
@@ -205,6 +224,10 @@ const request = computed(() => {
         col1: "Change Description",
         col2: custom.value.changeDescription,
       },
+      {
+        col1: "Person Designated For Implementation",
+        col2: custom.value.personDesignatedForImplementation,
+      },
     ],
     documentation: [
       {
@@ -241,7 +264,7 @@ const request = computed(() => {
       },
       {
         col1: "Dedicated Department Approver",
-        col2: custom.value.dedicatedDepartmentApprover,
+        col2: custom.value.dedicatedDepartmentApprover ?? "",
         col3: "Date",
         col4: item.value.processChangeNotice?.dedicatedDepartmentApprovalDate ?? "",
       },
@@ -261,21 +284,29 @@ const request = computed(() => {
 
 const router = useRouter();
 
-const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChangeRequest }) => {
-  emit("responseStatus", closeData.response);
-  emit("loadItems");
+const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChangeNotice }) => {
+  try {
+    emit("responseStatus", closeData.response);
+    emit("loadItems");
 
-  item.value = closeData.closed;
+    item.value.processChangeNotice = closeData.closed;
 
-  router.push({ path: `/tool/change/browse/pcn` });
-  openDialog.value = false;
+    router.push({ path: `/tool/change/browse/pcn` });
+    openDialog.value = false;
 
-  showAOR.value = false;
+    showAOR.value = false;
+  } catch (error) {
+    console.error(`handleClose ${error}`);
+  }
 };
 
 const open = () => {
-  router.push({ path: `/tool/change/browse/pcn/${item.value.id}` });
-  openDialog.value = true;
+  try {
+    router.push({ path: `/tool/change/browse/pcn/${noticeId}` });
+    openDialog.value = true;
+  } catch (error) {
+    console.error(`open ${error}`);
+  }
 };
 </script>
 
@@ -406,6 +437,22 @@ const open = () => {
                     v-html="col"
                   />
                 </template>
+                <template v-if="item.value.processChangeNotice?.isCustomerApprovalRequired">
+                  <v-col
+                    cols="3"
+                    class="text-body-2 border-s-md"
+                    style="background-color: #e9e7e7"
+                    v-html="'Customer Approver'"
+                  />
+                  <v-col cols="3" class="text-body-2" />
+                  <v-col
+                    cols="3"
+                    class="text-body-2"
+                    style="background-color: #e9e7e7"
+                    v-html="'Date and Signature'"
+                  />
+                  <v-col cols="3" class="text-body-2" />
+                </template>
               </v-row>
               <v-row
                 v-if="updateHistory.length > 0"
@@ -450,7 +497,8 @@ const open = () => {
           <accept-or-reject
             v-if="showAOR"
             variant="reject"
-            :pcnId="itemId"
+            :pcrId="requestId"
+            :pcnId="noticeId"
             @close="handleClose"
             :checkActions="checkActions"
             @resetActions="handleResetActions"
@@ -459,7 +507,8 @@ const open = () => {
           <accept-or-reject
             v-if="showAOR"
             variant="accept"
-            :pcnId="itemId"
+            :pcrId="requestId"
+            :pcnId="noticeId"
             @close="handleClose"
             :checkActions="checkActions"
             @resetActions="handleResetActions"

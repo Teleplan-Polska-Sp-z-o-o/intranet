@@ -10,6 +10,7 @@ import { useI18n } from "vue-i18n";
 import { IProcessChangeNoticeFields } from "../../../../../interfaces/change/IProcessChangeNoticeFields";
 import { UserManager } from "../../../../../models/user/UserManager";
 import { IUserEntity } from "../../../../../interfaces/user/IUserEntity";
+import { IProcessChangeNotice } from "../../../../../interfaces/change/IProcessChangeNotice";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -35,7 +36,7 @@ const nextStep = () => {
 };
 const prevable = computed(() => activeStep.value > 1);
 const nextable = computed(() => activeStep.value < 4);
-console.log(props.componentProps.editedItem.processChangeNotice);
+
 const noticeId = props.componentProps.editedItem.processChangeNotice.id;
 const noticeUpdatable: boolean = props.componentProps.editedItem.processChangeNotice.updatable;
 const editorStore = useEditorStore();
@@ -73,6 +74,10 @@ const notice = ref<IProcessChangeNoticeFields>({
   updateDescription: null,
 });
 
+const handleEditorDataChange = (key: string) => {
+  notice.value.changeDescription = editorStore.get(key);
+};
+
 const departments = ref<Array<string>>([]);
 
 const departmentsManager = new DepartmentsManager();
@@ -103,27 +108,26 @@ const reconextUsers = ref<Array<string>>([]);
 const newNoticeData = computed<
   { fields: IProcessChangeNoticeFields } & { assesser: IUser } & { noticeId: number }
 >((): { fields: IProcessChangeNoticeFields } & { assesser: IUser } & { noticeId: number } => {
-  const req: IProcessChangeNoticeFields = notice.value;
   const user: IUser | false = userStore.info();
 
   if (!user) throw new Error("User evaluates to false, user's local store is empty");
 
   const object: IProcessChangeNoticeFields = {
-    changeDescription: req.changeDescription,
-    areDocumentationChangesRequired: req.areDocumentationChangesRequired,
-    listOfDocumentationToChange: req.listOfDocumentationToChange,
-    isNewDocumentationRequired: req.isNewDocumentationRequired,
-    listOfDocumentationToCreate: req.listOfDocumentationToCreate,
-    isCustomerApprovalRequired: req.isCustomerApprovalRequired,
-    // departmentsRequiredForApproval: req.departmentsRequiredForApproval,
-    engineeringDepartmentName: req.engineeringDepartmentName,
-    qualityDepartmentName: req.qualityDepartmentName,
-    personDesignatedForImplementation: req.personDesignatedForImplementation,
-    updateDescription: req.updateDescription,
+    changeDescription: notice.value.changeDescription,
+    areDocumentationChangesRequired: notice.value.areDocumentationChangesRequired,
+    listOfDocumentationToChange: notice.value.listOfDocumentationToChange,
+    isNewDocumentationRequired: notice.value.isNewDocumentationRequired,
+    listOfDocumentationToCreate: notice.value.listOfDocumentationToCreate,
+    isCustomerApprovalRequired: notice.value.isCustomerApprovalRequired,
+    // departmentsRequiredForApproval: notice.value.departmentsRequiredForApproval,
+    engineeringDepartmentName: notice.value.engineeringDepartmentName,
+    qualityDepartmentName: notice.value.qualityDepartmentName,
+    personDesignatedForImplementation: notice.value.personDesignatedForImplementation,
+    updateDescription: notice.value.updateDescription,
   };
-
+  // fields: { ...object, changeDescription: editorStore.get("notice-change-description") },
   return {
-    fields: { ...object, changeDescription: editorStore.get("notice-change-description") },
+    fields: object,
     assesser: user,
     noticeId,
   };
@@ -131,23 +135,24 @@ const newNoticeData = computed<
 
 type Completed = { step1: boolean; step2: boolean; step3: boolean };
 const completed = computed<Completed>(() => {
-  const noti = notice.value;
-
-  const step1 = !!noti.changeDescription && noti.changeDescription !== baseChangeDescription;
+  const step1 =
+    !!notice.value.changeDescription && notice.value.changeDescription !== baseChangeDescription;
   const step2 =
-    noti.areDocumentationChangesRequired !== null &&
-    (!!noti.areDocumentationChangesRequired
-      ? !!noti.listOfDocumentationToChange && noti.listOfDocumentationToChange?.length > 0
+    notice.value.areDocumentationChangesRequired !== null &&
+    (!!notice.value.areDocumentationChangesRequired
+      ? !!notice.value.listOfDocumentationToChange &&
+        notice.value.listOfDocumentationToChange?.length > 0
       : true) &&
-    noti.isNewDocumentationRequired !== null &&
-    (!!noti.isNewDocumentationRequired
-      ? !!noti.listOfDocumentationToCreate && noti.listOfDocumentationToCreate?.length > 0
+    notice.value.isNewDocumentationRequired !== null &&
+    (!!notice.value.isNewDocumentationRequired
+      ? !!notice.value.listOfDocumentationToCreate &&
+        notice.value.listOfDocumentationToCreate?.length > 0
       : true);
   const step3 =
-    noti.personDesignatedForImplementation !== null &&
-    noti.isCustomerApprovalRequired !== null &&
-    noti.engineeringDepartmentName !== undefined &&
-    noti.qualityDepartmentName !== undefined &&
+    notice.value.personDesignatedForImplementation !== null &&
+    notice.value.isCustomerApprovalRequired !== null &&
+    notice.value.engineeringDepartmentName !== undefined &&
+    notice.value.qualityDepartmentName !== undefined &&
     (noticeUpdatable ? !!notice.value.updateDescription : true);
 
   return {
@@ -185,43 +190,51 @@ const qualityDepartmentRule = (value: string) => {
   return t("tools.change.tabs.pcn.stepper.qualityDepartmentRule");
 };
 
+const updatedFields = computed((): Array<string> => {
+  try {
+    const editedItem: IProcessChangeNotice | null =
+      props.componentProps.editedItem?.processChangeNotice;
+    if (editedItem) {
+      const fields: Array<string> = [];
+
+      for (const key in notice.value) {
+        switch (key) {
+          case "updateDescription":
+            continue;
+
+          default:
+            if (notice.value[key] !== editedItem[key]) {
+              fields.push(key);
+            }
+            continue;
+        }
+      }
+
+      return fields;
+    } else return [];
+  } catch (error) {
+    console.error(`PCN Stepper at updatedFields, ${error}`);
+    return [];
+  }
+});
+
 watch(activeStep, (newActiveStep) => {
-  notice.value = {
-    ...notice.value,
-    changeDescription: editorStore.get("notice-change-description"),
-  };
+  // notice.value = {
+  //   ...notice.value,
+  //   changeDescription: editorStore.get("notice-change-description"),
+  // };
 
   if (newActiveStep === 4 && departmentsTest.value) {
-    if (noticeUpdatable && notice.value.updateDescription) {
+    if (noticeUpdatable && updatedFields.value.length > 0 && notice.value.updateDescription) {
       emit("verified", false);
       emit("save-data", newNoticeData.value);
-    } else if (!noticeUpdatable) {
+    } else if (!noticeUpdatable || updatedFields.value.length === 0) {
       emit("verified", false);
       emit("save-data", newNoticeData.value);
     }
   } else {
     emit("verified", true);
   }
-});
-
-const updatedFields = computed(() => {
-  const editedItem = props.componentProps.editedItem.processChangeNotice;
-  const fields: Array<string> = [];
-
-  for (const key in notice.value) {
-    switch (key) {
-      case "updateDescription":
-        continue;
-
-      default:
-        if (notice.value[key] !== editedItem[key]) {
-          fields.push(key);
-        }
-        continue;
-    }
-  }
-
-  return fields;
 });
 </script>
 
@@ -269,7 +282,10 @@ const updatedFields = computed(() => {
     <v-stepper-window>
       <v-stepper-window-item :value="1">
         <v-card flat>
-          <ck-editor editorKey="notice-change-description"></ck-editor>
+          <ck-editor
+            editorKey="notice-change-description"
+            @editorDataChange="handleEditorDataChange"
+          ></ck-editor>
         </v-card>
       </v-stepper-window-item>
 
@@ -458,20 +474,20 @@ const updatedFields = computed(() => {
             <v-alert
               type="warning"
               border="start"
-              :title="$t(`tools.change.tabs.pcr.stepper.alerts.remainder.title`)"
+              :title="$t(`tools.change.tabs.pcn.stepper.alerts.remainder.title`)"
               variant="tonal"
             >
-              {{ $t(`tools.change.tabs.pcr.stepper.alerts.remainder.text`) }}
+              {{ $t(`tools.change.tabs.pcn.stepper.alerts.remainder.text`) }}
             </v-alert>
             <v-textarea
               class="mt-2"
               v-model="notice.updateDescription"
               variant="underlined"
-              :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].updateDescription`)"
+              :label="$t(`tools.change.tabs.pcn.stepper.vStepperWindowItem['3'].updateDescription`)"
               :rules="updateDescriptionRule"
             ></v-textarea>
             <div class="mb-2">
-              {{ $t(`tools.change.tabs.pcr.stepper.alerts.remainder.fields`) }}
+              {{ $t(`tools.change.tabs.pcn.stepper.alerts.remainder.fields`) }}
             </div>
             <v-chip v-for="chip in updatedFields" class="mr-2"> {{ chip }} </v-chip>
           </template>
@@ -479,18 +495,18 @@ const updatedFields = computed(() => {
             <v-alert
               type="warning"
               border="start"
-              :title="$t(`tools.change.tabs.pcr.stepper.alerts.emptyUpdate.title`)"
+              :title="$t(`tools.change.tabs.pcn.stepper.alerts.emptyUpdate.title`)"
               variant="tonal"
             >
-              {{ $t(`tools.change.tabs.pcr.stepper.alerts.emptyUpdate.text`) }}
+              {{ $t(`tools.change.tabs.pcn.stepper.alerts.emptyUpdate.text`) }}
             </v-alert>
-            <v-textarea
+            <!-- <v-textarea
               class="mt-2"
               v-model="notice.updateDescription"
               variant="underlined"
-              :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].updateDescription`)"
+              :label="$t(`tools.change.tabs.pcn.stepper.vStepperWindowItem['3'].updateDescription`)"
               :rules="updateDescriptionRule"
-            ></v-textarea>
+            ></v-textarea> -->
           </template>
         </v-card>
       </v-stepper-window-item>

@@ -223,26 +223,6 @@ const tests = computed<boolean>(() => {
   return testCustomerContactPerson && testCustomerContactEmail;
 });
 
-watch(activeStep, (newActiveStep) => {
-  if (newActiveStep === 5) {
-    request.value = {
-      ...request.value,
-      changeReason: editorStore.get("change-reason"),
-      changeDescription: editorStore.get("request-change-description"),
-    };
-
-    if (requestUpdatable === true && request.value.updateDescription) {
-      emit("verified", false);
-      emit("save-data", newRequestData.value);
-    } else if (!requestUpdatable) {
-      emit("verified", false);
-      emit("save-data", newRequestData.value);
-    }
-  } else {
-    emit("verified", true);
-  }
-});
-
 const updatedFields = computed(() => {
   const editedItem = props.componentProps.editedItem;
   const fields: Array<string> = [];
@@ -283,6 +263,30 @@ const updatedFields = computed(() => {
   }
 
   return fields;
+});
+
+watch(activeStep, (newActiveStep) => {
+  if (newActiveStep === 5) {
+    request.value = {
+      ...request.value,
+      changeReason: editorStore.get("change-reason"),
+      changeDescription: editorStore.get("request-change-description"),
+    };
+
+    if (
+      requestUpdatable === true &&
+      updatedFields.value.length > 0 &&
+      request.value.updateDescription
+    ) {
+      emit("verified", false);
+      emit("save-data", newRequestData.value);
+    } else if (!requestUpdatable || updatedFields.value.length === 0) {
+      emit("verified", false);
+      emit("save-data", newRequestData.value);
+    }
+  } else {
+    emit("verified", true);
+  }
 });
 </script>
 
@@ -453,7 +457,7 @@ const updatedFields = computed(() => {
             :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].riskAnalysis`)"
           ></v-textarea>
           <v-alert
-            v-if="requestUpdatable && requestNotice"
+            v-if="requestUpdatable && requestNotice && updatedFields.length > 0"
             color="error"
             icon="$warning"
             border="start"
@@ -493,13 +497,13 @@ const updatedFields = computed(() => {
             >
               {{ $t(`tools.change.tabs.pcr.stepper.alerts.emptyUpdate.text`) }}
             </v-alert>
-            <v-textarea
+            <!-- <v-textarea
               class="mt-2"
               v-model="request.updateDescription"
               variant="underlined"
               :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['4'].updateDescription`)"
               :rules="updateDescriptionRule"
-            ></v-textarea>
+            ></v-textarea> -->
           </template>
         </v-card>
       </v-stepper-window-item>

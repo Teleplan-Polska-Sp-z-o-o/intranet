@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, toRef, watchEffect } from "vue";
+import { computed, ref, toRef, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "../../../../../stores/userStore";
 import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
@@ -14,6 +14,7 @@ const emit = defineEmits(["resetActions", "close"]);
 const props = defineProps<{
   checkActions: true | null;
   variant: "accept" | "reject";
+  pcrId: number;
   pcnId: number;
 }>();
 const smallScreen = ref<boolean>(window.innerWidth < 960);
@@ -34,77 +35,88 @@ const user = userStore.info();
 if (!user) throw new Error("User at AcceptOrReject.vue resolve to false.");
 
 const acceptOrReject = async () => {
-  const formData: any = new FormData();
+  try {
+    const formData: any = new FormData();
 
-  formData.append("noticeId", JSON.stringify(props.pcnId));
-  formData.append("assesser", JSON.stringify(user));
+    formData.append("noticeId", JSON.stringify(props.pcnId));
+    formData.append("assesser", JSON.stringify(user));
 
-  const assessment: "approve" | "rejection" = props.variant === "accept" ? "approve" : "rejection";
+    const assessment: "approve" | "rejection" =
+      props.variant === "accept" ? "approve" : "rejection";
 
-  const close: { response: ResponseStatus; assessed: IProcessChangeRequest } = await manager.assess(
-    formData,
-    assessment
-  );
-  dialog.value = false;
+    const close: { response: ResponseStatus; assessed: IProcessChangeRequest } =
+      await manager.assess(formData, assessment);
+    dialog.value = false;
 
-  emit("close", close);
+    emit("close", close);
+  } catch (error) {
+    console.log(`acceptOrReject error: ${error}`);
+  }
 };
 
 const enableActions = async (): Promise<void> => {
-  const request: IProcessChangeRequest = await manager.getNotice(props.pcnId);
-  const notice: IProcessChangeNotice | null = request.processChangeNotice;
-  if (!notice) throw new Error("processChangeNotice at AcceptOrReject.vue resolve to null.");
-  const fields: ProcessChangeNoticeFields = new ProcessChangeNoticeFields().buildFromNotice(notice);
-  const isNotNullOrUndefined = (value: any): boolean => {
-    return value !== undefined && value !== null;
-  };
-  const filled = Object.entries(fields)
-    .filter(([key]) => key !== "updateDescription")
-    .every(([_, value]) => isNotNullOrUndefined(!!value));
-  // const isClosed = notice.status === "Closed";
-  const isClosed = notice.dedicatedDepartmentApproval === true;
+  try {
+    const request: IProcessChangeRequest = await manager.getNotice(props.pcrId);
+    if (request.processChangeNotice === null)
+      throw new Error("processChangeNotice at AcceptOrReject.vue resolve to null.");
+    const notice: IProcessChangeNotice = request.processChangeNotice;
+    const fields: ProcessChangeNoticeFields = new ProcessChangeNoticeFields().buildFromNotice(
+      notice
+    );
+    const isNotNullOrUndefined = (value: any): boolean => {
+      return value !== undefined && value !== null;
+    };
+    const filled = Object.entries(fields)
+      .filter(([key]) => key !== "updateDescription")
+      .every(([_, value]) => isNotNullOrUndefined(!!value));
+    // const isClosed = notice.status === "Closed";
+    const isClosed = notice.dedicatedDepartmentApproval === true;
 
-  // user.username === base.reconextOwner.toLocaleLowerCase().replace(" ", ".");
-  let isNextApprover: boolean = false;
+    // user.username === base.reconextOwner.toLocaleLowerCase().replace(" ", ".");
+    let isNextApprover: boolean = false;
 
-  const engDepartment = notice.engineeringDepartmentName;
-  const quaDepartment = notice.qualityDepartmentName;
-  const dedDepartment = request.dedicatedDepartment;
+    const engDepartment = notice.engineeringDepartmentName;
+    const quaDepartment = notice.qualityDepartmentName;
+    const dedDepartment = request.dedicatedDepartment;
 
-  const engApproval = notice.engineeringDepartmentApproval;
-  const quaApproval = notice.qualityDepartmentApproval;
-  const dedApproval = notice.dedicatedDepartmentApproval;
+    const engApproval = notice.engineeringDepartmentApproval;
+    const quaApproval = notice.qualityDepartmentApproval;
+    const dedApproval = notice.dedicatedDepartmentApproval;
 
-  const userManager = new UserManager();
-  const userInfo = await userManager.getOne(user.username);
-  const userDepartment = userInfo.info.department;
-  const decisionMaker = userInfo.info.decisionMaker;
+    const userManager = new UserManager();
+    const userInfo = await userManager.getOne(user.username);
+    const userDepartment = userInfo.info.department;
+    const decisionMaker = userInfo.info.decisionMaker;
 
-  switch (userDepartment) {
-    case engDepartment:
-      if (!engApproval && decisionMaker) isNextApprover = true;
-      break;
-    case quaDepartment:
-      if (engApproval && !quaApproval && decisionMaker) isNextApprover = true;
-      break;
-    case dedDepartment:
-      if (quaApproval && !dedApproval && decisionMaker) isNextApprover = true;
-      break;
+    switch (userDepartment) {
+      case engDepartment:
+        if (!engApproval && decisionMaker) isNextApprover = true;
+        break;
+      case quaDepartment:
+        if (engApproval && !quaApproval && decisionMaker) isNextApprover = true;
+        break;
+      case dedDepartment:
+        if (quaApproval && !dedApproval && decisionMaker) isNextApprover = true;
+        break;
 
-    default:
-      break;
+      default:
+        break;
+    }
+
+    showActions.value = filled && !isClosed && isNextApprover;
+  } catch (error) {
+    console.log(`enableActions error: ${error}`);
   }
-
-  console.log(filled, !isClosed, isNextApprover);
-
-  showActions.value = filled && !isClosed && isNextApprover;
 };
 
 const showActions = ref<boolean>(false);
 
-onMounted(() => {
-  enableActions();
-});
+// const noticeId = toRef(() => props.pcnId);
+// watchEffect(() => {
+//   if (noticeId.value) {
+//     enableActions(noticeId.value);
+//   }
+// });
 
 const checkActions = toRef(() => props.checkActions);
 

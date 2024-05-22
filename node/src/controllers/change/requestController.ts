@@ -79,7 +79,9 @@ const editRequest = async (req: Request, res: Response) => {
         });
       }
 
-      if (request.status === "Closed") {
+      const updateFields = request.compare(base);
+
+      if (request.status === "Closed" && updateFields.length > 0) {
         const noticeId = request.processChangeNotice?.id;
 
         if (noticeId) {
@@ -115,7 +117,6 @@ const editRequest = async (req: Request, res: Response) => {
 
       switch (updatable) {
         case true:
-          const updateFields = request.compare(base);
           if (updateFields.length === 0) {
             return res.status(200).json({
               message: "No fields require update",
@@ -165,10 +166,23 @@ const editRequest = async (req: Request, res: Response) => {
               emailHandler.newEmail(new PCREmailOptions("assigned updated", request)).send();
             }
 
+            res.status(200).json({
+              edited: request,
+              message: "Request updated successfully",
+              statusMessage: HttpResponseMessage.PUT_SUCCESS,
+            });
+
             break;
           }
 
         default:
+          if (updateFields.length === 0) {
+            return res.status(200).json({
+              message: "No fields require update",
+              statusMessage: HttpResponseMessage.PUT_SUCCESS,
+            });
+          }
+
           if (reassigned) {
             request.notification(transactionalEntityManager, "reassigned");
             emailHandler.newEmail(new PCREmailOptions("reassigned", request)).send();
@@ -190,14 +204,14 @@ const editRequest = async (req: Request, res: Response) => {
             emailHandler.newEmail(new PCREmailOptions("assigned", request)).send();
           }
 
+          res.status(200).json({
+            edited: request,
+            message: "Request updated successfully",
+            statusMessage: HttpResponseMessage.PUT_SUCCESS,
+          });
+
           break;
       }
-
-      res.status(200).json({
-        edited: request,
-        message: "Request updated successfully",
-        statusMessage: HttpResponseMessage.PUT_SUCCESS,
-      });
     });
   } catch (error) {
     console.error("Error updating request: ", error);

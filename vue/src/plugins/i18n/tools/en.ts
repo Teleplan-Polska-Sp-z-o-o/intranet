@@ -211,7 +211,7 @@ const enT = {
               },
               emptyUpdate: {
                 title: "Warning",
-                text: "Please note that proceeding without actually editing any fields in the closed request will still result in its reopening.",
+                text: "Please be aware that proceeding without making any actual edits to the closed request will not yield any effect.",
               },
               removalOfNotice: {
                 title: "Warning",
@@ -270,6 +270,7 @@ const enT = {
                 isCustomerApprovalRequired: "Is Customer Approval Required",
                 engineeringDepartmentName: "Engineering Department Name",
                 qualityDepartmentName: "Quality Department Name",
+                updateDescription: "Update Description",
               },
             },
             alerts: {
@@ -295,7 +296,7 @@ const enT = {
               },
               emptyUpdate: {
                 title: "Warning",
-                text: "Please note that proceeding without actually editing any fields in the closed notice will still result in its reopening.",
+                text: "Please be aware that proceeding without making any actual edits to the closed notice will not yield any effect.",
               },
             },
           },

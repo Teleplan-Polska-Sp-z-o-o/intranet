@@ -5,7 +5,7 @@ import { useEditorStore } from "../../stores/editorStore";
 import { nodeConfig } from "../../config/env";
 import { Endpoints } from "../../config/Endpoints";
 
-const emit = defineEmits(["ref"]);
+const emit = defineEmits(["ref", "editorDataChange"]);
 
 const editor = Editor;
 
@@ -84,6 +84,7 @@ watch(editorData, (newV) => {
     `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content">${newV}</div>`,
     props.editorKey
   );
+  emit("editorDataChange", props.editorKey);
 });
 </script>
 

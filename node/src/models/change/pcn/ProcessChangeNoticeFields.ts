@@ -1,14 +1,15 @@
-import { IProcessChangeNotice } from "../../../interfaces/change/IProcessChangeNotice";
 import { IProcessChangeNoticeFields } from "../../../interfaces/change/IProcessChangeNoticeFields";
+import { ProcessChangeNotice } from "../../../orm/entity/change/ProcessChangeNoticeEntity";
 
 class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
   [key: string]: any;
-  changeDescription: string | null | undefined;
+  changeDescription: string | null;
   areDocumentationChangesRequired: boolean | null;
   listOfDocumentationToChange: string | null;
   isNewDocumentationRequired: boolean | null;
   listOfDocumentationToCreate: string | null;
   isCustomerApprovalRequired: boolean | null;
+  departmentsRequiredForApproval: string | null;
   engineeringDepartmentName: string | null;
   qualityDepartmentName: string | null;
   personDesignatedForImplementation: string | null;
@@ -21,14 +22,15 @@ class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
     this.isNewDocumentationRequired = null;
     this.listOfDocumentationToCreate = null;
     this.isCustomerApprovalRequired = null;
+    this.departmentsRequiredForApproval = null;
     this.engineeringDepartmentName = null;
     this.qualityDepartmentName = null;
     this.personDesignatedForImplementation = null;
     this.updateDescription = null;
   }
 
-  public buildFromNotice(data: IProcessChangeNotice): ProcessChangeNoticeFields {
-    this.changeDescription = data.changeDescription === undefined ? null : data.changeDescription;
+  public build(data: ProcessChangeNotice | IProcessChangeNoticeFields): ProcessChangeNoticeFields {
+    this.changeDescription = data.changeDescription;
     this.areDocumentationChangesRequired = data.areDocumentationChangesRequired;
     this.listOfDocumentationToChange = data.listOfDocumentationToChange;
     this.isNewDocumentationRequired = data.isNewDocumentationRequired;
@@ -37,7 +39,10 @@ class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
     this.engineeringDepartmentName = data.engineeringDepartmentName;
     this.qualityDepartmentName = data.qualityDepartmentName;
     this.personDesignatedForImplementation = data.personDesignatedForImplementation;
-    this.updateDescription = data.updateDescription;
+
+    if (data.hasOwnProperty("updateDescription")) {
+      this.updateDescription = (data as any).updateDescription;
+    }
 
     return this;
   }

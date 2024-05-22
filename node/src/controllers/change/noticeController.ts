@@ -5,10 +5,27 @@ import { ProcessChangeNotice } from "../../orm/entity/change/ProcessChangeNotice
 import { IProcessChangeNoticeFields } from "../../interfaces/change/IProcessChangeNoticeFields";
 import { IUser } from "../../interfaces/user/IUser";
 import { User } from "../../orm/entity/user/UserEntity";
-import { Department } from "../../orm/entity/document/DepartmentEntity";
 import { ProcessChangeRequest } from "../../orm/entity/change/ProcessChangeRequestEntity";
 import { IsNull, Not } from "typeorm";
 import { ProcessChangeNoticeUpdates } from "../../orm/entity/change/ProcessChangeNoticeUpdatesEntity";
+
+/*
+
+Approvals:
+
+1. Reassigned => designated person
+2. Assigned => designated person
+
+3. Completed => engineering dep
+4. Engineering Approval => quality dep
+5. Quality Approval (optional) => dedicated dep
+
+6. Updated Uncompleted => engineering dep
+7. Updated Completed => engineering dep
+8. Updated Engineering Approval => quality dep
+8. Updated Quality Approval => dedicated dep
+
+*/
 
 const editNotice = async (req: Request, res: Response) => {
   try {
@@ -24,7 +41,6 @@ const editNotice = async (req: Request, res: Response) => {
       notice = await transactionalEntityManager
         .getRepository(ProcessChangeNotice)
         .findOne({ where: { id } });
-      console.log("notice", notice);
       if (!notice) {
         return res.status(404).json({
           message: "Notice not found",
@@ -32,22 +48,30 @@ const editNotice = async (req: Request, res: Response) => {
         });
       }
 
+      const request = await transactionalEntityManager.getRepository(ProcessChangeRequest).findOne({
+        relations: ["processChangeNotice"],
+        where: { processChangeNotice: { id: notice.id } },
+      });
+
+      const reassigned = notice.isReassigned(fields);
+
       //   const emailHandler = EmailHandler.getInstance();
 
-      if (notice.status === "Closed") {
+      const updateFields = notice.compare(fields);
+
+      if (notice.status === "Closed" && updateFields.length > 0) {
         notice.open();
       }
-      console.log("notice.updatable", notice.updatable);
+
+      let recipients: User | Array<User> | null = null;
+
       if (notice.updatable) {
-        const updateFields = notice.compare(fields);
-        console.log(1, updateFields);
-        console.log("updateFields.length === 0", updateFields.length === 0);
-        // if (updateFields.length === 0) {
-        //   return res.status(200).json({
-        //     message: "No fields require update",
-        //     statusMessage: HttpResponseMessage.PUT_SUCCESS,
-        //   });
-        // }
+        if (updateFields.length === 0) {
+          return res.status(200).json({
+            message: "No fields require update",
+            statusMessage: HttpResponseMessage.PUT_SUCCESS,
+          });
+        }
 
         let noticeUpdates = new ProcessChangeNoticeUpdates();
         noticeUpdates.build(
@@ -56,27 +80,47 @@ const editNotice = async (req: Request, res: Response) => {
           JSON.stringify(updateFields),
           fields.updateDescription
         );
-        console.log(2);
 
         noticeUpdates = await transactionalEntityManager
           .getRepository(ProcessChangeNoticeUpdates)
           .save(noticeUpdates);
-        console.log(3);
+
         if (!noticeUpdates) {
           return res.status(400).json({
             message: "Notice Updates not saved",
             statusMessage: HttpResponseMessage.PUT_ERROR,
           });
         } else {
-          // if (reassigned) {
-          //   request.notification(transactionalEntityManager, "reassigned");
-          //   emailHandler.newEmail(new PCREmailOptions("reassigned", request)).send();
-          // }
+          if (reassigned.bool) {
+            recipients = await notice.notification(
+              transactionalEntityManager,
+              request,
+              "reassigned"
+            );
+          }
 
           notice = await transactionalEntityManager
             .getRepository(ProcessChangeNotice)
             .save(notice.setNoticeFields(fields));
-          console.log(5);
+
+          if (!reassigned.bool && reassigned.newPerson) {
+            recipients = await notice.notification(transactionalEntityManager, request, "assigned");
+          }
+
+          if (notice.isFilled()) {
+            recipients = await notice.notification(
+              transactionalEntityManager,
+              request,
+              "updated completed"
+            );
+          } else {
+            recipients = await notice.notification(
+              transactionalEntityManager,
+              request,
+              "updated uncompleted"
+            );
+          }
+
           // if (allFieldsFilled && !reassigned) {
           //   request.notification(transactionalEntityManager, "updated");
           //   emailHandler.newEmail(new PCREmailOptions("updated", request)).send();
@@ -90,19 +134,43 @@ const editNotice = async (req: Request, res: Response) => {
           //   request.notification(transactionalEntityManager, "assigned updated");
           //   emailHandler.newEmail(new PCREmailOptions("assigned updated", request)).send();
           // }
+
+          res.status(200).json({
+            edited: notice,
+            message: "Notice updated successfully",
+            statusMessage: HttpResponseMessage.PUT_SUCCESS,
+          });
         }
       } else {
+        if (updateFields.length === 0) {
+          return res.status(200).json({
+            message: "No fields require update",
+            statusMessage: HttpResponseMessage.PUT_SUCCESS,
+          });
+        }
+
+        if (reassigned.bool) {
+          recipients = await notice.notification(transactionalEntityManager, request, "reassigned");
+        }
+
         notice = await transactionalEntityManager
           .getRepository(ProcessChangeNotice)
           .save(notice.setNoticeFields(fields));
-        console.log(6);
-      }
 
-      res.status(200).json({
-        edited: notice,
-        message: "Notice updated successfully",
-        statusMessage: HttpResponseMessage.PUT_SUCCESS,
-      });
+        if (!reassigned.bool && reassigned.newPerson) {
+          recipients = await notice.notification(transactionalEntityManager, request, "assigned");
+        }
+
+        if (notice.isFilled()) {
+          recipients = await notice.notification(transactionalEntityManager, request, "completed");
+        }
+
+        res.status(200).json({
+          edited: notice,
+          message: "Notice updated successfully",
+          statusMessage: HttpResponseMessage.PUT_SUCCESS,
+        });
+      }
     });
   } catch (error) {
     console.error("Error updating notice: ", error);
@@ -117,13 +185,12 @@ const assessNotice = async (req: Request, res: Response) => {
   try {
     const body = req.body;
 
-    const assesser: IUser = JSON.parse(body.assesser);
+    const assesser: User = JSON.parse(body.assesser);
     const id: number = JSON.parse(body.noticeId);
     const { assessment }: { assessment: "approve" | "rejection" } = req.params;
 
     let notice: ProcessChangeNotice;
     await dataSource.transaction(async (transactionalEntityManager) => {
-      console.log(1);
       notice = await transactionalEntityManager
         .getRepository(ProcessChangeNotice)
         .findOne({ where: { id } });
@@ -133,6 +200,7 @@ const assessNotice = async (req: Request, res: Response) => {
           statusMessage: HttpResponseMessage.PUT_ERROR,
         });
       }
+
       // const request = await transactionalEntityManager.getRepository(ProcessChangeRequest).findOne({
       //   relations: ["processChangeNotice"],
       //   where: { processChangeNotice: notice },
@@ -142,29 +210,53 @@ const assessNotice = async (req: Request, res: Response) => {
         where: { processChangeNotice: { id: notice.id } },
       });
 
-      const user = await transactionalEntityManager
-        .getRepository(User)
-        .findOne({ where: { id: assesser.id }, relations: ["info"] });
-      if (!user) {
-        return res.status(404).json({
-          message: "User not found",
-          statusMessage: HttpResponseMessage.PUT_ERROR,
-        });
-      }
+      // const user = await transactionalEntityManager
+      //   .getRepository(User)
+      //   .findOne({ where: { id: assesser.id }, relations: ["info"] });
+      // if (!user) {
+      //   return res.status(404).json({
+      //     message: "User not found",
+      //     statusMessage: HttpResponseMessage.PUT_ERROR,
+      //   });
+      // }
 
-      const department = await transactionalEntityManager
-        .getRepository(Department)
-        .findOne({ where: { name: user.info.department } });
+      // const department = await transactionalEntityManager
+      //   .getRepository(Department)
+      //   .findOne({ where: { name: user.info.department } });
 
       if (notice.status === "Open") {
         notice.close();
       }
 
-      if (user.info.decisionMaker) {
+      if (assesser.info.decisionMaker) {
+        const assess: {
+          notice: ProcessChangeNotice;
+          assessments: { eng: boolean; qua: boolean; ded: boolean };
+        } = notice.assess(request, assesser.info.department, assesser.username, assessment);
+
         //   const emailHandler = EmailHandler.getInstance();
+
+        if (assess.assessments.eng) {
+          if (notice.updatable) {
+            notice.notification(
+              transactionalEntityManager,
+              request,
+              "updated engineering approval"
+            );
+          } else {
+            notice.notification(transactionalEntityManager, request, "engineering approval");
+          }
+        } else if (assess.assessments.qua && !assess.notice.dedicatedDepartmentApproval) {
+          if (notice.updatable) {
+            notice.notification(transactionalEntityManager, request, "updated quality approval");
+          } else {
+            notice.notification(transactionalEntityManager, request, "quality approval");
+          }
+        }
+
         notice = await transactionalEntityManager
           .getRepository(ProcessChangeNotice)
-          .save(notice.assess(request, department, user, assessment));
+          .save(assess.notice);
       }
 
       res.status(200).json({
@@ -185,14 +277,14 @@ const assessNotice = async (req: Request, res: Response) => {
 const getNotice = async (req: Request, res: Response) => {
   try {
     const { id }: { id: number } = req.params;
-
+    console.log(id);
     const objectConfig = {
       where: { id, processChangeNotice: Not(IsNull()) },
       relations: ["processChangeNotice"],
     };
 
     const request = await dataSource.getRepository(ProcessChangeRequest).findOne(objectConfig);
-
+    console.log(request);
     res.status(200).json({
       got: request,
       message: "Notice retrieved successfully",

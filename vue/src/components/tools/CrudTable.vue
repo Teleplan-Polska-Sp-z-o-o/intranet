@@ -49,8 +49,12 @@ const manager = ref<any>(props.manager);
 const chips = ref<any>(props.chips);
 
 const load = async (log?: boolean) => {
-  items.value = await manager.value.get(chips.value);
-  if (log) console.log(items.value);
+  try {
+    items.value = await manager.value.get(chips.value);
+    if (log) console.log(items.value);
+  } catch (error) {
+    console.error(`Crud Table at load, ${error}`);
+  }
 };
 
 // onMounted(() => load(true));
@@ -64,23 +68,28 @@ const toolbarTitle = ref<string>(props.toolbarTitle);
 const search = ref<string>("");
 const searchTitle = ref<string>(props.searchTitle ? props.searchTitle : "Search");
 const filtered = computed(() => {
-  const itemsFiltered = filtersCallback.value?.hasOwnProperty("callback")
-    ? (filtersCallback.value?.callback(items.value) as Array<any>)
-    : items.value;
+  try {
+    const itemsFiltered = filtersCallback.value?.hasOwnProperty("callback")
+      ? (filtersCallback.value?.callback(items.value) as Array<any>)
+      : items.value;
 
-  if (search.value) {
-    return itemsFiltered.filter((item: any) => {
-      for (const key of props.searchBy) {
-        const value = item[key]?.toLowerCase();
-        const searchTerm = search.value.toLowerCase();
-        if (value && value.includes(searchTerm)) {
-          return true;
+    if (search.value) {
+      return itemsFiltered.filter((item: any) => {
+        for (const key of props.searchBy) {
+          const value = item[key]?.toLowerCase();
+          const searchTerm = search.value.toLowerCase();
+          if (value && value.includes(searchTerm)) {
+            return true;
+          }
         }
-      }
-      return false;
-    });
-  } else {
-    return itemsFiltered;
+        return false;
+      });
+    } else {
+      return itemsFiltered;
+    }
+  } catch (error) {
+    console.error(`Crud Table at filtered, ${error}`);
+    return items.value;
   }
 });
 const dialog = ref<boolean>(false);
@@ -151,33 +160,49 @@ watch(
 );
 
 const deleteItem = async (item: any) => {
-  editedIndex.value = items.value.indexOf(item);
-  editedItem.value = { ...item };
-  dialogDelete.value = true;
+  try {
+    editedIndex.value = items.value.indexOf(item);
+    editedItem.value = { ...item };
+    dialogDelete.value = true;
+  } catch (error) {
+    console.error(`Crud Table at deleteItem, ${error}`);
+  }
 };
 const editItem = (item: any) => {
-  editedIndex.value = items.value.indexOf(item);
-  editedItem.value = { ...item };
-  dialog.value = true;
+  try {
+    editedIndex.value = items.value.indexOf(item);
+    editedItem.value = { ...item };
+    dialog.value = true;
+  } catch (error) {
+    console.error(`Crud Table at editItem, ${error}`);
+  }
 };
 
 const close = () => {
-  dialog.value = false;
-  dialogLoading.value = false;
+  try {
+    dialog.value = false;
+    dialogLoading.value = false;
 
-  nextTick(() => {
-    editedItem.value = { ...item.value };
-    editedIndex.value = -1;
-  });
+    nextTick(() => {
+      editedItem.value = { ...item.value };
+      editedIndex.value = -1;
+    });
+  } catch (error) {
+    console.error(`Crud Table at close, ${error}`);
+  }
 };
 
 const closeDelete = async () => {
-  dialogDelete.value = false;
+  try {
+    dialogDelete.value = false;
 
-  nextTick(() => {
-    editedItem.value = { ...item.value };
-    editedIndex.value = -1;
-  });
+    nextTick(() => {
+      editedItem.value = { ...item.value };
+      editedIndex.value = -1;
+    });
+  } catch (error) {
+    console.error(`Crud Table at closeDelete, ${error}`);
+  }
 };
 
 const deleteItemConfirm = async () => {
@@ -187,7 +212,7 @@ const deleteItemConfirm = async () => {
     if (props.emitTableChange) emit("emit-table-change");
     load();
   } catch (error: any) {
-    console.log(error);
+    console.error(`Crud Table at deleteItemConfirm, ${error}`);
     responseStatus.value = new ResponseStatus({
       code: error.response.status,
       message: error.response.data.statusMessage,
@@ -206,7 +231,7 @@ const save = async () => {
     if (editedIndex.value > -1) responseStatus.value = await manager.value.put(data, true);
     else responseStatus.value = await manager.value.post(data, true);
   } catch (error: any) {
-    console.log(error);
+    console.error(`Crud Table at save, ${error}`);
     responseStatus.value = new ResponseStatus({
       code: error.response.status,
       message: error.response.data.statusMessage,

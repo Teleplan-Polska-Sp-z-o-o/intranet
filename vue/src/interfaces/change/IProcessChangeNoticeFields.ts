@@ -1,6 +1,6 @@
 interface IProcessChangeNoticeFields {
   [key: string]: any;
-  changeDescription: string | null;
+  changeDescription: string | null | undefined;
   areDocumentationChangesRequired: boolean | null;
   listOfDocumentationToChange: string | null;
   isNewDocumentationRequired: boolean | null;

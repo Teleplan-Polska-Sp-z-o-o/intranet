@@ -7,41 +7,62 @@ export const useEditorStore = defineStore("editor", () => {
   const eRef = ref<string>("");
 
   const save = (value: string, key: string): void => {
-    editor.value = {
-      ...editor.value,
-      [key]: value,
-    };
+    try {
+      editor.value = {
+        ...editor.value,
+        [key]: value,
+      };
+    } catch (error) {
+      console.error(`editorStore at save: ${error}`);
+    }
   };
 
   const get = (key: string): string => {
-    if (editor.value.hasOwnProperty(key)) {
-      return editor.value[key];
-    } else {
-      throw new Error(`Invalid editor key: ${key}`);
+    try {
+      if (editor.value.hasOwnProperty(key)) {
+        return editor.value[key];
+      } else {
+        throw new Error(`Invalid editor key: ${key}`);
+      }
+    } catch (error) {
+      console.error(`returning: "", editorStore at get: ${error}`);
+      return "";
     }
   };
 
   const getDefault = (key: string, withBase: boolean = false): string => {
-    const formString = (value: string) => {
-      if (withBase)
-        return `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content">${value}</div>`;
-      else return value;
-    };
+    try {
+      const formString = (value: string) => {
+        if (withBase)
+          return `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content">${value}</div>`;
+        else return value;
+      };
 
-    switch (key) {
-      case "change-reason":
-        return formString('<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>');
-      case "change-description":
-        return formString('<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>');
+      switch (key) {
+        case "change-reason":
+          return formString('<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>');
+        case "change-description":
+          return formString(
+            '<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>'
+          );
 
-      default:
-        throw new Error(`Default key for ${key} not set.`);
+        default:
+          throw new Error(`Default key for ${key} not set.`);
+      }
+    } catch (error) {
+      console.error(`returning: "", editorStore at getDefault: ${error}`);
+      return "";
     }
   };
 
   const getRef = (): string => {
-    if (!eRef.value) return uuidv4();
-    return eRef.value;
+    try {
+      if (!eRef.value) return uuidv4();
+      return eRef.value;
+    } catch (error) {
+      console.error(`returning: "", editorStore at getRef: ${error}`);
+      return "";
+    }
   };
 
   return { save, get, getDefault, getRef };
