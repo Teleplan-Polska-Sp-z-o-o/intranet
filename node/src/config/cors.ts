@@ -1,6 +1,6 @@
 import { serverConfig } from "./server";
 
-const whitelist: Array<string> = [serverConfig.origin, "http://bydintranet.reconext.com"];
+const whitelist: Array<string> = [serverConfig.origin, "https://bydintranet.reconext.com"];
 const corsOptions = {
   origin: true,
   methods: ["GET", "POST", "PUT", "DELETE"],

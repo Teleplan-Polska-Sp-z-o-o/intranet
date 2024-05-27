@@ -11,5 +11,6 @@ RUN mkdir dist
 COPY ./node/dist ./dist
 
 COPY ./.env ./
+COPY ./_.reconext.com.2024.pem ./
 
 CMD ["node", "./dist/index.js"]
