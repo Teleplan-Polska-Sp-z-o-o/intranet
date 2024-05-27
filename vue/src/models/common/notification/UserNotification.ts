@@ -34,6 +34,8 @@ class UserNotification implements INotification {
     switch (sourceString) {
       case "PCR":
         return ENotificationSource.PCR;
+      case "PCN":
+        return ENotificationSource.PCN;
       default:
         throw new Error(`Invalid notification source: ${sourceString}. Accepted values: PCR.`);
     }

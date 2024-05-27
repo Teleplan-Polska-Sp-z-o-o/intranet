@@ -27,7 +27,7 @@ const storeWebSocketConnections = (ws: any) => {
   });
 
   ws.onclose = () => {
-    WC.removeClosedConnection();
+    WC.removeClosedConnections();
   };
 };
 

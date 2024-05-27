@@ -437,23 +437,29 @@ const open = () => {
                     v-html="col"
                   />
                 </template>
-                <template v-if="item.value.processChangeNotice?.isCustomerApprovalRequired">
-                  <v-col
-                    cols="3"
-                    class="text-body-2 border-s-md"
-                    style="background-color: #e9e7e7"
-                    v-html="'Customer Approver'"
-                  />
-                  <v-col cols="3" class="text-body-2" />
+                <template
+                  v-if="
+                    rowIndex === request.approvals.length - 1 &&
+                    item.processChangeNotice?.isCustomerApprovalRequired
+                  "
+                >
                   <v-col
                     cols="3"
                     class="text-body-2"
                     style="background-color: #e9e7e7"
+                    v-html="'Customer Approver'"
+                  />
+                  <v-col cols="3" class="text-body-2 border-s-md" />
+                  <v-col
+                    cols="3"
+                    class="text-body-2 border-s-md"
+                    style="background-color: #e9e7e7"
                     v-html="'Date and Signature'"
                   />
-                  <v-col cols="3" class="text-body-2" />
+                  <v-col cols="3" class="text-body-2 border-s-md" />
                 </template>
               </v-row>
+
               <v-row
                 v-if="updateHistory.length > 0"
                 v-for="(row, rowIndex) in request.history"

@@ -1,5 +1,6 @@
 enum Endpoints {
   Users = "/api/user",
+  Msal = "/api/msal",
 
   User = "/api/user/one",
   UserAuth = "/api/user/auth",

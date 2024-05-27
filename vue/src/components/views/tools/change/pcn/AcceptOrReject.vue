@@ -63,12 +63,35 @@ const enableActions = async (): Promise<void> => {
     const fields: ProcessChangeNoticeFields = new ProcessChangeNoticeFields().buildFromNotice(
       notice
     );
-    const isNotNullOrUndefined = (value: any): boolean => {
-      return value !== undefined && value !== null;
+    // const isNotNullOrUndefined = (value: any): boolean => {
+    //   return value !== undefined && value !== null;
+    // };
+    // const filled = Object.entries(fields)
+    //   .filter(([key]) => key !== "updateDescription")
+    //   .every(([_, value]) => isNotNullOrUndefined(!!value));
+
+    const isFilled = (): boolean => {
+      const isNotNullOrUndefined = (value: any): boolean => {
+        return value !== undefined && value !== null;
+      };
+
+      const filled = Object.entries(fields)
+        .filter(([key]) => key !== "updateDescription")
+        .every(([key, value]) => {
+          switch (key) {
+            case "listOfDocumentationToChange":
+              return fields.areDocumentationChangesRequired ? isNotNullOrUndefined(value) : true;
+            case "listOfDocumentationToCreate":
+              return fields.isNewDocumentationRequired ? isNotNullOrUndefined(value) : true;
+
+            default:
+              return isNotNullOrUndefined(value);
+          }
+        });
+
+      return filled;
     };
-    const filled = Object.entries(fields)
-      .filter(([key]) => key !== "updateDescription")
-      .every(([_, value]) => isNotNullOrUndefined(!!value));
+
     // const isClosed = notice.status === "Closed";
     const isClosed = notice.dedicatedDepartmentApproval === true;
 
@@ -103,7 +126,7 @@ const enableActions = async (): Promise<void> => {
         break;
     }
 
-    showActions.value = filled && !isClosed && isNextApprover;
+    showActions.value = isFilled() && !isClosed && isNextApprover;
   } catch (error) {
     console.log(`enableActions error: ${error}`);
   }

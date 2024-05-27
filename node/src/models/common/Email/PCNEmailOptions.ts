@@ -2,37 +2,39 @@ import { emailConfig } from "../../../config/email";
 import { serverConfig } from "../../../config/server";
 import { IEmailContent } from "../../../interfaces/Email/IEmailContent";
 import { IEmailOptions } from "../../../interfaces/Email/IEmailOptions";
+import { ENotificationVariant } from "../../../interfaces/user/notification/ENotificationVariant";
 import { ProcessChangeNotice } from "../../../orm/entity/change/ProcessChangeNoticeEntity";
 import { User } from "../../../orm/entity/user/UserEntity";
 import { template } from "./template";
 
 class PCNEmailOptions implements IEmailOptions {
+  variant: ENotificationVariant;
   to: string;
   subject: string;
   html: string;
 
   private getSubject(variant: string): string {
     switch (variant) {
-      case "reassigned":
-      case "assigned":
-        return "PCR Person Designated Change";
-      case "completed":
+      case ENotificationVariant.Reassigned:
+      case ENotificationVariant.Assigned:
+        return "PCN Person Designated Change";
+      case ENotificationVariant.Completed:
         return "PCN Completion";
-      case "updated completed":
+      case ENotificationVariant.UpdatedCompleted:
         return "PCN Updated and Completed";
-      case "updated uncompleted":
+      case ENotificationVariant.UpdatedUncompleted:
         return "PCN Update";
       //
       //
-      case "engineering approval":
+      case ENotificationVariant.EngineeringApproval:
         return "PCN Engineering Approval";
-      case "quality approval":
+      case ENotificationVariant.QualityApproval:
         return "PCN Quality Approval";
       //
       //
-      case "updated engineering approval":
+      case ENotificationVariant.UpdatedEngineeringApproval:
         return "PCN Updated and Engineering Approved";
-      case "updated quality approval":
+      case ENotificationVariant.UpdatedQualityApproval:
         return "PCN Updated and Quality Approved";
       default:
         return "Notification";
@@ -41,23 +43,23 @@ class PCNEmailOptions implements IEmailOptions {
 
   private getText(variant: string, notice: ProcessChangeNotice): string {
     switch (variant) {
-      case "reassigned":
+      case ENotificationVariant.Reassigned:
         return `You are no longer the person designated of notice ${notice.numberOfNotice}.`;
-      case "assigned":
+      case ENotificationVariant.Assigned:
         return `You have been assigned as the person designated of notice ${notice.numberOfNotice}.`;
-      case "completed":
+      case ENotificationVariant.Completed:
         return `Notice ${notice.numberOfNotice} has been completed and is awaiting your review.`;
-      case "engineering approval":
+      case ENotificationVariant.EngineeringApproval:
         return `Notice ${notice.numberOfNotice} has been approved by the engineering department and is awaiting further review.`;
-      case "quality approval":
+      case ENotificationVariant.QualityApproval:
         return `Notice ${notice.numberOfNotice} has been approved by the quality department and is awaiting further review.`;
-      case "updated completed":
+      case ENotificationVariant.UpdatedCompleted:
         return `Notice ${notice.numberOfNotice} has been updated and completed. Please review the changes.`;
-      case "updated uncompleted":
+      case ENotificationVariant.UpdatedUncompleted:
         return `Notice ${notice.numberOfNotice} has been updated, but some fields remain incomplete. You will be notified when it's ready for review.`;
-      case "updated engineering approval":
+      case ENotificationVariant.UpdatedEngineeringApproval:
         return `Notice ${notice.numberOfNotice} has been updated and approved by the engineering department. It is now awaiting further review.`;
-      case "updated quality approval":
+      case ENotificationVariant.UpdatedQualityApproval:
         return `Notice ${notice.numberOfNotice} has been updated and approved by the quality department. It is now awaiting further review.`;
     }
   }

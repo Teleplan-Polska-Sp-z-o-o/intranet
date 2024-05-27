@@ -13,6 +13,7 @@ import { ResponseStatus } from "../models/common/ResponseStatus";
 import { IResponseStatus } from "../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../components/common/alertResponseStatus.vue";
 import { UserEntity } from "../models/user/UserEntity";
+import msSignIn from "../components/auth/msSignIn.vue";
 
 // Router
 const router = useRouter();
@@ -187,6 +188,7 @@ const submitLogin = (): void => {
               </v-container>
               <v-btn type="submit" color="primary" class="rounded-xl">Login</v-btn>
             </v-form>
+            <ms-sign-in></ms-sign-in>
             <!-- <v-spacer v-if="responseStatus"></v-spacer> -->
             <alert-response-status
               class="rounded-xl mt-2"

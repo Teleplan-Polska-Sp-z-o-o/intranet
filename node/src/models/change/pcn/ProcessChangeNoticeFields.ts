@@ -9,7 +9,6 @@ class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
   isNewDocumentationRequired: boolean | null;
   listOfDocumentationToCreate: string | null;
   isCustomerApprovalRequired: boolean | null;
-  departmentsRequiredForApproval: string | null;
   engineeringDepartmentName: string | null;
   qualityDepartmentName: string | null;
   personDesignatedForImplementation: string | null;
@@ -22,7 +21,6 @@ class ProcessChangeNoticeFields implements IProcessChangeNoticeFields {
     this.isNewDocumentationRequired = null;
     this.listOfDocumentationToCreate = null;
     this.isCustomerApprovalRequired = null;
-    this.departmentsRequiredForApproval = null;
     this.engineeringDepartmentName = null;
     this.qualityDepartmentName = null;
     this.personDesignatedForImplementation = null;

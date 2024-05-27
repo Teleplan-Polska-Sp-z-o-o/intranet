@@ -1,4 +1,5 @@
 import express from "express";
+import session from "express-session";
 import cors from "cors";
 import "reflect-metadata";
 
@@ -11,6 +12,20 @@ expressWs(app);
 
 app.use(express.json());
 app.use(cors(corsOptionsDelegate));
+
+import { serverConfig } from "./config/server";
+
+app.use(
+  session({
+    secret: process.env.MS_EXPRESS_SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: serverConfig.test ? false : true, // set this to true on production
+    },
+  })
+);
 
 // Routes
 import { userRoutes } from "./routes/userRoutes";
@@ -28,9 +43,11 @@ app.use("/api/editor", editorRoutes);
 app.use("/api/change", changeRoutes);
 app.use("/api/notification", notificationRoutes);
 
+import { msalRoutes } from "./routes/msalRoutes";
+app.use("/api/msal", msalRoutes);
+
 // DataSource instance initialize
 import { dataSource } from "./config/orm/dataSource";
-import { serverConfig } from "./config/server";
 import { storeWebSocketConnections } from "./controllers/common/websocketController";
 import * as fs from "fs";
 import https from "https";

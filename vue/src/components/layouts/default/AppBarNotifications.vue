@@ -39,8 +39,15 @@ watch(
   }
 );
 
-const received = ref<Array<MessageEvent<any>>>(websocketStore.receivedMessages);
-watch(received, () => getNotifications(), { deep: true });
+// const received = ref<Array<MessageEvent<any>>>(websocketStore.receivedMessages);
+watch(
+  websocketStore.receivedMessages,
+  () => {
+    console.log("getinNotif");
+    getNotifications();
+  },
+  { deep: true }
+);
 
 const router = useRouter();
 

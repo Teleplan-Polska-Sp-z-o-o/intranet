@@ -19,7 +19,8 @@ class WebsocketConnections {
   };
 
   public replaceConnection = (existingIndex: number, conn: ISocketConnection): void => {
-    if (this.connections[existingIndex].ws.readyState !== 1) {
+    const existingConnection = this.connections[existingIndex];
+    if (existingConnection.ws.readyState !== 1) {
       this.connections[existingIndex] = conn;
     }
   };
@@ -30,13 +31,19 @@ class WebsocketConnections {
     });
   };
 
-  public removeClosedConnection = (): void => {
-    const indexToRemove = this.connections.findIndex((connection) => {
-      return connection.ws.readyState !== 1; // if not OPEN
+  public removeClosedConnections = (): void => {
+    // const indexToRemove = this.connections.findIndex((connection) => {
+    //   return connection.ws.readyState !== 1; // if not OPEN
+    // });
+    // if (indexToRemove !== -1) {
+    //   this.connections.splice(indexToRemove, 1);
+    // }
+    this.connections = this.connections.filter((connection) => {
+      if (connection.ws.readyState !== 1) {
+        return false;
+      }
+      return true;
     });
-    if (indexToRemove !== -1) {
-      this.connections.splice(indexToRemove, 1);
-    }
   };
 
   public getConnections = (): Array<ISocketConnection> => this.connections;
