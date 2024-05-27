@@ -25,7 +25,7 @@ const addDepartment = async (req: Request, res: Response) => {
       });
     } else {
       console.error("Error adding department: ", error);
-      res.status(404).json({
+      res.status(500).json({
         message: "Unknown error occurred. Failed to add department.",
         statusMessage: HttpResponseMessage.UNKNOWN,
       });
@@ -64,7 +64,7 @@ const editDepartment = async (req: Request, res: Response) => {
       });
     } else {
       console.error("Error updating department: ", error);
-      res.status(404).json({
+      res.status(500).json({
         message: "Unknown error occurred. Failed to update department.",
         statusMessage: HttpResponseMessage.UNKNOWN,
       });
@@ -94,7 +94,7 @@ const removeDepartment = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error removing department: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to remove department.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -112,7 +112,7 @@ const getDepartments = async (_req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error retrieving departments: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve departments.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

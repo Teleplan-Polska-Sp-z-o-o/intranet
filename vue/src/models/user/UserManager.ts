@@ -2,25 +2,37 @@ import axios from "axios";
 import { nodeConfig } from "../../config/env";
 import { Endpoints } from "../../config/Endpoints";
 import { UserEntity } from "./UserEntity";
+import { IUserEntity } from "../../interfaces/user/IUserEntity";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 
-class UserPermissionManager {
+class UserManager {
   constructor() {}
 
   public new = () => new UserEntity();
 
-  public get = async (): Promise<Array<any>> => {
-    const response = await axios.get(`${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}`);
+  public get = async (
+    equalOrAbovePermission?: "moderator" | "admin"
+  ): Promise<Array<IUserEntity>> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/all/${equalOrAbovePermission}`
+    );
     return response.data.users;
   };
 
+  public getOne = async (username: string): Promise<IUserEntity> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/one/${username}`
+    );
+    return response.data.user;
+  };
+
   public put = async (
-    reqData: any,
+    reqData: FormData,
     status: boolean = false
   ): Promise<Array<any> | IResponseStatus> => {
     const response = await axios.put(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.UserPermission}`,
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}`,
       reqData
     );
     if (status) {
@@ -33,4 +45,4 @@ class UserPermissionManager {
   };
 }
 
-export { UserPermissionManager };
+export { UserManager };

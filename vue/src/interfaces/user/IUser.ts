@@ -1,7 +1,7 @@
 interface IUser {
-  id: number | null;
-  username: string | null;
-  domain: string | null;
+  id: number;
+  username: string;
+  domain: string;
 }
 
 export type { IUser };

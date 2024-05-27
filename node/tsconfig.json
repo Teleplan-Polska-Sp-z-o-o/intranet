@@ -1,13 +1,4 @@
 {
-  // "compilerOptions": {
-  //   "module": "NodeNext",
-  //   "moduleResolution": "NodeNext",
-  //   "target": "ES2021",
-  //   "sourceMap": true,
-  //   "outDir": "dist",
-  //   "experimentalDecorators": true,
-  //   "emitDecoratorMetadata": true
-  // },
   "compilerOptions": {
     "module": "CommonJS", // Set the module system to CommonJS for interoperability with both TypeScript and JavaScript
     "target": "ES2021",
@@ -18,7 +9,18 @@
     "checkJs": true, // Enable type checking for JavaScript files
     "resolveJsonModule": true, // Enable importing JSON files
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*"]
 }
+
+// "compilerOptions": {
+//   "module": "NodeNext",
+//   "moduleResolution": "NodeNext",
+//   "target": "ES2021",
+//   "sourceMap": true,
+//   "outDir": "dist",
+//   "experimentalDecorators": true,
+//   "emitDecoratorMetadata": true
+// },

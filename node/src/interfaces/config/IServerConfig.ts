@@ -1,6 +1,7 @@
 import { IPortConfig } from "./IPortConfig";
 
 interface IServerConfig extends IPortConfig {
+  test: boolean;
   host: string;
   origin: string;
   port: number;

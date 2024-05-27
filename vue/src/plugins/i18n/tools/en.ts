@@ -7,9 +7,11 @@ const enT = {
       cancel: "Cancel",
       save: "Save",
       ok: "OK",
+      search: "Search",
       deleteItemConfirmation: "Deleting this item will also affect all of its associated children.",
       deleteDocumentConfirmation:
         "Deleting this document will also affect all of its associated files.",
+      filters: "Filter by using advanced criteria",
     },
     chips: {
       departments: "Departments",
@@ -23,7 +25,6 @@ const enT = {
           name: "MY DOCUMENTS",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -31,7 +32,6 @@ const enT = {
           name: "MY FAVORITES",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -39,7 +39,6 @@ const enT = {
           name: "ALL INSTRUCTIONS",
           table: {
             toolbar: "Instructions",
-            search: "Search",
             select_lang: "Select Language",
             header: {
               name: "Name",
@@ -52,7 +51,6 @@ const enT = {
           name: "ALL VISUAL AIDS",
           table: {
             toolbar: "Visual Aids",
-            search: "Search",
             select_lang: "Select Language",
             header: {
               name: "Name",
@@ -65,7 +63,6 @@ const enT = {
           name: "RECENTLY BROWSED",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -82,7 +79,6 @@ const enT = {
               workstations: "Workstations",
               programs: "Programs",
             },
-            search: "Search",
             header: {
               name: "Name",
               actions: "Actions",
@@ -93,13 +89,13 @@ const enT = {
           name: "DOCUMENTS",
           table: {
             toolbar: "Documents",
-            search: "Search",
             header: {
               name: "Name",
               type: "Type",
               description: "Description",
               language: "Languages (files)",
               revision: "Revision",
+              subcategory: "Subcategory",
               actions: "Actions",
             },
           },
@@ -118,11 +114,13 @@ const enT = {
           name: "Permissions",
           table: {
             toolbar: "Permissions",
-            search: "Search",
             header: {
               username: "Username",
               domain: "Domain",
               permission: "Permission",
+              position: "Position",
+              department: "Department",
+              decisionMaker: "Decision Maker",
               actions: "Actions",
             },
           },
@@ -131,13 +129,180 @@ const enT = {
           name: "News",
           table: {
             toolbar: "News",
-            search: "Search",
             header: {
               title: "Title",
               subtitle: "Subtitle",
               actions: "Actions",
             },
           },
+        },
+      },
+    },
+    change: {
+      name: "Change",
+      tabs: {
+        pcr: {
+          name: "Process Change Request",
+          table: {
+            toolbar: "Requests",
+            header: {
+              numberOfRequest: "No",
+              requestDate: "Request Date",
+              internalOrExternal: "Internal/External",
+              reconextOwner: "Owner",
+              dedicatedDepartment: "Department",
+              program: "Program",
+              modelOrProcessImpacted: "Impact On",
+              dateNeeded: "Need Date",
+              assessment: "Assessment",
+              approvedOrRejectedBy: "Closed By",
+              closureDate: "Closure Date",
+              viewPcr: "View PCR",
+              numberOfNotice: "Notice No",
+              actions: "Actions",
+            },
+          },
+          stepper: {
+            actions: {
+              prev: "Previous",
+              next: "Next",
+            },
+            changeReason: "Change Reason",
+            changeDescription: "Change Description",
+            updateDescriptionRule: "Update description is required.",
+            customerContactPersonRule:
+              "Please enter both a name and a surname separated by a space.",
+            customerContactEmailRule: "Email must be valid.",
+            vStepperItem: {
+              "1": "Base Info",
+              "2": "Contact Info",
+              "3": "Need Date",
+              "4": "Descriptive Info",
+              "5": "Verify",
+            },
+            vStepperWindowItem: {
+              "1": {
+                internalOrExternal: "Internal or External",
+                dedicatedDepartment: "Dedicated Department",
+                program: "Program",
+                reconextOwner: "Reconext Owner",
+              },
+              "2": {
+                customerContactPerson: "Customer Contact Person",
+                customerContactEmail: "Customer Contact Email",
+                reconextContactPerson: "Reconext Contact Person",
+              },
+              "3": {
+                dateNeeded: "Clear Implementation Need Date",
+              },
+              "4": {
+                modelOrProcessImpacted: "Model or Process Impacted",
+                costOfImplementation: "Cost of Implementation",
+                impacts: "Impacts",
+                riskAnalysis: "Risk Analysis",
+                updateDescription: "Update Description",
+              },
+            },
+            alerts: {
+              remainder: {
+                title: "Reminder",
+                text: "Please be advised that any updates made to the closed request will automatically trigger its reopening for further review and action.",
+                fields: "Keys preview of updated fields.",
+              },
+              emptyUpdate: {
+                title: "Warning",
+                text: "Please be aware that proceeding without making any actual edits to the closed request will not yield any effect.",
+              },
+              removalOfNotice: {
+                title: "Warning",
+                text: "Please be aware that proceeding will result in the deletion of its related notice.",
+              },
+            },
+          },
+        },
+
+        pcn: {
+          name: "Process Change Notice",
+          table: {
+            toolbar: "Notices",
+            header: {
+              numberOfNotice: "No",
+              numberOfRequest: "No Request",
+              reconextOwner: "Applicant",
+              personDesignatedForImplementation: "Person Designated",
+              noticeDate: "Notice Date",
+              modelOrProcessImpacted: "Impact On",
+              areDocumentationChangesRequired: "Doc Changes Req",
+              isNewDocumentationRequired: "New Doc Req",
+              isCustomerApprovalRequired: "Customer Approve Req",
+              status: "Status",
+              engineeringDepartmentApproval: "Eng Approval",
+              qualityDepartmentApproval: "Qua Approval",
+              dedicatedDepartmentApproval: "Ded Approval",
+              closureDate: "Closure Date",
+              viewPcn: "View PCN",
+              actions: "Actions",
+            },
+          },
+          stepper: {
+            actions: {
+              prev: "Previous",
+              next: "Next",
+            },
+            updateDescriptionRule: "Update description is required.",
+            qualityDepartmentRule: "Quality and Engineering departments must differ.",
+            changeDescription: "Change Description",
+            vStepperItem: {
+              "1": "Change Description",
+              "2": "Documentation",
+              "3": "Approvals",
+              "4": "Verify",
+            },
+            vStepperWindowItem: {
+              "2": {
+                areDocumentationChangesRequired: "Are Documentation Changes Required",
+                listOfDocumentationToChange: "List Of Documentation To Change",
+                isNewDocumentationRequired: "Is New Documentation Required",
+                listOfDocumentationToCreate: "List Of Documentation To Create",
+              },
+              "3": {
+                personDesignatedForImplementation: "Person Designated For Implementation",
+                isCustomerApprovalRequired: "Is Customer Approval Required",
+                engineeringDepartmentName: "Engineering Department Name",
+                qualityDepartmentName: "Quality Department Name",
+                updateDescription: "Update Description",
+              },
+            },
+            alerts: {
+              departmentsRequiredForApproval: {
+                title: "PCN Approval Process",
+                initial: {
+                  title: "Initialization",
+                  text: "The PCN form requires specifying the relevant Engineering and Quality departments for Intranet to identify their decision-makers. Once all fields within the PCN are completed, the system automatically informs recipients about the upcoming action they may take to begin approval process.",
+                },
+                "required-review": {
+                  title: "Engineering and Quality Review",
+                  text: "The PCN will first be routed to the Engineering department for review. Once approval is received from any of the Engineering decision-makers, the PCN will automatically close and proceed to the Quality department for further review.",
+                },
+                "optional-review": {
+                  title: "Dedicated Department Review (Optional)",
+                  text: "If the PCR dedicated department pertains to a specific area outside Engineering and Quality, the system also routes the request for approval to the designated decision-maker(s) within that department.",
+                },
+              },
+              remainder: {
+                title: "Reminder",
+                text: "Please be advised that any updates made to the closed notice will automatically trigger its reopening for further review and action.",
+                fields: "Keys preview of updated fields.",
+              },
+              emptyUpdate: {
+                title: "Warning",
+                text: "Please be aware that proceeding without making any actual edits to the closed notice will not yield any effect.",
+              },
+            },
+          },
+        },
+        dcn: {
+          name: "Document Change Notice",
         },
       },
     },

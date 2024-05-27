@@ -22,6 +22,9 @@ const enC = {
           },
           matrix: "Matrix",
           admin: "Admin",
+          change: {
+            browse: "Change",
+          },
         },
       },
       pages: {
@@ -39,8 +42,8 @@ const enC = {
             title: "Training",
             text: "Enhancing skills and certifications.",
           },
-          cn: {
-            title: "CN",
+          change: {
+            title: "Change",
             text: "Creation and approval of change notices.",
           },
           matrix: {
@@ -59,6 +62,20 @@ const enC = {
         settings: {
           application: {
             name: "APPLICATION",
+            list: {
+              "list-subheader": "General",
+              "list-item": {
+                "1": {
+                  title: "Themes",
+                  subtitle: "Choose between light and dark mode",
+                },
+                "2": {
+                  title: "Languages",
+                  subtitle:
+                    "Select the language for the interface. Note: While English is fully supported, other languages may have limited support.",
+                },
+              },
+            },
             theme: {
               name: "Theme",
               dark: "Dark",
@@ -70,6 +87,9 @@ const enC = {
               polish: "Polish",
               ukrainian: "Ukrainian",
             },
+          },
+          notification: {
+            name: "NOTIFICATION CENTER",
           },
           user: {
             name: "USER",

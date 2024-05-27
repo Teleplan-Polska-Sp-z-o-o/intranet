@@ -22,6 +22,9 @@ const plC = {
           },
           matrix: "Macierz",
           admin: "Administrator",
+          change: {
+            browse: "Zmiana",
+          },
         },
       },
       pages: {
@@ -39,8 +42,8 @@ const plC = {
             title: "Szkolenie",
             text: "Rozwijanie umiejętności i certyfikacji wśród operatorów.",
           },
-          cn: {
-            title: "CN",
+          change: {
+            title: "Zmiana",
             text: "Tworzenie i zatwierdzanie komunikatów o zmianie.",
           },
           matrix: {
@@ -59,6 +62,20 @@ const plC = {
         settings: {
           application: {
             name: "APLIKACJA",
+            list: {
+              "list-subheader": "Ogólne",
+              "list-item": {
+                "1": {
+                  title: "Motywy",
+                  subtitle: "Wybierz między trybem jasnym i ciemnym",
+                },
+                "2": {
+                  title: "Języki",
+                  subtitle:
+                    "Wybierz język interfejsu. Uwaga: Angielski jest w pełni obsługiwany, inne języki mogą mieć ograniczoną obsługę.",
+                },
+              },
+            },
             theme: {
               name: "Motyw",
               dark: "Ciemny",
@@ -70,6 +87,9 @@ const plC = {
               polish: "Polski",
               ukrainian: "Ukraiński",
             },
+          },
+          notification: {
+            name: "CENTRUM POWIADOMIEŃ",
           },
           user: {
             name: "UŻYTKOWNIK",

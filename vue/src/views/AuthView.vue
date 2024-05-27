@@ -7,12 +7,13 @@ import { useUserStore } from "../stores/userStore";
 import { useRouter } from "vue-router";
 import { nodeConfig } from "../config/env";
 import { Endpoints } from "../config/Endpoints";
-import { User } from "../models/user/User";
 import { Permission } from "../models/user/Permission";
 import { useSettingsStore } from "../stores/settingsStore";
 import { ResponseStatus } from "../models/common/ResponseStatus";
 import { IResponseStatus } from "../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../components/common/alertResponseStatus.vue";
+import { UserEntity } from "../models/user/UserEntity";
+import msSignIn from "../components/auth/msSignIn.vue";
 
 // Router
 const router = useRouter();
@@ -82,8 +83,8 @@ const submitLogin = (): void => {
 
     axios
       .post(reqUrl, reqData)
-      .then(function (response) {
-        userStore.set(new User(response.data.userExist));
+      .then(function (response: any) {
+        userStore.set(new UserEntity().buildFromIUserEntity(response.data.userExist));
 
         const permission = { ...response.data.userExist.permission };
         delete permission.id;
@@ -187,6 +188,7 @@ const submitLogin = (): void => {
               </v-container>
               <v-btn type="submit" color="primary" class="rounded-xl">Login</v-btn>
             </v-form>
+            <ms-sign-in></ms-sign-in>
             <!-- <v-spacer v-if="responseStatus"></v-spacer> -->
             <alert-response-status
               class="rounded-xl mt-2"

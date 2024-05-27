@@ -9,6 +9,7 @@ import { Permission } from "../../../../models/user/Permission";
 import { IPermission } from "../../../../interfaces/user/IPermission";
 import { usePermissionStore } from "../../../../stores/permissionStore";
 import { nodeConfig } from "../../../../config/env";
+import { Endpoints } from "../../../../config/Endpoints";
 import axios from "axios";
 
 const emit = defineEmits(["save-data", "verified"]);
@@ -60,7 +61,7 @@ const editorStore = useEditorStore();
   const newsTitle = news.value.title;
   const newsSubtitle = news.value.subtitle;
   const newsContent = news.value.content;
-  editorStore.save(newsContent);
+  editorStore.save(newsContent, "news");
   const newsBgImage = news.value.bgImage;
   if (newsRef && newsTitle && newsSubtitle && newsContent && newsBgImage) {
     const constructBgImgSrc = (): string => {
@@ -92,7 +93,7 @@ const handleRef = (ref: string) => {
 const hasBgImage = computed<boolean>(() => bgImage.value.length > 0);
 
 watch(activeStep, (newStep, oldStep) => {
-  if (oldStep === 3 && newStep === 4) news.value.content = editorStore.get();
+  if (oldStep === 3 && newStep === 4) news.value.content = editorStore.get("news");
 });
 
 const hasContent = computed<boolean>(() => {
@@ -193,7 +194,7 @@ watchEffect(() => {
 
       <v-stepper-window-item :value="3">
         <v-card flat>
-          <ck-editor @ref="handleRef"></ck-editor>
+          <ck-editor :endpoint="Endpoints.News" editorKey="news" @ref="handleRef"></ck-editor>
         </v-card>
       </v-stepper-window-item>
 

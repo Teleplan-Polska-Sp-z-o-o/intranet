@@ -30,7 +30,7 @@ const addCategory = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error adding category: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to add category.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -63,7 +63,7 @@ const editCategory = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error updating category: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to update category.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -92,7 +92,7 @@ const removeCategory = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error removing category: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to remove category.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -122,7 +122,7 @@ const getCategories = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error retrieving categories: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve categories.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

@@ -1,14 +1,15 @@
 import { IUser } from "../../interfaces/user/IUser";
+import { IUserEntity } from "../../interfaces/user/IUserEntity";
 
 class User implements IUser {
-  id: number | null;
-  username: string | null;
-  domain: string | null;
+  id: number;
+  username: string;
+  domain: string;
 
-  constructor(user: IUser) {
-    this.id = user.id;
-    this.username = user.username;
-    this.domain = user.domain;
+  constructor(user?: IUser | IUserEntity) {
+    this.id = user ? user.id : 0;
+    this.username = user ? user.username : "";
+    this.domain = user ? user.domain : "";
   }
 }
 

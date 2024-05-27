@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import PermissionsTable from "../../components/views/tools/admin/PermissionsTable.vue";
+import PermissionsTable from "../../components/views/tools/admin/users/PermissionsTable.vue";
 import NewsTable from "../../components/views/tools/admin/NewsTable.vue";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
@@ -62,7 +62,7 @@ const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value 
           </v-row>
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
-              <v-window v-model="currentTab" class="w-100">
+              <v-window v-model="currentTab" class="w-100" :touch="false">
                 <v-window-item :value="1">
                   <permissions-table
                     class="bg-surface-2 pa-4 ma-1"

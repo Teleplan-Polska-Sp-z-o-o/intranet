@@ -77,7 +77,7 @@ const addDocument = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error adding document: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Failed to add document.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -163,7 +163,7 @@ const editDocument = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error editing document: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Failed to edit document.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -210,7 +210,7 @@ const removeDocument = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error removing document: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Failed to remove document.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -222,7 +222,7 @@ const getDocuments = async (req: Request, res: Response) => {
     const { type, reduce } = req.params;
 
     let docOptions: IDocOptions = {
-      relations: ["languages"],
+      relations: ["languages", "subcategory"],
     };
 
     if (type !== "all") {
@@ -258,6 +258,7 @@ const getDocuments = async (req: Request, res: Response) => {
       return {
         ...document,
         languages: document.languages.map((language) => language.name),
+        subcategory: document.subcategory,
       };
     });
 
@@ -268,7 +269,7 @@ const getDocuments = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error retrieving documents: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Failed to retrieve documents.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -301,7 +302,7 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
           },
         },
       },
-      relations: ["languages"],
+      relations: ["languages", "subcategory"],
     };
 
     if (type !== "all") {
@@ -341,6 +342,7 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
       return {
         ...document,
         languages: document.languages.map((language) => language.name),
+        subcategory: document.subcategory,
       };
     });
 
@@ -351,7 +353,7 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error retrieving documents: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Failed to retrieve documents.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -405,7 +407,7 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
       where: {
         subcategory: In(subcategoryIds),
       },
-      relations: ["languages"],
+      relations: ["languages", "subcategory"],
     };
 
     if (type !== "all") {
@@ -441,6 +443,7 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
       return {
         ...document,
         languages: document.languages.map((language) => language.name),
+        subcategory: document.subcategory,
       };
     });
 
@@ -451,7 +454,7 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error retrieving documents: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Failed to retrieve documents.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -508,7 +511,7 @@ const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
       where: {
         subcategory: subcategoryEntity,
       },
-      relations: ["languages"],
+      relations: ["languages", "subcategory"],
     };
 
     if (type !== "all") {
@@ -544,6 +547,7 @@ const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
       return {
         ...document,
         languages: document.languages.map((language) => language.name),
+        subcategory: document.subcategory,
       };
     });
 
@@ -554,7 +558,7 @@ const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error retrieving documents: ", error);
-    res.status(404).json({
+    res.status(500).json({
       message: "Failed to retrieve documents.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

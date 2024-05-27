@@ -89,4 +89,3 @@ if (props.retrieved.length > 0) {
     >
   </div>
 </template>
-../../../../../interfaces/document/IFileItem

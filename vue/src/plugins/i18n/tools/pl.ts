@@ -7,10 +7,12 @@ const plT = {
       cancel: "Anuluj",
       save: "Zapisz",
       ok: "OK",
+      search: "Szukaj",
       deleteItemConfirmation:
         "Usunięcie tego elementu wpłynie również na wszystkie jego elementy podrzędne.",
       deleteDocumentConfirmation:
         "Usunięcie tego dokumentu spowoduje również usunięcie wszystkich powiązanych z nim plików.",
+      filters: "Filtruj według zaawansowanych kryteriów",
     },
     chips: {
       departments: "Działy",
@@ -24,7 +26,6 @@ const plT = {
           name: "MOJE DOKUMENTY",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -32,7 +33,6 @@ const plT = {
           name: "MOJE ULUBIONE",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -40,7 +40,6 @@ const plT = {
           name: "WSZYSTKIE INSTRUKCJE",
           table: {
             toolbar: "Instrukcje",
-            search: "Szukaj",
             select_lang: "Wybierz język",
             header: {
               name: "Nazwa",
@@ -53,7 +52,6 @@ const plT = {
           name: "WSZYSTKIE POMOCE WIZUALNE",
           table: {
             toolbar: "Pomoce wizualne",
-            search: "Szukaj",
             select_lang: "Wybierz język",
             header: {
               name: "Nazwa",
@@ -66,7 +64,6 @@ const plT = {
           name: "OSTATNIO PRZEGLĄDANE",
           table: {
             toolbar: "",
-            search: "",
             select_lang: "",
           },
         },
@@ -83,7 +80,6 @@ const plT = {
               workstations: "Stanowiska pracy",
               programs: "Programy",
             },
-            search: "Szukaj",
             header: {
               name: "Nazwa",
               actions: "Akcje",
@@ -94,13 +90,13 @@ const plT = {
           name: "DOKUMENTY",
           table: {
             toolbar: "Dokumenty",
-            search: "Szukaj",
             header: {
               name: "Nazwa",
               type: "Typ",
               description: "Opis",
               language: "Języki (pliki)",
               revision: "Wersja",
+              subcategory: "Podkategoria",
               actions: "Akcje",
             },
           },
@@ -119,11 +115,13 @@ const plT = {
           name: "Uprawnienia",
           table: {
             toolbar: "Uprawnienia",
-            search: "Szukaj",
             header: {
               username: "Nazwa użytkownika",
               domain: "Domena",
               permission: "Uprawnienie",
+              position: "Pozycja",
+              department: "Dział",
+              decisionMaker: "Osoba Decyzyjna",
               actions: "Akcje",
             },
           },
@@ -132,11 +130,114 @@ const plT = {
           name: "Wiadomości",
           table: {
             toolbar: "Wiadomości",
-            search: "Szukaj",
             header: {
               title: "Tytuł",
               subtitle: "Podtytuł",
               actions: "Akcje",
+            },
+          },
+        },
+      },
+    },
+    change: {
+      name: "Zmiana",
+      tabs: {
+        pcr: {
+          name: "Prośba o zmianę procesu",
+          table: {
+            toolbar: "Prośby",
+            header: {
+              numberOfRequest: "Nr",
+              requestDate: "Data prośby",
+              internalOrExternal: "Wewnętrzny/Zewnętrzny",
+              reconextOwner: "Właściciel",
+              dedicatedDepartment: "Dedykowany dział",
+              program: "Program",
+              modelOrProcessImpacted: "Wpływ na",
+              dateNeeded: "Data potrzeby",
+              assessment: "Ocena",
+              approvedOrRejectedBy: "Zamknięte przez",
+              closureDate: "Data zamknięcia",
+              viewPcr: "Wyświetl PCR",
+              numberOfNotice: "Nr powiadomienia",
+              actions: "Akcje",
+            },
+          },
+          stepper: {
+            actions: {
+              prev: "Poprzedni",
+              next: "Następny",
+            },
+            changeReason: "Powód zmiany",
+            changeDescription: "Opis zmiany",
+            updateDescriptionRule: "Opis aktualizacji jest wymagany.",
+            customerContactPersonRule:
+              "Proszę podać zarówno imię, jak i nazwisko, oddzielone spacją.",
+            customerContactEmailRule: "Adres e-mail musi być poprawny.",
+            vStepperItem: {
+              "1": "Podstawowe informacje",
+              "2": "Informacje kontaktowe",
+              "3": "Data potrzebna",
+              "4": "Informacje opisowe",
+              "5": "Sprawdź",
+            },
+            vStepperWindowItem: {
+              "1": {
+                internalOrExternal: "Wewnętrzny lub Zewnętrzny",
+                dedicatedDepartment: "Dedykowany dział",
+                program: "Program",
+                reconextOwner: "Właściciel Reconext",
+              },
+              "2": {
+                customerContactPerson: "Osoba kontaktowa klienta",
+                customerContactEmail: "E-mail kontaktowy klienta",
+                reconextContactPerson: "Osoba kontaktowa Reconext",
+              },
+              "3": {
+                dateNeeded: "Wyczyść datę potrzebnej implementacji",
+              },
+              "4": {
+                modelOrProcessImpacted: "Wpływ na model lub proces",
+                costOfImplementation: "Koszt wdrożenia",
+                impacts: "Wpływy",
+                riskAnalysis: "Analiza ryzyka",
+                updateDescription: "Opis aktualizacji",
+              },
+            },
+            alerts: {
+              remainder: {
+                title: "Przypomnienie",
+                text: "Informujemy, że każda aktualizacja zamkniętego zapytania spowoduje automatyczne jego ponowne otwarcie w celu dalszej analizy i działań.",
+                fields: "Podgląd kluczy zaktualizowanych pól.",
+              },
+              emptyUpdate: {
+                title: "Ostrzeżenie",
+                text: "Prosimy zauważyć, że kontynuowanie bez faktycznej edycji jakichkolwiek pól w zamkniętym zgłoszeniu nadal spowoduje jego ponowne otwarcie.",
+              },
+              removalOfNotice: {
+                title: "Ostrzeżenie",
+                text: "Proszę pamiętać, że kontynuacja spowoduje usunięcie powiązanego powiadomienia o zmianie.",
+              },
+            },
+          },
+        },
+        pcn: {
+          name: "Powiadomienie o Zmianie Procesu",
+          table: {
+            toolbar: "Powiadomienia",
+            header: {
+              numberOfNotice: "Nr",
+              numberOfRequest: "Nr Wniosku",
+              reconextOwner: "Wnioskujący",
+              noticeDate: "Data Powiadomienia",
+              modelOrProcessImpacted: "Wpływ Na",
+              areDocumentationChangesRequired: "Zmiany w Dokumentacji",
+              isNewDocumentationRequired: "Nowa Dokumentacja",
+              isCustomerApprovalRequired: "Wymagana Akceptacja Klienta",
+              status: "Status",
+              closureDate: "Data zamknięcia",
+              viewPcn: "Wyświetl PCN",
+              actions: "Działania",
             },
           },
         },

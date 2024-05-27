@@ -33,7 +33,7 @@ const menuItems = [
   },
   {
     id: 3,
-    link: "/pages/settings",
+    link: "/pages/settings/application",
     content: "settings",
     icon: "cogs",
     onClick: "",
@@ -62,7 +62,9 @@ const hello = computed(() => t("common.default_layout.drawer.hello"));
     <v-list>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title class="text-h6"> {{ `${hello} ${username}` }} </v-list-item-title>
+          <v-list-item-title class="text-h6">
+            {{ `${hello} ${username}` }}
+          </v-list-item-title>
           <!-- <v-list-item-subtitle> </v-list-item-subtitle> -->
         </v-list-item-content>
       </v-list-item>

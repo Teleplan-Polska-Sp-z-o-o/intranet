@@ -51,18 +51,18 @@ const tools = [
   //     control: false,
   //   },
   // },
-  // {
-  //   id: 3,
-  //   name: "cn",
-  //   href: "",
-  //   icon: "file-document-edit",
-  //   image: "../tools/change.png",
-  //   permissions: {
-  //     read: true,
-  //     write: true,
-  //     control: false,
-  //   },
-  // },
+  {
+    id: 3,
+    name: "change",
+    href: "/tool/change/browse/pcr",
+    icon: "file-document-edit",
+    image: "../tools/change.png",
+    permissions: {
+      read: true,
+      write: true,
+      control: false,
+    },
+  },
   {
     id: 4,
     name: "matrix",

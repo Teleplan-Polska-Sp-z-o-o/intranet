@@ -67,7 +67,7 @@ const headers = ref<any>([
 const toolbarTitle = computed(() => {
   return t(`${tPath}.toolbar.${tableItem.value}`);
 });
-const searchTitle = t(`${tPath}.search`);
+const searchTitle = t(`tools.common.search`);
 
 const reqData = ref<any>(null);
 

@@ -1,6 +1,8 @@
 enum Endpoints {
+  Users = "/api/user",
+  Msal = "/api/msal",
+
   User = "/api/user/one",
-  Users = "/api/user/all",
   UserAuth = "/api/user/auth",
   UserSettingsTheme = "/api/user/settings/theme",
   UserSettingsLanguage = "/api/user/settings/language",
@@ -15,6 +17,14 @@ enum Endpoints {
 
   // editor
   News = "/api/editor/news",
+  Request = "/api/editor/request",
+
+  // change
+  ChangeRequest = "/api/change/request",
+  ChangeNotice = "/api/change/notice",
+
+  //notification
+  Notification = "/api/notification",
 }
 
 export { Endpoints };

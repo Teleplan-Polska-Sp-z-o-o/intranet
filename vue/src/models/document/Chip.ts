@@ -8,6 +8,10 @@ class Chip implements IChip {
     this.id = id;
     this.name = name;
   }
+
+  getName(): string {
+    return this.name;
+  }
 }
 
 export { Chip };
