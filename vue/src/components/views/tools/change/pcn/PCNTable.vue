@@ -23,7 +23,7 @@ const props = defineProps<{
 const { t } = useI18n();
 const tab = ref<string>(props.tab);
 watchEffect(() => (tab.value = props.tab));
-const tPath = `tools.change.tabs.${tab.value}.table`;
+const tPath = `tools.change.tabs.pcn.table`;
 
 const headers: any = [
   {
