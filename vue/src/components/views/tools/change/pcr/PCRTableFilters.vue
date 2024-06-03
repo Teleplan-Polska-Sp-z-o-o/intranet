@@ -13,11 +13,18 @@ const selectedOwner = ref<boolean>(pcrStore.getFilter("onlyOwned"));
 const saveOwner = () => {
   pcrStore.saveFilter(selectedOwner.value, "onlyOwned");
 };
+
+const smallScreen = ref<boolean>(window.innerWidth < 960);
 </script>
 
 <template>
-  <v-list lines="three" select-strategy="classic" bg-color="surface-2">
-    <v-list-item class="pa-0">
+  <v-list
+    lines="three"
+    select-strategy="classic"
+    bg-color="surface-2"
+    :class="smallScreen ? 'px-n2' : 'mx-5'"
+  >
+    <v-list-item>
       <template v-slot:prepend>
         <v-list-item-action start>
           <v-switch
@@ -31,9 +38,9 @@ const saveOwner = () => {
       <v-list-item-title>Owner</v-list-item-title>
       <v-list-item-subtitle> Show only requests that I own. </v-list-item-subtitle>
     </v-list-item>
-    <v-list-item class="pa-0">
+    <v-list-item>
       <template v-slot:prepend>
-        <v-list-item-action start style="min-width: 150px">
+        <v-list-item-action start :style="smallScreen ? '' : 'min-width: 150px'">
           <v-select
             v-model="selectedStatus"
             label="Status"

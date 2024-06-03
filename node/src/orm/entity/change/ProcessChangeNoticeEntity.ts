@@ -267,7 +267,6 @@ class ProcessChangeNotice implements IProcessChangeNotice {
     assessments: { eng: boolean; qua: boolean; ded: boolean };
   } => {
     try {
-      console.log("assess run");
       const decision: boolean = assessment === "approve";
 
       const decisionDateString = Helper.formatDate(new Date(), "pcn assessment");
@@ -315,30 +314,12 @@ class ProcessChangeNotice implements IProcessChangeNotice {
         assessmentOf("dedicated");
         flags.ded = true;
       }
-      console.log("assess before return");
+
       return { notice: this, assessments: flags };
     } catch (error) {
       console.error(`ProcesChangeNotice at assess, ${error}`);
     }
   };
-
-  /*
-
-Approvals:
-
-1. Reassigned => designated person
-2. Assigned => designated person
-
-3. Completed => engineering dep
-4. Engineering Approval => quality dep
-5. Quality Approval (optional) => dedicated dep
-
-6. Updated Uncompleted => engineering dep
-7. Updated Completed => engineering dep
-8. Updated Engineering Approval => quality dep
-8. Updated Quality Approval => dedicated dep
-
-*/
 
   public notification = async (
     entityManager: EntityManager,
@@ -396,7 +377,7 @@ Approvals:
         });
 
         recipients = users;
-        console.log("recipients", recipients);
+
         break;
     }
 
@@ -577,7 +558,7 @@ Approvals:
     };
 
     const fields: ProcessChangeNoticeFields = new ProcessChangeNoticeFields().build(this);
-    console.log("fields", fields);
+
     const filled = Object.entries(fields)
       .filter(([key]) => key !== "updateDescription")
       .every(([key, value]) => {
@@ -600,7 +581,7 @@ Approvals:
             return isNotNullOrUndefined(value);
         }
       });
-    console.log("filled", filled);
+
     return filled;
   };
 

@@ -17,7 +17,7 @@ emit("filters", { callback: props.callback });
 </script>
 
 <template>
-  <v-expansion-panels class="pa-4">
+  <v-expansion-panels>
     <v-expansion-panel class="rounded-xl bg-surface-2">
       <v-expansion-panel-title
         expand-icon="mdi-filter-menu-outline"
