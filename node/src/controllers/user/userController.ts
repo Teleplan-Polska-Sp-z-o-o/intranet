@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
 import { dataSource } from "../../config/orm/dataSource";
 import { User as UserEntity } from "../../orm/entity/user/UserEntity";
-import { User } from "../../models/user/User";
+import { LDAP } from "../../models/user/LDAP";
 import { UserPermission } from "../../orm/entity/user/UserPermissionEntity";
 import { UserSettings } from "../../orm/entity/user/UserSettingsEntity";
 import { adminsConfig } from "../../config/admins";
 import { HttpResponseMessage } from "../../enums/response";
 import { UserInfo } from "../../orm/entity/user/UserInfoEntity";
-import { IUser } from "../../interfaces/user/IUser";
 import { IPermission } from "../../interfaces/user/IPermission";
 import { UserInformation } from "../../models/user/UserInformation";
 import { DataSource, EntityManager } from "typeorm";
@@ -96,13 +95,13 @@ const getUsers = async (req: Request, res: Response) => {
 
 const userAuth = async (req: Request, res: Response) => {
   try {
-    let user = new User(req.body);
+    let ldap = new LDAP(req.body);
 
-    user.username.toLocaleLowerCase();
+    ldap.username.toLocaleLowerCase();
 
     // Wait for LDAP authentication to complete
-    const authenticated = await user.ldapAuthenticate();
-
+    const authenticated = await ldap.authentication();
+    console.log(authenticated);
     if (!authenticated)
       return res.status(204).json({
         message: "Invalid username or password.",
@@ -112,7 +111,7 @@ const userAuth = async (req: Request, res: Response) => {
     // Check if user exist in database
     let userExist: UserEntity | null = null;
 
-    userExist = await findUser(user.username);
+    userExist = await findUser(ldap.username);
 
     // Create new UserEntity if user doesn't exist in database
     if (!userExist) {
@@ -123,7 +122,7 @@ const userAuth = async (req: Request, res: Response) => {
         control: true,
       };
 
-      const permissionEntity: UserPermission = admins.includes(user.username)
+      const permissionEntity: UserPermission = admins.includes(ldap.username)
         ? new UserPermission(adminPermission)
         : new UserPermission();
 
@@ -135,9 +134,9 @@ const userAuth = async (req: Request, res: Response) => {
 
       await dataSource
         .getRepository(UserEntity)
-        .save(new UserEntity(user.username, user.domain, permission, settings, info));
+        .save(new UserEntity(ldap.username, ldap.domain, permission, settings, info));
 
-      userExist = await findUser(user.username);
+      userExist = await findUser(ldap.username);
 
       return res.status(201).json({
         userExist,
