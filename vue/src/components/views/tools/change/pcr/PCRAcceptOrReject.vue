@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, toRef, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { useUserStore } from "../../../../../stores/userStore";
@@ -49,31 +49,46 @@ const acceptOrReject = async () => {
   emit("close", close);
 };
 
-const enableActions = async (): Promise<void> => {
+type CheckActionsInfo = { isFilled: boolean; isClosed: boolean };
+
+const enableActions = async (): Promise<CheckActionsInfo> => {
   const request: IProcessChangeRequest = await manager.getRequest(props.pcrId);
   const base: ProcessChangeRequestBase = new ProcessChangeRequestBase().buildFromRequest(request);
 
-  const filled = Object.entries(base)
+  const isFilled = Object.entries(base)
     .filter(([key]) => key !== "riskAnalysis" && key !== "updateDescription")
     .every(([_, value]) => !!value);
   const isClosed = request.status === "Closed";
   const isOwner = user.username === base.reconextOwner.toLocaleLowerCase().replace(" ", ".");
 
-  showActions.value = filled && !isClosed && isOwner;
+  showActions.value = isFilled && !isClosed && isOwner;
+  return { isFilled, isClosed };
 };
 
 const showActions = ref<boolean>(false);
 
-onMounted(() => {
-  enableActions();
+const checkActionsInfo = ref<CheckActionsInfo>({
+  isFilled: false,
+  isClosed: false,
 });
 
-const checkActions = toRef(() => props.checkActions);
+const checkActionsInfoAlert = computed(() => {
+  return {
+    "1": !checkActionsInfo.value.isFilled && !checkActionsInfo.value.isClosed,
+    "2": checkActionsInfo.value.isClosed,
+  };
+});
 
-watchEffect(() => {
+const checkActions = ref<true | null>(props.checkActions);
+
+watchEffect(async () => {
   if (checkActions.value === true) {
     enableActions();
     emit("resetActions");
+  } else {
+    const { isFilled, isClosed } = await enableActions();
+    checkActionsInfo.value.isFilled = isFilled;
+    checkActionsInfo.value.isClosed = isClosed;
   }
 });
 
@@ -83,6 +98,20 @@ const click = () => {
 </script>
 
 <template>
+  <template v-if="props.variant === 'accept'">
+    <v-alert
+      v-if="checkActionsInfoAlert['1']"
+      variant="outlined"
+      text="Approval controls will appear once PCR is complete."
+      type="info"
+    ></v-alert>
+    <v-alert
+      v-if="checkActionsInfoAlert['2']"
+      variant="outlined"
+      text="Approval for this PCR has been granted."
+      type="info"
+    ></v-alert>
+  </template>
   <v-dialog :max-width="smallScreen ? '80%' : '40%'" v-model="dialog">
     <template v-slot:activator>
       <v-btn

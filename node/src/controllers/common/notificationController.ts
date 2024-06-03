@@ -49,14 +49,14 @@ const editNotification = async (req: Request, res: Response) => {
         .save(updatedNotification);
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       edited: updatedNotification,
       message: "Notification updated successfully",
       statusMessage: HttpResponseMessage.PUT_SUCCESS,
     });
   } catch (error) {
     console.error("Error editing notifications: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve notifications.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -105,14 +105,14 @@ const getNotifications = async (req: Request, res: Response) => {
         .find(notificationsOptions);
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       got: notifications,
       message: "Notifications retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving notifications: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve notifications.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

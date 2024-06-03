@@ -30,12 +30,12 @@ const inputs = ref<Array<UserInput>>([]);
     };
 
     const info = () => {
-      const position: string = item.value.info.position || "";
+      const position: string = item.value.info?.position || "";
 
-      const department: string = item.value.info.department || "";
+      const department: string = item.value.info?.department || "";
 
       const decisionMaker = ((): string => {
-        const d: boolean = item.value.info.decisionMaker;
+        const d: boolean = item.value.info?.decisionMaker;
         if (d) return "Yes";
         else if (d === false) return "No";
         else return "";
@@ -69,6 +69,7 @@ watch(
   <div v-for="input in inputs" :key="input.id">
     <v-select
       v-if="input.variant === 'select'"
+      :clearable="true"
       v-model="input.val"
       :label="input.label"
       :items="input?.items"

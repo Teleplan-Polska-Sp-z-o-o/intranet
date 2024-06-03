@@ -117,7 +117,7 @@ const handleSaveData = (data: { item: any; inputs: Array<UserInput> }) => {
 const manager = new UserManager();
 
 const decisionMaker = (item: any) => {
-  const d: boolean = item.info.decisionMaker;
+  const d: boolean = !!item.info?.decisionMaker;
   if (d) return "Yes";
   else return "No";
 };

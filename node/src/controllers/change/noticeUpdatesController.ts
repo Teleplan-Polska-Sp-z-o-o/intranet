@@ -18,14 +18,14 @@ const getNoticeUpdates = async (req: Request, res: Response) => {
 
     const noticeUpdates = notice.processChangeNoticeUpdates;
 
-    res.status(200).json({
+    return res.status(200).json({
       got: noticeUpdates,
       message: "Notice Updates retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving notice updates: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve notice updates.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

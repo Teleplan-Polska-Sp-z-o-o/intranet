@@ -69,7 +69,7 @@ const addDocument = async (req: Request, res: Response) => {
         );
       }
 
-      res.status(201).json({
+      return res.status(201).json({
         added: JSON.stringify(savedDocument),
         message: "Document added successfully",
         statusMessage: HttpResponseMessage.POST_SUCCESS,
@@ -77,7 +77,7 @@ const addDocument = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error adding document: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to add document.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -155,7 +155,7 @@ const editDocument = async (req: Request, res: Response) => {
         );
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         edited: JSON.stringify(updatedDocument),
         message: "Document updated successfully",
         statusMessage: HttpResponseMessage.PUT_SUCCESS,
@@ -163,7 +163,7 @@ const editDocument = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error editing document: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to edit document.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -202,7 +202,7 @@ const removeDocument = async (req: Request, res: Response) => {
         .getRepository(Document)
         .remove(documentToRemove);
 
-      res.status(200).json({
+      return res.status(200).json({
         deleted: removedDocument,
         message: "Document removed successfully",
         statusMessage: HttpResponseMessage.DELETE_SUCCESS,
@@ -210,7 +210,7 @@ const removeDocument = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error removing document: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to remove document.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -262,14 +262,14 @@ const getDocuments = async (req: Request, res: Response) => {
       };
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       documents: documents,
       message: "Documents retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving documents: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to retrieve documents.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -346,14 +346,14 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
       };
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       documents: documents,
       message: "Documents retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving documents: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to retrieve documents.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -447,14 +447,14 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
       };
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       documents: documents,
       message: "Documents retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving documents: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to retrieve documents.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -551,14 +551,14 @@ const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
       };
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       documents: documents,
       message: "Documents retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving documents: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to retrieve documents.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

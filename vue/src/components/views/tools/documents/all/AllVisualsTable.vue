@@ -85,7 +85,7 @@ watchEffect(() => (tab.value = props.tab));
 const tPath = `tools.documents.tabs.${tab.value}.table`;
 
 const headers: any = [
-  { title: t(`${tPath}.header.name`), align: "start", key: "name" },
+  { title: t(`${tPath}.header.name`), align: "start", key: "name", minWidth: 200 },
   { title: t(`${tPath}.header.description`), key: "description" },
   { title: t(`${tPath}.header.view_document`), key: "custom", sortable: false, filterable: false },
   // { title: "Favorite", key: "custom2", sortable: false, filterable: false },

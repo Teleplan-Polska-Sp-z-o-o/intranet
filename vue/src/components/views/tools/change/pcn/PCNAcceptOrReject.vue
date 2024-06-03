@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRef, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "../../../../../stores/userStore";
 import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
@@ -54,7 +54,13 @@ const acceptOrReject = async () => {
   }
 };
 
-const enableActions = async (): Promise<void> => {
+type CheckActionsInfo = {
+  isFilled: boolean;
+  isNextApprover: boolean;
+  isAlreadyApproved: boolean;
+};
+
+const enableActions = async (): Promise<CheckActionsInfo> => {
   try {
     const request: IProcessChangeRequest = await manager.getNotice(props.pcrId);
     if (request.processChangeNotice === null)
@@ -69,31 +75,25 @@ const enableActions = async (): Promise<void> => {
     // const filled = Object.entries(fields)
     //   .filter(([key]) => key !== "updateDescription")
     //   .every(([_, value]) => isNotNullOrUndefined(!!value));
-
-    const isFilled = (): boolean => {
-      const isNotNullOrUndefined = (value: any): boolean => {
-        return value !== undefined && value !== null;
-      };
-
-      const filled = Object.entries(fields)
-        .filter(([key]) => key !== "updateDescription")
-        .every(([key, value]) => {
-          switch (key) {
-            case "listOfDocumentationToChange":
-              return fields.areDocumentationChangesRequired ? isNotNullOrUndefined(value) : true;
-            case "listOfDocumentationToCreate":
-              return fields.isNewDocumentationRequired ? isNotNullOrUndefined(value) : true;
-
-            default:
-              return isNotNullOrUndefined(value);
-          }
-        });
-
-      return filled;
+    const isNotNullOrUndefined = (value: any): boolean => {
+      return value !== undefined && value !== null;
     };
+    const isFilled: boolean = Object.entries(fields)
+      .filter(([key]) => key !== "updateDescription")
+      .every(([key, value]) => {
+        switch (key) {
+          case "listOfDocumentationToChange":
+            return fields.areDocumentationChangesRequired ? isNotNullOrUndefined(value) : true;
+          case "listOfDocumentationToCreate":
+            return fields.isNewDocumentationRequired ? isNotNullOrUndefined(value) : true;
+
+          default:
+            return isNotNullOrUndefined(value);
+        }
+      });
 
     // const isClosed = notice.status === "Closed";
-    const isClosed = notice.dedicatedDepartmentApproval === true;
+    // const isClosed = notice.dedicatedDepartmentApproval === true;
 
     // user.username === base.reconextOwner.toLocaleLowerCase().replace(" ", ".");
     let isNextApprover: boolean = false;
@@ -111,24 +111,30 @@ const enableActions = async (): Promise<void> => {
     const userDepartment = userInfo.info.department;
     const decisionMaker = userInfo.info.decisionMaker;
 
+    let isAlreadyApproved: boolean = false;
+
     switch (userDepartment) {
       case engDepartment:
         if (!engApproval && decisionMaker) isNextApprover = true;
+        if (engApproval) isAlreadyApproved = true;
         break;
       case quaDepartment:
         if (engApproval && !quaApproval && decisionMaker) isNextApprover = true;
+        if (quaApproval) isAlreadyApproved = true;
         break;
       case dedDepartment:
         if (quaApproval && !dedApproval && decisionMaker) isNextApprover = true;
+        if (dedApproval) isAlreadyApproved = true;
         break;
 
       default:
         break;
     }
 
-    showActions.value = isFilled() && !isClosed && isNextApprover;
+    showActions.value = isFilled && isNextApprover;
+    return { isFilled, isNextApprover, isAlreadyApproved };
   } catch (error) {
-    console.log(`enableActions error: ${error}`);
+    throw new Error(`enableActions error: ${error}`);
   }
 };
 
@@ -141,12 +147,37 @@ const showActions = ref<boolean>(false);
 //   }
 // });
 
-const checkActions = toRef(() => props.checkActions);
+const checkActionsInfo = ref<CheckActionsInfo>({
+  isFilled: false,
+  isNextApprover: false,
+  isAlreadyApproved: false,
+});
 
-watchEffect(() => {
+const checkActionsInfoAlert = computed(() => {
+  return {
+    "1":
+      !checkActionsInfo.value.isFilled &&
+      !checkActionsInfo.value.isNextApprover &&
+      !checkActionsInfo.value.isAlreadyApproved,
+    "2":
+      checkActionsInfo.value.isFilled &&
+      !checkActionsInfo.value.isNextApprover &&
+      !checkActionsInfo.value.isAlreadyApproved,
+    "3": !checkActionsInfo.value.isFilled && checkActionsInfo.value.isNextApprover,
+    "4": checkActionsInfo.value.isFilled && checkActionsInfo.value.isAlreadyApproved,
+  };
+});
+
+const checkActions = ref<true | null>(props.checkActions);
+
+watchEffect(async () => {
   if (checkActions.value === true) {
-    enableActions();
     emit("resetActions");
+  } else {
+    const { isFilled, isNextApprover, isAlreadyApproved } = await enableActions();
+    checkActionsInfo.value.isFilled = isFilled;
+    checkActionsInfo.value.isNextApprover = isNextApprover;
+    checkActionsInfo.value.isAlreadyApproved = isAlreadyApproved;
   }
 });
 
@@ -156,6 +187,32 @@ const click = () => {
 </script>
 
 <template>
+  <template v-if="props.variant === 'accept'">
+    <v-alert
+      v-if="checkActionsInfoAlert['1']"
+      variant="outlined"
+      text="Approval controls will appear once PCN is complete and you are next to approve."
+      type="info"
+    ></v-alert>
+    <v-alert
+      v-if="checkActionsInfoAlert['2']"
+      variant="outlined"
+      text="PCN is complete. Approval controls will appear once you are next to approve."
+      type="info"
+    ></v-alert>
+    <v-alert
+      v-if="checkActionsInfoAlert['3']"
+      variant="outlined"
+      text="Approval controls will appear once PCN is complete."
+      type="info"
+    ></v-alert>
+    <v-alert
+      v-if="checkActionsInfoAlert['4']"
+      variant="outlined"
+      text="Approval for this PCN has been granted by your department."
+      type="info"
+    ></v-alert>
+  </template>
   <v-dialog :max-width="smallScreen ? '80%' : '40%'" v-model="dialog">
     <template v-slot:activator>
       <v-btn

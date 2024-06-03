@@ -18,6 +18,8 @@ const addFile = () => {
   files.value.push(new FileItem(++currId));
 };
 
+addFile();
+
 const handleFileChange = (fileData: IFileItem) => {
   const existingIndex = files.value.findIndex((item) => item.id === fileData.id);
 

@@ -391,7 +391,7 @@ Approvals:
 
         let users: Array<UserEntity> = await queryBuilder.getMany();
 
-        users.filter((user) => {
+        users = users.filter((user) => {
           return user.info.decisionMaker && user.info.department === nextDepartmentToApprove();
         });
 

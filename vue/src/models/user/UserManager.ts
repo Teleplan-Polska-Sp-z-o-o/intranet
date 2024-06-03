@@ -43,6 +43,22 @@ class UserManager {
     }
     return response.data.edited;
   };
+
+  public delete = async (
+    id: number,
+    status: boolean = false
+  ): Promise<Array<IUserEntity> | IResponseStatus> => {
+    const response = await axios.delete(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/${id}`
+    );
+    if (status) {
+      return new ResponseStatus({
+        code: response.status,
+        message: response.data.statusMessage,
+      });
+    }
+    return response.data.deleted;
+  };
 }
 
 export { UserManager };

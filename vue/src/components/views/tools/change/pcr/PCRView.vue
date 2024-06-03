@@ -2,14 +2,15 @@
 import { IProcessChangeRequest } from "../../../../../interfaces/change/IProcessChangeRequest";
 import { nodeConfig } from "../../../../../config/env";
 import { PDFHelper } from "../../../../../models/common/PDFHelper";
-import { computed, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+import { computed, ref, watch, watchEffect } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { IProcessChangeRequestUpdates } from "../../../../../interfaces/change/IProcessChangeRequestUpdates";
-import AcceptOrReject from "./AcceptOrReject.vue";
+import PCRAcceptOrReject from "./PCRAcceptOrReject.vue";
 import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { useEditorStore } from "../../../../../stores/editorStore";
 import { UserManager } from "../../../../../models/user/UserManager";
+// import { v4 as uuidv4 } from "uuid";
 
 const emit = defineEmits(["responseStatus", "loadItems"]);
 
@@ -17,25 +18,31 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const props = defineProps<{
   item: IProcessChangeRequest;
+  tab: string;
 }>();
 
 const backend = `${nodeConfig.origin}:${nodeConfig.port}/uploads/common/`;
 const logoSource = `${backend}reconext-logo.png`;
 
-const itemId: number = props.item.id;
+const item = ref<IProcessChangeRequest>(props.item);
 const manager = new ProcessChangeRequestManager();
 
-const item = ref<IProcessChangeRequest>(props.item);
+const tab = ref<string>(props.tab);
+watch(
+  () => props.tab,
+  async (newT, oldT) => {
+    tab.value = newT;
+    if (newT === "pcr" && oldT !== "pcr") item.value = await manager.getRequest(props.item.id);
+  }
+);
 
-// const route = useRoute();
-// const no = ref<string | undefined>((route.params.no as string) || undefined);
+const route = useRoute();
 
 const openDialog = ref<boolean>(false);
 
-// watchEffect(() => {
-//   no.value = (route.params.no as string) || undefined;
-//   openDialog.value = no.value ? parseInt(no.value) === item.value.id : false;
-// });
+watchEffect(() => {
+  if (tab.value === "pcr") openDialog.value = parseInt(route.params.no as string) === props.item.id;
+});
 
 const showAOR = ref<boolean>(true);
 
@@ -44,11 +51,13 @@ const handleResetActions = () => (checkActions.value = null);
 
 watch(openDialog, async (newOpenDialog, oldOpenDialog) => {
   if (oldOpenDialog !== true && newOpenDialog !== false) {
-    item.value = await manager.getRequest(itemId);
-    showAOR.value = true;
-    checkActions.value = true;
+    if (tab.value === "pcr") {
+      item.value = await manager.getRequest(props.item.id);
+      showAOR.value = true;
+      checkActions.value = true;
+    }
   } else if (oldOpenDialog === true && newOpenDialog === false) {
-    router.push({ path: `/tool/change/browse/pcr` });
+    if (tab.value === "pcr") router.push({ path: `/tool/change/browse/pcr` });
   }
 });
 
@@ -98,16 +107,16 @@ const ownerTitle = ref<string>("");
 
 const updates = ref<Array<IProcessChangeRequestUpdates>>([]);
 
-const getUpdates = async () => {
-  updates.value = item.value.id ? await manager.getRequestUpdates(item.value.id) : [];
+const getUpdates = async (item: IProcessChangeRequest) => {
+  updates.value = item.id ? await manager.getRequestUpdates(item.id) : [];
 };
 
-getUpdates();
+if (tab.value === "pcr") getUpdates(item.value);
 
 watch(
   item,
-  () => {
-    getUpdates();
+  (newItem) => {
+    if (tab.value === "pcr") getUpdates(newItem);
   },
   { deep: true }
 );
@@ -249,27 +258,39 @@ const request = computed(() => {
 const router = useRouter();
 
 const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChangeRequest }) => {
-  emit("responseStatus", closeData.response);
-  emit("loadItems");
+  try {
+    if (tab.value === "pcr") {
+      emit("responseStatus", closeData.response);
+      emit("loadItems");
 
-  item.value = closeData.closed;
+      item.value = closeData.closed;
 
-  router.push({ path: `/tool/change/browse/pcr` });
-  openDialog.value = false;
+      router.push({ path: `/tool/change/browse/pcr` });
+      openDialog.value = false;
 
-  showAOR.value = false;
+      showAOR.value = false;
+    }
+  } catch (error) {
+    console.error(`handleClose pcr ${error}`);
+  }
 };
 
 const open = () => {
-  router.push({ path: `/tool/change/browse/pcr/${item.value.id}` });
-  openDialog.value = true;
+  try {
+    if (tab.value === "pcr") {
+      router.push({ path: `/tool/change/browse/pcr/${item.value.id}` });
+      openDialog.value = true;
+    }
+  } catch (error) {
+    console.error(`open pcr ${error}`);
+  }
 };
 </script>
 
 <template>
   <v-dialog v-model="openDialog" :max-width="smallScreen ? '90vw' : '60vw'" max-height="80vh">
     <template v-slot:activator>
-      <v-tooltip text="View PCR">
+      <v-tooltip text="View/Approve PCR">
         <template v-slot:activator="{ props: tooltip }">
           <!-- :id="item.value.numberOfRequest" -->
           <v-btn
@@ -280,7 +301,7 @@ const open = () => {
             v-bind="{ ...tooltip }"
             @click="open"
           >
-            <v-icon icon="mdi-file-pdf-box" :size="24" />
+            <v-icon icon="mdi-file-find" :size="24" />
           </v-btn>
         </template>
       </v-tooltip>
@@ -432,23 +453,23 @@ const open = () => {
           </v-sheet>
         </v-card-text>
         <v-card-actions :class="smallScreen ? 'px-4' : 'px-10'">
-          <accept-or-reject
+          <p-c-r-accept-or-reject
             v-if="showAOR"
             variant="reject"
-            :pcrId="itemId"
+            :pcrId="props.item.id"
             @close="handleClose"
             :checkActions="checkActions"
             @resetActions="handleResetActions"
-          ></accept-or-reject>
+          ></p-c-r-accept-or-reject>
 
-          <accept-or-reject
+          <p-c-r-accept-or-reject
             v-if="showAOR"
             variant="accept"
-            :pcrId="itemId"
+            :pcrId="props.item.id"
             @close="handleClose"
             :checkActions="checkActions"
             @resetActions="handleResetActions"
-          ></accept-or-reject>
+          ></p-c-r-accept-or-reject>
 
           <v-spacer></v-spacer>
 

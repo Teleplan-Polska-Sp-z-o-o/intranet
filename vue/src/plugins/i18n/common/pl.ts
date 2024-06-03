@@ -44,7 +44,7 @@ const plC = {
           },
           change: {
             title: "Zmiana",
-            text: "Tworzenie i zatwierdzanie komunikatów o zmianie.",
+            text: "Tworzenie i zatwierdzanie zmian.",
           },
           matrix: {
             title: "Macierz",

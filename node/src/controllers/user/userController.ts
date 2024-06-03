@@ -10,10 +10,15 @@ import { UserInfo } from "../../orm/entity/user/UserInfoEntity";
 import { IUser } from "../../interfaces/user/IUser";
 import { IPermission } from "../../interfaces/user/IPermission";
 import { UserInformation } from "../../models/user/UserInformation";
+import { DataSource, EntityManager } from "typeorm";
 
-const findUser = async (username: string): Promise<UserEntity> => {
-  return dataSource.getRepository(UserEntity).findOne({
-    where: { username },
+const findUser = async (
+  where: string | number,
+  entityManager: DataSource | EntityManager = dataSource
+): Promise<UserEntity> => {
+  const whereOptions = typeof where === "number" ? { id: where } : { username: where };
+  return entityManager.getRepository(UserEntity).findOne({
+    where: whereOptions,
     relations: ["permission", "settings", "info"],
   });
 };
@@ -25,7 +30,7 @@ const getUser = async (req: Request, res: Response) => {
     const user: UserEntity = await findUser(username);
 
     if (!user)
-      res
+      return res
         .status(404)
         .json({ user, message: "User not found.", statusMessage: HttpResponseMessage.GET_ERROR });
 
@@ -34,7 +39,7 @@ const getUser = async (req: Request, res: Response) => {
       .json({ user, message: "User found.", statusMessage: HttpResponseMessage.GET_SUCCESS });
   } catch (err) {
     console.error("Error retrieving user:", err);
-    res.status(500).json({
+    return res.status(500).json({
       err,
       message: "Unknown error occurred. Failed to retrieve user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
@@ -81,7 +86,7 @@ const getUsers = async (req: Request, res: Response) => {
       .json({ users, message: "Users found.", statusMessage: HttpResponseMessage.GET_SUCCESS });
   } catch (err) {
     console.error("Error retrieving user:", err);
-    res.status(500).json({
+    return res.status(500).json({
       err,
       message: "Unknown error occurred. Failed to retrieve user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
@@ -99,7 +104,7 @@ const userAuth = async (req: Request, res: Response) => {
     const authenticated = await user.ldapAuthenticate();
 
     if (!authenticated)
-      res.status(204).json({
+      return res.status(204).json({
         message: "Invalid username or password.",
         statusMessage: HttpResponseMessage.POST_ERROR,
       });
@@ -134,7 +139,7 @@ const userAuth = async (req: Request, res: Response) => {
 
       userExist = await findUser(user.username);
 
-      res.status(201).json({
+      return res.status(201).json({
         userExist,
         message: "Authentication successful. User has been created.",
         statusMessage: HttpResponseMessage.POST_SUCCESS,
@@ -148,7 +153,7 @@ const userAuth = async (req: Request, res: Response) => {
         await dataSource.getRepository(UserEntity).save(userExist);
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         userExist,
         message: "Authentication successful.",
         statusMessage: HttpResponseMessage.POST_SUCCESS,
@@ -156,7 +161,7 @@ const userAuth = async (req: Request, res: Response) => {
     }
   } catch (err) {
     console.error("Error authenticating user: ", err);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to authenticate user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -188,32 +193,41 @@ const editUser = async (req: Request, res: Response) => {
         await transactionalEntityManager.getRepository(UserPermission).save(userPermission);
       }
 
-      if (info) {
-        const userInfo: UserInfo = await transactionalEntityManager
+      const userInfo: UserInfo = (await findUser(userId, transactionalEntityManager)).info;
+
+      if (userInfo) {
+        userInfo.build(new UserInformation(info));
+        await transactionalEntityManager.getRepository(UserInfo).save(userInfo);
+      } else {
+        const userInfoRecord = await transactionalEntityManager
           .getRepository(UserInfo)
-          .findOne({
-            where: { id: userId },
-          });
+          .save(new UserInfo().build());
+        user.info = userInfoRecord;
+        await transactionalEntityManager.getRepository(UserEntity).save(user);
 
         userInfo.build(new UserInformation(info));
+        const userInfoExist = await transactionalEntityManager
+          .getRepository(UserInfo)
+          .save(userInfo);
 
-        await transactionalEntityManager.getRepository(UserInfo).save(userInfo);
+        if (!userInfoExist)
+          return res.status(404).json({
+            message: "User info not found.",
+            statusMessage: HttpResponseMessage.PUT_ERROR,
+          });
       }
 
-      user = await transactionalEntityManager.getRepository(UserEntity).findOne({
-        where: { id: userId },
-        relations: ["permission", "settings", "info"],
-      });
-    });
+      user = await findUser(userId, transactionalEntityManager);
 
-    res.status(200).json({
-      edited: user,
-      message: "Request updated successfully",
-      statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      return res.status(200).json({
+        edited: user,
+        message: "Request updated successfully",
+        statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      });
     });
   } catch (err) {
     console.error("Error editing user:", err);
-    res.status(500).json({
+    return res.status(500).json({
       err,
       message: "Unknown error occurred. Failed to remove user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
@@ -241,7 +255,7 @@ const removeUser = async (req: Request, res: Response) => {
         .getRepository(UserEntity)
         .remove(userToRemove);
 
-      res.status(200).json({
+      return res.status(200).json({
         deleted: removedUser,
         message: "User removed successfully",
         statusMessage: HttpResponseMessage.DELETE_SUCCESS,
@@ -249,7 +263,7 @@ const removeUser = async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error("Error removing user:", err);
-    res.status(500).json({
+    return res.status(500).json({
       err,
       message: "Unknown error occurred. Failed to remove user.",
       statusMessage: HttpResponseMessage.UNKNOWN,

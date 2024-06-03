@@ -11,6 +11,7 @@ import { IProcessChangeNoticeFields } from "../../../../../interfaces/change/IPr
 import { IUser } from "../../../../../interfaces/user/IUser";
 import { useRoute } from "vue-router";
 import { usePCNStore } from "../../../../../stores/change/pcnStore";
+import { nodeConfig } from "../../../../../config/env";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -125,6 +126,59 @@ watch(
 );
 
 const pcnStore = usePCNStore();
+
+const copyHeadersOrder = [
+  "processChangeNotice.numberOfNotice=>numberOfNotice",
+  "processChangeNotice.numberOfRequest=>numberOfRequest",
+  "closureDate=>noticeDate",
+  "requestedBy=>requestApprovedBy",
+  "id=>pcnLink",
+  "processChangeNotice.personDesignatedForImplementation=>personDesignatedForImplementation",
+  "changeReason=>requestChangeReason",
+  "processChangeNotice.changeDescription=>noticeChangeDescription",
+  "processChangeNotice.areDocumentationChangesRequired=>areDocumentationChangesRequired",
+  "processChangeNotice.listOfDocumentationToChange=>listOfDocumentationToChange",
+  "processChangeNotice.isNewDocumentationRequired=>isNewDocumentationRequired",
+  "processChangeNotice.listOfDocumentationToCreate=>listOfDocumentationToCreate",
+  "processChangeNotice.isCustomerApprovalRequired=>isCustomerApprovalRequired",
+  "processChangeNotice.engineeringDepartmentApproval=>engineeringDepartmentApproval",
+  "processChangeNotice.engineeringDepartmentApproverUsername=>engineeringDepartmentApproverUsername",
+  "processChangeNotice.engineeringDepartmentApprovalDate=>engineeringDepartmentApprovalDate",
+  "processChangeNotice.qualityDepartmentApproval=>qualityDepartmentApproval",
+  "processChangeNotice.qualityDepartmentApproverUsername=>qualityDepartmentApproverUsername",
+  "processChangeNotice.qualityDepartmentApprovalDate=>qualityDepartmentApprovalDate",
+  "dedicatedDepartment=>requestDedicatedDepartment",
+  "processChangeNotice.dedicatedDepartmentApproval=>dedicatedDepartmentApproval",
+  "processChangeNotice.dedicatedDepartmentApproverUsername=>dedicatedDepartmentApproverUsername",
+  "processChangeNotice.dedicatedDepartmentApprovalDate=>dedicatedDepartmentApprovalDate",
+];
+
+const copyHeadersCustoms = (headerKey: string, rowValue: string | boolean | object) => {
+  switch (headerKey) {
+    case "id":
+      return `${nodeConfig.origin}/tool/change/browse/pcn/${rowValue as string}`;
+    case "changeReason":
+      return (rowValue as string).replace(/<[^>]+>/g, "").trim();
+    case "processChangeNotice.changeDescription":
+      return (rowValue as string).replace(/<[^>]+>/g, "").trim();
+    case "processChangeNotice.areDocumentationChangesRequired":
+      return (rowValue as boolean) ? "Yes" : "No";
+    case "processChangeNotice.listOfDocumentationToChange":
+      return (JSON.parse(rowValue as string) as Array<string>).join(", ");
+    case "processChangeNotice.isNewDocumentationRequired":
+      return (rowValue as boolean) ? "Yes" : "No";
+    case "processChangeNotice.listOfDocumentationToCreate":
+      return (JSON.parse(rowValue as string) as Array<string>).join(", ");
+    case "processChangeNotice.engineeringDepartmentApproval":
+      return (rowValue as boolean) ? "Yes" : "No";
+    case "processChangeNotice.qualityDepartmentApproval":
+      return (rowValue as boolean) ? "Yes" : "No";
+    case "processChangeNotice.dedicatedDepartmentApproval":
+      return (rowValue as boolean) ? "Yes" : "No";
+    default:
+      return "no-case";
+  }
+};
 </script>
 
 <!-- :sortBy="[{ key: 'id', order: 'asc' }]" -->
@@ -150,6 +204,8 @@ const pcnStore = usePCNStore();
     :tableDialogComponentProps="{}"
     @responseStatus="handleResponseStatus"
     :copy="true"
+    :copyHeadersOrder="copyHeadersOrder"
+    :copyHeadersCustoms="copyHeadersCustoms"
     flow="pcn-flow"
     :loadItems="loadItems"
     :filters="true"
@@ -163,6 +219,7 @@ const pcnStore = usePCNStore();
     </template>
     <template v-slot:table-key-slot-2="{ item }">
       <p-c-n-view
+        :tab="props.tab"
         :item="item"
         @loadItems="handleLoadItems"
         @responseStatus="handleResponseStatus"

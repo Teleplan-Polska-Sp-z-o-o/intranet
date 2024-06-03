@@ -5,9 +5,9 @@ import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IPro
 import { IUser } from "../../../../../interfaces/user/IUser";
 import { useUserStore } from "../../../../../stores/userStore";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
-import { CategoriesManager } from "../../../../../models/document/CategoriesManager";
-import { IChips } from "../../../../../interfaces/document/IChips";
-import { Chips } from "../../../../../models/document/Chips";
+// import { CategoriesManager } from "../../../../../models/document/CategoriesManager";
+// import { IChips } from "../../../../../interfaces/document/IChips";
+// import { Chips } from "../../../../../models/document/Chips";
 import { IUserEntity } from "../../../../../interfaces/user/IUserEntity";
 import { UserManager } from "../../../../../models/user/UserManager";
 import CkEditor from "../../../../common/CkEditor.vue";
@@ -80,10 +80,10 @@ const request = ref<IProcessChangeRequestBase>({
 });
 
 const departments = ref<Array<string>>([]);
-const programs = ref<Array<string>>([]);
+// const programs = ref<Array<string>>([]);
 
 const departmentsManager = new DepartmentsManager();
-const programsManager = new CategoriesManager();
+// const programsManager = new CategoriesManager();
 
 const fillDepartments = async () => {
   const got = await departmentsManager.get();
@@ -93,22 +93,22 @@ const fillDepartments = async () => {
 
 fillDepartments();
 
-const fillPrograms = async () => {
-  const reqData: IChips = new Chips(request.value.dedicatedDepartment);
-  programs.value = (await programsManager.get(reqData)).map((prog) => prog.name);
-};
+// const fillPrograms = async () => {
+//   const reqData: IChips = new Chips(request.value.dedicatedDepartment);
+//   programs.value = (await programsManager.get(reqData)).map((prog) => prog.name);
+// };
 
-if (request.value.dedicatedDepartment) fillPrograms();
+// if (request.value.dedicatedDepartment) fillPrograms();
 
-watch(
-  () => request.value.dedicatedDepartment,
-  async (newVal, oldVal) => {
-    if (newVal && oldVal !== newVal) {
-      request.value.program = "";
-      fillPrograms();
-    }
-  }
-);
+// watch(
+//   () => request.value.dedicatedDepartment,
+//   async (newVal, oldVal) => {
+//     if (newVal && oldVal !== newVal) {
+//       request.value.program = "";
+//       fillPrograms();
+//     }
+//   }
+// );
 
 (async () => {
   const date = request.value.dateNeeded || undefined;
@@ -356,14 +356,19 @@ watch(activeStep, (newActiveStep) => {
             @update:modelValue="(value: string | null) => (request.dedicatedDepartment = value || '')"
             clearable
           ></v-autocomplete>
-          <v-autocomplete
+          <!-- <v-autocomplete
             variant="underlined"
             :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['1'].program`)"
             :items="programs"
             clearable
             :modelValue="request.program"
             @update:modelValue="(value: string | null) => (request.program = value || '')"
-          ></v-autocomplete>
+          ></v-autocomplete> -->
+          <v-text-field
+            v-model="request.program"
+            variant="underlined"
+            :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['1'].program`)"
+          ></v-text-field>
           <v-autocomplete
             variant="underlined"
             :label="$t(`tools.change.tabs.pcr.stepper.vStepperWindowItem['1'].reconextOwner`)"

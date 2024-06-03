@@ -11,7 +11,7 @@ const addDepartment = async (req: Request, res: Response) => {
 
     await dataSource.getRepository(Department).save(department);
 
-    res.status(201).json({
+    return res.status(201).json({
       added: department,
       message: "Department added successfully",
       statusMessage: HttpResponseMessage.POST_SUCCESS,
@@ -25,7 +25,7 @@ const addDepartment = async (req: Request, res: Response) => {
       });
     } else {
       console.error("Error adding department: ", error);
-      res.status(500).json({
+      return res.status(500).json({
         message: "Unknown error occurred. Failed to add department.",
         statusMessage: HttpResponseMessage.UNKNOWN,
       });
@@ -50,7 +50,7 @@ const editDepartment = async (req: Request, res: Response) => {
 
     await dataSource.getRepository(Department).save(department);
 
-    res.status(200).json({
+    return res.status(200).json({
       edited: department,
       message: "Department updated successfully",
       statusMessage: HttpResponseMessage.PUT_SUCCESS,
@@ -64,7 +64,7 @@ const editDepartment = async (req: Request, res: Response) => {
       });
     } else {
       console.error("Error updating department: ", error);
-      res.status(500).json({
+      return res.status(500).json({
         message: "Unknown error occurred. Failed to update department.",
         statusMessage: HttpResponseMessage.UNKNOWN,
       });
@@ -87,14 +87,14 @@ const removeDepartment = async (req: Request, res: Response) => {
 
     await dataSource.getRepository(Department).remove(department);
 
-    res.status(200).json({
+    return res.status(200).json({
       deleted: department,
       message: "Department removed successfully",
       statusMessage: HttpResponseMessage.DELETE_SUCCESS,
     });
   } catch (error) {
     console.error("Error removing department: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to remove department.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -105,14 +105,14 @@ const getDepartments = async (_req: Request, res: Response) => {
   try {
     const departments = await dataSource.getRepository(Department).find();
 
-    res.status(200).json({
+    return res.status(200).json({
       got: departments,
       message: "Departments retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving departments: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve departments.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

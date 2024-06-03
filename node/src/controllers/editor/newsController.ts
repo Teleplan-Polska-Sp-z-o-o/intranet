@@ -68,7 +68,7 @@ const addNews = async (req: Request, res: Response) => {
         // store content image
         const newFileName = saveNewsFile(req.files.at(0), req.headers.ref, false);
 
-        res.status(200).json({
+        return res.status(200).json({
           url: `${serverConfig.origin}:${serverConfig.port}/uploads/news/${newFileName}`,
         });
         break;
@@ -97,7 +97,7 @@ const addNews = async (req: Request, res: Response) => {
           removeUnusedImages(transactionalEntityManager);
         });
 
-        res.status(200).json({
+        return res.status(200).json({
           added: newNews,
           message: "News added successfully.",
           statusMessage: HttpResponseMessage.PUT_SUCCESS,
@@ -107,7 +107,7 @@ const addNews = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error adding news:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to add news.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -149,7 +149,7 @@ const editNews = async (req: Request, res: Response) => {
 
       removeUnusedImages(transactionalEntityManager);
 
-      res.status(200).json({
+      return res.status(200).json({
         edited: newsToUpdate,
         message: "News added successfully.",
         statusMessage: HttpResponseMessage.PUT_SUCCESS,
@@ -157,7 +157,7 @@ const editNews = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error adding news:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to add news.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -189,14 +189,14 @@ const getNews = async (req: Request, res: Response) => {
 
     const allNews: Array<News> = await query.skip(skip).take(take).getMany();
 
-    res.status(200).json({
+    return res.status(200).json({
       news: allNews,
       message: "News retrieved successfully.",
       statusMessage: HttpResponseMessage.PUT_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving news:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve news.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -233,7 +233,7 @@ const removeNews = async (req: Request, res: Response) => {
 
       const removedNews = await transactionalEntityManager.getRepository(News).remove(newsToRemove);
 
-      res.status(200).json({
+      return res.status(200).json({
         deleted: removedNews,
         message: "News removed successfully",
         statusMessage: HttpResponseMessage.DELETE_SUCCESS,
@@ -241,7 +241,7 @@ const removeNews = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error removing news: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to remove news.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

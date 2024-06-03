@@ -32,6 +32,9 @@ const props = defineProps<{
   tableDialogComponentProps?: any;
 
   copy?: true;
+  copyHeadersOrder?: Array<string>;
+  copyHeadersCustoms?: Function;
+
   flow?: string; // pdf name
 
   loadItems?: true;
@@ -76,7 +79,7 @@ const filtered = computed(() => {
     if (search.value) {
       return itemsFiltered.filter((item: any) => {
         for (const key of props.searchBy) {
-          const value = item[key]?.toLowerCase();
+          const value = item[key]?.toString().toLowerCase();
           const searchTerm = search.value.toLowerCase();
           if (value && value.includes(searchTerm)) {
             return true;
@@ -290,6 +293,8 @@ const handleFilters = (filters: { callback: Function }) => {
           <copy-to-clipboard
             v-if="props.copy && !smallScreen"
             :filtered="filtered"
+            :copyHeadersOrder="copyHeadersOrder"
+            :copyHeadersCustoms="copyHeadersCustoms"
           ></copy-to-clipboard>
 
           <v-divider v-if="props.tableAdd" class="mx-4" inset vertical></v-divider>

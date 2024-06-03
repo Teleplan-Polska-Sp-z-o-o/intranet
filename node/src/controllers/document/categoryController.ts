@@ -23,14 +23,14 @@ const addCategory = async (req: Request, res: Response) => {
 
     await dataSource.getRepository(Category).save(category);
 
-    res.status(201).json({
+    return res.status(201).json({
       added: category,
       message: "Category added successfully",
       statusMessage: HttpResponseMessage.POST_SUCCESS,
     });
   } catch (error) {
     console.error("Error adding category: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to add category.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -56,14 +56,14 @@ const editCategory = async (req: Request, res: Response) => {
     await dataSource.getRepository(Category).save(category);
 
     // Send success response
-    res.status(200).json({
+    return res.status(200).json({
       edited: category,
       message: "Category updated successfully",
       statusMessage: HttpResponseMessage.PUT_SUCCESS,
     });
   } catch (error) {
     console.error("Error updating category: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to update category.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -85,14 +85,14 @@ const removeCategory = async (req: Request, res: Response) => {
 
     await dataSource.getRepository(Category).remove(category);
 
-    res.status(200).json({
+    return res.status(200).json({
       deleted: category,
       message: "Category removed successfully",
       statusMessage: HttpResponseMessage.DELETE_SUCCESS,
     });
   } catch (error) {
     console.error("Error removing category: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to remove category.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -115,14 +115,14 @@ const getCategories = async (req: Request, res: Response) => {
 
     const categories = department.categories;
 
-    res.status(200).json({
+    return res.status(200).json({
       got: categories,
       message: "Categories retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving categories: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve categories.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

@@ -41,7 +41,7 @@ watchEffect(() => (tab.value = props.tab));
 const tPath = `tools.matrix.tabs.${tab.value}.table`;
 
 const headers: any = [
-  { title: t(`${tPath}.header.name`), align: "start", key: "name" },
+  { title: t(`${tPath}.header.name`), align: "start", key: "name", minWidth: 200 },
   { title: t(`${tPath}.header.type`), align: "start", key: "type" },
   { title: t(`${tPath}.header.description`), key: "description" },
   { title: t(`${tPath}.header.language`), key: "custom", sortable: false },

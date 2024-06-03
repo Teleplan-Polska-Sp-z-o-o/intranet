@@ -2,7 +2,7 @@ import { IUser } from "../../interfaces/user/IUser";
 import { ISocketConnection } from "../../interfaces/websocket/ISocketConnection";
 import { WebsocketConnections } from "../../models/websocket/WebsocketConnections";
 
-const storeWebSocketConnections = (ws: any) => {
+const websocketController = (ws: any, _req: Request) => {
   const WC: WebsocketConnections = WebsocketConnections.getInstance();
 
   ws.on("message", function (msg: string) {
@@ -37,4 +37,4 @@ const getWebSocketConnections = (): Array<ISocketConnection> => {
   return WC.getConnections();
 };
 
-export { storeWebSocketConnections, getWebSocketConnections };
+export { websocketController, getWebSocketConnections };

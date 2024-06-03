@@ -10,4 +10,7 @@ enum HttpResponseMessage {
   UNKNOWN = "unknown",
 }
 
+// enum HttpUserResponseMessage {}
+// PUT_INFO_EDIT_ERROR = "put_info_edit_error",
+
 export { HttpResponseMessage };

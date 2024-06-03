@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // DefineComponent, computed,
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import alertResponseStatus from "../../../components/common/alertResponseStatus.vue";
 import PCRTable from "../../../components/views/tools/change/pcr/PCRTable.vue";
 import PCNTable from "../../../components/views/tools/change/pcn/PCNTable.vue";
@@ -14,13 +14,13 @@ const tabs = [
     id: 1,
     name: "pcr",
     icon: "mdi-invoice-text-send-outline",
-    component: PCRTable,
+    // component: PCRTable,
   },
   {
     id: 2,
     name: "pcn",
     icon: "mdi-bulletin-board",
-    component: PCNTable,
+    // component: PCNTable,
   },
   // {
   //   id: 3,
@@ -33,24 +33,54 @@ const tabs = [
 const router = useRouter();
 const route = useRoute();
 
-const currentTab = ref<number>(1);
+const getTab = (newTab: string | Array<string>, getNumericValue: boolean): number | string => {
+  if (Array.isArray(newTab))
+    throw new Error(
+      `New tab at getTab evaluates to Array<string>: ${newTab}, length: ${newTab.length}`
+    );
+  switch (newTab) {
+    case "pcr":
+      return getNumericValue ? 1 : "pcr";
+
+    case "pcn":
+      return getNumericValue ? 2 : "pcn";
+
+    case "dcn":
+      return getNumericValue ? 3 : "dcn";
+
+    default:
+      return getNumericValue ? 1 : "pcr";
+  }
+};
+
+const currentTabValue = ref<number>(getTab(route.params.tab, true) as number);
+
+const currentTab = ref<string>(getTab(route.params.tab, false) as string);
 // const no = ref<string | undefined>((route.params.no as string) || undefined);
 
-switch (route.params.tab) {
-  case "pcr":
-    currentTab.value = 1;
-    break;
-  case "pcn":
-    currentTab.value = 2;
-    break;
-  case "dcn":
-    currentTab.value = 3;
-    break;
+// switch (route.params.tab) {
+//   case "pcr":
+//     currentTab.value = 1;
+//     break;
+//   case "pcn":
+//     currentTab.value = 2;
+//     break;
+//   case "dcn":
+//     currentTab.value = 3;
+//     break;
 
-  default:
-    currentTab.value = 1;
-    break;
-}
+//   default:
+//     currentTab.value = 1;
+//     break;
+// }
+
+watch(
+  () => route.params.tab,
+  (newTab) => {
+    currentTabValue.value = getTab(newTab, true) as number;
+    currentTab.value = getTab(route.params.tab, false) as string;
+  }
+);
 
 // const currentTabName = computed<string>(() => {
 //   return tabs.find((tab) => tab.id === currentTab.value)?.name || "";
@@ -82,7 +112,7 @@ const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value =
             <v-col>
               <v-card class="rounded-xl bg-surface-2 elevation-2 ma-1">
                 <v-tabs
-                  v-model="currentTab"
+                  v-model="currentTabValue"
                   color="secondary"
                   class="ma-4"
                   :direction="smallScreen ? 'horizontal' : 'vertical'"
@@ -103,7 +133,7 @@ const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value =
           </v-row>
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
-              <v-window v-model="currentTab" class="w-100" :touch="false">
+              <v-window v-model="currentTabValue" class="w-100" :touch="false">
                 <v-window-item :value="1">
                   <!-- <router-view
                     class="bg-surface-2 pa-4 ma-1"
@@ -115,7 +145,7 @@ const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value =
                   <p-c-r-table
                     class="bg-surface-2 pa-4 ma-1"
                     @responseStatus="handleResponseStatus"
-                    tab="pcr"
+                    :tab="currentTab"
                   ></p-c-r-table>
                   <!-- :no="no" -->
                 </v-window-item>
@@ -130,7 +160,7 @@ const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value =
                   <p-c-n-table
                     class="bg-surface-2 pa-4 ma-1"
                     @responseStatus="handleResponseStatus"
-                    tab="pcn"
+                    :tab="currentTab"
                   ></p-c-n-table>
                   <!-- :no="no" -->
                 </v-window-item>

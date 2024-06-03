@@ -26,15 +26,14 @@ export const useWebsocketStore = defineStore("websocket", () => {
 
   checkOnMessage();
 
-  const indicateWebSocketClosureState = (readyState: number) => {
-    instanceReadyState.value = readyState;
+  const indicateWebSocketClosureState = (_readyState: number) => {
+    // instanceReadyState.value = readyState;
   };
 
   watch(instanceReadyState, (newValue) => {
     if (newValue === 2 || newValue === 3) {
       try {
         instance.value = WebsocketConnections.getInstance();
-        console.error(`WebSocketStore was able to reconnect`);
       } catch (error) {
         console.error(`WebSocketStore was unable to reconnect: ${error}`);
       }

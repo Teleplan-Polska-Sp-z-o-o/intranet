@@ -41,14 +41,14 @@ const editPermission = async (req: Request, res: Response) => {
 
     await dataSource.getRepository(UserPermission).save(userPermission);
 
-    res.status(200).json({
+    return res.status(200).json({
       edited: newPermission,
       message: "Permission updated successfully.",
       statusMessage: HttpResponseMessage.PUT_SUCCESS,
     });
   } catch (error) {
     console.error("Error setting permission:", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to update subcategory.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

@@ -41,7 +41,7 @@ const addRequest = async (req: Request, res: Response) => {
         emailHandler.newEmail(new PCREmailOptions("assigned", request)).send();
       }
 
-      res.status(201).json({
+      return res.status(201).json({
         added: request,
         message: "Request added successfully",
         statusMessage: HttpResponseMessage.POST_SUCCESS,
@@ -49,7 +49,7 @@ const addRequest = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error adding request: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to add request.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -166,13 +166,11 @@ const editRequest = async (req: Request, res: Response) => {
               emailHandler.newEmail(new PCREmailOptions("assigned updated", request)).send();
             }
 
-            res.status(200).json({
+            return res.status(200).json({
               edited: request,
               message: "Request updated successfully",
               statusMessage: HttpResponseMessage.PUT_SUCCESS,
             });
-
-            break;
           }
 
         default:
@@ -204,7 +202,7 @@ const editRequest = async (req: Request, res: Response) => {
             emailHandler.newEmail(new PCREmailOptions("assigned", request)).send();
           }
 
-          res.status(200).json({
+          return res.status(200).json({
             edited: request,
             message: "Request updated successfully",
             statusMessage: HttpResponseMessage.PUT_SUCCESS,
@@ -215,7 +213,7 @@ const editRequest = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error updating request: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to update request.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -274,7 +272,7 @@ const closeRequest = async (req: Request, res: Response) => {
         }
       }
 
-      res.status(200).json({
+      return res.status(200).json({
         closed: request,
         message: "Request closed successfully",
         statusMessage: HttpResponseMessage.PUT_SUCCESS,
@@ -282,7 +280,7 @@ const closeRequest = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error closing request: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to close request.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -313,7 +311,7 @@ const removeRequest = async (req: Request, res: Response) => {
         .getRepository(ProcessChangeRequest)
         .remove(request);
 
-      res.status(200).json({
+      return res.status(200).json({
         deleted: delRequest,
         message: "Request removed successfully",
         statusMessage: HttpResponseMessage.DELETE_SUCCESS,
@@ -321,7 +319,7 @@ const removeRequest = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error removing request: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to remove request.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -334,14 +332,14 @@ const getRequests = async (_req: Request, res: Response) => {
       .getRepository(ProcessChangeRequest)
       .find({ relations: ["processChangeNotice"], order: { id: "DESC" as const } });
 
-    res.status(200).json({
+    return res.status(200).json({
       got: requests,
       message: "Requests retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving requests: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve requests.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -383,14 +381,14 @@ const getRequest = async (req: Request, res: Response) => {
       .getRepository(ProcessChangeRequest)
       .findOne(options);
 
-    res.status(200).json({
+    return res.status(200).json({
       got: request,
       message: "Request retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving request: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve request.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

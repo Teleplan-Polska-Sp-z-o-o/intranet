@@ -24,14 +24,14 @@ const addSubcategory = async (req: Request, res: Response) => {
 
     await dataSource.getRepository(Subcategory).save(subcategory);
 
-    res.status(201).json({
+    return res.status(201).json({
       added: subcategory,
       message: "Subcategory added successfully",
       statusMessage: HttpResponseMessage.POST_SUCCESS,
     });
   } catch (error) {
     console.error("Error adding subcategory: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to add subcategory.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -55,14 +55,14 @@ const editSubcategory = async (req: Request, res: Response) => {
 
     await dataSource.getRepository(Subcategory).save(subcategory);
 
-    res.status(200).json({
+    return res.status(200).json({
       edited: subcategory,
       message: "Subcategory updated successfully",
       statusMessage: HttpResponseMessage.PUT_SUCCESS,
     });
   } catch (error) {
     console.error("Error updating subcategory: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to update subcategory.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -84,14 +84,14 @@ const removeSubcategory = async (req: Request, res: Response) => {
 
     await dataSource.getRepository(Subcategory).remove(subcategory);
 
-    res.status(200).json({
+    return res.status(200).json({
       deleted: subcategory,
       message: "Subcategory removed successfully",
       statusMessage: HttpResponseMessage.DELETE_SUCCESS,
     });
   } catch (error) {
     console.error("Error removing subcategory: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to remove subcategory.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -122,14 +122,14 @@ const getSubcategories = async (req: Request, res: Response) => {
 
     const subcategories = await dataSource.getRepository(Subcategory).find({ where: { category } });
 
-    res.status(200).json({
+    return res.status(200).json({
       got: subcategories,
       message: "Subcategories retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving subcategories: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve subcategories.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

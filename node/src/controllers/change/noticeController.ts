@@ -107,7 +107,7 @@ const editNotice = async (req: Request, res: Response) => {
           notice.sendEmails(recipients, ENotificationVariant.UpdatedUncompleted);
         }
 
-        res.status(200).json({
+        return res.status(200).json({
           edited: notice,
           message: "Notice updated successfully",
           statusMessage: HttpResponseMessage.PUT_SUCCESS,
@@ -146,7 +146,7 @@ const editNotice = async (req: Request, res: Response) => {
           notice.sendEmails(recipients, ENotificationVariant.Completed);
         }
 
-        res.status(200).json({
+        return res.status(200).json({
           edited: notice,
           message: "Notice updated successfully",
           statusMessage: HttpResponseMessage.PUT_SUCCESS,
@@ -155,7 +155,7 @@ const editNotice = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error updating notice: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to update notice.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -210,19 +210,38 @@ const assessNotice = async (req: Request, res: Response) => {
         });
       }
 
+      // const recipients: User | Array<User> = await notice.notification(
+      //       transactionalEntityManager,
+      //       request,
+      //       ENotificationVariant.Completed
+      //     );
+      //     notice.sendEmails(recipients, ENotificationVariant.Completed);
+
       if (assess.assessments.eng) {
-        notice.notification(
+        const recipients: User | Array<User> = await notice.notification(
           transactionalEntityManager,
           request,
           notice.updatable
             ? ENotificationVariant.UpdatedEngineeringApproval
             : ENotificationVariant.EngineeringApproval
         );
+        notice.sendEmails(
+          recipients,
+          notice.updatable
+            ? ENotificationVariant.UpdatedEngineeringApproval
+            : ENotificationVariant.EngineeringApproval
+        );
       } else if (assess.assessments.qua && !assess.notice.dedicatedDepartmentApproval) {
         if (notice.updatable) {
-          notice.notification(
+          const recipients: User | Array<User> = await notice.notification(
             transactionalEntityManager,
             request,
+            notice.updatable
+              ? ENotificationVariant.UpdatedQualityApproval
+              : ENotificationVariant.QualityApproval
+          );
+          notice.sendEmails(
+            recipients,
             notice.updatable
               ? ENotificationVariant.UpdatedQualityApproval
               : ENotificationVariant.QualityApproval
@@ -234,7 +253,7 @@ const assessNotice = async (req: Request, res: Response) => {
         .getRepository(ProcessChangeNotice)
         .save(assess.notice);
 
-      res.status(200).json({
+      return res.status(200).json({
         assessed: notice,
         message: "Notices retrieved successfully",
         statusMessage: HttpResponseMessage.GET_SUCCESS,
@@ -242,7 +261,7 @@ const assessNotice = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error assessing notice: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to assess notice.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -258,14 +277,14 @@ const getNotice = async (req: Request, res: Response) => {
     };
 
     const request = await dataSource.getRepository(ProcessChangeRequest).findOne(objectConfig);
-    res.status(200).json({
+    return res.status(200).json({
       got: request,
       message: "Notice retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving notice: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve notice.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -282,14 +301,14 @@ const getNotices = async (_req: Request, res: Response) => {
 
     const requests = await dataSource.getRepository(ProcessChangeRequest).find(objectConfig);
 
-    res.status(200).json({
+    return res.status(200).json({
       got: requests,
       message: "Requests retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving requests: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve requests.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

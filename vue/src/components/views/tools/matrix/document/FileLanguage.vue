@@ -78,4 +78,3 @@ watchEffect(() => {
   text-overflow: ellipsis;
 }
 </style>
-../../../../../interfaces/document/IFileItem

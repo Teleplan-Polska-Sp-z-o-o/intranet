@@ -11,6 +11,8 @@ import PCRView from "./PCRView.vue";
 import PCRTableFilters from "./PCRTableFilters.vue";
 import { useRoute } from "vue-router";
 import { usePCRStore } from "../../../../../stores/change/pcrStore";
+import { nodeConfig } from "../../../../../config/env";
+import { IProcessChangeNotice } from "../../../../../interfaces/change/IProcessChangeNotice";
 
 const emit = defineEmits(["responseStatus"]);
 
@@ -27,25 +29,31 @@ const tPath = `tools.change.tabs.${tab.value}.table`;
 const headers: any = [
   { title: t(`${tPath}.header.numberOfRequest`), align: "start", key: "numberOfRequest" },
   { title: t(`${tPath}.header.requestDate`), key: "requestDate" },
+  { title: t(`${tPath}.header.program`), key: "program" },
   { title: t(`${tPath}.header.internalOrExternal`), key: "internalOrExternal" },
+  { title: t(`${tPath}.header.requestedBy`), key: "requestedBy" },
+  { title: t(`${tPath}.header.customerContactPerson`), key: "customerContactPerson" },
+  { title: t(`${tPath}.header.customerContactEmail`), key: "customerContactEmail" },
+  { title: t(`${tPath}.header.reconextContactPerson`), key: "reconextContactPerson" },
+  { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
+  { title: t(`${tPath}.header.costOfImplementation`), key: "costOfImplementation", minWidth: 200 },
+  { title: t(`${tPath}.header.dateNeeded`), key: "dateNeeded" },
   {
     title: t(`${tPath}.header.modelOrProcessImpacted`),
     key: "modelOrProcessImpacted",
     minWidth: 200,
   },
-  { title: t(`${tPath}.header.reconextOwner`), key: "reconextOwner" },
-  { title: t(`${tPath}.header.dedicatedDepartment`), key: "dedicatedDepartment" },
-  { title: t(`${tPath}.header.program`), key: "program" },
-  { title: t(`${tPath}.header.dateNeeded`), key: "dateNeeded" },
+  { title: t(`${tPath}.header.impacts`), key: "impacts", minWidth: 200 },
   { title: t(`${tPath}.header.assessment`), key: "assessment" },
   { title: t(`${tPath}.header.approvedOrRejectedBy`), key: "approvedOrRejectedBy" },
-  { title: t(`${tPath}.header.closureDate`), key: "closureDate" },
+  { title: t(`${tPath}.header.dedicatedDepartment`), key: "dedicatedDepartment" },
+  { title: t(`${tPath}.header.riskAnalysis`), key: "riskAnalysis", minWidth: 200 },
   {
     title: t(`${tPath}.header.numberOfNotice`),
     key: "processChangeNotice.numberOfNotice",
-    sortable: false,
-    filterable: false,
   },
+  { title: t(`${tPath}.header.closureDate`), key: "closureDate" },
+  { title: t(`${tPath}.header.status`), key: "status" },
   { title: t(`${tPath}.header.viewPcr`), key: "custom2", sortable: false, filterable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
@@ -91,28 +99,77 @@ watch(
   }
 );
 
+const searchBy = [
+  "numberOfRequest",
+  "requestDate",
+  "program",
+  "internalOrExternal",
+  "requestedBy",
+  "customerContactPerson",
+  "customerContactEmail",
+  "reconextContactPerson",
+  "reconextOwner",
+  "costOfImplementation",
+  "dateNeeded",
+  "modelOrProcessImpacted",
+  "impacts",
+  "assessment",
+  "approvedOrRejectedBy",
+  "dedicatedDepartment",
+  "riskAnalysis",
+  "processChangeNotice",
+  "closureDate",
+  "status",
+];
+
 const pcrStore = usePCRStore();
+const copyHeadersOrder = [
+  "numberOfRequest",
+  "requestDate",
+  "program=>programOrProject",
+  "internalOrExternal",
+  "requestedBy",
+  "customerContactPerson",
+  "customerContactEmail",
+  "reconextContactPerson",
+  "id=>pcrLink", // link
+  "reconextOwner",
+  "costOfImplementation",
+  "dateNeeded",
+  "modelOrProcessImpacted",
+  "changeReason", // trim
+  "changeDescription", // trim
+  "impacts",
+  "assessment",
+  "approvedOrRejectedBy",
+  "dedicatedDepartment",
+  "riskAnalysis",
+  "processChangeNotice",
+  "closureDate",
+  "status",
+];
+
+const copyHeadersCustoms = (headerKey: string, rowValue: string | object) => {
+  switch (headerKey) {
+    case "id":
+      return `${nodeConfig.origin}/tool/change/browse/pcr/${rowValue as string}`;
+    case "changeReason":
+      return (rowValue as string).replace(/<[^>]+>/g, "").trim();
+    case "changeDescription":
+      return (rowValue as string).replace(/<[^>]+>/g, "").trim();
+    case "processChangeNotice":
+      return (rowValue as IProcessChangeNotice).numberOfNotice;
+    default:
+      return "no-case";
+  }
+};
 </script>
 
-<!-- :sortBy="[{ key: 'id', order: 'asc' }]" -->
 <template>
   <crud-table
     :headers="headers"
     :sortBy="undefined"
-    :searchBy="[
-      'numberOfRequest',
-      'requestDate',
-      'internalOrExternal',
-      'modelOrProcessImpacted',
-      'reconextOwner',
-      'dedicatedDepartment',
-      'program',
-      'dateNeeded',
-      'assessment',
-      'approvedOrRejectedBy',
-      'closureDate',
-      'processChangeNotice.numberOfNotice',
-    ]"
+    :searchBy="searchBy"
     :toolbarTitle="toolbarTitle"
     :searchTitle="searchTitle"
     :manager="manager"
@@ -125,6 +182,8 @@ const pcrStore = usePCRStore();
     :tableDialogComponentProps="{}"
     @responseStatus="handleResponseStatus"
     :copy="true"
+    :copyHeadersOrder="copyHeadersOrder"
+    :copyHeadersCustoms="copyHeadersCustoms"
     flow="pcr-flow"
     :loadItems="loadItems"
     :filters="true"
@@ -138,6 +197,7 @@ const pcrStore = usePCRStore();
     </template>
     <template v-slot:table-key-slot-2="{ item }">
       <p-c-r-view
+        :tab="props.tab"
         :item="item"
         @loadItems="handleLoadItems"
         @responseStatus="handleResponseStatus"

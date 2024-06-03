@@ -44,7 +44,7 @@ const enC = {
           },
           change: {
             title: "Change",
-            text: "Creation and approval of change notices.",
+            text: "Creation and approval of change.",
           },
           matrix: {
             title: "Matrix",

@@ -30,14 +30,14 @@ const getRequestUpdates = async (req: Request, res: Response) => {
 
     const requestUpdates = request.processChangeRequestUpdates;
 
-    res.status(200).json({
+    return res.status(200).json({
       got: requestUpdates,
       message: "Request Updates retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving request updates: ", error);
-    res.status(500).json({
+    return res.status(500).json({
       message: "Unknown error occurred. Failed to retrieve request updates.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

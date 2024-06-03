@@ -2,14 +2,15 @@
 import { IProcessChangeRequest } from "../../../../../interfaces/change/IProcessChangeRequest";
 import { nodeConfig } from "../../../../../config/env";
 import { PDFHelper } from "../../../../../models/common/PDFHelper";
-import { computed, ref, watch } from "vue";
-import { useRouter } from "vue-router";
-import AcceptOrReject from "./AcceptOrReject.vue";
+import { computed, ref, watch, watchEffect } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import PCNAcceptOrReject from "./PCNAcceptOrReject.vue";
 import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 import { useEditorStore } from "../../../../../stores/editorStore";
 import { IProcessChangeNoticeUpdates } from "../../../../../interfaces/change/IProcessChangeNoticeUpdates";
 import { IProcessChangeNotice } from "../../../../../interfaces/change/IProcessChangeNotice";
+// import { v4 as uuidv4 } from "uuid";
 
 const emit = defineEmits(["responseStatus", "loadItems"]);
 
@@ -17,42 +18,36 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const props = defineProps<{
   item: IProcessChangeRequest;
+  tab: string;
 }>();
 
 const backend = `${nodeConfig.origin}:${nodeConfig.port}/uploads/common/`;
 const logoSource = `${backend}reconext-logo.png`;
 
-const requestId: number = props.item.id;
 const manager = new ProcessChangeNoticeManager();
-
 const item = ref<IProcessChangeRequest>(props.item);
 
-// const noticeId = computed<number>(() => {
-//   try {
-//     if (item.value.processChangeNotice) return item.value.processChangeNotice.id;
-//     else return 0;
-//   } catch (error) {
-//     console.log("noticeId", error);
-//     return 0;
-//   }
-// });
-const noticeId = props.item.processChangeNotice?.id as number;
+const tab = ref<string>(props.tab);
+watch(
+  () => props.tab,
+
+  async (newT, oldT) => {
+    tab.value = newT;
+    if (newT === "pcn" && oldT !== "pcn") item.value = await manager.getNotice(props.item.id);
+  }
+);
 
 const updates = ref<Array<IProcessChangeNoticeUpdates>>([]);
 
-const getUpdates = async () => {
-  updates.value = noticeId ? await manager.getNoticeUpdates(noticeId) : [];
-};
-
-// const route = useRoute();
-// const no = ref<string | undefined>((route.params.no as string) || undefined);
+const route = useRoute();
 
 const openDialog = ref<boolean>(false);
 
-// watchEffect(() => {
-//   no.value = (route.params.no as string) || undefined;
-//   openDialog.value = no.value ? parseInt(no.value) === item.value.id : false;
-// });
+watchEffect(() => {
+  if (tab.value === "pcn")
+    openDialog.value =
+      parseInt(route.params.no as string) === (props.item.processChangeNotice?.id as number);
+});
 
 const showAOR = ref<boolean>(true);
 
@@ -62,12 +57,13 @@ const handleResetActions = () => (checkActions.value = null);
 watch(openDialog, async (newOpenDialog, oldOpenDialog) => {
   try {
     if (oldOpenDialog !== true && newOpenDialog !== false) {
-      item.value = await manager.getNotice(requestId);
-      // getUpdates();
-      showAOR.value = true;
-      checkActions.value = true;
+      if (tab.value === "pcn") {
+        item.value = await manager.getNotice(props.item.id);
+        showAOR.value = true;
+        checkActions.value = true;
+      }
     } else if (oldOpenDialog === true && newOpenDialog === false) {
-      router.push({ path: `/tool/change/browse/pcn` });
+      if (tab.value === "pcn") router.push({ path: `/tool/change/browse/pcn` });
     }
   } catch (error) {
     console.error(`watch openDialog ${error}`);
@@ -170,10 +166,18 @@ const custom = computed(() => {
   }
 });
 
+const getUpdates = async (item: IProcessChangeRequest) => {
+  updates.value = (item.processChangeNotice?.id as number)
+    ? await manager.getNoticeUpdates(item.processChangeNotice?.id as number)
+    : [];
+};
+
+if (tab.value === "pcn") getUpdates(item.value);
+
 watch(
   item,
-  () => {
-    if (item) getUpdates();
+  (newItem) => {
+    if (tab.value === "pcn") getUpdates(newItem);
   },
   { deep: true }
 );
@@ -286,26 +290,32 @@ const router = useRouter();
 
 const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChangeNotice }) => {
   try {
-    emit("responseStatus", closeData.response);
-    emit("loadItems");
+    if (tab.value === "pcn") {
+      emit("responseStatus", closeData.response);
+      emit("loadItems");
 
-    item.value.processChangeNotice = closeData.closed;
+      item.value.processChangeNotice = closeData.closed;
 
-    router.push({ path: `/tool/change/browse/pcn` });
-    openDialog.value = false;
+      router.push({ path: `/tool/change/browse/pcn` });
+      openDialog.value = false;
 
-    showAOR.value = false;
+      showAOR.value = false;
+    }
   } catch (error) {
-    console.error(`handleClose ${error}`);
+    console.error(`handleClose pcn ${error}`);
   }
 };
 
 const open = () => {
   try {
-    router.push({ path: `/tool/change/browse/pcn/${noticeId}` });
-    openDialog.value = true;
+    if (tab.value === "pcn") {
+      router.push({
+        path: `/tool/change/browse/pcn/${props.item.processChangeNotice?.id as number}`,
+      });
+      openDialog.value = true;
+    }
   } catch (error) {
-    console.error(`open ${error}`);
+    console.error(`open pcn ${error}`);
   }
 };
 </script>
@@ -313,7 +323,7 @@ const open = () => {
 <template>
   <v-dialog v-model="openDialog" :max-width="smallScreen ? '90vw' : '60vw'" max-height="80vh">
     <template v-slot:activator>
-      <v-tooltip text="View PCN">
+      <v-tooltip text="View/Approve PCN">
         <template v-slot:activator="{ props: tooltip }">
           <!-- :id="item.value.numberOfRequest" -->
           <v-btn
@@ -324,7 +334,7 @@ const open = () => {
             v-bind="{ ...tooltip }"
             @click="open"
           >
-            <v-icon icon="mdi-file-pdf-box" :size="24" />
+            <v-icon icon="mdi-file-find" :size="24" />
           </v-btn>
         </template>
       </v-tooltip>
@@ -500,25 +510,25 @@ const open = () => {
           </v-sheet>
         </v-card-text>
         <v-card-actions :class="smallScreen ? 'px-4' : 'px-10'">
-          <accept-or-reject
+          <p-c-n-accept-or-reject
             v-if="showAOR"
             variant="reject"
-            :pcrId="requestId"
-            :pcnId="noticeId"
+            :pcrId="props.item.id"
+            :pcnId="(props.item.processChangeNotice?.id as number)"
             @close="handleClose"
             :checkActions="checkActions"
             @resetActions="handleResetActions"
-          ></accept-or-reject>
+          ></p-c-n-accept-or-reject>
 
-          <accept-or-reject
+          <p-c-n-accept-or-reject
             v-if="showAOR"
             variant="accept"
-            :pcrId="requestId"
-            :pcnId="noticeId"
+            :pcrId="props.item.id"
+            :pcnId="(props.item.processChangeNotice?.id as number)"
             @close="handleClose"
             :checkActions="checkActions"
             @resetActions="handleResetActions"
-          ></accept-or-reject>
+          ></p-c-n-accept-or-reject>
 
           <v-spacer></v-spacer>
 

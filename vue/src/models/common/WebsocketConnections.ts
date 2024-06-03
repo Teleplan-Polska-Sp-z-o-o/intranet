@@ -9,10 +9,7 @@ class WebsocketConnections {
   private constructor() {}
 
   public static getInstance(): WebSocket {
-    if (
-      !WebsocketConnections.instance ||
-      WebsocketConnections.instance.readyState === WebSocket.CLOSED
-    ) {
+    if (!WebsocketConnections.instance || WebsocketConnections.instance.readyState === 3) {
       const user: IUserEntity | false = useUserStore().info();
       if (user) {
         WebsocketConnections.instance = new WebSocket(
@@ -23,8 +20,9 @@ class WebsocketConnections {
           WebsocketConnections.instance.send(JSON.stringify({ user }));
         };
 
-        WebsocketConnections.instance.onerror = (error) => {
-          console.error(`WebSocket onerror: ${error}`);
+        WebsocketConnections.instance.onerror = () => {
+          console.error(`WebSocket error`);
+
           const webSocketStore = useWebsocketStore();
           webSocketStore.indicateWebSocketClosureState(WebsocketConnections.instance.readyState);
         };
