@@ -1,34 +1,121 @@
 import { authenticate } from "ldap-authentication";
 import { ILogin } from "../../interfaces/user/ILogin";
 import { getLDAPConfig } from "../../config/ldap";
+import { serverConfig } from "../../config/server";
+import { JwtPayload, Secret, SignOptions, VerifyOptions, sign, verify } from "jsonwebtoken";
 
-class LDAP implements ILogin {
+class LDAP {
   username: string;
   domain: string;
-  password: string;
+  private password: string;
 
-  constructor(login: ILogin) {
-    this.username = login.username;
-    this.domain = login.domain;
-    this.password = login.password;
+  private DEFAULT_OPTIONS: SignOptions = {
+    expiresIn: "1h",
+  } as const;
+
+  constructor(login?: ILogin) {
+    this.username = login.username || "";
+    this.domain = login.domain || "";
+    this.password = login.password || "";
   }
 
-  public authentication = async (): Promise<any> => {
-    // const ldapHost = `ldap://${this.domain}`;
-    // const options = {
-    //   ldapOpts: { url: ldapHost },
-    //   userDn: `${this.username}@${this.domain}`,
-    //   userPassword: this.password,
-    // };
+  public authenticate = async (loginObj?: ILogin): Promise<any> => {
+    try {
+      if (loginObj) {
+        this.username = loginObj.username;
+        this.domain = loginObj.domain;
+        this.password = loginObj.password;
+      } else if (!this.username || !this.domain || !this.password) {
+        throw new Error(
+          `LDAP object expects user credentials. None has been provided in constructor, 'authenticate' at this point requires providing user credentials.`
+        );
+      }
 
-    const fromLogin: ILogin = {
-      username: this.username,
-      domain: this.domain,
-      password: this.password,
-    };
-    const options = getLDAPConfig(fromLogin);
+      const fromLogin: ILogin = {
+        username: this.username,
+        domain: this.domain,
+        password: this.password,
+      };
 
-    return authenticate(options);
+      const options = getLDAPConfig(fromLogin);
+
+      return authenticate(options);
+    } catch (error) {
+      throw new Error(`authenticate at LDAP, ${error}`);
+    }
+  };
+
+  public generateJwt = (
+    payload: string | Buffer | object,
+    overrideOptions?: SignOptions & { secret: string }
+  ): string => {
+    try {
+      const secretKey: Secret = serverConfig.apiKey;
+
+      if (overrideOptions && overrideOptions.secret !== secretKey) {
+        throw new Error(`overrideOptions require secret key`);
+      } else if (overrideOptions && overrideOptions.secret === secretKey)
+        delete overrideOptions.secret;
+
+      const options: SignOptions = this.DEFAULT_OPTIONS;
+      const token: string = sign(payload, secretKey, overrideOptions ? overrideOptions : options);
+      return token;
+    } catch (error) {
+      throw new Error(`generateJwt at LDAP, ${error}`);
+    }
+  };
+
+  private isJson = (input: string | Buffer | object): boolean => {
+    try {
+      if (typeof input !== "string") return false;
+      JSON.parse(input);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  public verifyJwt = (jwtToken: string): JwtPayload => {
+    try {
+      const token: string = this.isJson(jwtToken) ? JSON.parse(jwtToken) : jwtToken;
+      const secretKey: Secret = serverConfig.apiKey;
+
+      const decoded: JwtPayload | string = verify(token, secretKey);
+
+      if (typeof decoded === "string")
+        throw new Error(`verifyJwt at LDAP, decoded is of type string, message: ${decoded}`);
+      else return decoded; // payload
+    } catch (error) {
+      throw new Error(`verifyJwt at LDAP, ${error}`);
+    }
+  };
+
+  public refreshJwt = (jwtToken: JwtPayload | string): string => {
+    // based on example: https://gist.github.com/ziluvatar/a3feb505c4c0ec37059054537b38fc48
+
+    try {
+      const payload: JwtPayload =
+        typeof jwtToken !== "string" ? jwtToken : this.verifyJwt(jwtToken);
+
+      if (payload.aud) delete payload.aud;
+      if (payload.exp) delete payload.exp;
+      if (payload.iat) delete payload.iat;
+      if (payload.iss) delete payload.iss;
+      if (payload.jti) delete payload.jti;
+      if (payload.nbf) delete payload.nbf;
+      if (payload.sub) delete payload.sub;
+
+      const secretKey: Secret = serverConfig.apiKey;
+      const options: SignOptions & { secret: string } = Object.assign(
+        { secret: secretKey },
+        this.DEFAULT_OPTIONS
+      );
+
+      const token: string = this.generateJwt(payload, options);
+      return token;
+    } catch (error) {
+      throw new Error(`refreshJwt at LDAP, ${error}`);
+    }
   };
 }
 

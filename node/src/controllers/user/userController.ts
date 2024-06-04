@@ -97,16 +97,16 @@ const userAuth = async (req: Request, res: Response) => {
   try {
     let ldap = new LDAP(req.body);
 
-    ldap.username.toLocaleLowerCase();
+    ldap.username.toLowerCase();
 
-    // Wait for LDAP authentication to complete
-    const authenticated = await ldap.authentication();
-    console.log(authenticated);
+    const authenticated = await ldap.authenticate();
     if (!authenticated)
       return res.status(204).json({
         message: "Invalid username or password.",
         statusMessage: HttpResponseMessage.POST_ERROR,
       });
+
+    const token = ldap.generateJwt(authenticated);
 
     // Check if user exist in database
     let userExist: UserEntity | null = null;
@@ -154,6 +154,7 @@ const userAuth = async (req: Request, res: Response) => {
 
       return res.status(200).json({
         userExist,
+        token,
         message: "Authentication successful.",
         statusMessage: HttpResponseMessage.POST_SUCCESS,
       });

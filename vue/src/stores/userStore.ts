@@ -5,6 +5,7 @@ import { UserEntity } from "../models/user/UserEntity";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<IUserEntity>(new UserEntity());
+  const userToken = ref<string>("");
 
   // const set = (data: IUser | IUserEntity): boolean => {
   const set = (data: IUserEntity): boolean => {
@@ -15,11 +16,22 @@ export const useUserStore = defineStore("user", () => {
       user.value = new UserEntity().buildFromIUserEntity(data);
 
       localStorage.setItem("user", JSON.stringify(user.value));
+
+      return true;
     } catch (error) {
       return false;
     }
+  };
 
-    return true;
+  const setToken = (token: string): boolean => {
+    try {
+      userToken.value = token;
+      localStorage.setItem("token", userToken.value);
+
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   // const info = (): IUser | false => {
@@ -41,5 +53,21 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  return { set, info };
+  const getToken = (): string | false => {
+    try {
+      if (!localStorage) {
+        return false;
+      }
+
+      const token: string | null = localStorage.getItem("token");
+      if (!token) return false;
+
+      return token;
+    } catch (error) {
+      console.error("Error retrieving user token:", error);
+      return false;
+    }
+  };
+
+  return { set, setToken, info, getToken };
 });
