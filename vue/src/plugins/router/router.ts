@@ -21,9 +21,8 @@ router.beforeEach((to, _from, next) => {
 
     if (!isUser && !isHomeRoute) {
       // If user is not logged in, store the intended destination route
-      if (to.path !== "/") {
-        sessionStorage.setItem("intendedRoute", to.fullPath);
-      }
+      sessionStorage.setItem("intendedRoute", to.fullPath);
+
       next("/"); // Redirect to the home route
     } else if (!isUser && isHomeRoute) {
       next();
@@ -67,6 +66,38 @@ router.beforeEach((to, _from, next) => {
       next(intendedRoute); // Redirect to the intended destination route
     } else {
       next(); // Proceed with the navigation
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.beforeEach(async (to, from, next) => {
+  try {
+    const userStore = useUserStore();
+    const isTokenVerified: boolean = await userStore.verifyToken();
+    const isToHomeRoute = to.path === "/";
+    const isFromHomeRoute = from.path === "/";
+
+    if (!isTokenVerified && !isToHomeRoute) {
+      // If user is not logged in, store the intended destination route
+      sessionStorage.setItem("intendedRoute", to.fullPath);
+      next("/"); // Redirect to the home route
+    } else if (!isTokenVerified && isToHomeRoute) {
+      next();
+    } else {
+      // If user is logged in and intendedRoute is stored, proceed to that route
+      const intendedRoute = sessionStorage.getItem("intendedRoute");
+
+      if (intendedRoute) {
+        sessionStorage.removeItem("intendedRoute");
+        next(intendedRoute); // Redirect to the intended destination route
+      } else {
+        if (!isFromHomeRoute) {
+          await userStore.refreshToken();
+        }
+        next(); // Proceed with the navigation
+      }
     }
   } catch (error) {
     console.log(error);

@@ -14,9 +14,9 @@ class LDAP {
   } as const;
 
   constructor(login?: ILogin) {
-    this.username = login.username || "";
-    this.domain = login.domain || "";
-    this.password = login.password || "";
+    this.username = login?.username || "";
+    this.domain = login?.domain || "";
+    this.password = login?.password || "";
   }
 
   public authenticate = async (loginObj?: ILogin): Promise<any> => {

@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { IUserEntity } from "../interfaces/user/IUserEntity";
 import { UserEntity } from "../models/user/UserEntity";
+import { UserTokenManager } from "../models/user/UserTokenManager";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<IUserEntity>(new UserEntity());
@@ -25,6 +26,8 @@ export const useUserStore = defineStore("user", () => {
 
   const setToken = (token: string): boolean => {
     try {
+      if (!token) throw new Error("Token at setToken evaluates to empty string");
+
       userToken.value = token;
       localStorage.setItem("token", userToken.value);
 
@@ -69,5 +72,37 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  return { set, setToken, info, getToken };
+  const verifyToken = async (): Promise<boolean> => {
+    try {
+      const token: string | false = getToken();
+      if (!token) return false;
+
+      const tokenManager = new UserTokenManager();
+      const response = await tokenManager.verify(JSON.stringify(token));
+
+      return response;
+    } catch (error) {
+      console.error("Error retrieving user token:", error);
+      return false;
+    }
+  };
+
+  const refreshToken = async (): Promise<string> => {
+    try {
+      const token: string | false = getToken();
+      if (!token) return "";
+
+      const tokenManager = new UserTokenManager();
+      const response = await tokenManager.refresh(JSON.stringify(token));
+
+      if (response) userToken.value = response;
+
+      return response;
+    } catch (error) {
+      console.error("Error retrieving user token:", error);
+      return "";
+    }
+  };
+
+  return { set, setToken, info, getToken, verifyToken, refreshToken };
 });

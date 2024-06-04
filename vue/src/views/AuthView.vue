@@ -78,7 +78,7 @@ const submitLogin = (): void => {
     responseStatus.value = null;
     loading(true);
     const reqUrl: string = `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.UserAuth}`;
-    data.value.username.toLocaleLowerCase();
+    data.value.username.toLowerCase();
     const reqData: LoginData = data.value;
 
     axios
