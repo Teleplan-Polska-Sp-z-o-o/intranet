@@ -2,7 +2,15 @@ import { authenticate } from "ldap-authentication";
 import { ILogin } from "../../interfaces/user/ILogin";
 import { getLDAPConfig } from "../../config/ldap";
 import { serverConfig } from "../../config/server";
-import { JwtPayload, Secret, SignOptions, VerifyOptions, sign, verify } from "jsonwebtoken";
+import {
+  JwtPayload,
+  Secret,
+  SignOptions,
+  VerifyErrors,
+  VerifyOptions,
+  sign,
+  verify,
+} from "jsonwebtoken";
 
 class LDAP {
   username: string;
@@ -61,7 +69,7 @@ class LDAP {
       const token: string = sign(payload, secretKey, overrideOptions ? overrideOptions : options);
       return token;
     } catch (error) {
-      throw new Error(`generateJwt at LDAP, ${error}`);
+      console.log(`generateJwt at LDAP, ${error}`);
     }
   };
 
@@ -75,18 +83,16 @@ class LDAP {
     }
   };
 
-  public verifyJwt = (jwtToken: string): JwtPayload => {
+  public verifyJwt = (jwtToken: string): JwtPayload | false => {
     try {
       const token: string = this.isJson(jwtToken) ? JSON.parse(jwtToken) : jwtToken;
       const secretKey: Secret = serverConfig.apiKey;
 
-      const decoded: JwtPayload | string = verify(token, secretKey);
+      const decoded: JwtPayload = verify(token, secretKey) as JwtPayload;
 
-      if (typeof decoded === "string")
-        throw new Error(`verifyJwt at LDAP, decoded is of type string, message: ${decoded}`);
-      else return decoded; // payload
+      return decoded; // payload
     } catch (error) {
-      throw new Error(`verifyJwt at LDAP, ${error}`);
+      return false; // unverified
     }
   };
 
@@ -94,8 +100,10 @@ class LDAP {
     // based on example: https://gist.github.com/ziluvatar/a3feb505c4c0ec37059054537b38fc48
 
     try {
-      const payload: JwtPayload =
+      const payload: JwtPayload | false =
         typeof jwtToken !== "string" ? jwtToken : this.verifyJwt(jwtToken);
+
+      if (!payload) throw new Error(`refreshJwt at LDAP`);
 
       if (payload.aud) delete payload.aud;
       if (payload.exp) delete payload.exp;
@@ -114,7 +122,7 @@ class LDAP {
       const token: string = this.generateJwt(payload, options);
       return token;
     } catch (error) {
-      throw new Error(`refreshJwt at LDAP, ${error}`);
+      console.log(error);
     }
   };
 }

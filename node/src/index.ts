@@ -14,24 +14,13 @@ app.use(cors(corsOptionsDelegate));
 
 import { serverConfig } from "./config/server";
 
-// app.use(
-//   session({
-//     secret: process.env.MS_EXPRESS_SESSION_SECRET,
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: {
-//       httpOnly: true,
-//       secure: serverConfig.test ? false : true, // set this to true on production
-//     },
-//   })
-// );
-
 // Routes
 import { userRoutes } from "./routes/userRoutes";
 import { documentRoutes } from "./routes/documentRoutes";
 import { editorRoutes } from "./routes/editorRoutes";
 import { changeRoutes } from "./routes/changeRoutes";
 import { notificationRoutes } from "./routes/notificationRoutes";
+import { serverRoutes } from "./routes/serverRoutes";
 
 import path from "path";
 
@@ -41,6 +30,7 @@ app.use("/api/document", documentRoutes);
 app.use("/api/editor", editorRoutes);
 app.use("/api/change", changeRoutes);
 app.use("/api/notification", notificationRoutes);
+app.use("/api/server", serverRoutes);
 
 // import { msalRoutes } from "./routes/msalRoutes";
 // app.use("/api/msal", msalRoutes);
