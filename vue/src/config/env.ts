@@ -4,8 +4,8 @@ interface ServerConfig {
 }
 
 const nodeConfig: ServerConfig = {
-  origin: "http://172.20.176.1",
-  // origin: "https://bydintranet.reconext.com",
+  // origin: "http://172.20.176.1",
+  origin: "https://bydintranet.reconext.com",
   port: 3000,
 };
 
