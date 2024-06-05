@@ -40,10 +40,6 @@ export const useUserStore = defineStore("user", () => {
   // const info = (): IUser | false => {
   const info = (): IUserEntity | false => {
     try {
-      if (!localStorage) {
-        return false;
-      }
-
       const json: string | null = localStorage.getItem("user");
       if (!json) return false;
       //throw new Error("No user data found in localStorage");
@@ -58,13 +54,8 @@ export const useUserStore = defineStore("user", () => {
 
   const getToken = (): string | false => {
     try {
-      if (!localStorage) {
-        return false;
-      }
-
       const token: string | null = localStorage.getItem("token");
       if (!token) return false;
-
       return token;
     } catch (error) {
       console.error("Error retrieving user token:", error);
@@ -80,9 +71,14 @@ export const useUserStore = defineStore("user", () => {
       const tokenManager = new UserTokenManager();
       const response = await tokenManager.verify(JSON.stringify(token));
 
+      if (!response) {
+        userToken.value = "";
+        localStorage.setItem("token", "");
+      }
+
       return response;
     } catch (error) {
-      console.error("Error retrieving user token:", error);
+      console.error("Error verifying user token:", error);
       return false;
     }
   };
@@ -95,7 +91,10 @@ export const useUserStore = defineStore("user", () => {
       const tokenManager = new UserTokenManager();
       const response = await tokenManager.refresh(JSON.stringify(token));
 
-      if (response) userToken.value = response;
+      if (response) {
+        userToken.value = response;
+        localStorage.setItem("token", response);
+      }
 
       return response;
     } catch (error) {

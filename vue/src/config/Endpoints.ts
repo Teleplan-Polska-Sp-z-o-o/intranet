@@ -25,6 +25,9 @@ enum Endpoints {
 
   //notification
   Notification = "/api/notification",
+
+  // server config
+  ServerConfig = "/api/server",
 }
 
 export { Endpoints };

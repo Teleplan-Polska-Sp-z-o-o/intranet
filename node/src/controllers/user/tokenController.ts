@@ -7,16 +7,22 @@ const verifyToken = async (req: Request, res: Response) => {
     const token = req.body.token;
     const ldap = new LDAP();
 
-    ldap.verifyJwt(token);
-
-    return res.status(200).json({
-      token: true,
-      message: "Token verified successfully.",
-      statusMessage: HttpResponseMessage.POST_SUCCESS,
-    });
+    const resultOfVerification = ldap.verifyJwt(token);
+    if (resultOfVerification === false)
+      return res.status(200).json({
+        token: false,
+        message: "Token verified unsuccessfully.",
+        statusMessage: HttpResponseMessage.POST_SUCCESS,
+      });
+    else
+      return res.status(200).json({
+        token: true,
+        message: "Token verified successfully.",
+        statusMessage: HttpResponseMessage.POST_SUCCESS,
+      });
   } catch (error) {
     console.error("Error verifying token:", error);
-    return res.status(500).json({
+    return res.status(200).json({
       token: false,
       message: "Unknown error occurred. Failed to verify token.",
       statusMessage: HttpResponseMessage.UNKNOWN,

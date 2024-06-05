@@ -8,18 +8,26 @@ class UserTokenManager {
   constructor() {}
 
   public verify = async (token: string): Promise<boolean> => {
-    const response = await axios.post(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/token/verify`,
-      { token }
-    );
-    return response.data.token;
+    try {
+      const response = await axios.post(
+        `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/token/verify`,
+        { token }
+      );
+      return response.data.token;
+    } catch (error) {
+      return false;
+    }
   };
   public refresh = async (token: string): Promise<string> => {
-    const response = await axios.post(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/token/refresh`,
-      { token }
-    );
-    return response.data.token;
+    try {
+      const response = await axios.post(
+        `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/token/refresh`,
+        { token }
+      );
+      return response.data.token;
+    } catch (error) {
+      return "";
+    }
   };
 }
 
