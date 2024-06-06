@@ -35,8 +35,8 @@ const uaT = {
             select_lang: "",
           },
         },
-        all_instructions: {
-          name: "ВСІ ІНСТРУКЦІЇ",
+        instructions: {
+          name: "ІНСТРУКЦІЇ",
           table: {
             toolbar: "Інструкції",
             select_lang: "Вибрати мову",
@@ -47,8 +47,8 @@ const uaT = {
             },
           },
         },
-        all_visuals: {
-          name: "УСІ ВІЗУАЛЬНІ МАТЕРІАЛИ",
+        visuals: {
+          name: "ВІЗУАЛЬНІ ДОПОМОГИ",
           table: {
             toolbar: "Візуальні матеріали",
             select_lang: "Вибрати мову",
@@ -58,6 +58,9 @@ const uaT = {
               view_document: "Переглянути документ",
             },
           },
+        },
+        assistant: {
+          назва: "ПОМІЧНИК",
         },
         recently_browsed: {
           name: "ОСТАННІ ПЕРЕГЛЯДИ",

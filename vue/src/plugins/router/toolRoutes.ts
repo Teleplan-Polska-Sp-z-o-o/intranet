@@ -43,7 +43,7 @@ export const toolRoutes = {
       },
       children: [
         {
-          path: "browse",
+          path: "browse/:tab/:no?",
           name: "browseDocuments",
           component: DocumentsView,
           meta: {
@@ -54,6 +54,21 @@ export const toolRoutes = {
               include: false,
             },
           },
+          // children: [
+          //   {
+          //     path: ":tab/:no?",
+          //     name: "browseDocumentsTab",
+          //     component: DocumentsView,
+          //     meta: {
+          //       read: true,
+          //       write: true,
+          //       control: false,
+          //       breadcrumbs: {
+          //         include: false,
+          //       },
+          //     },
+          //   },
+          // ],
         },
         {
           path: ":fileName/:fileLangs/:fileUUID",

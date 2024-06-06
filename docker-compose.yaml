@@ -15,9 +15,10 @@ services:
       - postgres
 
   vue:
-    build:
-      context: .
-      dockerfile: ./vue/Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: ./vue/Dockerfile
+    image: nginx:1.25
     container_name: vue
     ports:
       - 80:80
@@ -25,6 +26,8 @@ services:
     restart: "no"
     volumes:
       - ./vue/dist:/usr/share/nginx/html
+      - ./vue/default.conf:/etc/nginx/conf.d/default.conf
+      - ./_.reconext.com.2024.pem:/etc/nginx/certs/_.reconext.com.2024.pem
     depends_on:
       - node
 

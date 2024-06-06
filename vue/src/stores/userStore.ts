@@ -52,6 +52,12 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
+  const isEmptyState = (developerUsername: string) => {
+    const user: IUserEntity | false = info();
+    if (!user) return true;
+    return developerUsername !== user.username;
+  };
+
   const getToken = (): string | false => {
     try {
       const token: string | null = localStorage.getItem("token");
@@ -103,5 +109,5 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  return { set, setToken, info, getToken, verifyToken, refreshToken };
+  return { set, setToken, info, isEmptyState, getToken, verifyToken, refreshToken };
 });

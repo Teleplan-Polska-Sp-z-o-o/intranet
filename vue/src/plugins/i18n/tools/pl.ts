@@ -36,8 +36,8 @@ const plT = {
             select_lang: "",
           },
         },
-        all_instructions: {
-          name: "WSZYSTKIE INSTRUKCJE",
+        instructions: {
+          name: "INSTRUKCJE",
           table: {
             toolbar: "Instrukcje",
             select_lang: "Wybierz język",
@@ -48,8 +48,8 @@ const plT = {
             },
           },
         },
-        all_visuals: {
-          name: "WSZYSTKIE POMOCE WIZUALNE",
+        visuals: {
+          name: "POMOCE WIZUALNE",
           table: {
             toolbar: "Pomoce wizualne",
             select_lang: "Wybierz język",
@@ -59,6 +59,9 @@ const plT = {
               view_document: "Zobacz dokument",
             },
           },
+        },
+        assistant: {
+          nazwa: "ASYSTENT",
         },
         recently_browsed: {
           name: "OSTATNIO PRZEGLĄDANE",

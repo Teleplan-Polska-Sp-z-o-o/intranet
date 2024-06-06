@@ -254,7 +254,6 @@ const handleFilters = (filters: { callback: Function }) => {
   filtersCallback.value = filters;
 };
 </script>
-
 <template>
   <v-card class="rounded-xl elevation-2">
     <v-data-table

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Endpoints } from "./Endpoints";
+import { useUserStore } from "../stores/userStore";
 
 interface ServerConfig {
   origin: string | undefined;
@@ -56,4 +57,28 @@ getNodeConfig();
 //   port: 3000,
 // };
 
-export { nodeConfig };
+interface AssistantConfig {
+  url: string;
+  token: string;
+}
+
+const DOCUMENT_ASSISTANT_TEST = true;
+const DOCUMENT_ASSISTANT_URL = "";
+
+const getDocumentsAssistantConfig = (): AssistantConfig => {
+  const userStore = useUserStore();
+  const assistantToken: string | false = userStore.getToken();
+
+  if (!assistantToken) console.error(`assistantToken at env.ts evaluates to ${assistantToken}`);
+
+  const documentsAssistantConfig: AssistantConfig = {
+    url: DOCUMENT_ASSISTANT_TEST
+      ? "https://fr.wikipedia.org/wiki/Main_Page"
+      : DOCUMENT_ASSISTANT_URL,
+    token: assistantToken.toString(),
+  };
+
+  return documentsAssistantConfig;
+};
+
+export { nodeConfig, getDocumentsAssistantConfig };
