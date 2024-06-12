@@ -9,8 +9,9 @@ import { v4 as uuidv4 } from "uuid";
 import { Language } from "../../orm/entity/document/LanguageEntity";
 import { Department } from "../../orm/entity/document/DepartmentEntity";
 import { Category } from "../../orm/entity/document/CategoryEntity";
-import { In } from "typeorm";
+import { And, In, Not } from "typeorm";
 import { IDocOptions } from "../../interfaces/document/IDocOptions";
+import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
 
 const addDocument = async (req: Request, res: Response) => {
   try {
@@ -40,7 +41,8 @@ const addDocument = async (req: Request, res: Response) => {
         base.name,
         base.description,
         base.revision,
-        subcategory
+        subcategory,
+        base.confidentiality
       );
 
       const savedDocument = await transactionalEntityManager.getRepository(Document).save(document);
@@ -111,6 +113,7 @@ const editDocument = async (req: Request, res: Response) => {
       documentToUpdate.name = base.name;
       documentToUpdate.description = base.description;
       documentToUpdate.revision = base.revision;
+      documentToUpdate.confidentiality = base?.confidentiality;
 
       const updatedDocument = await transactionalEntityManager
         .getRepository(Document)
@@ -217,17 +220,43 @@ const removeDocument = async (req: Request, res: Response) => {
   }
 };
 
+const confidentialRestriction = (confidentiality: TConfidentiality) => {
+  try {
+    switch (confidentiality) {
+      case "restricted":
+        return ["secret"];
+      case "secret":
+        return [];
+
+      default:
+        return ["restricted", "secret"];
+    }
+  } catch (error) {
+    console.error(`confidentialRestriction at documentController, ${error}`);
+  }
+};
+
 const getDocuments = async (req: Request, res: Response) => {
   try {
-    const { type, reduce } = req.params;
+    const {
+      type,
+      reduce,
+      confidentiality,
+    }: {
+      type: "Instruction" | "Visual" | "all";
+      reduce: "true" | "false";
+      confidentiality: TConfidentiality;
+    } = req.params;
 
     let docOptions: IDocOptions = {
       relations: ["languages", "subcategory"],
     };
-
+    console.log("confidentiality", confidentiality);
+    console.log("restriction", confidentialRestriction(confidentiality));
     if (type !== "all") {
       docOptions.where = {
         type,
+        confidentiality: Not(In(confidentialRestriction(confidentiality))),
       };
     }
 
@@ -278,7 +307,7 @@ const getDocuments = async (req: Request, res: Response) => {
 
 const getDocumentsByDep = async (req: Request, res: Response) => {
   try {
-    const { departmentName, type, reduce } = req.params;
+    const { departmentName, type, reduce, confidentiality } = req.params;
 
     const depOptions = {
       where: {
@@ -301,6 +330,7 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
             department: departmentEntity,
           },
         },
+        confidentiality: Not(In(confidentialRestriction(confidentiality))),
       },
       relations: ["languages", "subcategory"],
     };
@@ -313,6 +343,7 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
             department: departmentEntity,
           },
         },
+        confidentiality: Not(In(confidentialRestriction(confidentiality))),
       };
     }
 
@@ -362,7 +393,7 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
 
 const getDocumentsByDepCat = async (req: Request, res: Response) => {
   try {
-    const { departmentName, categoryName, type, reduce } = req.params;
+    const { departmentName, categoryName, type, reduce, confidentiality } = req.params;
 
     const depOptions = {
       where: {
@@ -406,6 +437,7 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
     let docOptions: IDocOptions = {
       where: {
         subcategory: In(subcategoryIds),
+        confidentiality: Not(In(confidentialRestriction(confidentiality))),
       },
       relations: ["languages", "subcategory"],
     };
@@ -414,6 +446,7 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
       docOptions.where = {
         type,
         subcategory: In(subcategoryIds),
+        confidentiality: Not(In(confidentialRestriction(confidentiality))),
       };
     }
 
@@ -463,7 +496,8 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
 
 const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
   try {
-    const { departmentName, categoryName, subcategoryName, type, reduce } = req.params;
+    const { departmentName, categoryName, subcategoryName, type, reduce, confidentiality } =
+      req.params;
     const depOptions = {
       where: {
         name: departmentName,
@@ -510,6 +544,7 @@ const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
     let docOptions: IDocOptions = {
       where: {
         subcategory: subcategoryEntity,
+        confidentiality: Not(In(confidentialRestriction(confidentiality))),
       },
       relations: ["languages", "subcategory"],
     };
@@ -518,6 +553,7 @@ const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
       docOptions.where = {
         type,
         subcategory: subcategoryEntity,
+        confidentiality: Not(In(confidentialRestriction(confidentiality))),
       };
     }
 
@@ -565,6 +601,46 @@ const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
   }
 };
 
+const getDocumentByUuidAndLangs = async (req: Request, res: Response) => {
+  try {
+    const { uuid, langs } = req.params;
+    const docOptions = {
+      where: {
+        ref: uuid,
+      },
+    };
+
+    const docs: Array<Document> = await dataSource.getRepository(Document).find(docOptions);
+    if (!docs) {
+      return res.status(404).json({
+        message: "Documents not found",
+        statusMessage: HttpResponseMessage.GET_ERROR,
+      });
+    }
+
+    const docsIds: number[] = docs.map((doc) => doc.id);
+    const docWithLangs: Language = await dataSource.getRepository(Language).findOne({
+      where: {
+        document: In(docsIds),
+        name: langs,
+      },
+      relations: ["document"],
+    });
+    const document: Document = docs.find((doc) => doc.id === docWithLangs.document.id);
+    return res.status(200).json({
+      document: document,
+      message: "Document retrieved successfully",
+      statusMessage: HttpResponseMessage.GET_SUCCESS,
+    });
+  } catch (error) {
+    console.error("Error retrieving document: ", error);
+    return res.status(500).json({
+      message: "Failed to retrieve document.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
 export {
   addDocument,
   editDocument,
@@ -573,4 +649,5 @@ export {
   getDocumentsByDep,
   getDocumentsByDepCat,
   getDocumentsByDepCatSub,
+  getDocumentByUuidAndLangs,
 };

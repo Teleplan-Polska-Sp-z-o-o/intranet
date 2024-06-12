@@ -5,6 +5,7 @@ import { IDocumentEntity } from "../../interfaces/document/IDocumentEntity";
 import { DocumentEntity } from "./DocumentEntity";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
+import { useUserStore } from "../../stores/userStore";
 
 class VisualManager {
   constructor() {}
@@ -34,16 +35,20 @@ class VisualManager {
     if (reqData.categoryName) lvl = 2;
     if (reqData.subcategoryName) lvl = 3;
 
-    let params: string = "/Visual/true";
+    const userInfo = useUserStore().info();
+    let confidentiality = "public";
+    if (userInfo) confidentiality = userInfo.permission.confidentiality;
+
+    let params: string = `/Visual/true/${confidentiality}`;
     switch (lvl) {
       case 1:
-        params = `/${reqData.departmentName}/Visual/true`;
+        params = `/${reqData.departmentName}/Visual/true/${confidentiality}`;
         break;
       case 2:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/Visual/true`;
+        params = `/${reqData.departmentName}/${reqData.categoryName}/Visual/true/${confidentiality}`;
         break;
       case 3:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/Visual/true`;
+        params = `/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/Visual/true/${confidentiality}`;
         break;
 
       default:

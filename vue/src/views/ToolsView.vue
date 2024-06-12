@@ -30,7 +30,7 @@ const tools = [
   {
     id: 1,
     name: "documents",
-    href: "/tool/documents",
+    href: "/tool/documents/browse/instructions",
     icon: "file-document",
     image: "../tools/docs.png",
     permissions: {

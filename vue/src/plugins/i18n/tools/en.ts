@@ -35,8 +35,8 @@ const enT = {
             select_lang: "",
           },
         },
-        all_instructions: {
-          name: "ALL INSTRUCTIONS",
+        instructions: {
+          name: "INSTRUCTIONS",
           table: {
             toolbar: "Instructions",
             select_lang: "Select Language",
@@ -47,8 +47,8 @@ const enT = {
             },
           },
         },
-        all_visuals: {
-          name: "ALL VISUAL AIDS",
+        visuals: {
+          name: "VISUAL AIDS",
           table: {
             toolbar: "Visual Aids",
             select_lang: "Select Language",
@@ -58,6 +58,13 @@ const enT = {
               view_document: "View Document",
             },
           },
+        },
+        assistant: {
+          name: "ASSISTANT",
+          title: "AI Document Assistant",
+          send: "Send",
+          placeholder: "Ask me a question.",
+          new: "New Conversation",
         },
         recently_browsed: {
           name: "RECENTLY BROWSED",
@@ -121,6 +128,7 @@ const enT = {
               position: "Position",
               department: "Department",
               decisionMaker: "Decision Maker",
+              confidentiality: "Confidentiality",
               actions: "Actions",
             },
           },

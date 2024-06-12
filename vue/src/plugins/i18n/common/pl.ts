@@ -124,6 +124,7 @@ const plC = {
       delete_error: "Wystąpił błąd podczas usuwania zasobu.",
       delete_success: "Zasób został pomyślnie usunięty.",
       unknown: "Nieznany błąd. Spróbuj ponownie później.",
+      unauthorized: "Brak autoryzacji do wykonania tej akcji.",
     },
   },
 };

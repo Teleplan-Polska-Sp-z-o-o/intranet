@@ -4,6 +4,7 @@ import PermissionsTable from "../../components/views/tools/admin/users/Permissio
 import NewsTable from "../../components/views/tools/admin/NewsTable.vue";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
+import PermissionsTableInfo from "../../components/views/tools/admin/users/PermissionsTableInfo.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -64,6 +65,7 @@ const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value 
             <v-col class="h-100">
               <v-window v-model="currentTab" class="w-100" :touch="false">
                 <v-window-item :value="1">
+                  <permissions-table-info class="mb-5 ma-1"></permissions-table-info>
                   <permissions-table
                     class="bg-surface-2 pa-4 ma-1"
                     @responseStatus="handleResponseStatus"

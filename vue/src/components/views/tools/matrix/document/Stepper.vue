@@ -41,11 +41,12 @@ const retrievedFiles = ref<Array<IFileItem>>([]);
 
 (async () => {
   const docType = document.value.type;
+  const docConfidentiality = document.value.confidentiality;
   const docName = document.value.name;
   const docRef = document.value.ref;
   const docLangs = document.value.languages;
 
-  if (docType && docName && docRef && docLangs) {
+  if (docType && docConfidentiality && docName && docRef && docLangs) {
     for (const [index, lang] of Object.entries(docLangs)) {
       const fileName = `${docName}_qs_langs=${lang}&uuid=${docRef}`;
       const fileUrl = `${nodeConfig.origin}:${nodeConfig.port}/uploads/documents/${fileName}.pdf`;
@@ -84,6 +85,7 @@ const newDocData = computed(() => {
     name: document.value.name,
     description: document.value.description,
     revision: document.value.revision,
+    confidentiality: document.value.confidentiality,
 
     files: files.value,
   };
@@ -92,6 +94,7 @@ const newDocData = computed(() => {
 watchEffect(() => {
   if (
     !!document.value.type &&
+    !!document.value.confidentiality &&
     !!document.value.name &&
     !!document.value.description &&
     !!document.value.revision &&
@@ -141,6 +144,12 @@ watchEffect(() => {
             v-model="document.type"
             label="Type"
             :items="['Instruction', 'Visual']"
+            variant="underlined"
+          ></v-select>
+          <v-select
+            v-model="document.confidentiality"
+            label="Confidentiality"
+            :items="['public', 'restricted', 'secret']"
             variant="underlined"
           ></v-select>
           <v-text-field v-model="document.name" variant="underlined" label="Name"></v-text-field>

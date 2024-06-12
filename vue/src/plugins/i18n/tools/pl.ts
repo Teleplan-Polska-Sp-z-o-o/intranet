@@ -36,8 +36,8 @@ const plT = {
             select_lang: "",
           },
         },
-        all_instructions: {
-          name: "WSZYSTKIE INSTRUKCJE",
+        instructions: {
+          name: "INSTRUKCJE",
           table: {
             toolbar: "Instrukcje",
             select_lang: "Wybierz język",
@@ -48,8 +48,8 @@ const plT = {
             },
           },
         },
-        all_visuals: {
-          name: "WSZYSTKIE POMOCE WIZUALNE",
+        visuals: {
+          name: "POMOCE WIZUALNE",
           table: {
             toolbar: "Pomoce wizualne",
             select_lang: "Wybierz język",
@@ -59,6 +59,13 @@ const plT = {
               view_document: "Zobacz dokument",
             },
           },
+        },
+        assistant: {
+          name: "ASYSTENT",
+          title: "AI Asystent Dokumentów ",
+          send: "Wyślij",
+          placeholder: "Zadaj mi pytanie.",
+          new: "Nowa Rozmowa",
         },
         recently_browsed: {
           name: "OSTATNIO PRZEGLĄDANE",
@@ -122,6 +129,7 @@ const plT = {
               position: "Pozycja",
               department: "Dział",
               decisionMaker: "Osoba Decyzyjna",
+              confidentiality: "Poufność",
               actions: "Akcje",
             },
           },

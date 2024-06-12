@@ -5,6 +5,8 @@ import { IDocumentEntity } from "../../interfaces/document/IDocumentEntity";
 import { DocumentEntity } from "./DocumentEntity";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
+import { useUserStore } from "../../stores/userStore";
+import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
 
 class DocumentManager {
   constructor() {}
@@ -34,16 +36,21 @@ class DocumentManager {
     if (reqData.categoryName) lvl = 2;
     if (reqData.subcategoryName) lvl = 3;
 
-    let params: string = "/all/false";
+    const userInfo = useUserStore().info();
+
+    let confidentiality: TConfidentiality = "public";
+    if (userInfo) confidentiality = userInfo.permission.confidentiality;
+
+    let params: string = `/all/false/${confidentiality}`;
     switch (lvl) {
       case 1:
-        params = `/${reqData.departmentName}/all/false`;
+        params = `/${reqData.departmentName}/all/false/${confidentiality}`;
         break;
       case 2:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/all/false`;
+        params = `/${reqData.departmentName}/${reqData.categoryName}/all/false/${confidentiality}`;
         break;
       case 3:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/all/false`;
+        params = `/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/all/false/${confidentiality}`;
         break;
 
       default:
@@ -87,6 +94,15 @@ class DocumentManager {
       });
     }
     return response.data.deleted;
+  };
+
+  public getByUuidAndLangs = async (uuid: string, langs: string): Promise<IDocumentEntity> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/uuidLangs/${uuid}/${langs}`
+    );
+    console.log(response);
+
+    return response.data.document;
   };
 }
 

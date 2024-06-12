@@ -35,8 +35,8 @@ const uaT = {
             select_lang: "",
           },
         },
-        all_instructions: {
-          name: "ВСІ ІНСТРУКЦІЇ",
+        instructions: {
+          name: "ІНСТРУКЦІЇ",
           table: {
             toolbar: "Інструкції",
             select_lang: "Вибрати мову",
@@ -47,8 +47,8 @@ const uaT = {
             },
           },
         },
-        all_visuals: {
-          name: "УСІ ВІЗУАЛЬНІ МАТЕРІАЛИ",
+        visuals: {
+          name: "ВІЗУАЛЬНІ ДОПОМОГИ",
           table: {
             toolbar: "Візуальні матеріали",
             select_lang: "Вибрати мову",
@@ -58,6 +58,13 @@ const uaT = {
               view_document: "Переглянути документ",
             },
           },
+        },
+        assistant: {
+          name: "ПОМІЧНИК",
+          title: "AI Асистент Документів",
+          send: "Надіслати",
+          placeholder: "Задайте мені питання.",
+          new: "Нова Pозмова",
         },
         recently_browsed: {
           name: "ОСТАННІ ПЕРЕГЛЯДИ",
@@ -116,6 +123,7 @@ const uaT = {
               position: "Посада",
               department: "Відділ",
               decisionMaker: "Приймач рішень",
+              confidentiality: "Конфіденційність",
               actions: "Дії",
             },
           },

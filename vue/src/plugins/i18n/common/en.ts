@@ -124,6 +124,7 @@ const enC = {
       delete_error: "An error occurred while deleting the resource.",
       delete_success: "The resource was successfully deleted.",
       unknown: "Unknown error. Please try again later.",
+      unauthorized: "Unauthorized access to perform this action.",
     },
   },
 };

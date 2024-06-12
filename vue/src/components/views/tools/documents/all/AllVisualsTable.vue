@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, watchEffect } from "vue";
+import { ref, watch } from "vue";
 // import { ResponseStatus } from "../../../../models/common/ResponseStatus";
 import { IChips } from "../../../../../interfaces/document/IChips";
 import { VisualManager } from "../../../../../models/document/VisualManager";
@@ -80,9 +80,7 @@ watch(
 // const responseStatus = ref<ResponseStatus | null>(null);
 
 const { t } = useI18n();
-const tab = ref<string>(props.tab);
-watchEffect(() => (tab.value = props.tab));
-const tPath = `tools.documents.tabs.${tab.value}.table`;
+const tPath = `tools.documents.tabs.${props.tab}.table`;
 
 const headers: any = [
   { title: t(`${tPath}.header.name`), align: "start", key: "name", minWidth: 200 },

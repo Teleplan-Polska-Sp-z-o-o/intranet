@@ -21,7 +21,7 @@ const inputs = ref<Array<UserInput>>([]);
 (async (): Promise<void> => {
   inputs.value = await props.componentProps.inputs;
 
-  if (inputs.value && inputs.value.length === 4) {
+  if (inputs.value && inputs.value.length > 0) {
     const permission = () => {
       const p: IPermission = item.value.permission;
       if (p.control) return "Admin";
@@ -48,6 +48,7 @@ const inputs = ref<Array<UserInput>>([]);
     inputs.value[1].val = info().position;
     inputs.value[2].val = info().department;
     inputs.value[3].val = info().decisionMaker;
+    inputs.value[4].val = item.value.permission.confidentiality;
   }
 })();
 

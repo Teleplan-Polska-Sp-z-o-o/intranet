@@ -10,6 +10,7 @@ import { UserInfo } from "../../orm/entity/user/UserInfoEntity";
 import { IPermission } from "../../interfaces/user/IPermission";
 import { UserInformation } from "../../models/user/UserInformation";
 import { DataSource, EntityManager } from "typeorm";
+import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
 
 const findUser = async (
   where: string | number,
@@ -174,12 +175,15 @@ const editUser = async (req: Request, res: Response) => {
     const userId: number = JSON.parse(body.user).id;
     const permission: IPermission = JSON.parse(body.permission);
     const info: UserInformation = JSON.parse(body.info);
+    const confidentiality: TConfidentiality | undefined = JSON.parse(body?.confidentiality);
 
     let user: UserEntity;
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       if (permission) {
-        const newPermission: UserPermission = new UserPermission(permission);
+        const newPermission: UserPermission = confidentiality
+          ? new UserPermission(permission, confidentiality)
+          : new UserPermission(permission);
 
         const userPermission = await transactionalEntityManager
           .getRepository(UserPermission)
@@ -189,6 +193,7 @@ const editUser = async (req: Request, res: Response) => {
 
         userPermission.write = newPermission.write;
         userPermission.control = newPermission.control;
+        userPermission.confidentiality = newPermission.confidentiality;
 
         await transactionalEntityManager.getRepository(UserPermission).save(userPermission);
       }

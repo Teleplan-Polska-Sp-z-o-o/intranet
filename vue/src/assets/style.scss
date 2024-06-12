@@ -27,6 +27,9 @@ $padding: 8px;
   &-view-container {
     height: auto;
     margin-bottom: calc($breadcrumb-height + $footer-height) !important;
+    &.mb-0 {
+      margin-bottom: 0 !important;
+    }
   }
 
   &-footer {

@@ -60,6 +60,7 @@ const handleSaveData = (data: any) => {
   base.name = data.name;
   base.description = data.description;
   base.revision = data.revision;
+  base.confidentiality = data.confidentiality;
 
   handleReqData(base, data.files, chips.value);
 };

@@ -1,4 +1,5 @@
 import { IDocumentEntity } from "../../interfaces/document/IDocumentEntity";
+import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
 
 export class DocumentEntity implements IDocumentEntity {
   id: number;
@@ -10,6 +11,7 @@ export class DocumentEntity implements IDocumentEntity {
   subcategory: { name: string; id: number };
   competence: string | null;
   languages: string[];
+  confidentiality: TConfidentiality;
 
   constructor() {
     this.id = 0;
@@ -21,5 +23,6 @@ export class DocumentEntity implements IDocumentEntity {
     this.subcategory = { name: "", id: 0 };
     this.competence = null;
     this.languages = [];
+    this.confidentiality = "public";
   }
 }
