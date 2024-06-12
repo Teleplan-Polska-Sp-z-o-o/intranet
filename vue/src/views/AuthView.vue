@@ -106,23 +106,6 @@ const submitLogin = (): void => {
       });
   }
 };
-
-// const proceed = (): void => {
-//   loading(true);
-//   const user = {
-//     id: null,
-//     username: null,
-//     domain: null,
-//   };
-//   const permission = {
-//     read: true,
-//     write: false,
-//     control: false,
-//   };
-//   userStore.set(new User(user));
-//   permissionStore.set(new Permission(permission));
-//   router.push({ path: "/pages" });
-// };
 </script>
 
 <template>
@@ -198,77 +181,6 @@ const submitLogin = (): void => {
             />
           </v-card-text>
         </v-card>
-
-        <!-- <v-sheet :width="300" class="h-auto d-flex flex-column align-center mx-auto">
-          <v-container fluid class="bg-surface-1 text-on-surface rounded-xl elevation-6">
-            <v-row>
-              <v-col>
-                <h1 class="text-primary text-h2 text-center">Intranet</h1>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-form
-                  ref="login"
-                  class="d-flex flex-column"
-                  v-model="validation"
-                  @submit.prevent="submitLogin"
-                >
-                  <v-container fluid>
-                    <v-row>
-                      <v-text-field
-                        color="primary"
-                        class="mb-2"
-                        v-model="data.username"
-                        :rules="nameRules"
-                        label="Username"
-                        required
-                      ></v-text-field
-                    ></v-row>
-                    <v-row>
-                      <v-select
-                        color="primary"
-                        label="Domain"
-                        v-model="data.domain"
-                        :items="['reconext.com', 'tgn.teleplan.com']"
-                        :rules="domainRules"
-                        required
-                      ></v-select>
-                    </v-row>
-                    <v-row>
-                      <v-text-field
-                        color="primary"
-                        class="mb-2"
-                        v-model="data.password"
-                        :rules="passwordRules"
-                        :append-inner-icon="passwordIcon"
-                        @click:append-inner="passwordVisibility = !passwordVisibility"
-                        label="Password"
-                        :type="passwordType"
-                        required
-                      />
-                    </v-row>
-                  </v-container>
-                  <v-btn type="submit" color="primary">Login</v-btn>
-                </v-form>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <alert-response-status :status="responseStatus" :persist="true" />
-              </v-col>
-            </v-row>
-            
-            <v-spacer v-if="!responseStatus"></v-spacer>
-          </v-container>
-
-          <v-progress-linear
-            :active="loader"
-            :indeterminate="loader"
-            bottom
-            color="primary"
-          ></v-progress-linear>
-        </v-sheet> -->
       </v-col>
     </v-row>
   </v-container>

@@ -1,3 +1,5 @@
+import { TConfidentiality } from "./TConfidentiality";
+
 interface IUserEntity {
   domain: string;
   id: number;
@@ -5,6 +7,7 @@ interface IUserEntity {
     read: boolean;
     write: boolean;
     control: boolean;
+    confidentiality: TConfidentiality;
     id: number;
   };
   settings: {

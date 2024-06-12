@@ -31,6 +31,10 @@ const headers: any = [
   { title: t(`${tPath}.header.position`), key: "info.position" },
   { title: t(`${tPath}.header.department`), key: "info.department" },
   { title: t(`${tPath}.header.decisionMaker`), key: "custom2" },
+  {
+    title: t(`${tPath}.header.confidentiality`),
+    key: "permission.confidentiality",
+  },
   { title: t(`${tPath}.header.permission`), key: "custom", sortable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
@@ -71,6 +75,13 @@ const componentProps = async (): Promise<Array<UserInput>> => {
       items: ["Yes", "No"],
       val: "",
     },
+    {
+      id: 4,
+      variant: "select",
+      label: "Confidentiality",
+      items: ["public", "restricted", "secret"],
+      val: "",
+    },
   ];
 
   for (const input of inputs) {
@@ -100,6 +111,8 @@ const handleSaveData = (data: { item: any; inputs: Array<UserInput> }) => {
   if (data.inputs.at(3)?.val === "Yes") decisionMaker = true;
   if (data.inputs.at(3)?.val === "No") decisionMaker = false;
 
+  const confidentiality = data.inputs.at(4)?.val;
+
   const info: IUserInfo = {
     position: position,
     department: department,
@@ -110,6 +123,7 @@ const handleSaveData = (data: { item: any; inputs: Array<UserInput> }) => {
   formData.append("user", JSON.stringify(user));
   formData.append("permission", JSON.stringify(permission));
   formData.append("info", JSON.stringify(info));
+  formData.append("confidentiality", JSON.stringify(confidentiality));
 
   reqData.value = formData;
 };

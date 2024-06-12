@@ -61,6 +61,10 @@ const enT = {
         },
         assistant: {
           name: "ASSISTANT",
+          title: "AI Document Assistant",
+          send: "Send",
+          placeholder: "Ask me a question.",
+          new: "New Conversation",
         },
         recently_browsed: {
           name: "RECENTLY BROWSED",
@@ -124,6 +128,7 @@ const enT = {
               position: "Position",
               department: "Department",
               decisionMaker: "Decision Maker",
+              confidentiality: "Confidentiality",
               actions: "Actions",
             },
           },

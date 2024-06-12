@@ -61,7 +61,11 @@ const plT = {
           },
         },
         assistant: {
-          nazwa: "ASYSTENT",
+          name: "ASYSTENT",
+          title: "AI Asystent Dokumentów ",
+          send: "Wyślij",
+          placeholder: "Zadaj mi pytanie.",
+          new: "Nowa Rozmowa",
         },
         recently_browsed: {
           name: "OSTATNIO PRZEGLĄDANE",
@@ -125,6 +129,7 @@ const plT = {
               position: "Pozycja",
               department: "Dział",
               decisionMaker: "Osoba Decyzyjna",
+              confidentiality: "Poufność",
               actions: "Akcje",
             },
           },

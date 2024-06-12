@@ -25,12 +25,12 @@ const tabs = [
   {
     id: 3,
     name: "instructions",
-    icon: "mdi-file-multiple",
+    icon: "mdi-file-document",
   },
   {
     id: 4,
     name: "visuals",
-    icon: "mdi-file-multiple",
+    icon: "mdi-file-image",
   },
   {
     id: 5,
@@ -68,13 +68,13 @@ const getTab = (newTab: string | Array<string>, getNumericValue: boolean): numbe
 };
 
 const currentTabValue = ref<number>(getTab(route.params.tab, true) as number);
-const currentTabName = ref<string>(getTab(route.params.tab, false) as string);
+// const currentTabName = ref<string>(getTab(route.params.tab, false) as string);
 
 watch(
   () => route.params.tab,
   (newTab) => {
     currentTabValue.value = getTab(newTab, true) as number;
-    currentTabName.value = getTab(route.params.tab, false) as string;
+    // currentTabName.value = getTab(newTab, false) as string;
   }
 );
 
@@ -151,7 +151,7 @@ const handleTable = (newValue: ILevel): void => {
                   <all-instructions-table
                     @table="handleTable"
                     :chips="chips"
-                    :tab="currentTabName"
+                    :tab="'instructions'"
                     class="bg-surface-2 pa-4 ma-1"
                   ></all-instructions-table>
                 </v-window-item>
@@ -165,7 +165,7 @@ const handleTable = (newValue: ILevel): void => {
                   <all-visuals-table
                     @table="handleTable"
                     :chips="chips"
-                    :tab="currentTabName"
+                    :tab="'visuals'"
                     class="bg-surface-2 pa-4 ma-1"
                   ></all-visuals-table>
                 </v-window-item>
@@ -175,7 +175,7 @@ const handleTable = (newValue: ILevel): void => {
                     class="bg-surface-2 pa-4 ma-1"
                   ></iframe-ai-assistant> -->
                   <custom-ai-assistant
-                    :tab="currentTabName"
+                    :tab="'assistant'"
                     class="bg-surface-2 pa-4 ma-1"
                   ></custom-ai-assistant>
                 </v-window-item>

@@ -60,7 +60,11 @@ const uaT = {
           },
         },
         assistant: {
-          назва: "ПОМІЧНИК",
+          name: "ПОМІЧНИК",
+          title: "AI Асистент Документів",
+          send: "Надіслати",
+          placeholder: "Задайте мені питання.",
+          new: "Нова Pозмова",
         },
         recently_browsed: {
           name: "ОСТАННІ ПЕРЕГЛЯДИ",
@@ -119,6 +123,7 @@ const uaT = {
               position: "Посада",
               department: "Відділ",
               decisionMaker: "Приймач рішень",
+              confidentiality: "Конфіденційність",
               actions: "Дії",
             },
           },

@@ -1,3 +1,5 @@
+import { TConfidentiality } from "../user/TConfidentiality";
+
 interface IDocumentEntity {
   id: number;
   ref: string;
@@ -11,6 +13,7 @@ interface IDocumentEntity {
   };
   competence: string | null;
   languages: Array<string>;
+  confidentiality: TConfidentiality;
 }
 
 export type { IDocumentEntity };

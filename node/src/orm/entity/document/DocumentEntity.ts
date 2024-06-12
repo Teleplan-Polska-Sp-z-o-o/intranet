@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "ty
 import { Competence } from "./CompetenceEntity";
 import { Subcategory } from "./SubcategoryEntity";
 import { Language } from "./LanguageEntity";
+import { TConfidentiality } from "../../../interfaces/user/TConfidentiality";
 
 @Entity()
 export class Document {
@@ -32,13 +33,17 @@ export class Document {
   @OneToMany(() => Language, (language) => language.document, { onDelete: "CASCADE" })
   languages: Array<Language>;
 
+  @Column()
+  confidentiality: TConfidentiality;
+
   constructor(
     ref: string,
     type: string,
     name: string,
     description: string,
     revision: number,
-    subcategory: Subcategory
+    subcategory: Subcategory,
+    confidentiality: TConfidentiality = "public"
   ) {
     this.ref = ref;
     this.type = type;
@@ -46,5 +51,6 @@ export class Document {
     this.description = description;
     this.revision = revision;
     this.subcategory = subcategory;
+    this.confidentiality = confidentiality;
   }
 }

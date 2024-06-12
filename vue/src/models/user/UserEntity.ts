@@ -1,4 +1,5 @@
 import { IUserEntity } from "../../interfaces/user/IUserEntity";
+import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
 
 export class UserEntity implements IUserEntity {
   domain: string;
@@ -7,6 +8,7 @@ export class UserEntity implements IUserEntity {
     read: boolean;
     write: boolean;
     control: boolean;
+    confidentiality: TConfidentiality;
     id: number;
   };
   settings: {
@@ -24,7 +26,13 @@ export class UserEntity implements IUserEntity {
   constructor() {
     this.domain = "";
     this.id = 0;
-    this.permission = { read: true, write: false, control: false, id: 0 };
+    this.permission = {
+      read: true,
+      write: false,
+      control: false,
+      confidentiality: "public",
+      id: 0,
+    };
     this.settings = { theme: "", language: "", id: 0 };
     this.username = "";
     this.info = { position: null, department: null, decisionMaker: null };

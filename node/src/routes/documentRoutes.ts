@@ -22,6 +22,7 @@ import {
 import {
   addDocument,
   editDocument,
+  getDocumentByUuidAndLangs,
   getDocuments,
   getDocumentsByDep,
   getDocumentsByDepCat,
@@ -50,11 +51,12 @@ router.delete("/subcategory/:id", removeSubcategory);
 router.post("/", upload.any(), addDocument);
 router.put("/", upload.any(), editDocument);
 router.delete("/:id", removeDocument);
-router.get("/:type/:reduce", getDocuments);
-router.get("/:departmentName/:type/:reduce", getDocumentsByDep);
-router.get("/:departmentName/:categoryName/:type/:reduce", getDocumentsByDepCat);
+router.get("/uuidLangs/:uuid/:langs", getDocumentByUuidAndLangs);
+router.get("/:type/:reduce/:confidentiality", getDocuments);
+router.get("/:departmentName/:type/:reduce/:confidentiality", getDocumentsByDep);
+router.get("/:departmentName/:categoryName/:type/:reduce/:confidentiality", getDocumentsByDepCat);
 router.get(
-  "/:departmentName/:categoryName/:subcategoryName/:type/:reduce",
+  "/:departmentName/:categoryName/:subcategoryName/:type/:reduce/:confidentiality",
   getDocumentsByDepCatSub
 );
 
