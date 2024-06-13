@@ -19,13 +19,28 @@ const getLDAPConfig = (loginData: ILogin): AuthenticationOptions => {
   }
 
   const ldapHost = `ldap://${loginData.domain}`;
+  let userSearchBase = ``;
+
+  const getUserSearchBase = (): string => {
+    switch (loginData.domain) {
+      case "reconext.com":
+        userSearchBase = `dc=reconext,dc=com`;
+        return userSearchBase;
+      case "tgn.teleplan.com":
+        userSearchBase = `dc=tgn,dc=teleplan,dc=com`;
+        return userSearchBase;
+
+      default:
+        throw new Error(`Domain doesn't match any switch cases.`);
+    }
+  };
 
   const ldapConfig: AuthenticationOptions = {
     ldapOpts: { url: ldapHost },
     adminDn: `${intranetUser.username}@reconext.com`,
     adminPassword: intranetUser.password,
     //
-    userSearchBase: `dc=reconext,dc=com`,
+    userSearchBase: getUserSearchBase(),
     usernameAttribute: `sAMAccountName`,
     username: loginData.username,
     userPassword: loginData.password,
