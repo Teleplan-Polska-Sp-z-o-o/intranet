@@ -1,4 +1,7 @@
-import { TAssistantResponseMessage } from "../../../../../interfaces/assistants/AssistantResponse";
+import {
+  TAssistantResponseChunk,
+  TAssistantResponseMessage,
+} from "../../../../../interfaces/assistants/TAssistantResponse";
 
 const _handleLink = (reference: { title: string; url: string }): boolean => {
   if (reference.url.includes("/node/uploads/documents/") && reference.title.includes("_qs_")) {
@@ -77,45 +80,58 @@ const _format = (stringToFormat: string) => {
   return formattedString;
 };
 
-const outputMessage = (message: TAssistantResponseMessage): string => {
-  const messageToFormat: string = message
-    .map((m) => {
-      if (m?.type === "references" && Array.isArray(m?.data)) {
-        const btnTemplate = (reference: {
-          title: string;
-          url: string;
-        }) => `<span class="mdi mdi-file-link-outline"></span><a href="${reference.url}">
+const outputMessage = (message: TAssistantResponseMessage, conversationKey: string): string => {
+  try {
+    const messageToFormat: string = message[conversationKey]
+      .map((m: TAssistantResponseChunk) => {
+        if (m?.type === "references" && Array.isArray(m?.data)) {
+          const btnTemplate = (reference: {
+            title: string;
+            url: string;
+          }) => `<span class="mdi mdi-file-link-outline"></span><a href="${reference.url}">
           ${reference.title}
         </a>`;
-        for (let i = 0; i < m.data.length; i++) {
-          let btn = m.data[i];
-          const generateLink = _handleLink(btn);
-          if (!generateLink) return "";
-          btn = btnTemplate(btn);
-          if (i === 0) btn = `<br>${btn}`;
-          else if (i < m.data.length - 1) btn = `${btn}<br>`;
-          return btn;
-        }
-      } else return Object.hasOwn(m, "message") ? m.message : m?.data;
-    })
-    .join("");
+          for (let i = 0; i < m.data.length; i++) {
+            let btn = m.data[i];
+            const generateLink = _handleLink(btn);
+            if (!generateLink) return "";
+            btn = btnTemplate(btn);
+            if (i === 0) btn = `<br>${btn}`;
+            else if (i < m.data.length - 1) btn = `${btn}<br>`;
+            return btn;
+          }
+        } else return Object.hasOwn(m, "message") ? m.message : m?.data;
+      })
+      .join("");
 
-  return _format(messageToFormat);
+    return _format(messageToFormat);
+  } catch (error) {
+    console.error(`outputMessage at assistantOutputFunctions, ${error}`);
+    return "";
+  }
 };
 
 const outputSource = (
   message: TAssistantResponseMessage,
+  conversationKey: string,
   variant: "background" | "flex"
 ): string => {
-  const isUserMessage = message.some((m) => Object.hasOwn(m, "message"));
-  switch (variant) {
-    case "background":
-      return isUserMessage ? "bg-primary-container" : "bg-secondary-container";
-    case "flex":
-      return isUserMessage ? "user-message" : "assistant-message";
+  try {
+    const isUserMessage = message[conversationKey].some((m: TAssistantResponseChunk) =>
+      Object.hasOwn(m, "message")
+    );
+    switch (variant) {
+      case "background":
+        return isUserMessage ? "bg-primary-container" : "bg-secondary-container";
+      case "flex":
+        return isUserMessage ? "user-message" : "assistant-message";
 
-    default:
-      return isUserMessage ? "user-message" : "assistant-message";
+      default:
+        return isUserMessage ? "user-message" : "assistant-message";
+    }
+  } catch (error) {
+    console.error(`outputSource at assistantOutputFunctions, ${error}`);
+    return "";
   }
 };
 

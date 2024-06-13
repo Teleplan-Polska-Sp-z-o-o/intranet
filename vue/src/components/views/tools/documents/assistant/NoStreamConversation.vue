@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { TAssistantResponseMessages } from "../../../../../interfaces/assistants/AssistantResponse";
-import { outputMessage, outputSource } from "./outputFunctions";
+import { TAssistantResponseMessages } from "../../../../../interfaces/assistants/TAssistantResponse";
+import { outputMessage, outputSource } from "./assistantOutputFunctions";
 
 const props = defineProps<{
   messages: TAssistantResponseMessages;
+  assistantKey: string;
   preparingResponse: boolean;
 }>();
 
@@ -15,14 +16,14 @@ const messages = computed<TAssistantResponseMessages>(() => props.messages);
   <div
     v-for="(message, index) in messages"
     :key="index"
-    :class="outputSource(message, 'flex')"
+    :class="outputSource(message, assistantKey, 'flex')"
     class="my-2"
   >
-    <div class="w-75" :class="outputSource(message, 'flex')">
+    <div class="w-75" :class="outputSource(message, assistantKey, 'flex')">
       <div
-        :class="outputSource(message, 'background')"
+        :class="outputSource(message, assistantKey, 'background')"
         class="text-body-1 rounded-xl pa-4"
-        v-html="outputMessage(message)"
+        v-html="outputMessage(message, assistantKey)"
       ></div>
     </div>
   </div>

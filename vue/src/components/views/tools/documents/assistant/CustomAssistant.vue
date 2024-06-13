@@ -2,7 +2,7 @@
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { AiAssistant } from "../../../../../models/assistants/AiAssistant";
 import { useAssistantStore } from "../../../../../stores/assistantStore";
-import { TAssistantResponseMessages } from "../../../../../interfaces/assistants/AssistantResponse";
+import { TAssistantResponseMessages } from "../../../../../interfaces/assistants/TAssistantResponse";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { AssistantTranslations } from "../../../../../interfaces/common/Translations";
@@ -10,13 +10,14 @@ import NoStreamConversation from "./NoStreamConversation.vue";
 
 const props = defineProps<{
   tab: string;
+  assistantKey: string;
 }>();
 
 const loading = ref<boolean>(true);
 const preparingResponse = ref<boolean>(false);
-const assistant = ref<AiAssistant>(new AiAssistant());
+const assistant = ref<AiAssistant>(new AiAssistant(props.assistantKey));
 
-const messages = ref<TAssistantResponseMessages>([]);
+const messages = ref<TAssistantResponseMessages>([{}]);
 // const message = ref<TAssistantResponseMessage>([]);
 
 const create = async (newConversation: boolean = false): Promise<void> => {
@@ -55,7 +56,7 @@ const sendQuestion = async () => {
 };
 
 watch(
-  () => useAssistantStore().storedMessages,
+  () => useAssistantStore().storedConversations[props.assistantKey],
   (storedMessages) => {
     messages.value = storedMessages;
   },
@@ -67,7 +68,8 @@ watch(
   () => useRoute(),
   async (newRoute) => {
     if (newRoute && newRoute?.path === specificRoutePath) {
-      if (!messages.value.length) messages.value = useAssistantStore().storedMessages;
+      if (!messages.value.length)
+        messages.value = useAssistantStore().storedConversations[props.assistantKey];
     }
   },
   { deep: true }
@@ -107,6 +109,7 @@ const translation = computed<AssistantTranslations>(() => {
         <div class="div-list rounded-xl bg-transparent w-75 h-100 px-4 mx-auto">
           <no-stream-conversation
             :messages="messages"
+            :assistantKey="props.assistantKey"
             :preparingResponse="preparingResponse"
           ></no-stream-conversation>
         </div>

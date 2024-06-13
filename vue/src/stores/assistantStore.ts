@@ -2,29 +2,71 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import {
   TAssistantResponseChunk,
+  TAssistantResponseConversations,
   TAssistantResponseMessage,
   TAssistantResponseMessages,
-} from "../interfaces/assistants/AssistantResponse";
+} from "../interfaces/assistants/TAssistantResponse";
 
 export const useAssistantStore = defineStore("assistant", () => {
-  const messages = ref<TAssistantResponseMessages>([]);
-  const storedMessages = computed(() => messages.value);
-  const message = ref<TAssistantResponseMessage>([]);
+  const conversations = ref<TAssistantResponseConversations>({});
+  const storedConversations = computed(() => conversations.value);
+  const message = ref<TAssistantResponseMessage>({});
   const storedMessage = computed(() => message.value);
 
-  const storeChunk = (chunk: TAssistantResponseChunk) => {
-    if (Object.keys(chunk).length > 0) {
-      if (chunk?.type !== "finished") message.value.push(chunk);
-      if (chunk?.type === "finished" || Object.hasOwn(chunk, "message")) {
-        messages.value.push(message.value);
-        message.value = [];
+  const _storeMessageInConversations = (
+    message: TAssistantResponseMessage,
+    conversationKey: string
+  ): void => {
+    try {
+      if (!Object.hasOwn(conversations.value, conversationKey)) {
+        conversations.value[conversationKey] = [];
       }
+
+      conversations.value[conversationKey].push({ [conversationKey]: message[conversationKey] });
+    } catch (error) {
+      console.error(`_storeMessageInConversations at useAssistantStore: ${error}`);
+    }
+  };
+  const _storeChunk = (chunk: TAssistantResponseChunk, conversationKey: string): void => {
+    try {
+      if (!Object.hasOwn(message.value, conversationKey)) {
+        message.value[conversationKey] = [];
+      }
+      if (chunk?.type !== "finished") message.value[conversationKey].push(chunk);
+      if (chunk?.type === "finished" || Object.hasOwn(chunk, "message")) {
+        _storeMessageInConversations(message.value, conversationKey);
+        delete message.value[conversationKey];
+      }
+    } catch (error) {
+      console.error(`_storeChunk at useAssistantStore: ${error}`);
     }
   };
 
-  const clearStoredMessages = (): TAssistantResponseMessages => {
-    messages.value = [];
-    return storedMessages.value;
+  const store = (chunk: TAssistantResponseChunk, conversationKey: string): void => {
+    try {
+      if (Object.keys(chunk).length > 0) {
+        _storeChunk(chunk, conversationKey);
+      }
+    } catch (error) {
+      console.error(`store at save: ${error}`);
+    }
   };
-  return { storeChunk, storedMessage, storedMessages, clearStoredMessages };
+
+  const clearStoredMessagesInConversation = (
+    conversationKey: string,
+    deleteConversationKey?: boolean
+  ): TAssistantResponseMessages => {
+    try {
+      if (Object.hasOwn(conversations.value, conversationKey)) {
+        if (deleteConversationKey) delete conversations.value[conversationKey];
+        else conversations.value[conversationKey] = [];
+      }
+    } catch (error) {
+      console.error(`clearStoredMessagesInConversation at useAssistantStore: ${error}`);
+    } finally {
+      return storedConversations.value[conversationKey];
+    }
+  };
+
+  return { store, storedMessage, storedConversations, clearStoredMessagesInConversation };
 });

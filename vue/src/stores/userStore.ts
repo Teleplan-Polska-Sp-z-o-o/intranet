@@ -8,12 +8,8 @@ export const useUserStore = defineStore("user", () => {
   const user = ref<IUserEntity>(new UserEntity());
   const userToken = ref<string>("");
 
-  // const set = (data: IUser | IUserEntity): boolean => {
   const set = (data: IUserEntity): boolean => {
     try {
-      // user.value.id = data.id;
-      // user.value.username = data.username;
-      // user.value.domain = data.domain;
       user.value = new UserEntity().buildFromIUserEntity(data);
 
       localStorage.setItem("user", JSON.stringify(user.value));
@@ -37,13 +33,10 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  // const info = (): IUser | false => {
   const info = (): IUserEntity | false => {
     try {
       const json: string | null = localStorage.getItem("user");
       if (!json) return false;
-      //throw new Error("No user data found in localStorage");
-      // const user: IUser = JSON.parse(json);
       const user: IUserEntity = JSON.parse(json);
       return user;
     } catch (error) {
