@@ -175,7 +175,8 @@ const handleTable = (newValue: ILevel): void => {
                     class="bg-surface-2 pa-4 ma-1"
                   ></iframe-ai-assistant> -->
                   <custom-ai-assistant
-                    :tab="'assistant'"
+                    tab="assistant"
+                    assistantKey="documents"
                     class="bg-surface-2 pa-4 ma-1"
                   ></custom-ai-assistant>
                 </v-window-item>

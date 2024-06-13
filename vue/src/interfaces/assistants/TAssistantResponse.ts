@@ -1,5 +1,4 @@
 type TAssistantResponseChunk = {
-  [key: string]: string | undefined;
   type?: string;
   data?: string;
   references?: string;
@@ -7,9 +6,15 @@ type TAssistantResponseChunk = {
   message?: string;
 };
 
-type TAssistantResponseMessage = Array<TAssistantResponseChunk>;
+type TAssistantResponseMessage = {
+  [key: string]: Array<TAssistantResponseChunk>;
+};
 
 type TAssistantResponseMessages = Array<TAssistantResponseMessage>;
+
+type TAssistantResponseConversations = {
+  [key: string]: TAssistantResponseMessages;
+};
 
 type ICreateConversation = {
   data: {
@@ -23,5 +28,6 @@ export type {
   TAssistantResponseChunk,
   TAssistantResponseMessage,
   TAssistantResponseMessages,
+  TAssistantResponseConversations,
   ICreateConversation,
 };
