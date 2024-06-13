@@ -99,6 +99,7 @@ const uaT = {
             header: {
               name: "Назва",
               type: "Тип",
+              confidentiality: "Конфіденційність",
               description: "Опис",
               language: "Мови (файли)",
               revision: "Ревізія",

@@ -43,9 +43,10 @@ const tPath = `tools.matrix.tabs.${tab.value}.table`;
 const headers: any = [
   { title: t(`${tPath}.header.name`), align: "start", key: "name", minWidth: 200 },
   { title: t(`${tPath}.header.type`), align: "start", key: "type" },
-  { title: t(`${tPath}.header.description`), key: "description" },
+  { title: t(`${tPath}.header.confidentiality`), key: "confidentiality" },
+  { title: t(`${tPath}.header.description`), key: "description", sortable: false },
   { title: t(`${tPath}.header.language`), key: "custom", sortable: false },
-  { title: t(`${tPath}.header.revision`), key: "revision", sortable: false },
+  { title: t(`${tPath}.header.revision`), key: "revision" },
   { title: t(`${tPath}.header.subcategory`), key: "custom2", sortable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];

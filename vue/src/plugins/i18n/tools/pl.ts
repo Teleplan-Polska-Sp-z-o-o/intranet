@@ -100,6 +100,7 @@ const plT = {
             header: {
               name: "Nazwa",
               type: "Typ",
+              confidentiality: "Poufność",
               description: "Opis",
               language: "Języki (pliki)",
               revision: "Wersja",

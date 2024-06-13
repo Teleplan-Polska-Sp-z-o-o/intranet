@@ -99,6 +99,7 @@ const enT = {
             header: {
               name: "Name",
               type: "Type",
+              confidentiality: "Confidentiality",
               description: "Description",
               language: "Languages (files)",
               revision: "Revision",
