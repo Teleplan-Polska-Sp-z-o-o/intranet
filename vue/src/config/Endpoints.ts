@@ -14,6 +14,7 @@ enum Endpoints {
   DocumentDepartment = "/api/document/department",
   DocumentCategory = "/api/document/category",
   DocumentSubcategory = "/api/document/subcategory",
+  Competence = "/api/competence",
 
   // editor
   News = "/api/editor/news",

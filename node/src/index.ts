@@ -21,6 +21,7 @@ import { editorRoutes } from "./routes/editorRoutes";
 import { changeRoutes } from "./routes/changeRoutes";
 import { notificationRoutes } from "./routes/notificationRoutes";
 import { serverRoutes } from "./routes/serverRoutes";
+import { competenceRoutes } from "./routes/competenceRoutes";
 
 import path from "path";
 
@@ -31,6 +32,7 @@ app.use("/api/editor", editorRoutes);
 app.use("/api/change", changeRoutes);
 app.use("/api/notification", notificationRoutes);
 app.use("/api/server", serverRoutes);
+app.use("/api/competence", competenceRoutes);
 
 // import { msalRoutes } from "./routes/msalRoutes";
 // app.use("/api/msal", msalRoutes);
