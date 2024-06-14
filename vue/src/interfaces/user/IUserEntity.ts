@@ -1,4 +1,5 @@
 import { TConfidentiality } from "./TConfidentiality";
+import { LDAPUser } from "./TLDAP";
 
 interface IUserEntity {
   domain: string;
@@ -20,6 +21,7 @@ interface IUserEntity {
     position: string | null;
     department: string | null;
     decisionMaker: boolean | null;
+    LDAPObject: LDAPUser | null;
   };
 }
 

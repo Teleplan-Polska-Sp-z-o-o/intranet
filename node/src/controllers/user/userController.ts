@@ -11,6 +11,7 @@ import { IPermission } from "../../interfaces/user/IPermission";
 import { UserInformation } from "../../models/user/UserInformation";
 import { DataSource, EntityManager } from "typeorm";
 import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
+import { LDAPUser } from "../../interfaces/user/TLDAP";
 
 const findUser = async (
   where: string | number,
@@ -100,14 +101,14 @@ const userAuth = async (req: Request, res: Response) => {
 
     ldap.username.toLowerCase();
 
-    const authenticated = await ldap.authenticate();
-    if (!authenticated)
+    const ldapUser = await ldap.authenticate();
+    if (!ldapUser)
       return res.status(204).json({
         message: "Invalid username or password.",
         statusMessage: HttpResponseMessage.POST_ERROR,
       });
 
-    const token = ldap.generateJwt(authenticated);
+    const token = ldap.generateJwt(ldapUser);
 
     // Check if user exist in database
     let userExist: UserEntity | null = null;
@@ -131,7 +132,9 @@ const userAuth = async (req: Request, res: Response) => {
 
       const settings = await dataSource.getRepository(UserSettings).save(new UserSettings());
 
-      const info = await dataSource.getRepository(UserInfo).save(new UserInfo().build());
+      const info = await dataSource
+        .getRepository(UserInfo)
+        .save(new UserInfo().build(new UserInformation(), ldapUser));
 
       await dataSource
         .getRepository(UserEntity)
@@ -145,12 +148,23 @@ const userAuth = async (req: Request, res: Response) => {
         statusMessage: HttpResponseMessage.POST_SUCCESS,
       });
     } else {
-      if (!userExist.info) {
-        const info = await dataSource.getRepository(UserInfo).save(new UserInfo().build());
-
+      const hasTruthyValue = Object.values(userExist.info).some((value) => Boolean(value));
+      if (!userExist.info || !hasTruthyValue) {
+        const info = await dataSource
+          .getRepository(UserInfo)
+          .save(new UserInfo().build(new UserInformation(), ldapUser));
         userExist.info = info;
-
         await dataSource.getRepository(UserEntity).save(userExist);
+      }
+
+      if (!userExist.info.LDAPObject) {
+        let info = await dataSource
+          .getRepository(UserInfo)
+          .findOne({ where: { id: userExist.id } });
+        info = await dataSource
+          .getRepository(UserInfo)
+          .save(info.sanitizeAndAssignLDAPObject(ldapUser));
+        await dataSource.getRepository(UserEntity).save((userExist.info = info));
       }
 
       return res.status(200).json({
@@ -206,7 +220,7 @@ const editUser = async (req: Request, res: Response) => {
       } else {
         const userInfoRecord = await transactionalEntityManager
           .getRepository(UserInfo)
-          .save(new UserInfo().build());
+          .save(new UserInfo().build(new UserInformation()));
         user.info = userInfoRecord;
         await transactionalEntityManager.getRepository(UserEntity).save(user);
 

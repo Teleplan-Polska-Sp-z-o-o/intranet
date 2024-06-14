@@ -85,6 +85,7 @@ const submitLogin = (): void => {
       .post(reqUrl, reqData)
       .then(function (response: any) {
         userStore.set(new UserEntity().buildFromIUserEntity(response.data.userExist));
+        console.log(userStore.info());
         userStore.setToken(response.data.token);
 
         const permission = { ...response.data.userExist.permission };

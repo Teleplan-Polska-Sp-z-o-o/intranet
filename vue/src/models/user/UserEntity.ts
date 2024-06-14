@@ -1,5 +1,6 @@
 import { IUserEntity } from "../../interfaces/user/IUserEntity";
 import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
+import { LDAPUser } from "../../interfaces/user/TLDAP";
 
 export class UserEntity implements IUserEntity {
   domain: string;
@@ -21,6 +22,7 @@ export class UserEntity implements IUserEntity {
     position: string | null;
     department: string | null;
     decisionMaker: boolean | null;
+    LDAPObject: LDAPUser | null;
   };
 
   constructor() {
@@ -35,7 +37,7 @@ export class UserEntity implements IUserEntity {
     };
     this.settings = { theme: "", language: "", id: 0 };
     this.username = "";
-    this.info = { position: null, department: null, decisionMaker: null };
+    this.info = { position: null, department: null, decisionMaker: null, LDAPObject: null };
   }
 
   public buildFromIUserEntity(entity: IUserEntity): UserEntity {
