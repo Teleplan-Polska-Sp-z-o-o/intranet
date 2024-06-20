@@ -16,7 +16,7 @@ const enT = {
     chart: {
       post: {
         title: "Analyzing the Data",
-        subtitle: "Upload Overview by user and quantity",
+        subtitle: "Upload Overview by user and quantity from the past six months",
       },
     },
     chips: {

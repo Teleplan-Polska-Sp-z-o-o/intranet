@@ -2,15 +2,7 @@ import { authenticate } from "ldap-authentication";
 import { ILogin } from "../../interfaces/user/ILogin";
 import { getLDAPConfig } from "../../config/ldap";
 import { serverConfig } from "../../config/server";
-import {
-  JwtPayload,
-  Secret,
-  SignOptions,
-  VerifyErrors,
-  VerifyOptions,
-  sign,
-  verify,
-} from "jsonwebtoken";
+import { JwtPayload, Secret, SignOptions, sign, verify } from "jsonwebtoken";
 
 class LDAP {
   username: string;

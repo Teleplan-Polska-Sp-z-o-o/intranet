@@ -17,6 +17,9 @@ import {
   Legend,
   Colors,
 } from "chart.js";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 Chart.register(
   LinearScale,
@@ -69,29 +72,48 @@ class ChartData {
 }
 
 const processDocumentEntities = (entities: Array<IDocumentEntity>): Array<ChartData> => {
-  const lastSixMonths = getLastSixMonths();
-  const userStats: { [key: string]: number[] } = {};
+  try {
+    const lastSixMonths = getLastSixMonths();
+    const userStats: { [key: string]: number[] } = {};
 
-  entities.forEach((doc) => {
-    const { postBy, postByDate } = doc;
-    if (postBy && postByDate) {
-      const [day, month, year] = postByDate.split("/").map(Number);
-      const postDate = new Date(year, month - 1, day);
-      const monthYear = postDate.toLocaleString("default", { month: "long" });
+    entities.forEach((doc) => {
+      const { postBy, postByDate } = doc;
+      if (postBy && postByDate) {
+        const [day, month, year] = postByDate.split("/").map(Number);
+        const postDate = new Date(year, month - 1, day);
+        const monthKey = postDate.toLocaleString("en-US", { month: "short" }).toLocaleLowerCase();
 
-      if (!userStats[postBy]) {
-        userStats[postBy] = Array(6).fill(0);
+        if (!userStats[postBy]) {
+          userStats[postBy] = Array(6).fill(0);
+        }
+
+        const monthIndex = lastSixMonths.indexOf(monthKey);
+        if (monthIndex !== -1 && postDate.getFullYear() === new Date().getFullYear()) {
+          userStats[postBy][monthIndex]++;
+        }
       }
+    });
 
-      const monthIndex = lastSixMonths.indexOf(monthYear);
-      if (monthIndex !== -1 && postDate.getFullYear() === new Date().getFullYear()) {
-        userStats[postBy][monthIndex]++;
-      }
-    }
-  });
-
-  return Object.entries(userStats).map(([postBy, data]) => new ChartData(postBy, data));
+    return Object.entries(userStats).map(([postBy, data]) => new ChartData(postBy, data));
+  } catch (error) {
+    console.log(`processDocumentEntities at SimpleDocumentsPostedChart, ${error}`);
+    return [];
+  }
 };
+
+// labels - months from past 6 months
+const getLastSixMonths = () => {
+  const months: Array<string> = [];
+  const today: Date = new Date();
+  for (let i = 0; i < 6; i++) {
+    const month: Date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    months.push(month.toLocaleString("en-US", { month: "short" }).toLocaleLowerCase());
+  }
+  return months.reverse();
+};
+
+const lastSixMonths = ref<Array<string>>(getLastSixMonths());
+//
 
 const datasets = ref<Array<ChartData>>([]);
 watch(
@@ -106,25 +128,13 @@ watch(
   { deep: true, immediate: true }
 );
 
-// labels - months from past 6 months
-const getLastSixMonths = () => {
-  const months: Array<string> = [];
-  const today: Date = new Date();
-  for (let i = 0; i < 6; i++) {
-    const month: Date = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    months.push(month.toLocaleString("default", { month: "long" }));
-  }
-  return months.reverse();
-};
-
-const lastSixMonths = ref<Array<string>>(getLastSixMonths());
-//
-
 // data config
-const data = computed<{ labels: Array<string>; datasets: Array<ChartData> }>(() => ({
-  labels: lastSixMonths.value,
-  datasets: datasets.value,
-}));
+const data = computed<{ labels: Array<string>; datasets: Array<ChartData> }>(() => {
+  return {
+    labels: lastSixMonths.value.map((monthKey) => t(`common.months.${monthKey}`)),
+    datasets: datasets.value,
+  };
+});
 
 const options = ref({
   scales: {

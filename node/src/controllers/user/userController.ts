@@ -11,7 +11,6 @@ import { IPermission } from "../../interfaces/user/IPermission";
 import { UserInformation } from "../../models/user/UserInformation";
 import { DataSource, EntityManager } from "typeorm";
 import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
-import { LDAPUser } from "../../interfaces/user/TLDAP";
 
 const findUser = async (
   where: string | number,

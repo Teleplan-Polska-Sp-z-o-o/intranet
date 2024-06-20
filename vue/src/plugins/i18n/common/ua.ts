@@ -96,23 +96,20 @@ const uaC = {
           },
         },
       },
-      tool: {
-        documents: {
-          name: "Документи",
-          tabs: {
-            my_documents: "МОЇ ДОКУМЕНТИ",
-            my_favorites: "МОЇ УЛЮБЛЕНІ",
-            all_documents: "УСІ ДОКУМЕНТИ",
-            recently_browsed: "ОСТАННЄ ПЕРЕГЛЯНУТЕ",
-          },
-        },
-        matrix: {
-          name: "Документи",
-          tabs: {
-            departments: "ВІДДІЛИ",
-          },
-        },
-      },
+    },
+    months: {
+      jan: "Січень",
+      feb: "Лютий",
+      mar: "Березень",
+      apr: "Квітень",
+      may: "Травень",
+      jun: "Червень",
+      jul: "Липень",
+      aug: "Серпень",
+      sep: "Вересень",
+      oct: "Жовтень",
+      nov: "Листопад",
+      dec: "Грудень",
     },
     status_message: {
       post_error: "Помилка під час обробки вашої дії.",

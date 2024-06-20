@@ -1,4 +1,4 @@
-type LDAPUser = {
+type TLDAPUser = {
   dn: string;
   objectClass: string[];
   cn: string;
@@ -49,6 +49,7 @@ type LDAPUser = {
   mobile: string;
   esaLastSuccessfulAuthentication: string;
   esaLastFailedAuthentication: string;
+  sIDHistory?: string;
 };
 
-export { LDAPUser };
+export { TLDAPUser };

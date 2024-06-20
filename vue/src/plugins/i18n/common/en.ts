@@ -96,23 +96,20 @@ const enC = {
           },
         },
       },
-      // tool: {
-      //   documents: {
-      //     name: "Documents",
-      //     tabs: {
-      //       my_documents: "MY DOCUMENTS",
-      //       my_favorites: "MY FAVORITES",
-      //       all_documents: "ALL DOCUMENTS",
-      //       recently_browsed: "RECENTLY BROWSED",
-      //     },
-      //   },
-      //   matrix: {
-      //     name: "Matrix",
-      //     tabs: {
-      //       departments: "DEPARTMENTS",
-      //     },
-      //   },
-      // },
+    },
+    months: {
+      jan: "January",
+      feb: "February",
+      mar: "March",
+      apr: "April",
+      may: "May",
+      jun: "June",
+      jul: "July",
+      aug: "August",
+      sep: "September",
+      oct: "October",
+      nov: "November",
+      dec: "December",
     },
     status_message: {
       post_error: "An error occurred while processing your action.",

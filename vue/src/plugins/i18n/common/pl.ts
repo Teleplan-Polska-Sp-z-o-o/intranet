@@ -96,23 +96,20 @@ const plC = {
           },
         },
       },
-      tool: {
-        documents: {
-          name: "Dokumenty",
-          tabs: {
-            my_documents: "MOJE DOKUMENTY",
-            my_favorites: "MOJE ULUBIONE",
-            all_documents: "WSZYSTKIE DOKUMENTY",
-            recently_browsed: "OSTATNIO PRZEGLĄDANE",
-          },
-        },
-        matrix: {
-          name: "Macierz",
-          tabs: {
-            departments: "DZIAŁY",
-          },
-        },
-      },
+    },
+    months: {
+      jan: "Styczeń",
+      feb: "Luty",
+      mar: "Marzec",
+      apr: "Kwiecień",
+      may: "Maj",
+      jun: "Czerwiec",
+      jul: "Lipiec",
+      aug: "Sierpień",
+      sep: "Wrzesień",
+      oct: "Październik",
+      nov: "Listopad",
+      dec: "Grudzień",
     },
     status_message: {
       post_error: "Wystąpił błąd podczas przetwarzania akcji.",

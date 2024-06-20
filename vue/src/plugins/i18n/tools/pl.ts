@@ -16,7 +16,7 @@ const plT = {
     chart: {
       post: {
         title: "Analiza Danych",
-        subtitle: "Przegląd uploadów według użytkownika i ilości",
+        subtitle: "Przegląd uploadów według użytkownika i ilości z ostatnich sześciu miesięcy",
       },
     },
     chips: {

@@ -113,6 +113,45 @@ To facilitate seamless development, it's important to note that Vue and Node app
 
    Now enter GitHub username and key instead of password.
 
+5. List all branches:
+
+   ```bash
+   sudo git branch -a
+   ```
+
+6. Switch to an existing branch:
+
+   Note: Replace <branch_name> with the name of the branch you want to switch to.
+
+   ```bash
+   sudo git checkout <branch_name>
+   ```
+
+7. Create and switch to a new branch:
+
+   Note: Replace <new_branch> with the name of the new branch.
+
+   ```bash
+   sudo git checkout -b <new_branch>
+   ```
+
+8. Merge the specified branch into the current branch:
+
+   Note: Replace <source_branch> with the name of the branch you want to merge into <target_branch>. Ensure you are on the branch you want to merge into.
+
+   ```bash
+   sudo git merge <source_branch>
+   ```
+
+   Note: If there are merge conflicts, you will need to resolve them manually. Git will mark the conflicts in the affected files. After resolving conflicts, add the changed files and commit the merge.
+
+   ```bash
+   sudo git add <conflicted_files>
+   sudo git commit -m "Merge branch '<source_branch>' into <target_branch>"
+   ```
+
+   Note: Ensure to push your changes after resolving conflicts.
+
 ## API
 
 To access exposed endpoints, you need to include an API key in the query parameters of your request. Here's how you can use the API key query parameter:
