@@ -96,23 +96,23 @@ const enC = {
           },
         },
       },
-      tool: {
-        documents: {
-          name: "Documents",
-          tabs: {
-            my_documents: "MY DOCUMENTS",
-            my_favorites: "MY FAVORITES",
-            all_documents: "ALL DOCUMENTS",
-            recently_browsed: "RECENTLY BROWSED",
-          },
-        },
-        matrix: {
-          name: "Matrix",
-          tabs: {
-            departments: "DEPARTMENTS",
-          },
-        },
-      },
+      // tool: {
+      //   documents: {
+      //     name: "Documents",
+      //     tabs: {
+      //       my_documents: "MY DOCUMENTS",
+      //       my_favorites: "MY FAVORITES",
+      //       all_documents: "ALL DOCUMENTS",
+      //       recently_browsed: "RECENTLY BROWSED",
+      //     },
+      //   },
+      //   matrix: {
+      //     name: "Matrix",
+      //     tabs: {
+      //       departments: "DEPARTMENTS",
+      //     },
+      //   },
+      // },
     },
     status_message: {
       post_error: "An error occurred while processing your action.",

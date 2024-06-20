@@ -26,6 +26,7 @@ const props = defineProps<{
 
   tableAdd?: true;
   tableDelete?: true;
+  deleteTMsg?: string;
   tableEdit?: true;
 
   tableDialogComponent?: any;
@@ -325,7 +326,7 @@ const handleFilters = (filters: { callback: Function }) => {
           <table-dialog
             v-model="dialogDelete"
             variant="Delete"
-            delete-t-msg="deleteDocumentConfirmation"
+            :deleteTMsg="props.deleteTMsg"
             :index="editedIndex"
             :loading="dialogDeleteLoading"
             @close="closeDelete"

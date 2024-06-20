@@ -121,6 +121,21 @@ export const toolRoutes = {
           path: "",
         },
       },
+      children: [
+        {
+          path: "browse/:tab/:no?",
+          name: "browseMatrix",
+          component: DocumentsView,
+          meta: {
+            read: true,
+            write: false,
+            control: false,
+            breadcrumbs: {
+              include: false,
+            },
+          },
+        },
+      ],
     },
     {
       path: "change",

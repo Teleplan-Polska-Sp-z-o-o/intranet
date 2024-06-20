@@ -19,7 +19,7 @@ const disable = ref<boolean>(props.disable ?? false);
 const confirmDisable = ref<boolean>(props.confirmDisable ?? false);
 const index = ref<number>(props.index);
 const loading = ref<boolean>(props.loading);
-const deleteTMsg: string | undefined = props.deleteTMsg;
+const deleteTMsg: string | undefined = props.deleteTMsg || undefined;
 const showBtn = props.showBtn;
 
 const title = computed<string>(() => {

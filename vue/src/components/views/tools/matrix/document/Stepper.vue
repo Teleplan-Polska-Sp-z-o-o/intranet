@@ -7,6 +7,8 @@ import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEnt
 import { nodeConfig } from "../../../../../config/env";
 import axios from "axios";
 import { FileItem } from "../../../../../models/document/FileItem";
+import { CompetenceManager } from "../../../../../models/document/CompetenceManager";
+import { ICompetence } from "../../../../../interfaces/document/ICompetence";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -38,6 +40,14 @@ watchEffect(() => {
 const files = ref<Array<IFileItem>>([]);
 
 const retrievedFiles = ref<Array<IFileItem>>([]);
+
+const competences = ref<Array<ICompetence>>([]);
+
+(async () => {
+  const competenceManager: CompetenceManager = new CompetenceManager();
+  const options: Array<ICompetence> = await competenceManager.get();
+  competences.value = options;
+})();
 
 (async () => {
   const docType = document.value.type;
@@ -86,6 +96,7 @@ const newDocData = computed(() => {
     description: document.value.description,
     revision: document.value.revision,
     confidentiality: document.value.confidentiality,
+    competences: document.value.competences,
 
     files: files.value,
   };
@@ -143,7 +154,7 @@ watchEffect(() => {
           <v-select
             v-model="document.type"
             label="Type"
-            :items="['Instruction', 'Visual']"
+            :items="['Instruction', 'Visual', 'MSD']"
             variant="underlined"
           ></v-select>
           <v-select
@@ -163,6 +174,18 @@ watchEffect(() => {
             variant="underlined"
             label="Revision"
           ></v-text-field>
+          <v-autocomplete
+            variant="underlined"
+            label="Competences"
+            :items="competences"
+            item-title="name"
+            item-value="id"
+            clearable
+            chips
+            multiple
+            :modelValue="document.competences.length > 0 ? document.competences : null"
+            @update:modelValue="(value: Array<string>) => (document.competences = value)"
+          ></v-autocomplete>
         </v-card>
       </v-stepper-window-item>
 

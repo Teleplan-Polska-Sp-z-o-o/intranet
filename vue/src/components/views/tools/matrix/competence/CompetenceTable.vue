@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import DialogInput from "../../../../tools/DialogInput.vue";
 import { useI18n } from "vue-i18n";
@@ -16,17 +16,19 @@ const props = defineProps<{
 const manager = ref<CompetenceManager>(new CompetenceManager());
 
 const { t } = useI18n();
+const tab = ref<string>(props.tab);
+watchEffect(() => (tab.value = props.tab));
 const tPath = computed(() => {
-  return `tools.matrix.tabs.${props.tab}.table`;
+  return `tools.matrix.tabs.${tab.value}.table`;
 });
 
-const headers = ref<any>([
-  { title: t(`${tPath}.header.name`), align: "start", key: "name" },
-  { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
+const headers = computed<any>(() => [
+  { title: t(`${tPath.value}.header.name`), align: "start", key: "name" },
+  { title: t(`${tPath.value}.header.actions`), key: "actions", sortable: false },
 ]);
 
 const toolbarTitle = computed(() => {
-  return t(`${tPath}.toolbar`);
+  return t(`${tPath.value}.toolbar`);
 });
 const searchTitle = t(`tools.common.search`);
 
@@ -35,13 +37,13 @@ const reqData = ref<any>(null);
 const handleSaveData = (data: any) => {
   try {
     if (!data) return;
-    const formData: any = new FormData();
+    const formData: FormData = new FormData();
 
-    formData.append("id", JSON.stringify(data.id));
-    formData.append("name", JSON.stringify(data.name));
-    const username = useUserStore().info();
-    if (!username) throw new Error(`username evaluates to false.`);
-    formData.append("issuer", JSON.stringify(username.username));
+    formData.append("id", JSON.stringify(data.item.id));
+    formData.append("name", JSON.stringify(data.model));
+    const user = useUserStore().info();
+    if (!user) throw new Error(`user evaluates to false.`);
+    formData.append("issuer", JSON.stringify(user.username));
 
     reqData.value = formData;
   } catch (error) {

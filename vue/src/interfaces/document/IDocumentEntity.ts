@@ -11,9 +11,13 @@ interface IDocumentEntity {
     name: string;
     id: number;
   };
-  competence: string | null;
+  competences: Array<string>;
   languages: Array<string>;
   confidentiality: TConfidentiality;
+  postBy: string;
+  postByDate: string;
+  putBy: string | null;
+  putByDate: string | null;
 }
 
 export type { IDocumentEntity };

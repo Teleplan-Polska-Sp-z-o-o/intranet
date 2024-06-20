@@ -12,6 +12,7 @@ import alertResponseStatus from "../components/common/alertResponseStatus.vue";
 import { IResponseStatus } from "../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../models/common/ResponseStatus";
 import { IUserEntity } from "../interfaces/user/IUserEntity";
+import { Helper } from "../models/common/Helper";
 
 const route = useRoute();
 const params = route.params;
@@ -20,7 +21,7 @@ const loading = ref<boolean>(true);
 
 const docManager = new DocumentManager();
 
-const equalConfidentiality = ref<boolean>(false);
+const confidentialityPassed = ref<boolean>(false);
 const responseStatus = ref<IResponseStatus | null>(null);
 const test = async () => {
   try {
@@ -28,15 +29,18 @@ const test = async () => {
       params.fileUUID as string,
       params.fileLangs as string
     );
-    console.log("desiredDocument", desiredDocument);
 
     const userInfo: IUserEntity | false = useUserStore().info();
     if (!userInfo) throw new Error("unknown");
 
-    equalConfidentiality.value =
-      desiredDocument.confidentiality === userInfo.permission.confidentiality;
+    const confidentialityRestrictions = Helper.confidentialRestriction(
+      desiredDocument.confidentiality
+    );
+    confidentialityPassed.value = confidentialityRestrictions?.includes(
+      userInfo.permission.confidentiality
+    );
 
-    if (!equalConfidentiality.value) throw new Error("unauthorized");
+    if (!confidentialityPassed.value) throw new Error("unauthorized");
 
     return;
   } catch (error) {
@@ -115,7 +119,7 @@ const handleDocumentRender = (): void => {
       >
       </v-btn>
 
-      <v-col class="pdf" v-if="equalConfidentiality && !responseStatus">
+      <v-col class="pdf" v-if="confidentialityPassed && !responseStatus">
         <vue-pdf-embed
           annotation-layer
           text-layer

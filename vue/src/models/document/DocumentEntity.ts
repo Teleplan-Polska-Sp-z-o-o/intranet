@@ -9,9 +9,13 @@ export class DocumentEntity implements IDocumentEntity {
   description: string;
   revision: number;
   subcategory: { name: string; id: number };
-  competence: string | null;
+  competences: string[];
   languages: string[];
   confidentiality: TConfidentiality;
+  postBy: string;
+  postByDate: string;
+  putBy: string | null;
+  putByDate: string | null;
 
   constructor() {
     this.id = 0;
@@ -21,8 +25,12 @@ export class DocumentEntity implements IDocumentEntity {
     this.description = "";
     this.revision = 0;
     this.subcategory = { name: "", id: 0 };
-    this.competence = null;
+    this.competences = [];
     this.languages = [];
     this.confidentiality = "public";
+    this.postBy = "";
+    this.postByDate = "";
+    this.putBy = null;
+    this.putByDate = null;
   }
 }

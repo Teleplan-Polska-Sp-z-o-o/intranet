@@ -66,7 +66,7 @@ const tools = [
   {
     id: 4,
     name: "matrix",
-    href: "/tool/matrix",
+    href: "/tool/matrix/browse/departments",
     icon: "database",
     image: "../tools/matrix.png",
     permissions: {

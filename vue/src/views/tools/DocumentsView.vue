@@ -3,6 +3,7 @@ import { ref, watch } from "vue";
 import ChipFilters from "../../components/tools/ChipFilters.vue";
 import AllInstructionsTable from "../../components/views/tools/documents/all/AllInstructionsTable.vue";
 import AllVisualsTable from "../../components/views/tools/documents/all/AllVisualsTable.vue";
+import AllMSDTable from "../../components/views/tools/documents/all/AllMSDTable.vue";
 import CustomAiAssistant from "../../components/views/tools/documents/assistant/CustomAssistant.vue";
 import { IChips } from "../../interfaces/document/IChips";
 import { ILevel } from "../../interfaces/document/ILevel";
@@ -34,6 +35,11 @@ const tabs = [
   },
   {
     id: 5,
+    name: "msd",
+    icon: "mdi-file-table",
+  },
+  {
+    id: 6,
     name: "assistant",
     icon: "mdi-assistant",
   },
@@ -59,8 +65,11 @@ const getTab = (newTab: string | Array<string>, getNumericValue: boolean): numbe
     case "visuals":
       return getNumericValue ? 4 : "visuals";
 
+    case "msd":
+      return getNumericValue ? 5 : "msd";
+
     case "assistant":
-      return getNumericValue ? 5 : "assistant";
+      return getNumericValue ? 6 : "assistant";
 
     default:
       return getNumericValue ? 3 : "instructions";
@@ -170,6 +179,23 @@ const handleTable = (newValue: ILevel): void => {
                   ></all-visuals-table>
                 </v-window-item>
                 <v-window-item :value="5">
+                  <chip-filters
+                    @chips="handleChips"
+                    :table="table"
+                    :max-level="2"
+                    departmentsSubtitle="category"
+                    programsSubtitle="subcategory"
+                    workstationsSubtitle="subSubcategory"
+                    class="bg-surface-2 mb-5 ma-1"
+                  ></chip-filters>
+                  <all-m-s-d-table
+                    @table="handleTable"
+                    :chips="chips"
+                    :tab="'msd'"
+                    class="bg-surface-2 pa-4 ma-1"
+                  ></all-m-s-d-table>
+                </v-window-item>
+                <v-window-item :value="6">
                   <!-- <iframe-ai-assistant
                     :tab="currentTabName"
                     class="bg-surface-2 pa-4 ma-1"

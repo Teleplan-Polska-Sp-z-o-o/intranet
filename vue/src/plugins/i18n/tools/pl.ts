@@ -8,16 +8,24 @@ const plT = {
       save: "Zapisz",
       ok: "OK",
       search: "Szukaj",
-      deleteItemConfirmation:
-        "Usunięcie tego elementu wpłynie również na wszystkie jego elementy podrzędne.",
+      deleteItemConfirmation: "Czy na pewno chcesz usunąć ten element?",
       deleteDocumentConfirmation:
         "Usunięcie tego dokumentu spowoduje również usunięcie wszystkich powiązanych z nim plików.",
       filters: "Filtruj według zaawansowanych kryteriów",
+    },
+    chart: {
+      post: {
+        title: "Analiza Danych",
+        subtitle: "Przegląd uploadów według użytkownika i ilości",
+      },
     },
     chips: {
       departments: "Działy",
       workstations: "Stanowiska pracy",
       programs: "Programy",
+      category: "Kategoria",
+      subcategory: "Podkategoria",
+      subSubcategory: "Pod-podkategoria",
     },
     documents: {
       name: "Dokumenty",
@@ -57,6 +65,18 @@ const plT = {
               name: "Nazwa",
               description: "Opis",
               view_document: "Zobacz dokument",
+            },
+          },
+        },
+        msd: {
+          name: "Systemy Zarządzania",
+          table: {
+            toolbar: "Systemy Zarządzania",
+            select_lang: "Wybierz Język",
+            header: {
+              name: "Nazwa",
+              description: "Opis",
+              view_document: "Zobacz Dokument",
             },
           },
         },
@@ -105,6 +125,16 @@ const plT = {
               language: "Języki (pliki)",
               revision: "Wersja",
               subcategory: "Podkategoria",
+              actions: "Akcje",
+            },
+          },
+        },
+        competences: {
+          name: "KOMPETENCJE",
+          table: {
+            toolbar: "Kompetencje",
+            header: {
+              name: "Nazwa",
               actions: "Akcje",
             },
           },

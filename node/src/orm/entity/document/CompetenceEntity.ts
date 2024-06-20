@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from "typeorm";
-import { Document } from "./DocumentEntity";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { Helper } from "../../../models/common/Helper";
+import { Utils } from "../../../controllers/common/Utils";
 
 @Entity()
 export class Competence {
@@ -19,8 +19,8 @@ export class Competence {
   @Column()
   putByDate: string | null;
 
-  @OneToMany(() => Document, (document) => document.competence, { nullable: true })
-  documents: Array<Document>;
+  // @OneToMany(() => Document, (document) => document.competence, { nullable: true })
+  // documents: Array<Document>;
 
   constructor() {}
 
@@ -37,9 +37,8 @@ export class Competence {
 
   public put = (name: string, username: string): Competence => {
     this.name = name;
-    this.putBy = username;
-    this.putByDate = Helper.formatDate(new Date(), "competence put");
+    const competence = new Utils().addRecordPutInfo<Competence>(username, this);
 
-    return this;
+    return competence;
   };
 }

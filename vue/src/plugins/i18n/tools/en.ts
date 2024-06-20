@@ -8,15 +8,24 @@ const enT = {
       save: "Save",
       ok: "OK",
       search: "Search",
-      deleteItemConfirmation: "Deleting this item will also affect all of its associated children.",
+      deleteItemConfirmation: "Are you sure you want to delete this item?",
       deleteDocumentConfirmation:
         "Deleting this document will also affect all of its associated files.",
       filters: "Filter by using advanced criteria",
+    },
+    chart: {
+      post: {
+        title: "Analyzing the Data",
+        subtitle: "Upload Overview by user and quantity",
+      },
     },
     chips: {
       departments: "Departments",
       workstations: "Workstations",
       programs: "Programs",
+      category: "Category",
+      subcategory: "Subcategory",
+      subSubcategory: "Sub-subcategory",
     },
     documents: {
       name: "Documents",
@@ -51,6 +60,18 @@ const enT = {
           name: "VISUAL AIDS",
           table: {
             toolbar: "Visual Aids",
+            select_lang: "Select Language",
+            header: {
+              name: "Name",
+              description: "Description",
+              view_document: "View Document",
+            },
+          },
+        },
+        msd: {
+          name: "Management Systems",
+          table: {
+            toolbar: "Management Systems",
             select_lang: "Select Language",
             header: {
               name: "Name",
@@ -104,6 +125,16 @@ const enT = {
               language: "Languages (files)",
               revision: "Revision",
               subcategory: "Subcategory",
+              actions: "Actions",
+            },
+          },
+        },
+        competences: {
+          name: "COMPETENCES",
+          table: {
+            toolbar: "Competences",
+            header: {
+              name: "Name",
               actions: "Actions",
             },
           },

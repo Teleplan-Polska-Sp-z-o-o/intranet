@@ -100,8 +100,6 @@ class DocumentManager {
     const response = await axios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/uuidLangs/${uuid}/${langs}`
     );
-    console.log(response);
-
     return response.data.document;
   };
 }

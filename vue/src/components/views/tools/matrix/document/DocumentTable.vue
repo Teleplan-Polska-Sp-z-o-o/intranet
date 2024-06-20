@@ -11,6 +11,7 @@ import Stepper from "./Stepper.vue";
 import { useI18n } from "vue-i18n";
 import { watchEffect } from "vue";
 import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
+import { useUserStore } from "../../../../../stores/userStore";
 
 const emit = defineEmits(["table", "responseStatus"]);
 
@@ -62,6 +63,7 @@ const handleSaveData = (data: any) => {
   base.description = data.description;
   base.revision = data.revision;
   base.confidentiality = data.confidentiality;
+  base.competences = data.competences;
 
   handleReqData(base, data.files, chips.value);
 };
@@ -70,12 +72,20 @@ const manager = new DocumentManager();
 
 const reqData = ref<any>(null);
 
-const handleReqData = (base: IDocumentEntity, files: Array<IFileItem>, chips: IChips): void => {
+const handleReqData = (
+  base: Partial<IDocumentEntity>,
+  files: Array<IFileItem>,
+  chips: IChips
+): void => {
   const formData: any = new FormData();
+
+  const user = useUserStore().info();
+  if (!user) throw new Error(`user evaluates to false.`);
 
   formData.append("base", JSON.stringify(base));
   formData.append("files", JSON.stringify(files));
   formData.append("target", JSON.stringify(chips));
+  formData.append("issuer", JSON.stringify(user.username));
 
   interface Langs {
     langs: Array<string>;

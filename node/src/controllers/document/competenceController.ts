@@ -131,4 +131,47 @@ const getCompetences = async (_req: Request, res: Response) => {
   }
 };
 
+// const addCompetenceToDocument = async (req: Request, res: Response) => {
+//   try {
+//     const { documentId, competenceId } = req.params;
+
+//     await dataSource.transaction(async (transactionalEntityManager) => {
+//       const document = await transactionalEntityManager.getRepository(Document).findOne({
+//         where: { id: documentId },
+//         relations: ["competences"],
+//       });
+//       if (!document) {
+//         return res.status(404).json({
+//           message: "Document not found",
+//           statusMessage: HttpResponseMessage.GET_ERROR,
+//         });
+//       }
+
+//       const competence = await transactionalEntityManager.getRepository(Competence).findOne({
+//         where: { id: competenceId },
+//       });
+//       if (!competence) {
+//         return res.status(404).json({
+//           message: "Competence not found",
+//           statusMessage: HttpResponseMessage.GET_ERROR,
+//         });
+//       }
+
+//       document.competences.push(competence);
+//       await transactionalEntityManager.getRepository(Document).save(document);
+//     });
+
+//     return res.status(200).json({
+//       message: "Competence added to document successfully.",
+//       statusMessage: HttpResponseMessage.GET_SUCCESS,
+//     });
+//   } catch (error) {
+//     console.error("Error adding competence to document: ", error);
+//     return res.status(500).json({
+//       message: "Unknown error occurred. Failed to add competence to document.",
+//       statusMessage: HttpResponseMessage.UNKNOWN,
+//     });
+//   }
+// };
+
 export { addCompetence, editCompetence, removeCompetence, getCompetences };

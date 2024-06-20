@@ -1,3 +1,5 @@
+import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
+
 class Helper {
   constructor() {}
 
@@ -51,6 +53,29 @@ class Helper {
 
     const formattedDate: string = `${day}/${month}/${year}`;
     return formattedDate;
+  };
+
+  /**
+   * Takes confidentiality level and returns Array of unrestricted confidentiality's.
+   * Example input 'restricted' returns ["public", "restricted"] which means - Person with confidentiality 'restricted' can access content with confidentiality 'public' and 'restricted'.
+   * @param {TConfidentiality} confidentiality String representing confidentiality.
+   * @returns {Array<string>} Restricted confidentiality's.
+   */
+  public static confidentialRestriction = (confidentiality: TConfidentiality): Array<string> => {
+    try {
+      switch (confidentiality) {
+        case "restricted":
+          return ["restricted", "secret"];
+        case "secret":
+          return ["secret"];
+
+        default:
+          return ["public", "restricted", "secret"];
+      }
+    } catch (error) {
+      console.error(`confidentialRestriction at Helper, ${error}`);
+      return [];
+    }
   };
 }
 

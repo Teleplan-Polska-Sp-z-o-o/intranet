@@ -16,19 +16,19 @@ class WebsocketConnections {
           `${nodeConfig.origin?.replace("http", "ws")}:${nodeConfig.port}/`
         );
         WebsocketConnections.instance.onopen = () => {
-          console.log(`WebSocket connection established, ${user.username}`);
+          console.log(`WebSocket connection established.`);
           WebsocketConnections.instance.send(JSON.stringify({ user }));
         };
 
         WebsocketConnections.instance.onerror = () => {
-          console.error(`WebSocket error`);
+          console.error(`WebSocket connection error.`);
 
           const webSocketStore = useWebsocketStore();
           webSocketStore.indicateWebSocketClosureState(WebsocketConnections.instance.readyState);
         };
 
         WebsocketConnections.instance.onclose = () => {
-          console.error(`WebSocket closing`);
+          console.warn(`WebSocket connection closing.`);
           const webSocketStore = useWebsocketStore();
           webSocketStore.indicateWebSocketClosureState(WebsocketConnections.instance.readyState);
         };

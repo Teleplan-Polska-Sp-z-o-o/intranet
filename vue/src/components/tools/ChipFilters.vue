@@ -14,6 +14,10 @@ const emit = defineEmits(["chips"]);
 const props = defineProps<{
   table: ILevel | undefined;
   maxLevel: number;
+  departmentsSubtitle?: string;
+  programsSubtitle?: string;
+  workstationsSubtitle?: string;
+  bothSubtitles?: boolean;
 }>();
 
 const chips = ref<IChips>(new Chips());
@@ -39,7 +43,9 @@ const { t } = useI18n();
 const chipGroups = computed(() => [
   {
     id: 0,
-    subtitle: t("tools.chips.departments"),
+    subtitle: props.bothSubtitles
+      ? `${t(`tools.chips.departments`)} / ${t(`tools.chips.${props.departmentsSubtitle}`)}`
+      : t(`tools.chips.${props.departmentsSubtitle ?? "departments"}`),
     chipsIf: departments.value,
     chips: departments.value,
     get chipsModel() {
@@ -54,7 +60,9 @@ const chipGroups = computed(() => [
   },
   {
     id: 1,
-    subtitle: t("tools.chips.programs"),
+    subtitle: props.bothSubtitles
+      ? `${t(`tools.chips.programs`)} / ${t(`tools.chips.${props.programsSubtitle}`)}`
+      : t(`tools.chips.${props.programsSubtitle ?? "programs"}`),
     chipsIf: chips.value.departmentName,
     chips: categories.value,
     get chipsModel() {
@@ -68,7 +76,9 @@ const chipGroups = computed(() => [
   },
   {
     id: 2,
-    subtitle: t("tools.chips.workstations"),
+    subtitle: props.bothSubtitles
+      ? `${t(`tools.chips.workstations`)} / ${t(`tools.chips.${props.workstationsSubtitle}`)}`
+      : t(`tools.chips.${props.workstationsSubtitle ?? "workstations"}`),
     chipsIf: chips.value.categoryName,
     chips: subcategories.value,
     get chipsModel() {

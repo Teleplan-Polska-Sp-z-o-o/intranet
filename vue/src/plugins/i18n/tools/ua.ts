@@ -8,15 +8,24 @@ const uaT = {
       save: "Зберегти",
       ok: "OK",
       search: "Пошук",
-      deleteItemConfirmation: "Видалення цього елемента також вплине на всі його дочірні елементи.",
+      deleteItemConfirmation: "Ви впевнені, що хочете видалити цей елемент?",
       deleteDocumentConfirmation:
         "Видалення цього документа також призведе до видалення всіх його пов'язаних файлів.",
       filters: "Фільтрувати за допомогою розширених критеріїв",
+    },
+    chart: {
+      post: {
+        title: "Аналіз Даних",
+        subtitle: "Огляд завантажень за користувачем і кількістю",
+      },
     },
     chips: {
       departments: "Відділи",
       workstations: "Робочі місця",
       programs: "Програми",
+      category: "Категорія",
+      subcategory: "Підкатегорія",
+      subSubcategory: "Під-підкатегорія",
     },
     documents: {
       name: "Документи",
@@ -56,6 +65,18 @@ const uaT = {
               name: "Назва",
               description: "Опис",
               view_document: "Переглянути документ",
+            },
+          },
+        },
+        msd: {
+          name: "Системи Управління",
+          table: {
+            toolbar: "Системи Управління",
+            select_lang: "Виберіть Мову",
+            header: {
+              name: "Назва",
+              description: "Опис",
+              view_document: "Переглянути Документ",
             },
           },
         },
@@ -104,6 +125,16 @@ const uaT = {
               language: "Мови (файли)",
               revision: "Ревізія",
               subcategory: "Підкатегорія",
+              actions: "Дії",
+            },
+          },
+        },
+        competences: {
+          name: "КОМПЕТЕНЦІЇ",
+          table: {
+            toolbar: "Компетенції",
+            header: {
+              name: "Назва",
               actions: "Дії",
             },
           },
