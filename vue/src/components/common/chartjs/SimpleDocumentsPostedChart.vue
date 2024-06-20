@@ -116,17 +116,29 @@ const lastSixMonths = ref<Array<string>>(getLastSixMonths());
 //
 
 const datasets = ref<Array<ChartData>>([]);
+
+const route = useRoute();
 watch(
-  () => useRoute(),
+  () => route,
   async (newRoute) => {
     const thisRoutePath: string = "/tool/matrix/browse/documents";
-    if (newRoute && newRoute?.path === thisRoutePath) {
+    if (newRoute && newRoute.path === thisRoutePath) {
       documentEntities.value = await documentManager.get(new Chips());
       datasets.value = processDocumentEntities(documentEntities.value);
     }
   },
   { deep: true, immediate: true }
 );
+
+// watchEffect(async () => {
+//   const newRoute = useRoute();
+//   const thisRoutePath: string = "/tool/matrix/browse/documents";
+//   if (newRoute && newRoute?.path === thisRoutePath) {
+//     console.log("this route");
+//     documentEntities.value = await documentManager.get(new Chips());
+//     datasets.value = processDocumentEntities(documentEntities.value);
+//   }
+// });
 
 // data config
 const data = computed<{ labels: Array<string>; datasets: Array<ChartData> }>(() => {
