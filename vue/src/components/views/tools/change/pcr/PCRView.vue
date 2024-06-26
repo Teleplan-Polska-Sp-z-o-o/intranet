@@ -328,6 +328,7 @@ const open = () => {
                 class="align-items-center border-s-md border-e-md border-t-md overflow-hidden"
                 style="height: 56px"
                 justify="space-between"
+                name="header"
               >
                 <v-col class="text-h6">
                   <div class="text-no-wrap" style="height: 32px">PROCESS CHANGE REQUEST</div>
@@ -336,7 +337,12 @@ const open = () => {
                   <v-img :src="logoSource" height="32px" width="144px"></v-img>
                 </v-col>
               </v-row>
-              <v-row v-for="row in request.base" class="border-s-md border-e-md border-t-md">
+              <v-row
+                v-for="(row, index) in request.base"
+                :key="index"
+                class="border-s-md border-e-md border-t-md"
+                :name="`base - ${index}`"
+              >
                 <template v-for="(col, colKey) in row">
                   <v-col
                     cols="3"
@@ -351,8 +357,10 @@ const open = () => {
               </v-row>
               <v-row
                 v-for="(row, rowIndex) in request.details"
+                :key="rowIndex"
                 class="border-s-md border-e-md border-t-md"
                 :id="rowIndex === 3 ? 'description' : rowIndex === 2 ? 'reason' : ''"
+                :name="`details - ${rowIndex}`"
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -373,7 +381,9 @@ const open = () => {
               </v-row>
               <v-row
                 v-for="(row, rowIndex) in request.risk"
+                :key="rowIndex"
                 class="border-s-md border-e-md border-t-md"
+                :name="`risk - ${rowIndex}`"
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -394,12 +404,14 @@ const open = () => {
               </v-row>
               <v-row
                 v-for="(row, rowIndex) in request.approvals"
+                :key="rowIndex"
                 class="border-s-md border-e-md border-t-md"
                 :class="
                   rowIndex === request.approvals.length - 1 && updateHistory.length === 0
                     ? 'border-b-md'
                     : ''
                 "
+                :name="`approvals - ${rowIndex}`"
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -423,7 +435,9 @@ const open = () => {
               <v-row
                 v-if="updateHistory.length > 0"
                 v-for="(row, rowIndex) in request.history"
+                :key="rowIndex"
                 class="border-s-md border-e-md border-t-md"
+                :name="`history - ${rowIndex}`"
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -444,8 +458,10 @@ const open = () => {
               </v-row>
               <v-row
                 v-for="(row, rowIndex) in updateHistory"
+                :key="rowIndex"
                 class="border-s-md border-e-md border-t-md"
                 :class="rowIndex === updateHistory.length - 1 ? 'border-b-md' : ''"
+                :name="`updateHistory - ${rowIndex}`"
               >
                 <template v-for="(col, colKey) in row">
                   <v-col

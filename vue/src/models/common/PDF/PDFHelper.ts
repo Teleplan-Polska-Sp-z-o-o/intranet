@@ -71,9 +71,9 @@ class PDFHelper {
   private static totalHeightPt: number = 842;
   private static totalWidthPt: number = 595;
 
-  private static paddingPx: string = "32px";
+  private static paddingPx: string = "32px"; // 20px of margin
   private static breakDeep?: Set<string>;
-  // private static breakBound?: Map<string, number>;
+
   constructor() {}
 
   private static createHtmlPageContainer(): HTMLDivElement {
@@ -98,51 +98,42 @@ class PDFHelper {
     try {
       const htmlPages: Array<HTMLDivElement> = [];
 
-      let currentPageOfHtml: HTMLDivElement = PDFHelper.createHtmlPageContainer();
-
-      let currentHeightOfHtmlPage = 0;
-
+      let currentPageOfHtml: HTMLDivElement | undefined = undefined;
       const rowsOfHtml = html.querySelectorAll(".v-row");
-      // OLD
-      // rowsOfHtml.forEach((row) => {
-      //   const rowHeightPx = row.getBoundingClientRect().height;
-      //   const rowHeightPt = (rowHeightPx * 72) / 96;
-
-      //   if (currentHeightOfHtmlPage + rowHeightPt > PDFHelper.totalHeightPt) {
-      //     const lastChild = currentPageOfHtml.querySelector(".v-container")
-      //       ?.lastElementChild as HTMLDivElement;
-      //     if (lastChild) {
-      //       lastChild.classList.add("border-b-md");
-      //     }
-      //     htmlPages.push(currentPageOfHtml);
-      //     currentPageOfHtml = PDFHelper.createHtmlPageContainer();
-      //     currentHeightOfHtmlPage = 0;
-      //   }
-
-      //   const rowClone = row.cloneNode(true) as HTMLDivElement;
-      //   currentPageOfHtml.querySelector(".v-container")?.appendChild(rowClone);
-      //   currentHeightOfHtmlPage += rowHeightPt;
-      // });
 
       const addBottomBorder = () => {
-        const lastChild = currentPageOfHtml.querySelector(".v-container")
+        const lastChild = currentPageOfHtml!.querySelector(".v-container")
           ?.lastElementChild as HTMLDivElement;
         if (lastChild) {
           lastChild.classList.add("border-b-md");
         }
       };
 
-      const newPage = () => {
-        addBottomBorder();
-        htmlPages.push(currentPageOfHtml);
-        currentPageOfHtml = PDFHelper.createHtmlPageContainer();
-        currentHeightOfHtmlPage = 0;
+      const getHtmlPageContainerHeightPt = () => {
+        const container = currentPageOfHtml!.querySelector(".v-container");
+        const containerHeightPx = container!.getBoundingClientRect().height;
+        const containerHeightPt = (containerHeightPx * 72) / 96;
+
+        return containerHeightPt;
       };
 
-      const createBlankRowContainer = (row: Element, deep: boolean): HTMLElement => {
+      const newPage = (appendNew: boolean = true) => {
+        if (currentPageOfHtml) {
+          addBottomBorder();
+          htmlPages.push(currentPageOfHtml);
+        }
+
+        currentPageOfHtml = PDFHelper.createHtmlPageContainer();
+
+        if (appendNew) document.body.appendChild(currentPageOfHtml);
+      };
+
+      newPage();
+
+      const createBlankRowContainer = (row: Element, textContent: boolean): HTMLElement => {
         const clone = row.cloneNode(true) as HTMLElement;
 
-        if (!deep) {
+        if (!textContent) {
           const ckContentElement = clone.querySelector(".ck.ck-content");
           if (ckContentElement)
             while (ckContentElement.firstChild) {
@@ -153,26 +144,34 @@ class PDFHelper {
         return clone;
       };
 
-      const getNodeHightPt = (node: Node, domHooked: boolean = false) => {
-        if (!domHooked) document.body.appendChild(node);
-        const heightPx = (node as HTMLElement).getBoundingClientRect().height;
-        if (!domHooked) document.body.removeChild(node);
+      const getNodeHightPt = (node: Node, hookCurrentPageOfHtml: boolean = false) => {
+        const clone = node.cloneNode(true);
+        if (hookCurrentPageOfHtml)
+          currentPageOfHtml!.querySelector(".v-container")?.appendChild(clone);
+        const heightPx = (
+          (hookCurrentPageOfHtml ? clone : node) as HTMLElement
+        ).getBoundingClientRect().height;
+        if (hookCurrentPageOfHtml)
+          currentPageOfHtml!.querySelector(".v-container")?.removeChild(clone);
         return (heightPx * 72) / 96;
       };
 
       const isPageOverflowing = (heightPt: number) => {
-        const total = PDFHelper.totalHeightPt - 2 * (parseInt(PDFHelper.paddingPx, 10) - 12);
-        return currentHeightOfHtmlPage + heightPt > total;
+        const total = PDFHelper.totalHeightPt;
+
+        const containerHeightPt = getHtmlPageContainerHeightPt();
+
+        return containerHeightPt + heightPt > total;
       };
 
       rowsOfHtml.forEach((row) => {
-        const rowHeightPt = getNodeHightPt(row);
-
+        const rowHeightPt = getNodeHightPt(row, true);
         const deep = PDFHelper.breakDeep?.has(row.id);
 
         if (deep && isPageOverflowing(rowHeightPt)) {
           const rowDeepClone = createBlankRowContainer(row, true);
           const rowClone = createBlankRowContainer(row, false);
+
           const lastElementChild = rowDeepClone.lastElementChild as HTMLElement | null;
           const contentContainer = lastElementChild?.lastElementChild as HTMLElement | null;
           const rowDeepCloneContent = Array.from(contentContainer?.childNodes || []);
@@ -180,11 +179,11 @@ class PDFHelper {
           let rowCloneClone: HTMLElement | undefined = undefined;
 
           for (const colChild of rowDeepCloneContent) {
+            const childHeightPt = getNodeHightPt(colChild, true);
+
             if (!rowCloneClone) {
               rowCloneClone = rowClone.cloneNode(true) as HTMLElement;
-              currentHeightOfHtmlPage += getNodeHightPt(rowCloneClone);
             }
-            const childHeightPt = getNodeHightPt(colChild);
 
             if (isPageOverflowing(childHeightPt)) {
               newPage();
@@ -193,16 +192,14 @@ class PDFHelper {
               const titleChild = rowCloneClone.firstElementChild;
               if (titleChild) titleChild.innerHTML = "";
 
-              currentPageOfHtml.querySelector(".v-container")?.appendChild(rowCloneClone);
-              currentHeightOfHtmlPage += getNodeHightPt(rowCloneClone);
+              currentPageOfHtml!.querySelector(".v-container")?.appendChild(rowCloneClone);
             }
 
             const colChildClone = colChild.cloneNode(true) as HTMLElement;
+
             rowCloneClone.querySelector(".ck.ck-content")?.appendChild(colChildClone);
 
-            currentPageOfHtml.querySelector(".v-container")?.appendChild(rowCloneClone);
-
-            currentHeightOfHtmlPage += childHeightPt;
+            currentPageOfHtml!.querySelector(".v-container")?.appendChild(rowCloneClone);
           }
         } else {
           if (isPageOverflowing(rowHeightPt)) {
@@ -210,13 +207,12 @@ class PDFHelper {
           }
 
           const rowClone = row.cloneNode(true) as HTMLDivElement;
-          currentPageOfHtml.querySelector(".v-container")?.appendChild(rowClone);
-          currentHeightOfHtmlPage += rowHeightPt;
+          currentPageOfHtml!.querySelector(".v-container")?.appendChild(rowClone);
         }
       });
 
-      if (currentHeightOfHtmlPage > 0) {
-        newPage();
+      if (getHtmlPageContainerHeightPt() > 0) {
+        newPage(false);
       }
 
       return htmlPages;
@@ -233,8 +229,6 @@ class PDFHelper {
         if (i > 0) {
           pdf.addPage();
         }
-
-        document.body.appendChild(htmlPages[i]);
 
         const canvas = await html2canvas(htmlPages[i], {
           scale: 2,
