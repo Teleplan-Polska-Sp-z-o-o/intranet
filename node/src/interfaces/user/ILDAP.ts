@@ -1,4 +1,5 @@
-type TLDAPUser = {
+interface ILdapUser {
+  [key: string]: any;
   dn: string;
   objectClass: string[];
   cn: string;
@@ -50,6 +51,6 @@ type TLDAPUser = {
   esaLastSuccessfulAuthentication: string;
   esaLastFailedAuthentication: string;
   sIDHistory?: string;
-};
+}
 
-export { TLDAPUser };
+export { ILdapUser };

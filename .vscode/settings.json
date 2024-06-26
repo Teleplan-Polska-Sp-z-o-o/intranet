@@ -203,6 +203,7 @@
     "OSTATNIO",
     "Ostrzeżenie",
     "otwarcie",
+    "pagebreak",
     "pamiętać",
     "Październik",
     "pcloudyday",
@@ -750,5 +751,6 @@
     "якого",
     "якості",
     "якщо"
-  ]
+  ],
+  "CodeGPT.apiKey": "CodeGPT Plus Beta"
 }

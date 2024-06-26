@@ -79,10 +79,8 @@ const checkActionsInfoAlert = computed(() => {
   };
 });
 
-const checkActions = ref<true | null>(props.checkActions);
-
 watchEffect(async () => {
-  if (checkActions.value === true) {
+  if (props.checkActions === true) {
     enableActions();
     emit("resetActions");
   } else {

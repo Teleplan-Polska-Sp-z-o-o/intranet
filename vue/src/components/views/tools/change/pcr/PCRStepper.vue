@@ -45,17 +45,20 @@ const requestNotice = props.componentProps.editedItem.processChangeNotice;
 
 const editorStore = useEditorStore();
 
+const changeReasonKey = "change-reason";
+const changeDescriptionKey = "request-change-description";
+
 const changeReason = props.componentProps.editedItem.changeReason;
 const changeDescription = props.componentProps.editedItem.changeDescription;
 editorStore.save(
   changeReason ? changeReason : `<p><span style="color:hsl(0, 0%, 60%);">Change Reason</span></p>`,
-  "change-reason"
+  changeReasonKey
 );
 editorStore.save(
   changeDescription
     ? changeDescription
     : `<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>`,
-  "request-change-description"
+  changeDescriptionKey
 );
 
 const baseChangeReason: string = editorStore.getDefault("change-reason");
@@ -71,8 +74,8 @@ const request = ref<IProcessChangeRequestBase>({
   costOfImplementation: props.componentProps.editedItem.costOfImplementation,
   program: props.componentProps.editedItem.program,
   modelOrProcessImpacted: props.componentProps.editedItem.modelOrProcessImpacted,
-  changeReason: editorStore.get("change-reason"),
-  changeDescription: editorStore.get("request-change-description"),
+  changeReason: editorStore.get(changeReasonKey),
+  changeDescription: editorStore.get(changeDescriptionKey),
   impacts: props.componentProps.editedItem.impacts,
   dedicatedDepartment: props.componentProps.editedItem.dedicatedDepartment,
   riskAnalysis: props.componentProps.editedItem.riskAnalysis,
@@ -265,13 +268,30 @@ const updatedFields = computed(() => {
   return fields;
 });
 
-watch(activeStep, (newActiveStep) => {
-  if (newActiveStep === 5) {
+watch(
+  () => editorStore.editors,
+  (editors) => {
+    let changeReasonValue: string = "";
+    let changeDescriptionValue: string = "";
+    if (editors[changeReasonKey]) changeReasonValue = editorStore.get(changeReasonKey);
+    if (editors[changeDescriptionKey])
+      changeDescriptionValue = editorStore.get(changeDescriptionKey);
+
     request.value = {
       ...request.value,
-      changeReason: editorStore.get("change-reason"),
-      changeDescription: editorStore.get("request-change-description"),
+      changeReason: changeReasonValue,
+      changeDescription: changeDescriptionValue,
     };
+  }
+);
+
+watch(activeStep, (newActiveStep) => {
+  if (newActiveStep === 5) {
+    // request.value = {
+    //   ...request.value,
+    //   changeReason: editorStore.get("change-reason"),
+    //   changeDescription: editorStore.get("request-change-description"),
+    // };
 
     if (
       requestUpdatable === true &&

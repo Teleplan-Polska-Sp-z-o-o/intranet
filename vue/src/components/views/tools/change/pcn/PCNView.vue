@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { IProcessChangeRequest } from "../../../../../interfaces/change/IProcessChangeRequest";
 import { nodeConfig } from "../../../../../config/env";
-import { PDFHelper } from "../../../../../models/common/PDFHelper";
-import { computed, ref, watch, watchEffect } from "vue";
+import { PDFHelper } from "../../../../../models/common/PDF/PDFHelper";
+import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PCNAcceptOrReject from "./PCNAcceptOrReject.vue";
 import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
@@ -43,11 +43,19 @@ const route = useRoute();
 
 const openDialog = ref<boolean>(false);
 
-watchEffect(() => {
-  if (tab.value === "pcn")
-    openDialog.value =
-      parseInt(route.params.no as string) === (props.item.processChangeNotice?.id as number);
-});
+watch(
+  () => route,
+  async (newRoute) => {
+    if (
+      tab.value === "pcn" &&
+      newRoute &&
+      parseInt(route.params.no as string) === (props.item.processChangeNotice?.id as number)
+    ) {
+      openDialog.value = true;
+    }
+  },
+  { deep: true, immediate: true }
+);
 
 const showAOR = ref<boolean>(true);
 
@@ -348,8 +356,7 @@ const open = () => {
           class="d-flex justify-center align-center"
           :class="smallScreen ? 'px-2' : 'px-10'"
         >
-          <!-- width="595pt" height="842pt" -->
-          <v-sheet id="pcn" width="595pt">
+          <v-sheet id="pcn">
             <v-container fluid>
               <v-row
                 class="align-items-center border-s-md border-e-md border-t-md overflow-hidden"
@@ -379,6 +386,7 @@ const open = () => {
               <v-row
                 v-for="(row, rowIndex) in request.details"
                 class="border-s-md border-e-md border-t-md"
+                :id="rowIndex === 3 ? 'description' : rowIndex === 2 ? 'reason' : ''"
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -424,7 +432,9 @@ const open = () => {
                 v-for="(row, rowIndex) in request.approvals"
                 class="border-s-md border-e-md border-t-md"
                 :class="
-                  rowIndex === request.approvals.length - 1 && updateHistory.length === 0
+                  rowIndex === request.approvals.length - 1 &&
+                  updateHistory.length === 0 &&
+                  !item.processChangeNotice?.isCustomerApprovalRequired
                     ? 'border-b-md'
                     : ''
                 "
@@ -447,27 +457,25 @@ const open = () => {
                     v-html="col"
                   />
                 </template>
-                <template
-                  v-if="
-                    rowIndex === request.approvals.length - 1 &&
-                    item.processChangeNotice?.isCustomerApprovalRequired
-                  "
-                >
-                  <v-col
-                    cols="3"
-                    class="text-body-2"
-                    style="background-color: #e9e7e7"
-                    v-html="'Customer Approver'"
-                  />
-                  <v-col cols="3" class="text-body-2 border-s-md" />
-                  <v-col
-                    cols="3"
-                    class="text-body-2 border-s-md"
-                    style="background-color: #e9e7e7"
-                    v-html="'Date and Signature'"
-                  />
-                  <v-col cols="3" class="text-body-2 border-s-md" />
-                </template>
+              </v-row>
+              <v-row
+                v-if="item.processChangeNotice?.isCustomerApprovalRequired"
+                class="border-s-md border-e-md border-t-md"
+                :class="updateHistory.length === 0 ? 'border-b-md' : ''"
+                ><v-col
+                  cols="3"
+                  class="text-body-2"
+                  style="background-color: #e9e7e7"
+                  v-html="'Customer Approver'"
+                />
+                <v-col cols="3" class="text-body-2 border-s-md" />
+                <v-col
+                  cols="3"
+                  class="text-body-2 border-s-md"
+                  style="background-color: #e9e7e7"
+                  v-html="'Date and Signature'"
+                />
+                <v-col cols="3" class="text-body-2 border-s-md" />
               </v-row>
 
               <v-row
@@ -542,7 +550,12 @@ const open = () => {
           <!-- generate -->
           <v-btn
             class="bg-primary text-on-primary mr-4 rounded-xl"
-            @click="PDFHelper.generatePDF('pcn', isActive)"
+            @click="
+              PDFHelper.generatePDF('pcn', isActive, {
+                padding: undefined,
+                breakDeep: ['reason', 'description'],
+              })
+            "
             :text="smallScreen ? 'PDF' : 'GENERATE PDF'"
           />
         </v-card-actions>

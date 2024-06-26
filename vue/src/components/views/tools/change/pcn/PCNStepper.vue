@@ -43,17 +43,19 @@ const editorStore = useEditorStore();
 
 const changeDescription = props.componentProps.editedItem.processChangeNotice.changeDescription;
 
+const changeDescriptionKey = "notice-change-description";
+
 editorStore.save(
   changeDescription
     ? changeDescription
     : `<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>`,
-  "notice-change-description"
+  changeDescriptionKey
 );
 
 const baseChangeDescription: string = editorStore.getDefault("change-description");
 
 const notice = ref<IProcessChangeNoticeFields>({
-  changeDescription: editorStore.get("notice-change-description"),
+  changeDescription: editorStore.get(changeDescriptionKey),
   areDocumentationChangesRequired:
     props.componentProps.editedItem.processChangeNotice.areDocumentationChangesRequired,
   listOfDocumentationToChange:
@@ -218,12 +220,21 @@ const updatedFields = computed((): Array<string> => {
   }
 });
 
-watch(activeStep, (newActiveStep) => {
-  // notice.value = {
-  //   ...notice.value,
-  //   changeDescription: editorStore.get("notice-change-description"),
-  // };
+watch(
+  () => editorStore.editors,
+  (editors) => {
+    let changeDescriptionValue: string = "";
+    if (editors[changeDescriptionKey])
+      changeDescriptionValue = editorStore.get(changeDescriptionKey);
 
+    notice.value = {
+      ...notice.value,
+      changeDescription: changeDescriptionValue,
+    };
+  }
+);
+
+watch(activeStep, (newActiveStep) => {
   if (newActiveStep === 4 && departmentsTest.value) {
     if (noticeUpdatable && updatedFields.value.length > 0 && notice.value.updateDescription) {
       emit("verified", false);

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { IProcessChangeRequest } from "../../../../../interfaces/change/IProcessChangeRequest";
 import { nodeConfig } from "../../../../../config/env";
-import { PDFHelper } from "../../../../../models/common/PDFHelper";
-import { computed, ref, watch, watchEffect } from "vue";
+import { PDFHelper } from "../../../../../models/common/PDF/PDFHelper";
+import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { IProcessChangeRequestUpdates } from "../../../../../interfaces/change/IProcessChangeRequestUpdates";
@@ -40,9 +40,15 @@ const route = useRoute();
 
 const openDialog = ref<boolean>(false);
 
-watchEffect(() => {
-  if (tab.value === "pcr") openDialog.value = parseInt(route.params.no as string) === props.item.id;
-});
+watch(
+  () => route,
+  async (newRoute) => {
+    if (tab.value === "pcr" && newRoute && parseInt(route.params.no as string) === props.item.id) {
+      openDialog.value = true;
+    }
+  },
+  { deep: true, immediate: true }
+);
 
 const showAOR = ref<boolean>(true);
 
@@ -316,7 +322,7 @@ const open = () => {
           :class="smallScreen ? 'px-2' : 'px-10'"
         >
           <!-- width="595pt" height="842pt" -->
-          <v-sheet id="pcr" width="595pt">
+          <v-sheet id="pcr">
             <v-container fluid>
               <v-row
                 class="align-items-center border-s-md border-e-md border-t-md overflow-hidden"
@@ -346,6 +352,7 @@ const open = () => {
               <v-row
                 v-for="(row, rowIndex) in request.details"
                 class="border-s-md border-e-md border-t-md"
+                :id="rowIndex === 3 ? 'description' : rowIndex === 2 ? 'reason' : ''"
               >
                 <template v-for="(col, colKey) in row">
                   <v-col
@@ -483,7 +490,12 @@ const open = () => {
           <!-- generate -->
           <v-btn
             class="bg-primary text-on-primary mr-4 rounded-xl"
-            @click="PDFHelper.generatePDF('pcr', isActive)"
+            @click="
+              PDFHelper.generatePDF('pcr', isActive, {
+                padding: undefined,
+                breakDeep: ['reason', 'description'],
+              })
+            "
             :text="smallScreen ? 'PDF' : 'GENERATE PDF'"
           />
         </v-card-actions>

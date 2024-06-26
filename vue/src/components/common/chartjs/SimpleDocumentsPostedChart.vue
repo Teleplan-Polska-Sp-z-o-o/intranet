@@ -15,9 +15,9 @@ import {
   Title,
   Tooltip,
   Legend,
-  Colors,
 } from "chart.js";
 import { useI18n } from "vue-i18n";
+import { getUniqueColor } from "./colors";
 
 const { t } = useI18n();
 
@@ -29,8 +29,7 @@ Chart.register(
   PointElement,
   Title,
   Tooltip,
-  Legend,
-  Colors
+  Legend
 );
 
 const documentManager: DocumentManager = new DocumentManager();
@@ -41,8 +40,8 @@ class ChartData {
   data: Array<number> = [];
   fill: boolean = false;
 
-  // borderColor: string;
-  // backgroundColor: string;
+  borderColor: string;
+  backgroundColor: string;
 
   tension: number = 0.4;
 
@@ -50,24 +49,10 @@ class ChartData {
     this.label = postBy;
     this.data = data;
 
-    // randomize pastel colors for both
-    // const generateRandomPastelColor = (): string => {
-    //   // Define ranges for blue and green
-    //   const blueRange = [150, 250];
-    //   const greenRange = [150, 250];
+    const color = getUniqueColor();
 
-    //   // Generate random values within the specified ranges
-    //   const r = Math.floor(Math.random() * (greenRange[1] - greenRange[0] + 1) + greenRange[0]);
-    //   const g = Math.floor(Math.random() * (blueRange[1] - blueRange[0] + 1) + blueRange[0]);
-    //   const b = Math.floor(Math.random() * (blueRange[1] - blueRange[0] + 1) + blueRange[0]);
-
-    //   return `rgb(${r}, ${g}, ${b})`;
-    // };
-
-    // const color = generateRandomPastelColor();
-
-    // this.borderColor = color;
-    // this.backgroundColor = color;
+    this.borderColor = color;
+    this.backgroundColor = `${color.slice(0, -1)}, 0.2)`;
   }
 }
 
@@ -130,16 +115,6 @@ watch(
   { deep: true, immediate: true }
 );
 
-// watchEffect(async () => {
-//   const newRoute = useRoute();
-//   const thisRoutePath: string = "/tool/matrix/browse/documents";
-//   if (newRoute && newRoute?.path === thisRoutePath) {
-//     console.log("this route");
-//     documentEntities.value = await documentManager.get(new Chips());
-//     datasets.value = processDocumentEntities(documentEntities.value);
-//   }
-// });
-
 // data config
 const data = computed<{ labels: Array<string>; datasets: Array<ChartData> }>(() => {
   return {
@@ -155,9 +130,6 @@ const options = ref({
     },
   },
   plugins: {
-    colors: {
-      enabled: true,
-    },
     title: {
       text: "Line",
     },

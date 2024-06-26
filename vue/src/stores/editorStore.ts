@@ -1,10 +1,12 @@
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 export const useEditorStore = defineStore("editor", () => {
   const editor = ref<Record<string, string>>({});
   const eRef = ref<string>("");
+
+  const editors = computed(() => editor.value);
 
   const save = (value: string, key: string): void => {
     try {
@@ -65,5 +67,5 @@ export const useEditorStore = defineStore("editor", () => {
     }
   };
 
-  return { save, get, getDefault, getRef };
+  return { editors, save, get, getDefault, getRef };
 });
