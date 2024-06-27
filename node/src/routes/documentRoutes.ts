@@ -33,20 +33,6 @@ import {
 const router = express.Router();
 const upload = multer({ dest: `${__dirname}/../../uploads/documents` });
 // Define routes
-router.post("/department", addDepartment);
-router.get("/department", getDepartments);
-router.put("/department/:id/:name", editDepartment);
-router.delete("/department/:id", removeDepartment);
-
-router.post("/category", addCategory);
-router.get("/category/:departmentName", getCategories);
-router.put("/category/:id/:name", editCategory);
-router.delete("/category/:id", removeCategory);
-
-router.post("/subcategory", addSubcategory);
-router.get("/subcategory/:departmentName/:categoryName", getSubcategories);
-router.put("/subcategory/:id/:name", editSubcategory);
-router.delete("/subcategory/:id", removeSubcategory);
 
 router.post("/", upload.any(), addDocument);
 router.put("/", upload.any(), editDocument);

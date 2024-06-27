@@ -101,9 +101,22 @@ const removeDepartment = async (req: Request, res: Response) => {
   }
 };
 
-const getDepartments = async (_req: Request, res: Response) => {
+const getDepartments = async (req: Request, res: Response) => {
   try {
-    const departments = await dataSource.getRepository(Department).find();
+    const { whereDocType } = req.params;
+
+    const departmentsQuery = dataSource
+      .getRepository(Department)
+      .createQueryBuilder("department")
+      .leftJoinAndSelect("department.categories", "category")
+      .leftJoinAndSelect("category.subcategories", "subcategory")
+      .leftJoinAndSelect("subcategory.documents", "document");
+
+    if (whereDocType) {
+      departmentsQuery.where("document.type = :documentType", { documentType: whereDocType });
+    }
+
+    const departments = await departmentsQuery.getMany();
 
     return res.status(200).json({
       got: departments,

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { IChips } from "../../../../../interfaces/document/IChips";
+import { IChips, IFileItem } from "../../../../../interfaces/document/DocumentTypes";
 // import { useI18n } from "vue-i18n";
-import { IFileItem } from "../../../../../interfaces/document/IFileItem";
 import { DocumentManager } from "../../../../../models/document/DocumentManager";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
 import { DocumentEntity } from "../../../../../models/document/DocumentEntity";

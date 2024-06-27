@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import FileLanguage from "./FileLanguage.vue";
-import { IFileItem } from "../../../../../interfaces/document/IFileItem";
+import { IFileItem } from "../../../../../interfaces/document/DocumentTypes";
 import { FileItem } from "../../../../../models/document/FileItem";
 
 const emit = defineEmits(["files"]);

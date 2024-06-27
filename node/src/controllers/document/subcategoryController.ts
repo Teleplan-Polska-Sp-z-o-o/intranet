@@ -100,27 +100,62 @@ const removeSubcategory = async (req: Request, res: Response) => {
 
 const getSubcategories = async (req: Request, res: Response) => {
   try {
-    const { departmentName, categoryName } = req.params;
+    // const { departmentName, categoryName } = req.params;
 
-    const department = await dataSource
-      .getRepository(Department)
-      .findOne({ where: { name: departmentName }, relations: ["categories"] });
+    // const department = await dataSource
+    //   .getRepository(Department)
+    //   .findOne({ where: { name: departmentName }, relations: ["categories"] });
 
-    if (!department) {
-      return res.status(404).json({
-        message: "Department not found",
-      });
-    }
+    // if (!department) {
+    //   return res.status(404).json({
+    //     message: "Department not found",
+    //   });
+    // }
 
-    const category = department.categories.find((category) => category.name === categoryName);
+    // const category = department.categories.find((category) => category.name === categoryName);
 
-    if (!category) {
-      return res.status(404).json({
-        message: "Category not found within the department",
-      });
-    }
+    // if (!category) {
+    //   return res.status(404).json({
+    //     message: "Category not found within the department",
+    //   });
+    // }
 
-    const subcategories = await dataSource.getRepository(Subcategory).find({ where: { category } });
+    // const subcategories = await dataSource.getRepository(Subcategory).find({ where: { category } });
+
+    const { departmentName, categoryName, whereDocType } = req.params;
+
+    let subcategories: Array<Subcategory>;
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const department = await transactionalEntityManager
+        .getRepository(Department)
+        .findOne({ where: { name: departmentName }, relations: ["categories"] });
+      if (!department) {
+        return res.status(404).json({
+          message: "Department not found",
+        });
+      }
+
+      const category = department.categories.find((category) => category.name === categoryName);
+      if (!category) {
+        return res.status(404).json({
+          message: "Category not found within the department",
+        });
+      }
+
+      const subcategoriesQuery = transactionalEntityManager
+        .getRepository(Subcategory)
+        .createQueryBuilder("subcategory")
+        .leftJoinAndSelect("subcategory.documents", "document")
+        .where("subcategory.categoryId = :categoryId", { categoryId: category.id });
+
+      if (whereDocType) {
+        subcategoriesQuery.andWhere("document.type = :documentType", {
+          documentType: whereDocType,
+        });
+      }
+
+      subcategories = await subcategoriesQuery.getMany();
+    });
 
     return res.status(200).json({
       got: subcategories,

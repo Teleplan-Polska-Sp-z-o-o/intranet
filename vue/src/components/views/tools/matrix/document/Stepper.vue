@@ -2,13 +2,12 @@
 import { computed, ref, watch, watchEffect } from "vue";
 import VerifyTables from "./VerifyTables.vue";
 import FilesForm from "./FilesForm.vue";
-import { IFileItem } from "../../../../../interfaces/document/IFileItem";
+import { IFileItem, ICompetence } from "../../../../../interfaces/document/DocumentTypes";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
 import { nodeConfig } from "../../../../../config/env";
 import axios from "axios";
 import { FileItem } from "../../../../../models/document/FileItem";
 import { CompetenceManager } from "../../../../../models/document/CompetenceManager";
-import { ICompetence } from "../../../../../interfaces/document/ICompetence";
 
 const emit = defineEmits(["save-data", "verified"]);
 

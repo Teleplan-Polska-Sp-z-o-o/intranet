@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 // import { ResponseStatus } from "../../../../models/common/ResponseStatus";
-import { IChips } from "../../../../../interfaces/document/IChips";
-import { IChip } from "../../../../../interfaces/document/IChip";
-import { ILevel } from "../../../../../interfaces/document/ILevel";
+import { IChips, IChip, ILevel } from "../../../../../interfaces/document/DocumentTypes";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
 import { SubcategoriesManager } from "../../../../../models/document/SubcategoriesManager";
 import { CategoriesManager } from "../../../../../models/document/CategoriesManager";

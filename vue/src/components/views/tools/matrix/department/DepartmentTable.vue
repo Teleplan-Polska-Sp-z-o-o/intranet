@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from "vue";
-import { IChips } from "../../../../../interfaces/document/IChips";
-import { ILevel } from "../../../../../interfaces/document/ILevel";
+import { IChips, ILevel } from "../../../../../interfaces/document/DocumentTypes";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
 import { SubcategoriesManager } from "../../../../../models/document/SubcategoriesManager";
 import { CategoriesManager } from "../../../../../models/document/CategoriesManager";

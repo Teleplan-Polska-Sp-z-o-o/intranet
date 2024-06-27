@@ -4,7 +4,7 @@ import { Endpoints } from "../../config/Endpoints";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { Competence } from "./Competence";
-import { ICompetence } from "../../interfaces/document/ICompetence";
+import { ICompetence } from "../../interfaces/document/DocumentTypes";
 
 class CompetenceManager {
   constructor() {}

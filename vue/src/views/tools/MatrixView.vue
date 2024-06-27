@@ -5,8 +5,7 @@ import DepartmentTable from "../../components/views/tools/matrix/department/Depa
 // import DocumentFilters from "../../components/views/tools/matrix/document/DocumentFilters.vue";
 import DocumentTable from "../../components/views/tools/matrix/document/DocumentTable.vue";
 import ChipFilters from "../../components/tools/ChipFilters.vue";
-import { IChips } from "../../interfaces/document/IChips";
-import { ILevel } from "../../interfaces/document/ILevel";
+import { IChips, ILevel } from "../../interfaces/document/DocumentTypes";
 import { Chips } from "../../models/document/Chips";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../../components/common/alertResponseStatus.vue";

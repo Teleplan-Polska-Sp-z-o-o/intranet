@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 // import { ResponseStatus } from "../../../../models/common/ResponseStatus";
-import { IChips } from "../../../../../interfaces/document/IChips";
+import { IChips } from "../../../../../interfaces/document/DocumentTypes";
 import { MSDManager } from "../../../../../models/document/MSDManager";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
 import CrudTable from "../../../../tools/CrudTable.vue";

@@ -1,4 +1,4 @@
-import { IFileItem } from "../../interfaces/document/IFileItem";
+import { IFileItem } from "../../interfaces/document/DocumentTypes";
 
 class FileItem implements IFileItem {
   id: number;

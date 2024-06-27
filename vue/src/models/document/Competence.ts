@@ -1,4 +1,4 @@
-import { ICompetence } from "../../interfaces/document/ICompetence";
+import { ICompetence } from "../../interfaces/document/DocumentTypes";
 
 class Competence implements ICompetence {
   id: number;

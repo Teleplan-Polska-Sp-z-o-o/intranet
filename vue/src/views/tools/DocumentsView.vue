@@ -5,8 +5,7 @@ import AllInstructionsTable from "../../components/views/tools/documents/all/All
 import AllVisualsTable from "../../components/views/tools/documents/all/AllVisualsTable.vue";
 import AllMSDTable from "../../components/views/tools/documents/all/AllMSDTable.vue";
 import CustomAiAssistant from "../../components/views/tools/documents/assistant/CustomAssistant.vue";
-import { IChips } from "../../interfaces/document/IChips";
-import { ILevel } from "../../interfaces/document/ILevel";
+import { IChips, ILevel } from "../../interfaces/document/DocumentTypes";
 import { Chips } from "../../models/document/Chips";
 import { useRoute, useRouter } from "vue-router";
 
@@ -155,6 +154,7 @@ const handleTable = (newValue: ILevel): void => {
                     @chips="handleChips"
                     :table="table"
                     :max-level="2"
+                    whereDocType="Instruction"
                     class="bg-surface-2 mb-5 ma-1"
                   ></chip-filters>
                   <all-instructions-table
@@ -169,6 +169,7 @@ const handleTable = (newValue: ILevel): void => {
                     @chips="handleChips"
                     :table="table"
                     :max-level="2"
+                    whereDocType="Visual"
                     class="bg-surface-2 mb-5 ma-1"
                   ></chip-filters>
                   <all-visuals-table
@@ -186,6 +187,7 @@ const handleTable = (newValue: ILevel): void => {
                     departmentsSubtitle="category"
                     programsSubtitle="subcategory"
                     workstationsSubtitle="subSubcategory"
+                    whereDocType="MSD"
                     class="bg-surface-2 mb-5 ma-1"
                   ></chip-filters>
                   <all-m-s-d-table

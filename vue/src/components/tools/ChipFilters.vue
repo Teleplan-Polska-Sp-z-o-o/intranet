@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { IChip } from "../../interfaces/document/IChip";
-import { IChips } from "../../interfaces/document/IChips";
+import { IChip, IChips, ILevel, TDocumentType } from "../../interfaces/document/DocumentTypes";
 import { Chips } from "../../models/document/Chips";
-import { ILevel } from "../../interfaces/document/ILevel";
 import { DepartmentsManager } from "../../models/document/DepartmentsManager";
 import { CategoriesManager } from "../../models/document/CategoriesManager";
 import { SubcategoriesManager } from "../../models/document/SubcategoriesManager";
@@ -18,6 +16,7 @@ const props = defineProps<{
   programsSubtitle?: string;
   workstationsSubtitle?: string;
   bothSubtitles?: boolean;
+  whereDocType?: TDocumentType;
 }>();
 
 const chips = ref<IChips>(new Chips());
@@ -32,7 +31,7 @@ const subcategories = ref<Array<IChip> | null>(null);
 
 (async () => {
   try {
-    departments.value = await DepManager.get();
+    departments.value = await DepManager.get(undefined, props.whereDocType);
   } catch (error) {
     console.log(error);
   }
@@ -94,8 +93,8 @@ const chipGroups = computed(() => [
 watch(
   chips.value,
   async (chips) => {
-    if (chips.categoryName) subcategories.value = await SubManager.get(chips);
-    if (chips.departmentName) categories.value = await CatManager.get(chips);
+    if (chips.categoryName) subcategories.value = await SubManager.get(chips, props.whereDocType);
+    if (chips.departmentName) categories.value = await CatManager.get(chips, props.whereDocType);
   },
   { deep: true }
 );
@@ -107,13 +106,13 @@ watch(
 
     switch (tableLvl as ILevel) {
       case ILevel.Dep:
-        departments.value = await DepManager.get();
+        departments.value = await DepManager.get(undefined, props.whereDocType);
         break;
       case ILevel.Cat:
-        categories.value = await CatManager.get(chips.value);
+        categories.value = await CatManager.get(chips.value, props.whereDocType);
         break;
       case ILevel.Sub:
-        subcategories.value = await SubManager.get(chips.value);
+        subcategories.value = await SubManager.get(chips.value, props.whereDocType);
         break;
     }
   }

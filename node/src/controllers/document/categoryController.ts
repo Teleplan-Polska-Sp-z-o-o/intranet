@@ -101,19 +101,47 @@ const removeCategory = async (req: Request, res: Response) => {
 
 const getCategories = async (req: Request, res: Response) => {
   try {
-    const { departmentName } = req.params;
+    // const { departmentName } = req.params;
 
-    const department = await dataSource
-      .getRepository(Department)
-      .findOne({ where: { name: departmentName }, relations: ["categories"] });
-    if (!department) {
-      return res.status(404).json({
-        message: "Categories not found",
-        statusMessage: HttpResponseMessage.DELETE_ERROR,
-      });
-    }
+    // const department = await dataSource
+    //   .getRepository(Department)
+    //   .findOne({ where: { name: departmentName }, relations: ["categories"] });
+    // if (!department) {
+    //   return res.status(404).json({
+    //     message: "Categories not found",
+    //     statusMessage: HttpResponseMessage.DELETE_ERROR,
+    //   });
+    // }
 
-    const categories = department.categories;
+    // const categories = department.categories;
+
+    const { departmentName, whereDocType } = req.params;
+
+    let categories: Array<Category>;
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const department = await transactionalEntityManager
+        .getRepository(Department)
+        .findOne({ where: { name: departmentName }, relations: ["categories"] });
+      if (!department) {
+        return res.status(404).json({
+          message: "Categories not found",
+          statusMessage: HttpResponseMessage.DELETE_ERROR,
+        });
+      }
+
+      const categoriesQuery = transactionalEntityManager
+        .getRepository(Category)
+        .createQueryBuilder("category")
+        .leftJoinAndSelect("category.subcategories", "subcategory")
+        .leftJoinAndSelect("subcategory.documents", "document")
+        .where("category.departmentId = :departmentId", { departmentId: department.id });
+
+      if (whereDocType) {
+        categoriesQuery.andWhere("document.type = :documentType", { documentType: whereDocType });
+      }
+
+      categories = await categoriesQuery.getMany();
+    });
 
     return res.status(200).json({
       got: categories,

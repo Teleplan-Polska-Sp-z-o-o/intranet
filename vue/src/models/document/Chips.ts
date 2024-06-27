@@ -1,4 +1,4 @@
-import { IChips } from "../../interfaces/document/IChips";
+import { IChips } from "../../interfaces/document/DocumentTypes";
 
 class Chips implements IChips {
   departmentName: string;

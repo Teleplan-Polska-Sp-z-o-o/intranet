@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watchEffect } from "vue";
-import { IFileItem } from "../../../../../interfaces/document/IFileItem";
+import { IFileItem } from "../../../../../interfaces/document/DocumentTypes";
 
 const emit = defineEmits(["file-change"]);
 

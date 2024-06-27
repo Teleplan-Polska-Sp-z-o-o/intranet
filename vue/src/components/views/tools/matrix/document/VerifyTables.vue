@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
-import { IFileItem } from "../../../../../interfaces/document/IFileItem";
+import { IFileItem } from "../../../../../interfaces/document/DocumentTypes";
 
 const props = defineProps<{
   eDoc: Partial<IDocumentEntity>;

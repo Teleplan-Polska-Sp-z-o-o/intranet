@@ -1,9 +1,8 @@
 import axios from "axios";
-import { IChip } from "../../interfaces/document/IChip";
+import { IChip, IChips, TDocumentType } from "../../interfaces/document/DocumentTypes";
 import { nodeConfig } from "../../config/env";
 import { Endpoints } from "../../config/Endpoints";
 import { Chip } from "./Chip";
-import { IChips } from "../../interfaces/document/IChips";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 
@@ -33,9 +32,9 @@ class DepartmentsManager {
     return response.data.added;
   };
 
-  public get = async (_reqData?: IChips): Promise<Array<IChip>> => {
+  public get = async (_reqData?: IChips, whereDocType?: TDocumentType): Promise<Array<IChip>> => {
     const response = await axios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}`
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}/${whereDocType}`
     );
     return response.data.got;
   };

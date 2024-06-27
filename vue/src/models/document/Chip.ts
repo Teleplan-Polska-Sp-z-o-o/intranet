@@ -1,4 +1,4 @@
-import { IChip } from "../../interfaces/document/IChip";
+import { IChip } from "../../interfaces/document/DocumentTypes";
 
 class Chip implements IChip {
   id: number;
