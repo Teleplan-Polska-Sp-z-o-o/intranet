@@ -131,10 +131,17 @@ const getCategories = async (req: Request, res: Response) => {
 
       const categoriesQuery = transactionalEntityManager
         .getRepository(Category)
-        .createQueryBuilder("category")
-        .leftJoinAndSelect("category.subcategories", "subcategory")
-        .leftJoinAndSelect("subcategory.documents", "document")
-        .where("category.departmentId = :departmentId", { departmentId: department.id });
+        .createQueryBuilder("category");
+
+      if (whereDocType) {
+        categoriesQuery
+          .leftJoinAndSelect("category.subcategories", "subcategory")
+          .leftJoinAndSelect("subcategory.documents", "document");
+      }
+
+      categoriesQuery.where("category.departmentId = :departmentId", {
+        departmentId: department.id,
+      });
 
       if (whereDocType) {
         categoriesQuery.andWhere("document.type = :documentType", { documentType: whereDocType });

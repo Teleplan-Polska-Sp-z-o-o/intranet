@@ -144,9 +144,15 @@ const getSubcategories = async (req: Request, res: Response) => {
 
       const subcategoriesQuery = transactionalEntityManager
         .getRepository(Subcategory)
-        .createQueryBuilder("subcategory")
-        .leftJoinAndSelect("subcategory.documents", "document")
-        .where("subcategory.categoryId = :categoryId", { categoryId: category.id });
+        .createQueryBuilder("subcategory");
+
+      if (whereDocType) {
+        subcategoriesQuery.leftJoinAndSelect("subcategory.documents", "document");
+      }
+
+      subcategoriesQuery.where("subcategory.categoryId = :categoryId", {
+        categoryId: category.id,
+      });
 
       if (whereDocType) {
         subcategoriesQuery.andWhere("document.type = :documentType", {

@@ -37,7 +37,9 @@ class CategoriesManager {
   public get = async (reqData: IChips, whereDocType?: TDocumentType): Promise<Array<IChip>> => {
     const departmentName: string = reqData.departmentName;
     const response = await axios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${departmentName}/${whereDocType}`
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${departmentName}${
+        whereDocType ? `/${whereDocType}` : ""
+      }`
     );
     return response.data.got;
   };

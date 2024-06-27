@@ -105,15 +105,14 @@ const getDepartments = async (req: Request, res: Response) => {
   try {
     const { whereDocType } = req.params;
 
-    const departmentsQuery = dataSource
-      .getRepository(Department)
-      .createQueryBuilder("department")
-      .leftJoinAndSelect("department.categories", "category")
-      .leftJoinAndSelect("category.subcategories", "subcategory")
-      .leftJoinAndSelect("subcategory.documents", "document");
+    const departmentsQuery = dataSource.getRepository(Department).createQueryBuilder("department");
 
     if (whereDocType) {
-      departmentsQuery.where("document.type = :documentType", { documentType: whereDocType });
+      departmentsQuery
+        .leftJoinAndSelect("department.categories", "category")
+        .leftJoinAndSelect("category.subcategories", "subcategory")
+        .leftJoinAndSelect("subcategory.documents", "document")
+        .where("document.type = :documentType", { documentType: whereDocType });
     }
 
     const departments = await departmentsQuery.getMany();

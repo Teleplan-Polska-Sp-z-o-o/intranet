@@ -38,7 +38,9 @@ class SubcategoriesManager {
     const departmentName: string = reqData.departmentName;
     const categoryName: string = reqData.categoryName;
     const response = await axios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentSubcategory}/${departmentName}/${categoryName}/${whereDocType}`
+      `${nodeConfig.origin}:${nodeConfig.port}${
+        Endpoints.DocumentSubcategory
+      }/${departmentName}/${categoryName}${whereDocType ? `/${whereDocType}` : ""}`
     );
     return response.data.got;
   };

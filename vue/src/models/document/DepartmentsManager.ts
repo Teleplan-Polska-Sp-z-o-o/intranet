@@ -34,7 +34,9 @@ class DepartmentsManager {
 
   public get = async (_reqData?: IChips, whereDocType?: TDocumentType): Promise<Array<IChip>> => {
     const response = await axios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}/${whereDocType}`
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}${
+        whereDocType ? `/${whereDocType}` : ""
+      }`
     );
     return response.data.got;
   };
