@@ -122,6 +122,8 @@ const enC = {
       delete_success: "The resource was successfully deleted.",
       unknown: "Unknown error. Please try again later.",
       unauthorized: "Unauthorized access to perform this action.",
+
+      auth_invalid_credentials: "Invalid username or password.",
     },
   },
 };

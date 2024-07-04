@@ -1,9 +1,9 @@
 import { IUserInfo } from "../../interfaces/user/IUserInfo";
 
 class UserInformation implements IUserInfo {
-  position: string;
-  department: string;
-  decisionMaker: boolean;
+  position: string | null;
+  department: string | null;
+  decisionMaker: boolean | null;
 
   constructor(info: IUserInfo = undefined) {
     this.position = info?.position ?? null;

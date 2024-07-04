@@ -8,6 +8,8 @@ enum HttpResponseMessage {
   DELETE_ERROR = "delete_error",
   DELETE_SUCCESS = "delete_success",
   UNKNOWN = "unknown",
+
+  AUTH_INVALID_CREDENTIALS = "auth_invalid_credentials",
 }
 
 // enum HttpUserResponseMessage {}

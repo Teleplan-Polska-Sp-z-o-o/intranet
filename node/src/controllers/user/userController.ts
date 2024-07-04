@@ -173,7 +173,14 @@ const userAuth = async (req: Request, res: Response) => {
       });
     }
   } catch (err) {
-    console.error(`Error authenticating user: ${req.body}`, err);
+    console.error(`Error authenticating user: ${JSON.stringify(req.body)}, error: ${err}`);
+    if (err.name === "InvalidCredentialsError") {
+      return res.status(401).json({
+        message: "Invalid username or password.",
+        statusMessage: HttpResponseMessage.AUTH_INVALID_CREDENTIALS,
+      });
+    }
+
     return res.status(500).json({
       message: "Unknown error occurred. Failed to authenticate user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
