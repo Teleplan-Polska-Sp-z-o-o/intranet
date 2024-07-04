@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
-import { ISettings } from "../../../interfaces/user/ISettings";
+import { ISettings } from "../../../interfaces/user/UserTypes";
 
 @Entity()
 export class UserSettings {

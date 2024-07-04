@@ -1,4 +1,4 @@
-import { ISettings } from "../../interfaces/user/ISettings";
+import { ISettings } from "../../interfaces/user/UserTypes";
 
 class Settings implements ISettings {
   id: number | null;

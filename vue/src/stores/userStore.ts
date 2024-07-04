@@ -8,9 +8,9 @@ export const useUserStore = defineStore("user", () => {
   const user = ref<IUserEntity>(new UserEntity());
   const userToken = ref<string>("");
 
-  const set = (data: IUserEntity): boolean => {
+  const set = (data: UserEntity): boolean => {
     try {
-      user.value = new UserEntity().buildFromIUserEntity(data);
+      user.value = new UserEntity().buildFromUserEntity(data);
 
       localStorage.setItem("user", JSON.stringify(user.value));
 

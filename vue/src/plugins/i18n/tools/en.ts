@@ -149,18 +149,29 @@ const enT = {
     admin: {
       name: "Admin",
       tabs: {
-        permissions: {
-          name: "Permissions",
+        "user-info": {
+          name: "User Info",
           table: {
-            toolbar: "Permissions",
+            toolbar: "User Info",
             header: {
               username: "Username",
               domain: "Domain",
-              permission: "Permission",
               position: "Position",
               department: "Department",
               decisionMaker: "Decision Maker",
+              actions: "Actions",
+            },
+          },
+        },
+        "user-permissions": {
+          name: "User Permissions",
+          table: {
+            toolbar: "User Permissions",
+            header: {
+              username: "Username",
+              permission: "Permission",
               confidentiality: "Confidentiality",
+              groups: "Groups",
               actions: "Actions",
             },
           },

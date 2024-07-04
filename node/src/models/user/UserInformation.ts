@@ -1,4 +1,4 @@
-import { IUserInfo } from "../../interfaces/user/IUserInfo";
+import { IUserInfo } from "../../interfaces/user/UserTypes";
 
 class UserInformation implements IUserInfo {
   position: string;

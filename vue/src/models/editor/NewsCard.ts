@@ -1,6 +1,6 @@
 import { INewsCard } from "../../interfaces/editor/INewsCard";
 import { INewsEntity } from "../../interfaces/editor/INewsEntity";
-import { IPermission } from "../../interfaces/user/IPermission";
+import { IPermission } from "../../interfaces/user/UserTypes";
 
 class NewsCard implements INewsCard {
   id: number;

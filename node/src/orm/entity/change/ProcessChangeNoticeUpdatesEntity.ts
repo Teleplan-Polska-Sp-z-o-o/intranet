@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { IUser } from "../../../interfaces/user/IUser";
+import { IUser } from "../../../interfaces/user/UserTypes";
 import { Helper } from "../../../models/common/Helper";
 import { IProcessChangeNoticeUpdates } from "../../../interfaces/change/IProcessChangeNoticeUpdates";
 import { ProcessChangeNotice } from "./ProcessChangeNoticeEntity";

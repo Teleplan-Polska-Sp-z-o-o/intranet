@@ -6,7 +6,7 @@ import VerifyTables from "./VerifyTables.vue";
 import { useEditorStore } from "../../../../stores/editorStore";
 import { watch } from "vue";
 import { Permission } from "../../../../models/user/Permission";
-import { IPermission } from "../../../../interfaces/user/IPermission";
+import { IPermission, TPermissionStringCode } from "../../../../interfaces/user/UserTypes";
 import { usePermissionStore } from "../../../../stores/permissionStore";
 import { nodeConfig } from "../../../../config/env";
 import { Endpoints } from "../../../../config/Endpoints";
@@ -38,16 +38,16 @@ const bgImage = ref<Array<File>>([]);
 const news = ref<INewsEntity>(props.componentProps.editedItem);
 
 const setPermission = (val: string | null) => {
-  if (val) news.value.permission = new Permission(val as "User" | "Moderator" | "Admin");
+  if (val) news.value.permission = new Permission(val as TPermissionStringCode);
 };
 
 const getPermission = (per: IPermission) => {
   const permissionStore = usePermissionStore();
-  const code = permissionStore.getPermissionCode(per, true) as "User" | "Moderator" | "Admin";
+  const code = permissionStore.translatePermissionToStringCode(per) as TPermissionStringCode;
   return code;
 };
 
-const newsPermissionSelect = ref<string>("User");
+const newsPermissionSelect = ref<string>("user");
 
 watchEffect(() => {
   news.value = props.componentProps.editedItem;
@@ -168,7 +168,7 @@ watchEffect(() => {
             @update:modelValue="setPermission"
             variant="underlined"
             label="Permission"
-            :items="['User', 'Moderator', 'Admin']"
+            :items="['user', 'moderator', 'admin']"
           ></v-select>
           <v-text-field v-model="news.title" variant="underlined" label="Title"></v-text-field>
           <v-text-field

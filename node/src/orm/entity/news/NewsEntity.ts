@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { Permission } from "../../../models/user/Permission";
-import { IPermission } from "../../../interfaces/user/IPermission";
+import { IPermission } from "../../../interfaces/user/UserTypes";
 
 @Entity()
 export class News {

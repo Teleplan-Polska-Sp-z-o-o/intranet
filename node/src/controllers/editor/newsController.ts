@@ -7,6 +7,7 @@ import { dataSource } from "../../config/orm/dataSource";
 import { serverConfig } from "../../config/server";
 import { EntityManager } from "typeorm";
 import he from "he";
+import { TPermissionStringCode } from "../../interfaces/user/UserTypes";
 
 const saveNewsFile = (file: any, ref: string, bg: boolean): string => {
   const param = { bg: bg.toString(), uuid: ref };
@@ -170,7 +171,7 @@ const getNews = async (req: Request, res: Response) => {
       permission,
       skip,
       take,
-    }: { permission: "user" | "moderator" | "admin"; skip: number; take: number } = req.params;
+    }: { permission: TPermissionStringCode; skip: number; take: number } = req.params;
 
     let query = dataSource.getRepository(News).createQueryBuilder("news");
 

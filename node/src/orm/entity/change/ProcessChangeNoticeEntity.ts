@@ -11,8 +11,6 @@ import { IProcessChangeNotice } from "../../../interfaces/change/IProcessChangeN
 import { IProcessChangeNoticeFields } from "../../../interfaces/change/IProcessChangeNoticeFields";
 import { Helper } from "../../../models/common/Helper";
 import { ProcessChangeNoticeUpdates } from "./ProcessChangeNoticeUpdatesEntity";
-import { Department } from "../document/DepartmentEntity";
-import { IUser } from "../../../interfaces/user/IUser";
 import { User, User as UserEntity } from "../user/UserEntity";
 import { NotificationBuilder } from "../user/NotificationBuilder";
 import { ENotificationSource } from "../../../interfaces/user/notification/ENotificationSource";

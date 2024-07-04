@@ -8,10 +8,13 @@ import CustomAiAssistant from "../../components/views/tools/documents/assistant/
 import { IChips, ILevel } from "../../interfaces/document/DocumentTypes";
 import { Chips } from "../../models/document/Chips";
 import { useRoute, useRouter } from "vue-router";
+import { ToolTab } from "../../interfaces/common/ToolTabTypes";
+import { useUserStore } from "../../stores/userStore";
+import { usePermissionStore } from "../../stores/permissionStore";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
-const tabs = [
+const tabs: ToolTab[] = [
   // {
   //   id: 1,
   //   name: "my_documents",
@@ -26,24 +29,40 @@ const tabs = [
     id: 3,
     name: "instructions",
     icon: "mdi-file-document",
+    meta: {
+      group: "documents",
+      subgroup: "instructions",
+    },
   },
   {
     id: 4,
     name: "visuals",
     icon: "mdi-file-image",
+    meta: {
+      group: "documents",
+      subgroup: "visuals",
+    },
   },
   {
     id: 5,
     name: "msd",
     icon: "mdi-file-table",
+    meta: {
+      group: "documents",
+      subgroup: "msd",
+    },
   },
   {
     id: 6,
     name: "assistant",
     icon: "mdi-assistant",
+    meta: {
+      group: "documents",
+      subgroup: "assistant",
+    },
   },
   // {
-  //   id: 6,
+  //   id: 7,
   //   name: "recently_browsed",
   //   icon: "mdi-history",
   // },
@@ -98,6 +117,16 @@ const handleTable = (newValue: ILevel): void => {
     table.value = undefined;
   }, 0);
 };
+
+// filter tabs
+const userInfo = useUserStore().info();
+const filteredToolTabs = ref<ToolTab[]>([]);
+
+if (userInfo) {
+  usePermissionStore()
+    .filterToolTabs<ToolTab>(userInfo, tabs)
+    .then((fTT) => (filteredToolTabs.value = fTT));
+}
 </script>
 
 <template>
@@ -119,7 +148,7 @@ const handleTable = (newValue: ILevel): void => {
                   :direction="smallScreen ? 'horizontal' : 'vertical'"
                 >
                   <v-tab
-                    v-for="tab in tabs"
+                    v-for="tab in filteredToolTabs"
                     :key="tab.id"
                     :value="tab.id"
                     class="rounded"

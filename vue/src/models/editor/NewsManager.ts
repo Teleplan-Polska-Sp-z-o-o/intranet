@@ -54,7 +54,7 @@ class NewsManager {
     const permissionStore = usePermissionStore();
 
     const code: "user" | "moderator" | "admin" = permission
-      ? (permissionStore.getPermissionCode() as "user" | "moderator" | "admin")
+      ? (permissionStore.translatePermissionToStringCode() as "user" | "moderator" | "admin")
       : "admin";
     const response = await axios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.News}/${code}/${skip}/${take}`

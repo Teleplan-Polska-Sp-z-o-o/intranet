@@ -2,7 +2,7 @@
 import { onMounted } from "vue";
 import { useTheme } from "vuetify";
 import { useSettingsStore } from "./stores/settingsStore";
-import { ISettings } from "./interfaces/user/ISettings";
+import { ISettings } from "./interfaces/user/UserTypes";
 import { useI18n } from "vue-i18n";
 
 const { locale } = useI18n();

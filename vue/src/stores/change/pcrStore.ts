@@ -3,7 +3,7 @@ import { ComputedRef, computed, ref } from "vue";
 import { PCRFilters } from "../../models/change/pcr/PCRFilters";
 import { IProcessChangeRequest } from "../../interfaces/change/IProcessChangeRequest";
 import { useUserStore } from "../userStore";
-import { IUser } from "../../interfaces/user/IUser";
+import { IUser } from "../../interfaces/user/UserTypes";
 
 export const usePCRStore = defineStore("pcr", () => {
   const filters = ref<PCRFilters>(new PCRFilters());

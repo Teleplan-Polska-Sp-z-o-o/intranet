@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { IUser } from "../../../interfaces/user/IUser";
+import { IUser } from "../../../interfaces/user/UserTypes";
 import { useUserStore } from "../../../stores/userStore";
 import { useWebsocketStore } from "../../../stores/websocketStore";
 import { UserNotificationManager } from "../../../models/common/notification/UserNotificationManager";

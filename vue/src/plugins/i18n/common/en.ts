@@ -33,6 +33,10 @@ const enC = {
             explore: "Explore",
           },
         },
+        viewDocument: {
+          small: "Small",
+          large: "Large",
+        },
         tools: {
           documents: {
             title: "Documents",

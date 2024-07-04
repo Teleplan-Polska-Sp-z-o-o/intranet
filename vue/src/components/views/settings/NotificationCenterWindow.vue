@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import { UserNotification } from "../../../models/common/notification/UserNotification";
 import { ENotificationState } from "../../../interfaces/user/notification/ENotificationState";
 import { useUserStore } from "../../../stores/userStore";
-import { IUser } from "../../../interfaces/user/IUser";
+import { IUser } from "../../../interfaces/user/UserTypes";
 import { UserNotificationManager } from "../../../models/common/notification/UserNotificationManager";
 import { useWebsocketStore } from "../../../stores/websocketStore";
 import { useNotificationStore } from "../../../stores/notificationStore";

@@ -1,4 +1,4 @@
-import { IUser } from "../user/IUser";
+import { IUser } from "../user/UserTypes";
 
 interface ISocketConnection {
   ws: WebSocket;

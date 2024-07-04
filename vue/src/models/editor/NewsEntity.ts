@@ -1,5 +1,5 @@
 import { INewsEntity } from "../../interfaces/editor/INewsEntity";
-import { IPermission } from "../../interfaces/user/IPermission";
+import { IPermission } from "../../interfaces/user/UserTypes";
 import { Permission } from "../user/Permission";
 
 class NewsEntity implements INewsEntity {

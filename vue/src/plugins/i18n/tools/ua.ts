@@ -144,18 +144,29 @@ const uaT = {
     admin: {
       name: "Адміністратор",
       tabs: {
-        permissions: {
-          name: "Дозволи",
+        "user-info": {
+          name: "Інформація Про Користувача",
           table: {
-            toolbar: "Дозволи",
+            toolbar: "Інформація Про Користувача",
             header: {
               username: "Ім'я користувача",
               domain: "Домен",
-              permission: "Дозвіл",
               position: "Посада",
               department: "Відділ",
-              decisionMaker: "Приймач рішень",
+              decisionMaker: "Рішення приймає",
+              actions: "Дії",
+            },
+          },
+        },
+        "user-permissions": {
+          name: "Дозволи Користувача",
+          table: {
+            toolbar: "Дозволи Користувача",
+            header: {
+              username: "Ім'я користувача",
+              permission: "Дозвіл",
               confidentiality: "Конфіденційність",
+              groups: "Групи",
               actions: "Дії",
             },
           },

@@ -1,4 +1,4 @@
-import { TConfidentiality } from "../user/TConfidentiality";
+import { TConfidentiality } from "../user/UserTypes";
 
 interface IDocumentEntity {
   id: number;

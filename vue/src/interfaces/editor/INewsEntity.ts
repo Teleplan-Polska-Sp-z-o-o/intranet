@@ -1,4 +1,4 @@
-import { IPermission } from "../user/IPermission";
+import { IPermission } from "../user/UserTypes";
 
 interface INewsEntity {
   id: number;

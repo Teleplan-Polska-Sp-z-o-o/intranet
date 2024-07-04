@@ -1,4 +1,4 @@
-import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
+import { TConfidentiality } from "../../interfaces/user/UserTypes";
 
 class Helper {
   constructor() {}

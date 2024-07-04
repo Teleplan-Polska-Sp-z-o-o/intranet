@@ -1,5 +1,5 @@
 import { AuthenticationOptions } from "ldap-authentication";
-import { ILogin } from "../interfaces/user/ILogin";
+import { ILogin } from "../interfaces/user/UserTypes";
 import * as dotenv from "dotenv";
 
 dotenv.config({ path: "./.env" });
@@ -37,7 +37,7 @@ const getLDAPConfig = (loginData: ILogin): AuthenticationOptions => {
 
   const ldapConfig: AuthenticationOptions = {
     ldapOpts: { url: ldapHost },
-    adminDn: `${intranetUser.username}@reconext.com`,
+    adminDn: `${intranetUser.username}@${loginData.domain}`,
     adminPassword: intranetUser.password,
     //
     userSearchBase: getUserSearchBase(),

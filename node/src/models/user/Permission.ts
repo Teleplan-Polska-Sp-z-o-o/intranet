@@ -14,25 +14,25 @@
 
 // export { Permission };
 
-import { IPermission } from "../../interfaces/user/IPermission";
+import { IPermission, TPermissionStringCode } from "../../interfaces/user/UserTypes";
 
 class Permission implements IPermission {
   read: boolean;
   write: boolean;
   control: boolean;
 
-  constructor(permission: "User" | "Moderator" | "Admin" | IPermission = "User") {
+  constructor(permission: TPermissionStringCode | IPermission = "user") {
     let write: boolean = false;
     let control: boolean = false;
 
     if (!(permission instanceof Object)) {
       switch (permission) {
-        case "User":
+        case "user":
           break;
-        case "Moderator":
+        case "moderator":
           write = true;
           break;
-        case "Admin":
+        case "admin":
           write = true;
           control = true;
           break;

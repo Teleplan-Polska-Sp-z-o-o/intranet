@@ -7,10 +7,11 @@ import { UserSettings } from "../../orm/entity/user/UserSettingsEntity";
 import { adminsConfig } from "../../config/admins";
 import { HttpResponseMessage } from "../../enums/response";
 import { UserInfo } from "../../orm/entity/user/UserInfoEntity";
-import { IPermission } from "../../interfaces/user/IPermission";
+import { PermissionGroups, StaticGroups } from "../../interfaces/user/UserTypes";
 import { UserInformation } from "../../models/user/UserInformation";
 import { DataSource, EntityManager } from "typeorm";
-import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
+import { helperSetPermissionGroups } from "./permissionController";
+import { Permission } from "../../models/user/Permission";
 
 const findUser = async (
   where: string | number,
@@ -19,7 +20,13 @@ const findUser = async (
   const whereOptions = typeof where === "number" ? { id: where } : { username: where };
   return entityManager.getRepository(UserEntity).findOne({
     where: whereOptions,
-    relations: ["permission", "settings", "info"],
+    relations: [
+      "permission",
+      "settings",
+      "info",
+      "permission.groups",
+      "permission.groups.subgroups",
+    ],
   });
 };
 
@@ -56,7 +63,9 @@ const getUsers = async (req: Request, res: Response) => {
       .createQueryBuilder("user")
       .leftJoinAndSelect("user.permission", "permission")
       .leftJoinAndSelect("user.settings", "settings")
-      .leftJoinAndSelect("user.info", "info");
+      .leftJoinAndSelect("user.info", "info")
+      .leftJoinAndSelect("permission.groups", "groups")
+      .leftJoinAndSelect("groups.subgroups", "subgroups");
 
     if (equalOrAbovePermission) {
       switch (equalOrAbovePermission) {
@@ -108,71 +117,86 @@ const userAuth = async (req: Request, res: Response) => {
       });
 
     const token = ldap.generateJwt(ldapUser);
+    const admins = adminsConfig.admins;
+    const isAdmin = admins.includes(ldap.username);
 
-    // Check if user exist in database
-    let userExist: UserEntity | null = null;
-
-    userExist = await findUser(ldap.username);
-
-    // Create new UserEntity if user doesn't exist in database
-    if (!userExist) {
-      const admins = adminsConfig.admins;
-      const adminPermission = {
-        read: true,
-        write: true,
-        control: true,
-      };
-
-      const permissionEntity: UserPermission = admins.includes(ldap.username)
-        ? new UserPermission(adminPermission)
-        : new UserPermission();
-
-      const permission = await dataSource.getRepository(UserPermission).save(permissionEntity);
-
-      const settings = await dataSource.getRepository(UserSettings).save(new UserSettings());
-
-      const info = await dataSource
-        .getRepository(UserInfo)
-        .save(new UserInfo().build(new UserInformation(), ldapUser));
-
-      await dataSource
-        .getRepository(UserEntity)
-        .save(new UserEntity(ldap.username, ldap.domain, permission, settings, info));
-
-      userExist = await findUser(ldap.username);
-
-      return res.status(201).json({
-        userExist,
-        message: "Authentication successful. User has been created.",
-        statusMessage: HttpResponseMessage.POST_SUCCESS,
-      });
+    let groups: Partial<PermissionGroups>;
+    if (isAdmin) {
+      groups = StaticGroups.getAdminGroups();
     } else {
-      const hasTruthyValue = Object.values(userExist.info).some((value) => Boolean(value));
-      if (!userExist.info || !hasTruthyValue) {
-        const info = await dataSource
+      groups = StaticGroups.getBaseUserGroups();
+    }
+
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      // Check if user exist in database
+      let userExist: UserEntity | null = null;
+      userExist = await findUser(ldap.username, transactionalEntityManager);
+
+      // Create new UserEntity if user doesn't exist in database
+      if (!userExist) {
+        const permissionEntity: UserPermission = isAdmin
+          ? new UserPermission(new Permission("admin"))
+          : new UserPermission();
+
+        await helperSetPermissionGroups(groups, permissionEntity, transactionalEntityManager);
+
+        const permission = await transactionalEntityManager
+          .getRepository(UserPermission)
+          .save(permissionEntity);
+
+        const settings = await transactionalEntityManager
+          .getRepository(UserSettings)
+          .save(new UserSettings());
+
+        const info = await transactionalEntityManager
           .getRepository(UserInfo)
           .save(new UserInfo().build(new UserInformation(), ldapUser));
-        userExist.info = info;
-        await dataSource.getRepository(UserEntity).save(userExist);
-      }
 
-      if (!userExist.info.LDAPObject) {
-        let info = await dataSource
-          .getRepository(UserInfo)
-          .findOne({ where: { id: userExist.id } });
-        info = await dataSource
-          .getRepository(UserInfo)
-          .save(info.sanitizeAndAssignLDAPObject(ldapUser));
-        await dataSource.getRepository(UserEntity).save((userExist.info = info));
-      }
+        await transactionalEntityManager
+          .getRepository(UserEntity)
+          .save(new UserEntity(ldap.username, ldap.domain, permission, settings, info));
 
-      return res.status(200).json({
-        userExist,
-        token,
-        message: "Authentication successful.",
-        statusMessage: HttpResponseMessage.POST_SUCCESS,
-      });
-    }
+        userExist = await findUser(ldap.username);
+
+        return res.status(201).json({
+          userExist,
+          message: "Authentication successful. User has been created.",
+          statusMessage: HttpResponseMessage.POST_SUCCESS,
+        });
+      } else {
+        const hasTruthyValue = Object.values(userExist.info).some((value) => Boolean(value));
+        if (!userExist.info || !hasTruthyValue) {
+          const info = await transactionalEntityManager
+            .getRepository(UserInfo)
+            .save(new UserInfo().build(new UserInformation(), ldapUser));
+          userExist.info = info;
+          await transactionalEntityManager.getRepository(UserEntity).save(userExist);
+        }
+
+        if (!userExist.info.LDAPObject) {
+          let info = await transactionalEntityManager
+            .getRepository(UserInfo)
+            .findOne({ where: { id: userExist.id } });
+          info = await transactionalEntityManager
+            .getRepository(UserInfo)
+            .save(info.sanitizeAndAssignLDAPObject(ldapUser));
+          await transactionalEntityManager.getRepository(UserEntity).save((userExist.info = info));
+        }
+
+        const userPermission: UserPermission = userExist.permission;
+
+        if (!Array.isArray(userPermission.groups) || userPermission.groups.length === 0) {
+          await helperSetPermissionGroups(groups, userPermission, transactionalEntityManager);
+        }
+
+        return res.status(200).json({
+          userExist,
+          token,
+          message: "Authentication successful.",
+          statusMessage: HttpResponseMessage.POST_SUCCESS,
+        });
+      }
+    });
   } catch (err) {
     console.error("Error authenticating user: ", err);
     return res.status(500).json({
@@ -186,56 +210,19 @@ const editUser = async (req: Request, res: Response) => {
   try {
     const body = req.body;
     const userId: number = JSON.parse(body.user).id;
-    const permission: IPermission = JSON.parse(body.permission);
     const info: UserInformation = JSON.parse(body.info);
-    const confidentiality: TConfidentiality | undefined = JSON.parse(body?.confidentiality);
-
-    let user: UserEntity;
 
     await dataSource.transaction(async (transactionalEntityManager) => {
-      if (permission) {
-        const newPermission: UserPermission = confidentiality
-          ? new UserPermission(permission, confidentiality)
-          : new UserPermission(permission);
+      const user: UserEntity = await findUser(userId, transactionalEntityManager);
+      const userInfo: UserInfo = user.info;
+      if (!userInfo)
+        return res.status(404).json({
+          message: "User info not found.",
+          statusMessage: HttpResponseMessage.PUT_ERROR,
+        });
 
-        const userPermission = await transactionalEntityManager
-          .getRepository(UserPermission)
-          .findOne({
-            where: { id: userId },
-          });
-
-        userPermission.write = newPermission.write;
-        userPermission.control = newPermission.control;
-        userPermission.confidentiality = newPermission.confidentiality;
-
-        await transactionalEntityManager.getRepository(UserPermission).save(userPermission);
-      }
-
-      const userInfo: UserInfo = (await findUser(userId, transactionalEntityManager)).info;
-
-      if (userInfo) {
-        userInfo.build(new UserInformation(info));
-        await transactionalEntityManager.getRepository(UserInfo).save(userInfo);
-      } else {
-        const userInfoRecord = await transactionalEntityManager
-          .getRepository(UserInfo)
-          .save(new UserInfo().build(new UserInformation()));
-        user.info = userInfoRecord;
-        await transactionalEntityManager.getRepository(UserEntity).save(user);
-
-        userInfo.build(new UserInformation(info));
-        const userInfoExist = await transactionalEntityManager
-          .getRepository(UserInfo)
-          .save(userInfo);
-
-        if (!userInfoExist)
-          return res.status(404).json({
-            message: "User info not found.",
-            statusMessage: HttpResponseMessage.PUT_ERROR,
-          });
-      }
-
-      user = await findUser(userId, transactionalEntityManager);
+      userInfo.build(new UserInformation(info));
+      await transactionalEntityManager.getRepository(UserInfo).save(userInfo);
 
       return res.status(200).json({
         edited: user,

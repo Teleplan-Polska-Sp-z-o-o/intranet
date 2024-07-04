@@ -1,5 +1,5 @@
 import { IDocumentEntity } from "../../interfaces/document/IDocumentEntity";
-import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
+import { TConfidentiality } from "../../interfaces/user/UserTypes";
 
 export class DocumentEntity implements IDocumentEntity {
   id: number;

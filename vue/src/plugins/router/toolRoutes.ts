@@ -5,9 +5,14 @@ import MatrixView from "../../views/tools/MatrixView.vue";
 import DocumentView from "../../views/DocumentView.vue";
 import AdminView from "../../views/tools/AdminView.vue";
 
-import ChangeView from "../../views/tools/change/ChangeView.vue";
+import ChangeView from "../../views/tools/ChangeView.vue";
 
 import { RouteLocationNormalized } from "vue-router";
+
+// documents: ["instructions", "visuals", "msd", "assistant"],
+//       change: ["pcr", "pcn"],
+//       matrix: ["departments", "documents", "competences"],
+//       admin: ["info", "permissions", "news"],
 
 export const toolRoutes = {
   path: "/tool",
@@ -15,9 +20,6 @@ export const toolRoutes = {
   component: DefaultLayout,
   redirect: { name: "documents" },
   meta: {
-    read: true,
-    write: false,
-    control: false,
     breadcrumbs: {
       include: true,
       parent: "pages",
@@ -31,9 +33,7 @@ export const toolRoutes = {
       name: "documents",
       redirect: { name: "browseDocuments" },
       meta: {
-        read: true,
-        write: false,
-        control: false,
+        toolName: "documents",
         breadcrumbs: {
           include: true,
           parent: "tool.documents",
@@ -47,37 +47,18 @@ export const toolRoutes = {
           name: "browseDocuments",
           component: DocumentsView,
           meta: {
-            read: true,
-            write: false,
-            control: false,
+            toolName: "documents",
             breadcrumbs: {
               include: false,
             },
           },
-          // children: [
-          //   {
-          //     path: ":tab/:no?",
-          //     name: "browseDocumentsTab",
-          //     component: DocumentsView,
-          //     meta: {
-          //       read: true,
-          //       write: true,
-          //       control: false,
-          //       breadcrumbs: {
-          //         include: false,
-          //       },
-          //     },
-          //   },
-          // ],
         },
         {
           path: ":fileName/:fileLangs/:fileUUID",
           name: "viewDocuments",
           component: DocumentView,
           meta: {
-            read: true,
-            write: false,
-            control: false,
+            toolName: "documents",
             title: (route: RouteLocationNormalized) => route.params.fileName,
             breadcrumbs: {
               include: true,
@@ -95,9 +76,7 @@ export const toolRoutes = {
       name: "admin",
       component: AdminView,
       meta: {
-        read: true,
-        write: true,
-        control: true,
+        toolName: "admin",
         breadcrumbs: {
           include: true,
           parent: "tool",
@@ -105,15 +84,26 @@ export const toolRoutes = {
           path: "",
         },
       },
+      children: [
+        {
+          path: "browse/:tab",
+          name: "browseAdmin",
+          component: AdminView,
+          meta: {
+            toolName: "admin",
+            breadcrumbs: {
+              include: false,
+            },
+          },
+        },
+      ],
     },
     {
       path: "matrix",
       name: "matrix",
       component: MatrixView,
       meta: {
-        read: true,
-        write: true,
-        control: false,
+        toolName: "matrix",
         breadcrumbs: {
           include: true,
           parent: "tool",
@@ -123,13 +113,11 @@ export const toolRoutes = {
       },
       children: [
         {
-          path: "browse/:tab/:no?",
+          path: "browse/:tab",
           name: "browseMatrix",
           component: DocumentsView,
           meta: {
-            read: true,
-            write: false,
-            control: false,
+            toolName: "matrix",
             breadcrumbs: {
               include: false,
             },
@@ -143,9 +131,7 @@ export const toolRoutes = {
       component: ChangeView,
       redirect: { name: "browseChanges" },
       meta: {
-        read: true,
-        write: true,
-        control: false,
+        toolName: "change",
         breadcrumbs: {
           include: true,
           parent: "tool.change",
@@ -159,31 +145,26 @@ export const toolRoutes = {
           name: "browseChanges",
           component: ChangeView,
           meta: {
-            read: true,
-            write: true,
-            control: false,
+            toolName: "change",
             breadcrumbs: {
               include: false,
             },
           },
         },
-        {
-          path: "x",
-          name: "x",
-          component: ChangeView,
-          meta: {
-            read: true,
-            write: true,
-            control: false,
-            breadcrumbs: {
-              include: true,
-              parent: "tool.change",
-              name: "x",
-              path: "",
-              disabled: true,
-            },
-          },
-        },
+        // {
+        //   path: "x",
+        //   name: "x",
+        //   component: ChangeView,
+        //   meta: {
+        //     breadcrumbs: {
+        //       include: true,
+        //       parent: "tool.change",
+        //       name: "x",
+        //       path: "",
+        //       disabled: true,
+        //     },
+        //   },
+        // },
       ],
     },
     {

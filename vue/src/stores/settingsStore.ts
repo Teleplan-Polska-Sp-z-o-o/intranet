@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { ISettings } from "../interfaces/user/ISettings";
+import { ISettings } from "../interfaces/user/UserTypes";
 
 export const useSettingsStore = defineStore("settings", () => {
   const settings = ref<ISettings>({

@@ -150,7 +150,15 @@ const options = ref({
       <v-card-subtitle>
         {{ $t(`tools.chart.post.subtitle`) }}
       </v-card-subtitle>
-      <LineChart :chart-data="data" :options="options" css-classes="chart-container" />
+      <div class="chart-container">
+        <LineChart :chart-data="data" :options="options" />
+      </div>
     </v-card-text>
   </v-card>
 </template>
+
+<style scoped>
+.chart-container {
+  height: 400px;
+}
+</style>

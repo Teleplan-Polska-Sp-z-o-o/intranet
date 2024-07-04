@@ -6,7 +6,7 @@ import { useI18n } from "vue-i18n";
 import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import PCRStepper from "./PCRStepper.vue";
 import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IProcessChangeRequestBase";
-import { IUser } from "../../../../../interfaces/user/IUser";
+import { IUser } from "../../../../../interfaces/user/UserTypes";
 import PCRView from "./PCRView.vue";
 import PCRTableFilters from "./PCRTableFilters.vue";
 import { useRoute } from "vue-router";

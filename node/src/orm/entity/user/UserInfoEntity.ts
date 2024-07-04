@@ -20,31 +20,6 @@ export class UserInfo {
 
   constructor() {}
 
-  // public sanitizeAndAssignLDAPObject = (ldapUser: ILdapUser | null): UserInfo => {
-  //   if (ldapUser === null) return null;
-  //   const sanitizedLdapUser = { ...ldapUser };
-
-  //   // // Replace problematic values with a specific string
-  //   // const replacementString = "VALUE_CANNOT_BE_STORED";
-
-  //   const sanitizeJSONString = (jsonString: string): string => {
-  //     // Remove null characters
-  //     let sanitizedString = jsonString.replace(/\\u0000/g, "");
-
-  //     // Escape backslashes
-  //     sanitizedString = sanitizedString.replace(/\\/g, "\\\\");
-
-  //     // Ensure valid Unicode escapes
-  //     sanitizedString = sanitizedString.replace(/\\u([0-9A-Fa-f]{4})/g, "\\u$1");
-
-  //     return sanitizedString;
-  //   };
-
-  //   this.LDAPObject = sanitizeJSONString(JSON.stringify(sanitizedLdapUser));
-
-  //   return this;
-  // };
-
   public sanitizeAndAssignLDAPObject = (ldapUser: ILdapUser | null): UserInfo => {
     if (ldapUser === null) return null;
     const sanitizedLdapUser = { ...ldapUser };

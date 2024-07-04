@@ -1,32 +1,39 @@
 <script setup lang="ts">
-// DefineComponent, computed,
 import { ref, watch } from "vue";
-import alertResponseStatus from "../../../components/common/alertResponseStatus.vue";
-import PCRTable from "../../../components/views/tools/change/pcr/PCRTable.vue";
-import PCNTable from "../../../components/views/tools/change/pcn/PCNTable.vue";
+import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
+import PCRTable from "../../components/views/tools/change/pcr/PCRTable.vue";
+import PCNTable from "../../components/views/tools/change/pcn/PCNTable.vue";
 import { useRoute, useRouter } from "vue-router";
-import { ResponseStatus } from "../../../models/common/ResponseStatus";
+import { ResponseStatus } from "../../models/common/ResponseStatus";
+import { ToolTab } from "../../interfaces/common/ToolTabTypes";
+import { useUserStore } from "../../stores/userStore";
+import { usePermissionStore } from "../../stores/permissionStore";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
-const tabs = [
+const tabs: ToolTab[] = [
   {
     id: 1,
     name: "pcr",
     icon: "mdi-invoice-text-send-outline",
-    // component: PCRTable,
+    meta: {
+      group: "change",
+      subgroup: "pcr",
+    },
   },
   {
     id: 2,
     name: "pcn",
     icon: "mdi-bulletin-board",
-    // component: PCNTable,
+    meta: {
+      group: "change",
+      subgroup: "pcn",
+    },
   },
   // {
   //   id: 3,
   //   name: "dcn",
   //   icon: "mdi-bell-outline",
-  //   component: PCRTable,
   // },
 ];
 
@@ -56,23 +63,6 @@ const getTab = (newTab: string | Array<string>, getNumericValue: boolean): numbe
 const currentTabValue = ref<number>(getTab(route.params.tab, true) as number);
 
 const currentTab = ref<string>(getTab(route.params.tab, false) as string);
-// const no = ref<string | undefined>((route.params.no as string) || undefined);
-
-// switch (route.params.tab) {
-//   case "pcr":
-//     currentTab.value = 1;
-//     break;
-//   case "pcn":
-//     currentTab.value = 2;
-//     break;
-//   case "dcn":
-//     currentTab.value = 3;
-//     break;
-
-//   default:
-//     currentTab.value = 1;
-//     break;
-// }
 
 watch(
   () => route.params.tab,
@@ -82,16 +72,18 @@ watch(
   }
 );
 
-// const currentTabName = computed<string>(() => {
-//   return tabs.find((tab) => tab.id === currentTab.value)?.name || "";
-// });
-//no: string | undefined in defineComp
-// const tabTable = computed<DefineComponent<{ tab: string }, any, any> | undefined>(() => {
-//   return tabs.find((tab) => tab.id === currentTab.value)?.component;
-// });
-
 const responseStatus = ref<ResponseStatus | null>(null);
 const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value = status);
+
+// filter tabs
+const userInfo = useUserStore().info();
+const filteredToolTabs = ref<ToolTab[]>([]);
+
+if (userInfo) {
+  usePermissionStore()
+    .filterToolTabs<ToolTab>(userInfo, tabs)
+    .then((fTT) => (filteredToolTabs.value = fTT));
+}
 </script>
 
 <template>
@@ -118,7 +110,7 @@ const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value =
                   :direction="smallScreen ? 'horizontal' : 'vertical'"
                 >
                   <v-tab
-                    v-for="tab in tabs"
+                    v-for="tab in filteredToolTabs"
                     :key="tab.id"
                     :value="tab.id"
                     class="rounded"
@@ -135,44 +127,20 @@ const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value =
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
                 <v-window-item :value="1">
-                  <!-- <router-view
-                    class="bg-surface-2 pa-4 ma-1"
-                    :is="tabTable"
-                    @responseStatus="handleResponseStatus"
-                    :tab="currentTabName"
-                    :no="no"
-                  ></router-view> -->
                   <p-c-r-table
                     class="bg-surface-2 pa-4 ma-1"
                     @responseStatus="handleResponseStatus"
                     :tab="currentTab"
                   ></p-c-r-table>
-                  <!-- :no="no" -->
                 </v-window-item>
                 <v-window-item :value="2">
-                  <!-- <router-view
-                    class="bg-surface-2 pa-4 ma-1"
-                    :is="tabTable"
-                    @responseStatus="handleResponseStatus"
-                    :tab="currentTabName"
-                    :no="no"
-                  ></router-view> -->
                   <p-c-n-table
                     class="bg-surface-2 pa-4 ma-1"
                     @responseStatus="handleResponseStatus"
                     :tab="currentTab"
                   ></p-c-n-table>
-                  <!-- :no="no" -->
                 </v-window-item>
-                <v-window-item :value="3">
-                  <!-- <router-view
-                    class="bg-surface-2 pa-4 ma-1"
-                    :is="tabTable"
-                    @responseStatus="handleResponseStatus"
-                    :tab="currentTabName"
-                    :no="no"
-                  ></router-view> -->
-                </v-window-item>
+                <v-window-item :value="3"> </v-window-item>
               </v-window>
             </v-col>
           </v-row>
