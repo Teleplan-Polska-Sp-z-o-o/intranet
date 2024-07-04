@@ -147,8 +147,7 @@ const userAuth = async (req: Request, res: Response) => {
         statusMessage: HttpResponseMessage.POST_SUCCESS,
       });
     } else {
-      const hasTruthyValue = Object.values(userExist.info).some((value) => Boolean(value));
-      if (!userExist.info || !hasTruthyValue) {
+      if (!userExist.info || !Object.values(userExist.info).some((value) => Boolean(value))) {
         const info = await dataSource
           .getRepository(UserInfo)
           .save(new UserInfo().build(new UserInformation(), ldapUser));
@@ -174,7 +173,7 @@ const userAuth = async (req: Request, res: Response) => {
       });
     }
   } catch (err) {
-    console.error("Error authenticating user: ", err);
+    console.error(`Error authenticating user: ${req.body}`, err);
     return res.status(500).json({
       message: "Unknown error occurred. Failed to authenticate user.",
       statusMessage: HttpResponseMessage.UNKNOWN,
