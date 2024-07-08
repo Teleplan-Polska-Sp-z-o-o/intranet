@@ -71,12 +71,17 @@ const tabs: ToolTab[] = [
 const router = useRouter();
 const route = useRoute();
 
-const getTab = (newTab: string | Array<string>, getNumericValue: boolean): number | string => {
-  if (Array.isArray(newTab))
+const getTab = (
+  tabName: string | Array<string> | undefined,
+  getNumericValue: boolean
+): number | string => {
+  if (Array.isArray(tabName))
     throw new Error(
-      `newTab at getTab at DocumentsView evaluates to Array<string>: ${newTab}, length: ${newTab.length}`
+      `tabName at getTab at DocumentsView evaluates to Array<string>: ${tabName}, length: ${tabName.length}`
     );
-  switch (newTab) {
+  if (!tabName) throw new Error("tabName at getTab at DocumentsView evaluates to undefined");
+
+  switch (tabName) {
     case "instructions":
       return getNumericValue ? 3 : "instructions";
 
@@ -125,7 +130,10 @@ const filteredToolTabs = ref<ToolTab[]>([]);
 if (userInfo) {
   usePermissionStore()
     .filterToolTabs<ToolTab>(userInfo, tabs)
-    .then((fTT) => (filteredToolTabs.value = fTT));
+    .then((fTT) => {
+      filteredToolTabs.value = fTT;
+      currentTabValue.value = getTab(filteredToolTabs.value.at(0)?.meta.subgroup, true) as number;
+    });
 }
 </script>
 

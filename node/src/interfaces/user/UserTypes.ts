@@ -42,7 +42,7 @@ enum PermissionGroup {
 type PermissionDocumentsSubgroup = "instructions" | "visuals" | "msd" | "assistant";
 type PermissionChangeSubgroup = "pcr" | "pcn" | "dcn";
 type PermissionMatrixSubgroup = "departments" | "documents" | "competences";
-type PermissionAdminSubgroup = "info" | "permissions" | "news";
+type PermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
 
 interface PermissionGroups {
   [key: string]: Array<string>;
@@ -58,7 +58,7 @@ class StaticGroups {
       [PermissionGroup.DOCUMENTS]: ["instructions", "visuals", "msd", "assistant"],
       [PermissionGroup.CHANGE]: ["pcr", "pcn", "dcn"],
       [PermissionGroup.MATRIX]: ["departments", "documents", "competences"],
-      [PermissionGroup.ADMIN]: ["info", "permissions", "news"],
+      [PermissionGroup.ADMIN]: ["user-info", "user-permissions", "news"],
     };
   }
   public static getBaseUserGroups(): Partial<PermissionGroups> {

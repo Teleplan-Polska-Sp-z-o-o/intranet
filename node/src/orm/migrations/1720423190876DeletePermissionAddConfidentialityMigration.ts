@@ -9,6 +9,7 @@ export class DeletePermissionAddConfidentiality1720423190876 implements Migratio
       new TableColumn({
         name: "confidentiality",
         type: "varchar",
+        default: "'public'",
       })
     );
   }

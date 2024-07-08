@@ -83,7 +83,7 @@ export class UserInfo {
     this.position = info.position;
     this.department = info.department;
     this.decisionMaker = info.decisionMaker;
-    this.sanitizeAndAssignLDAPObject(fromLDAP);
+    if (fromLDAP) this.sanitizeAndAssignLDAPObject(fromLDAP);
 
     return this;
   };

@@ -10,6 +10,7 @@ import {
 import { UserPermissionManager } from "../models/user/UserPermissionManager";
 import { RouteGroup } from "../models/common/router/RouteGroup";
 import { RouterHelper } from "../models/common/router/RouterHelper";
+import { User } from "../models/user/User";
 
 export const usePermissionStore = defineStore("auth", () => {
   const storedRolePermission = ref<Partial<IPermission>>({
@@ -19,9 +20,9 @@ export const usePermissionStore = defineStore("auth", () => {
   });
 
   const get = async (iUser: IUser): Promise<IPermission> => {
-    const permission: IPermission = (
-      await new UserPermissionManager().getOne(JSON.stringify(iUser))
-    ).permission;
+    const user: User = new User().build(iUser);
+    const permission: IPermission = (await new UserPermissionManager().getOne(JSON.stringify(user)))
+      .permission;
 
     return permission;
   };
@@ -186,6 +187,7 @@ export const usePermissionStore = defineStore("auth", () => {
 
     // Filter out null values
     const filteredTools = resolvedToolTabs.filter((toolTab) => toolTab !== null) as T[];
+
     return filteredTools;
   };
 
