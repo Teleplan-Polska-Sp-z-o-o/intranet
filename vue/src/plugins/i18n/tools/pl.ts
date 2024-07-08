@@ -149,18 +149,29 @@ const plT = {
     admin: {
       name: "Admin",
       tabs: {
-        permissions: {
-          name: "Uprawnienia",
+        "user-info": {
+          name: "Informacje o Użytkowniku",
           table: {
-            toolbar: "Uprawnienia",
+            toolbar: "Informacje o Użytkowniku",
             header: {
               username: "Nazwa użytkownika",
               domain: "Domena",
-              permission: "Uprawnienie",
-              position: "Pozycja",
+              position: "Stanowisko",
               department: "Dział",
-              decisionMaker: "Osoba Decyzyjna",
+              decisionMaker: "Decydent",
+              actions: "Akcje",
+            },
+          },
+        },
+        "user-permissions": {
+          name: "Uprawnienia Użytkownika",
+          table: {
+            toolbar: "Uprawnienia Użytkownika",
+            header: {
+              username: "Nazwa użytkownika",
+              permission: "Uprawnienie",
               confidentiality: "Poufność",
+              groups: "Grupy",
               actions: "Akcje",
             },
           },

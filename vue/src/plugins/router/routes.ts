@@ -12,9 +12,6 @@ const routes = [
     name: "auth",
     component: AuthView,
     meta: {
-      read: false,
-      write: false,
-      control: false,
       breadcrumbs: {
         include: false,
       },

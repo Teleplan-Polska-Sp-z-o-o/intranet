@@ -7,6 +7,7 @@ import { dataSource } from "../../config/orm/dataSource";
 import { serverConfig } from "../../config/server";
 import { EntityManager } from "typeorm";
 import he from "he";
+import { TConfidentiality, TPermissionStringCode } from "../../interfaces/user/UserTypes";
 
 const saveNewsFile = (file: any, ref: string, bg: boolean): string => {
   const param = { bg: bg.toString(), uuid: ref };
@@ -71,7 +72,6 @@ const addNews = async (req: Request, res: Response) => {
         return res.status(200).json({
           url: `${serverConfig.origin}:${serverConfig.port}/uploads/news/${newFileName}`,
         });
-        break;
 
       default:
         const body = req.body;
@@ -85,7 +85,7 @@ const addNews = async (req: Request, res: Response) => {
 
           const news = new News(
             base.ref,
-            base.permission,
+            base.confidentiality,
             base.title,
             base.subtitle,
             base.content,
@@ -138,12 +138,16 @@ const editNews = async (req: Request, res: Response) => {
       // store bg image
       const newFileName = saveNewsFile(req.files.at(0), base.ref, true);
 
-      newsToUpdate.ref = base.ref;
-      newsToUpdate.permission = base.permission;
-      newsToUpdate.title = base.title;
-      newsToUpdate.subtitle = base.subtitle;
-      newsToUpdate.content = base.content;
-      newsToUpdate.bgImage = newFileName;
+      base.bgImage = newFileName;
+
+      // newsToUpdate.ref = base.ref;
+      // newsToUpdate.confidentiality = base.confidentiality;
+      // newsToUpdate.title = base.title;
+      // newsToUpdate.subtitle = base.subtitle;
+      // newsToUpdate.content = base.content;
+      // newsToUpdate.bgImage = base.bgImage;
+
+      newsToUpdate.editColumns(base);
 
       await transactionalEntityManager.getRepository(News).save(newsToUpdate);
 
@@ -167,20 +171,29 @@ const editNews = async (req: Request, res: Response) => {
 const getNews = async (req: Request, res: Response) => {
   try {
     const {
-      permission,
+      confidentiality,
       skip,
       take,
-    }: { permission: "user" | "moderator" | "admin"; skip: number; take: number } = req.params;
+    }: { confidentiality: TConfidentiality; skip: number; take: number } = req.params;
 
     let query = dataSource.getRepository(News).createQueryBuilder("news");
 
-    switch (permission) {
-      case "moderator":
-        query = query.where("news.permission->>'control' = :control", { control: "false" });
-      case "user":
-        query = query.where("news.permission->>'write' = :write", { write: "false" });
+    switch (confidentiality) {
+      case "public":
+        query = query.where("news.confidentiality = :confidentiality", {
+          confidentiality: "public",
+        });
         break;
-
+      case "restricted":
+        query = query.where("news.confidentiality IN (:...confidentialities)", {
+          confidentialities: ["public", "restricted"],
+        });
+        break;
+      case "secret":
+        query = query.where("news.confidentiality IN (:...confidentialities)", {
+          confidentialities: ["public", "restricted", "secret"],
+        });
+        break;
       default:
         break;
     }

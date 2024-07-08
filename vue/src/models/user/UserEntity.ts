@@ -1,5 +1,5 @@
 import { IUserEntity } from "../../interfaces/user/IUserEntity";
-import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
+import { TConfidentiality, UserGroup } from "../../interfaces/user/UserTypes";
 import { LDAPUser } from "../../interfaces/user/TLDAP";
 
 export class UserEntity implements IUserEntity {
@@ -10,11 +10,12 @@ export class UserEntity implements IUserEntity {
     write: boolean;
     control: boolean;
     confidentiality: TConfidentiality;
+    groups: Array<UserGroup>;
     id: number;
   };
   settings: {
     theme: string;
-    language: string;
+    language: "pl" | "en" | "ua";
     id: number;
   };
   username: string;
@@ -33,14 +34,15 @@ export class UserEntity implements IUserEntity {
       write: false,
       control: false,
       confidentiality: "public",
+      groups: [],
       id: 0,
     };
-    this.settings = { theme: "", language: "", id: 0 };
+    this.settings = { theme: "", language: "en", id: 0 };
     this.username = "";
     this.info = { position: null, department: null, decisionMaker: null, LDAPObject: null };
   }
 
-  public buildFromIUserEntity(entity: IUserEntity): UserEntity {
+  public buildFromUserEntity = (entity: UserEntity): UserEntity => {
     this.domain = entity.domain;
     this.id = entity.id;
     this.permission = entity.permission;
@@ -49,5 +51,5 @@ export class UserEntity implements IUserEntity {
     this.info = entity.info;
 
     return this;
-  }
+  };
 }

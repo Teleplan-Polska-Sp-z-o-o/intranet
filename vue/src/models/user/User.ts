@@ -1,16 +1,25 @@
-import { IUser } from "../../interfaces/user/IUser";
+import { IUser } from "../../interfaces/user/UserTypes";
 import { IUserEntity } from "../../interfaces/user/IUserEntity";
+import { UserEntity } from "./UserEntity";
 
 class User implements IUser {
   id: number;
   username: string;
   domain: string;
 
-  constructor(user?: IUser | IUserEntity) {
-    this.id = user ? user.id : 0;
-    this.username = user ? user.username : "";
-    this.domain = user ? user.domain : "";
+  constructor() {
+    this.id = 0;
+    this.username = "";
+    this.domain = "";
   }
+
+  public build = (user: IUser | IUserEntity | UserEntity): User => {
+    this.id = user.id;
+    this.username = user.username;
+    this.domain = user.domain;
+
+    return this;
+  };
 }
 
 export { User };

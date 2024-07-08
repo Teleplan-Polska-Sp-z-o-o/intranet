@@ -33,6 +33,10 @@ const plC = {
             explore: "Eksploruj",
           },
         },
+        viewDocument: {
+          small: "Mały",
+          large: "Duży",
+        },
         tools: {
           documents: {
             title: "Dokumenty",

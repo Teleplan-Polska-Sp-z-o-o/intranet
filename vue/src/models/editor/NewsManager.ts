@@ -6,6 +6,9 @@ import { INewsEntity } from "../../interfaces/editor/INewsEntity";
 import { usePermissionStore } from "../../stores/permissionStore";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
+import { TConfidentiality } from "../../interfaces/user/UserTypes";
+import { useUserStore } from "../../stores/userStore";
+import { User } from "../user/User";
 
 class NewsManager {
   constructor() {}
@@ -47,17 +50,18 @@ class NewsManager {
   };
 
   public get = async (
-    permission: boolean = false,
+    confidentiality: boolean = false,
     skip: number = 0,
     take: number = 0
   ): Promise<Array<INewsEntity>> => {
-    const permissionStore = usePermissionStore();
-
-    const code: "user" | "moderator" | "admin" = permission
-      ? (permissionStore.getPermissionCode() as "user" | "moderator" | "admin")
-      : "admin";
+    const userInfo = useUserStore().info();
+    let conf: TConfidentiality = "public";
+    if (userInfo) {
+      const user: User = new User().build(userInfo);
+      conf = confidentiality ? (await usePermissionStore().get(user)).confidentiality : "secret";
+    }
     const response = await axios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.News}/${code}/${skip}/${take}`
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.News}/${conf}/${skip}/${take}`
     );
     return response.data.news;
   };

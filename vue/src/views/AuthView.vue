@@ -13,7 +13,6 @@ import { ResponseStatus } from "../models/common/ResponseStatus";
 import { IResponseStatus } from "../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../components/common/alertResponseStatus.vue";
 import { UserEntity } from "../models/user/UserEntity";
-// import msSignIn from "../components/auth/msSignIn.vue";
 
 // Router
 const router = useRouter();
@@ -84,14 +83,12 @@ const submitLogin = (): void => {
     axios
       .post(reqUrl, reqData)
       .then(function (response: any) {
-        userStore.set(new UserEntity().buildFromIUserEntity(response.data.userExist));
+        const user: UserEntity = response.data.userExist;
+        userStore.set(new UserEntity().buildFromUserEntity(user));
         userStore.setToken(response.data.token);
-
-        const permission = { ...response.data.userExist.permission };
-        delete permission.id;
-
+        const permission = { ...user.permission };
         permissionStore.set(new Permission(permission));
-        settingsStore.set(response.data.userExist.settings);
+        settingsStore.set(user.settings);
         router.push({ path: "/pages" });
       })
       .catch(function (error) {

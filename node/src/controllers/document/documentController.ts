@@ -11,7 +11,7 @@ import { Department } from "../../orm/entity/document/DepartmentEntity";
 import { Category } from "../../orm/entity/document/CategoryEntity";
 import { In, Not } from "typeorm";
 import { IDocOptions } from "../../interfaces/document/IDocOptions";
-import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
+import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { Competence } from "../../orm/entity/document/CompetenceEntity";
 import { Utils } from "../common/Utils";
 

@@ -3,7 +3,7 @@ import { dataSource } from "../../config/orm/dataSource";
 import { HttpResponseMessage } from "../../enums/response";
 import { ProcessChangeNotice } from "../../orm/entity/change/ProcessChangeNoticeEntity";
 import { IProcessChangeNoticeFields } from "../../interfaces/change/IProcessChangeNoticeFields";
-import { IUser } from "../../interfaces/user/IUser";
+import { IUser } from "../../interfaces/user/UserTypes";
 import { User } from "../../orm/entity/user/UserEntity";
 import { ProcessChangeRequest } from "../../orm/entity/change/ProcessChangeRequestEntity";
 import { IsNull, Not } from "typeorm";

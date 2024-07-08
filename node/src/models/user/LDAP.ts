@@ -1,5 +1,5 @@
 import { authenticate } from "ldap-authentication";
-import { ILogin } from "../../interfaces/user/ILogin";
+import { ILogin } from "../../interfaces/user/UserTypes";
 import { getLDAPConfig } from "../../config/ldap";
 import { serverConfig } from "../../config/server";
 import { JwtPayload, Secret, SignOptions, sign, verify } from "jsonwebtoken";

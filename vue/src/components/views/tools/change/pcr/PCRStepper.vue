@@ -2,7 +2,7 @@
 import { computed, ref, watch } from "vue";
 import PCRVerifyTables from "./PCRVerifyTable.vue";
 import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IProcessChangeRequestBase";
-import { IUser } from "../../../../../interfaces/user/IUser";
+import { IUser } from "../../../../../interfaces/user/UserTypes";
 import { useUserStore } from "../../../../../stores/userStore";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
 // import { CategoriesManager } from "../../../../../models/document/CategoriesManager";

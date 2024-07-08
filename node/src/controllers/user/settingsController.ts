@@ -3,10 +3,6 @@ import { dataSource } from "../../config/orm/dataSource";
 import { Settings } from "../../models/user/Settings";
 import { User } from "../../orm/entity/user/UserEntity";
 import { UserSettings } from "../../orm/entity/user/UserSettingsEntity";
-import { Permission } from "../../models/user/Permission";
-import { IPermission } from "../../interfaces/user/IPermission";
-import { UserPermission } from "../../orm/entity/user/UserPermissionEntity";
-import { IUser } from "../../interfaces/user/IUser";
 import { HttpResponseMessage } from "../../enums/response";
 
 const findUser = async (id: number): Promise<User> => {

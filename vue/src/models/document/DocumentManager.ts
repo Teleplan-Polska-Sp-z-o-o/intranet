@@ -6,7 +6,7 @@ import { DocumentEntity } from "./DocumentEntity";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { useUserStore } from "../../stores/userStore";
-import { TConfidentiality } from "../../interfaces/user/TConfidentiality";
+import { TConfidentiality } from "../../interfaces/user/UserTypes";
 
 class DocumentManager {
   constructor() {}

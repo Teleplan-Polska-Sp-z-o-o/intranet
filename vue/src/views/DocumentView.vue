@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
 import "vue-pdf-embed/dist/style/index.css";
 import "vue-pdf-embed/dist/style/annotationLayer.css";
@@ -13,6 +13,7 @@ import { IResponseStatus } from "../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../models/common/ResponseStatus";
 import { IUserEntity } from "../interfaces/user/IUserEntity";
 import { Helper } from "../models/common/Helper";
+import { useI18n } from "vue-i18n";
 
 const route = useRoute();
 const params = route.params;
@@ -60,8 +61,8 @@ const test = async () => {
 test();
 
 const backend = `${nodeConfig.origin}:${nodeConfig.port}/uploads/documents/`;
-const document = `${params.fileName}_qs_langs=${params.fileLangs}&uuid=${params.fileUUID}`;
-const pdfSource = ref<any>(`${backend}${document}.pdf`);
+const doc = `${params.fileName}_qs_langs=${params.fileLangs}&uuid=${params.fileUUID}`;
+const pdfSource = ref<any>(`${backend}${doc}.pdf`);
 
 const pageCount = ref<number | undefined>(undefined);
 const page = ref<number>(1);
@@ -85,6 +86,51 @@ const handleDocumentLoad = ({ numPages }: { numPages: number }): void => {
 const handleDocumentRender = (): void => {
   loading.value = false;
 };
+
+const sliderScale = ref<number>(0.8);
+
+const formatNumber = (num: number) => {
+  return (num * 10).toFixed(0).padStart(2, "0");
+};
+const pdfClassExtension = computed(() => formatNumber(sliderScale.value));
+const { t } = useI18n();
+const ticks = computed(() => ({
+  0.6: t("common.default_layout.pages.viewDocument.small"),
+  0.7: "",
+  0.8: "",
+  0.9: "",
+  1: t("common.default_layout.pages.viewDocument.large"),
+}));
+const increaseScale = () => {
+  if (sliderScale.value < 1) {
+    sliderScale.value = +(sliderScale.value + 0.1).toFixed(1);
+  }
+};
+const decreaseScale = () => {
+  if (sliderScale.value > 0.6) {
+    sliderScale.value = +(sliderScale.value - 0.1).toFixed(1);
+  }
+};
+
+// Prevent default Ctrl + Scroll behavior and handle scaling
+const handleCtrlScroll = (event: WheelEvent) => {
+  if (event.ctrlKey) {
+    event.preventDefault();
+    if (event.deltaY < 0) {
+      increaseScale();
+    } else {
+      decreaseScale();
+    }
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("wheel", handleCtrlScroll, { passive: false });
+});
+
+onUnmounted(() => {
+  window.removeEventListener("wheel", handleCtrlScroll);
+});
 </script>
 
 <template>
@@ -103,6 +149,22 @@ const handleDocumentRender = (): void => {
 
       <h1 v-if="!loading && !responseStatus" class="text-h4">{{ params.fileName }} {{ index }}</h1>
     </v-row>
+    <v-row class="justify-center align-center w-50 mx-auto">
+      <v-slider
+        v-if="!loading && !responseStatus"
+        v-model="sliderScale"
+        :max="1"
+        :min="0.6"
+        append-icon="mdi-image-size-select-actual"
+        prepend-icon="mdi-image-size-select-large"
+        :ticks="ticks"
+        :step="0.1"
+        show-ticks="always"
+        @click:append="increaseScale"
+        @click:prepend="decreaseScale"
+        color="primary"
+      ></v-slider>
+    </v-row>
     <v-row class="justify-center align-center">
       <v-btn
         @click="prev"
@@ -119,8 +181,13 @@ const handleDocumentRender = (): void => {
       >
       </v-btn>
 
-      <v-col class="pdf" v-if="confidentialityPassed && !responseStatus">
+      <v-col
+        class="pdfDocumentView"
+        :class="`canvas-scale-${pdfClassExtension}`"
+        v-if="confidentialityPassed && !responseStatus"
+      >
         <vue-pdf-embed
+          ref="pdfEmbed"
           annotation-layer
           text-layer
           :source="pdfSource"
@@ -134,9 +201,6 @@ const handleDocumentRender = (): void => {
 </template>
 
 <style scoped lang="scss">
-.pdf {
-  position: relative;
-}
 .arrow {
   position: fixed;
   top: 50%;
@@ -149,6 +213,52 @@ const handleDocumentRender = (): void => {
 
   &-right {
     right: 0;
+  }
+}
+</style>
+
+<style lang="scss">
+.pdfDocumentView {
+  position: relative;
+
+  &.canvas-scale-06 {
+    canvas {
+      width: 60% !important;
+      height: 60% !important;
+      margin: auto !important;
+    }
+  }
+
+  &.canvas-scale-07 {
+    canvas {
+      width: 70% !important;
+      height: 70% !important;
+      margin: auto !important;
+    }
+  }
+
+  &.canvas-scale-08 {
+    canvas {
+      width: 80% !important;
+      height: 80% !important;
+      margin: auto !important;
+    }
+  }
+
+  &.canvas-scale-09 {
+    canvas {
+      width: 90% !important;
+      height: 90% !important;
+      margin: auto !important;
+    }
+  }
+
+  &.canvas-scale-10 {
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+      margin: auto !important;
+    }
   }
 }
 </style>

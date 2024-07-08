@@ -1,4 +1,4 @@
-import { IUser } from "../../interfaces/user/IUser";
+import { IUser } from "../../interfaces/user/UserTypes";
 import { ISocketConnection } from "../../interfaces/websocket/ISocketConnection";
 
 class WebsocketConnections {

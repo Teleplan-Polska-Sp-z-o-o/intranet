@@ -16,6 +16,7 @@ import { serverConfig } from "./config/server";
 
 // Routes
 import { userRoutes } from "./routes/userRoutes";
+import { permissionRoutes } from "./routes/permissionRoutes";
 import { documentRoutes } from "./routes/documentRoutes";
 import { departmentRoutes } from "./routes/departmentRoutes";
 import { categoryRoutes } from "./routes/categoryRoutes";
@@ -29,6 +30,9 @@ import { competenceRoutes } from "./routes/competenceRoutes";
 import path from "path";
 
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
+
+// user
+app.use("/api/user/permission", permissionRoutes);
 app.use("/api/user", userRoutes);
 
 // document/department/category/subcategory

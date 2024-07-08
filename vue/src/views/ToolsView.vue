@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { usePermissionStore } from "../stores/permissionStore";
-import { IPermission } from "../interfaces/user/IPermission";
+import { useUserStore } from "../stores/userStore";
+import { ref } from "vue";
+import { Tool } from "../interfaces/common/ToolTabTypes";
 
 let screen: string;
 const screenWidth: number = window.innerWidth;
@@ -24,88 +26,63 @@ switch (screen) {
     break;
 }
 
+const userStore = useUserStore();
 const permissionStore = usePermissionStore();
 
-const tools = [
+const tools: Tool[] = [
   {
     id: 1,
     name: "documents",
-    href: "/tool/documents/browse/instructions",
+    href: "",
     icon: "file-document",
     image: "../tools/docs.png",
-    permissions: {
-      read: true,
-      write: false,
-      control: false,
+    meta: {
+      group: "documents",
+      baseHref: "/tool/documents/browse/",
     },
   },
-  // {
-  //   id: 2,
-  //   name: "training",
-  //   href: "",
-  //   icon: "book-open-variant-outline",
-  //   image: "../tools/training.png",
-  //   permissions: {
-  //     read: true,
-  //     write: true,
-  //     control: false,
-  //   },
-  // },
   {
     id: 3,
     name: "change",
-    href: "/tool/change/browse/pcr",
+    href: "",
     icon: "file-document-edit",
     image: "../tools/change.png",
-    permissions: {
-      read: true,
-      write: true,
-      control: false,
+    meta: {
+      group: "change",
+      baseHref: "/tool/change/browse/",
     },
   },
   {
     id: 4,
     name: "matrix",
-    href: "/tool/matrix/browse/departments",
+    href: "",
     icon: "database",
     image: "../tools/matrix.png",
-    permissions: {
-      read: true,
-      write: true,
-      control: false,
+    meta: {
+      group: "matrix",
+      baseHref: "/tool/matrix/browse/",
     },
   },
-  // {
-  //   id: 5,
-  //   name: "8d",
-  //   href: "",
-  //   icon: "alert-octagon",
-  //   image: "../tools/analytics.png",
-  //   permissions: {
-  //     read: true,
-  //     write: true,
-  //     control: false,
-  //   },
-  // },
   {
     id: 6,
     name: "boss",
-    href: "/tool/admin",
+    href: "",
     icon: "account-tie",
     image: "../tools/boss.png",
-    permissions: {
-      read: true,
-      write: true,
-      control: true,
+    meta: {
+      group: "admin",
+      baseHref: "/tool/admin/browse/",
     },
   },
 ];
 
-const filteredTools = tools.filter((tool) => {
-  const toolPermissions: IPermission = tool.permissions;
-  // console.log(toolPermissions);
-  return permissionStore.check(toolPermissions);
-});
+const userInfo = userStore.info();
+
+const filteredTools = ref<Tool[]>([]);
+
+if (userInfo) {
+  permissionStore.filterTools<Tool>(userInfo, tools).then((fT) => (filteredTools.value = fT));
+}
 
 const router = useRouter();
 </script>

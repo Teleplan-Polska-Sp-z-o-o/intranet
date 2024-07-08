@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";
-// import EditTable from "../../../../components/tools/EditTable.vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
-import { IUser } from "../../../../../interfaces/user/IUser";
-import { IPermission } from "../../../../../interfaces/user/IPermission";
-import { Permission } from "../../../../../models/user/Permission";
 import { useI18n } from "vue-i18n";
 import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import { UserManager } from "../../../../../models/user/UserManager";
@@ -13,6 +9,7 @@ import { UserInput } from "../../../../../models/admin/users/UserInput";
 import UsersForm from "./UsersForm.vue";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
 import { IUserInfo } from "../../../../../interfaces/admin/users/IUserInfo";
+import { User } from "../../../../../models/user/User";
 
 const emit = defineEmits(["table", "responseStatus"]);
 
@@ -31,11 +28,6 @@ const headers: any = [
   { title: t(`${tPath}.header.position`), key: "info.position" },
   { title: t(`${tPath}.header.department`), key: "info.department" },
   { title: t(`${tPath}.header.decisionMaker`), key: "custom2" },
-  {
-    title: t(`${tPath}.header.confidentiality`),
-    key: "permission.confidentiality",
-  },
-  { title: t(`${tPath}.header.permission`), key: "custom", sortable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
 
@@ -50,36 +42,22 @@ const componentProps = async (): Promise<Array<UserInput>> => {
   const inputs: Array<IUserInput> = [
     {
       id: 0,
-      variant: "select",
-      label: "Permission",
-      items: ["User", "Moderator", "Admin"],
-      val: "",
-    },
-    {
-      id: 1,
       variant: "text",
       label: "Position",
       val: "",
     },
     {
-      id: 2,
+      id: 1,
       variant: "select",
       label: "Department",
       items: departments,
       val: "",
     },
     {
-      id: 3,
+      id: 2,
       variant: "select",
       label: "Decision Maker",
       items: ["Yes", "No"],
-      val: "",
-    },
-    {
-      id: 4,
-      variant: "select",
-      label: "Confidentiality",
-      items: ["public", "restricted", "secret"],
       val: "",
     },
   ];
@@ -91,27 +69,13 @@ const componentProps = async (): Promise<Array<UserInput>> => {
   return array;
 };
 
-const handleSaveData = (data: { item: any; inputs: Array<UserInput> }) => {
+const handleSaveData = (data: { user: User; item: any; inputs: Array<UserInput> }) => {
   if (!data) return;
-
-  const user: IUser = {
-    id: data.item.id,
-    username: data.item.username,
-    domain: data.item.domain,
-  };
-
-  const permission: IPermission | string =
-    data.inputs.at(0)?.val !== ""
-      ? new Permission(data.inputs.at(0)?.val as "User" | "Moderator" | "Admin")
-      : "";
-
-  const position = data.inputs.at(1)?.val || null;
-  const department = data.inputs.at(2)?.val || null;
+  const position = data.inputs.at(0)?.val || null;
+  const department = data.inputs.at(1)?.val || null;
   let decisionMaker: boolean | null = null;
-  if (data.inputs.at(3)?.val === "Yes") decisionMaker = true;
-  if (data.inputs.at(3)?.val === "No") decisionMaker = false;
-
-  const confidentiality = data.inputs.at(4)?.val;
+  if (data.inputs.at(2)?.val === "Yes") decisionMaker = true;
+  if (data.inputs.at(2)?.val === "No") decisionMaker = false;
 
   const info: IUserInfo = {
     position: position,
@@ -120,10 +84,8 @@ const handleSaveData = (data: { item: any; inputs: Array<UserInput> }) => {
   };
 
   const formData: FormData = new FormData();
-  formData.append("user", JSON.stringify(user));
-  formData.append("permission", JSON.stringify(permission));
+  formData.append("user", JSON.stringify(data.user));
   formData.append("info", JSON.stringify(info));
-  formData.append("confidentiality", JSON.stringify(confidentiality));
 
   reqData.value = formData;
 };
@@ -134,13 +96,6 @@ const decisionMaker = (item: any) => {
   const d: boolean = !!item.info?.decisionMaker;
   if (d) return "Yes";
   else return "No";
-};
-
-const permission = (item: any) => {
-  const p: IPermission = item.permission;
-  if (p.control) return "Admin";
-  if (p.write) return "Moderator";
-  else return "User";
 };
 
 const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
@@ -165,8 +120,8 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     <template v-slot:table-key-slot-2="{ item }">
       <span class="text-body-2">{{ decisionMaker(item) }}</span>
     </template>
-    <template v-slot:table-key-slot="{ item }">
+    <!-- <template v-slot:table-key-slot="{ item }">
       <span class="text-body-2">{{ permission(item) }}</span>
-    </template>
+    </template> -->
   </crud-table>
 </template>

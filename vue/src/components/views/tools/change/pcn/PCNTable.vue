@@ -8,7 +8,7 @@ import PCNView from "./PCNView.vue";
 import PCNTableFilters from "./PCNTableFilters.vue";
 import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 import { IProcessChangeNoticeFields } from "../../../../../interfaces/change/IProcessChangeNoticeFields";
-import { IUser } from "../../../../../interfaces/user/IUser";
+import { IUser } from "../../../../../interfaces/user/UserTypes";
 import { useRoute } from "vue-router";
 import { usePCNStore } from "../../../../../stores/change/pcnStore";
 import { nodeConfig } from "../../../../../config/env";

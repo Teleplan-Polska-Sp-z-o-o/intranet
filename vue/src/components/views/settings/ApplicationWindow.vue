@@ -4,7 +4,7 @@ import axios from "axios";
 import { useTheme } from "vuetify";
 import { nodeConfig } from "../../../config/env";
 import { Endpoints } from "../../../config/Endpoints";
-import { ISettings } from "../../../interfaces/user/ISettings";
+import { ISettings } from "../../../interfaces/user/UserTypes";
 import { Settings } from "../../../models/user/Settings";
 import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../../models/common/ResponseStatus";

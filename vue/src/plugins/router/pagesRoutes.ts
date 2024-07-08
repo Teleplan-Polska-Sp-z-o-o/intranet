@@ -10,9 +10,6 @@ export const pagesRoutes = {
   component: DefaultLayout,
   redirect: { name: "home" },
   meta: {
-    read: true,
-    write: false,
-    control: false,
     breadcrumbs: {
       include: true,
       parent: "pages",
@@ -26,9 +23,6 @@ export const pagesRoutes = {
       name: "home",
       component: HomeView,
       meta: {
-        read: true,
-        write: false,
-        control: false,
         breadcrumbs: {
           include: false,
         },
@@ -39,9 +33,6 @@ export const pagesRoutes = {
       name: "settings",
       component: SettingsView,
       meta: {
-        read: true,
-        write: false,
-        control: false,
         breadcrumbs: {
           include: true,
           parent: "pages",
@@ -54,9 +45,6 @@ export const pagesRoutes = {
       name: "tools",
       component: ToolsView,
       meta: {
-        read: true,
-        write: false,
-        control: false,
         breadcrumbs: {
           include: true,
           parent: "pages",

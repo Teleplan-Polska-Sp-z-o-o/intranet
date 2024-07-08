@@ -1,8 +1,10 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { RouteLocationNormalized, createRouter, createWebHistory } from "vue-router";
 import { routes } from "./routes.ts";
 import { usePermissionStore } from "./../../stores/permissionStore.ts";
 import { useUserStore } from "../../stores/userStore.ts";
-import { IUser } from "../../interfaces/user/IUser.ts";
+import { IUser, TPermissionGroup, TPermissionSubgroup } from "../../interfaces/user/UserTypes.ts";
+import { RouteGroup } from "../../models/common/router/RouteGroup.ts";
+import { RouterHelper } from "../../models/common/router/RouterHelper.ts";
 
 // 3. Create the router instance and pass the `routes` option
 
@@ -11,6 +13,27 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+const routeRequiredGroupAndSubgroup = (to: RouteLocationNormalized): RouteGroup => {
+  const metaToolName: unknown = to.meta.toolName;
+  const toolName: string | null = typeof metaToolName === "string" ? metaToolName : null;
+  const tabParam: string | string[] = to.params.tab;
+  const toolTab =
+    Array.isArray(tabParam) || !tabParam ? null : tabParam.length > 0 ? tabParam : null;
+
+  let permissionGroup: TPermissionGroup | null = null;
+  let permissionSubgroup: TPermissionSubgroup | null = null;
+
+  if (toolName && RouterHelper.isTPermissionGroup(toolName)) {
+    permissionGroup = toolName;
+  }
+
+  if (toolTab && RouterHelper.isTPermissionSubgroup(toolTab)) {
+    permissionSubgroup = toolTab;
+  }
+
+  return new RouteGroup(permissionGroup, permissionSubgroup);
+};
 
 router.beforeEach(async (to, _from, next) => {
   try {
@@ -25,13 +48,7 @@ router.beforeEach(async (to, _from, next) => {
 
     const permissionStore = usePermissionStore();
 
-    const meta = {
-      read: to.meta.read as boolean,
-      write: to.meta.write as boolean,
-      control: to.meta.control as boolean,
-    };
-
-    if (!isTokenVerified || !isUser || !permissionStore.check(meta)) {
+    if (!isTokenVerified || !isUser) {
       if (to.path !== "/") {
         sessionStorage.setItem("intendedRoute", to.fullPath);
         next("/");
@@ -39,6 +56,9 @@ router.beforeEach(async (to, _from, next) => {
         next();
       }
     } else {
+      if (!(await permissionStore.check(isUser, routeRequiredGroupAndSubgroup(to)))) {
+        next("/");
+      }
       // User is verified
       const intendedRoute: string | null = sessionStorage.getItem("intendedRoute");
       if (intendedRoute && to.path !== "/") {

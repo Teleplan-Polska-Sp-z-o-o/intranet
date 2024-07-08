@@ -10,7 +10,7 @@ import {
 import { Competence } from "./CompetenceEntity";
 import { Subcategory } from "./SubcategoryEntity";
 import { Language } from "./LanguageEntity";
-import { TConfidentiality } from "../../../interfaces/user/TConfidentiality";
+import { TConfidentiality } from "../../../interfaces/user/UserTypes";
 
 @Entity()
 export class Document {

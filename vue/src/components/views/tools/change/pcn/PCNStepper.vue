@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import PCNVerifyTables from "./PCNVerifyTable.vue";
-import { IUser } from "../../../../../interfaces/user/IUser";
+import { IUser } from "../../../../../interfaces/user/UserTypes";
 import { useUserStore } from "../../../../../stores/userStore";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
 import CkEditor from "../../../../common/CkEditor.vue";

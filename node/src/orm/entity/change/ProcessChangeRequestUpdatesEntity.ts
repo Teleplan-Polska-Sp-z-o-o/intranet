@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { IProcessChangeRequestUpdates } from "../../../interfaces/change/IProcessChangeRequestUpdates";
-import { IUser } from "../../../interfaces/user/IUser";
+import { IUser } from "../../../interfaces/user/UserTypes";
 import { Helper } from "../../../models/common/Helper";
 import { ProcessChangeRequest } from "./ProcessChangeRequestEntity";
 

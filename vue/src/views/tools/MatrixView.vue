@@ -12,24 +12,39 @@ import alertResponseStatus from "../../components/common/alertResponseStatus.vue
 import CompetenceTable from "../../components/views/tools/matrix/competence/CompetenceTable.vue";
 import { useRoute, useRouter } from "vue-router";
 import SimpleDocumentsPostedChart from "../../components/common/chartjs/SimpleDocumentsPostedChart.vue";
+import { ToolTab } from "../../interfaces/common/ToolTabTypes";
+import { useUserStore } from "../../stores/userStore";
+import { usePermissionStore } from "../../stores/permissionStore";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
-const tabs = [
+const tabs: ToolTab[] = [
   {
     id: 1,
     name: "departments",
     icon: "mdi-office-building",
+    meta: {
+      group: "matrix",
+      subgroup: "departments",
+    },
   },
   {
     id: 2,
     name: "documents",
     icon: "mdi-file-document",
+    meta: {
+      group: "matrix",
+      subgroup: "documents",
+    },
   },
   {
     id: 3,
     name: "competences",
     icon: "mdi-star-circle",
+    meta: {
+      group: "matrix",
+      subgroup: "competences",
+    },
   },
 ];
 
@@ -88,6 +103,16 @@ const handleTable = (newValue: ILevel): void => {
 
 const responseStatus = ref<IResponseStatus | null>(null);
 const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value = status);
+
+// filter tabs
+const userInfo = useUserStore().info();
+const filteredToolTabs = ref<ToolTab[]>([]);
+
+if (userInfo) {
+  usePermissionStore()
+    .filterToolTabs<ToolTab>(userInfo, tabs)
+    .then((fTT) => (filteredToolTabs.value = fTT));
+}
 </script>
 
 <template>
@@ -114,7 +139,7 @@ const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value 
                   :direction="smallScreen ? 'horizontal' : 'vertical'"
                 >
                   <v-tab
-                    v-for="tab in tabs"
+                    v-for="tab in filteredToolTabs"
                     :key="tab.id"
                     :value="tab.id"
                     class="rounded"

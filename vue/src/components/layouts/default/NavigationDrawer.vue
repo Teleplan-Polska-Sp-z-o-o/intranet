@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, ComputedRef } from "vue";
 import { useUserStore } from "../../../stores/userStore";
-import { IUser } from "../../../interfaces/user/IUser";
+import { IUser } from "../../../interfaces/user/UserTypes";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps(["drawerVisible"]);

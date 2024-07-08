@@ -1,4 +1,4 @@
-import { IUser } from "../user/IUser";
+import { IUser } from "../user/UserTypes";
 import { IProcessChangeNotice } from "./IProcessChangeNotice";
 import { IProcessChangeRequestBase } from "./IProcessChangeRequestBase";
 

@@ -5,12 +5,10 @@ import CkEditor from "../../../common/CkEditor.vue";
 import VerifyTables from "./VerifyTables.vue";
 import { useEditorStore } from "../../../../stores/editorStore";
 import { watch } from "vue";
-import { Permission } from "../../../../models/user/Permission";
-import { IPermission } from "../../../../interfaces/user/IPermission";
-import { usePermissionStore } from "../../../../stores/permissionStore";
 import { nodeConfig } from "../../../../config/env";
 import { Endpoints } from "../../../../config/Endpoints";
 import axios from "axios";
+import { TConfidentiality } from "../../../../interfaces/user/UserTypes";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -37,17 +35,17 @@ const nextable = computed(() => activeStep.value < 4);
 const bgImage = ref<Array<File>>([]);
 const news = ref<INewsEntity>(props.componentProps.editedItem);
 
-const setPermission = (val: string | null) => {
-  if (val) news.value.permission = new Permission(val as "User" | "Moderator" | "Admin");
-};
+// const setPermission = (val: string | null) => {
+//   if (val) news.value.permission = new Permission(val as TPermissionStringCode);
+// };
 
-const getPermission = (per: IPermission) => {
-  const permissionStore = usePermissionStore();
-  const code = permissionStore.getPermissionCode(per, true) as "User" | "Moderator" | "Admin";
-  return code;
-};
+// const getPermission = (per: IPermission) => {
+//   const permissionStore = usePermissionStore();
+//   const code = permissionStore.translatePermissionToStringCode(per) as TPermissionStringCode;
+//   return code;
+// };
 
-const newsPermissionSelect = ref<string>("User");
+// const newsPermissionSelect = ref<string>("user");
 
 watchEffect(() => {
   news.value = props.componentProps.editedItem;
@@ -57,13 +55,14 @@ const editorStore = useEditorStore();
 
 (async () => {
   const newsRef = news.value.ref;
-  newsPermissionSelect.value = getPermission(news.value.permission);
+  // newsPermissionSelect.value = getPermission(news.value.permission);
+  const newsConfidentiality: TConfidentiality = news.value.confidentiality;
   const newsTitle = news.value.title;
   const newsSubtitle = news.value.subtitle;
   const newsContent = news.value.content;
   editorStore.save(newsContent, "news");
   const newsBgImage = news.value.bgImage;
-  if (newsRef && newsTitle && newsSubtitle && newsContent && newsBgImage) {
+  if (newsRef && newsConfidentiality && newsTitle && newsSubtitle && newsContent && newsBgImage) {
     const constructBgImgSrc = (): string => {
       const backend = `${nodeConfig.origin}:${nodeConfig.port}/uploads/news/`;
       return `${backend}${newsBgImage}`;
@@ -103,7 +102,7 @@ const hasContent = computed<boolean>(() => {
 const newNewsData = computed(() => {
   return {
     ref: news.value.ref,
-    permission: news.value.permission,
+    confidentiality: news.value.confidentiality,
     title: news.value.title,
     subtitle: news.value.subtitle,
     content: news.value.content,
@@ -114,6 +113,7 @@ const newNewsData = computed(() => {
 
 watchEffect(() => {
   if (
+    !!news.value.confidentiality &&
     !!news.value.title &&
     !!news.value.subtitle &&
     hasContent.value &&
@@ -163,12 +163,13 @@ watchEffect(() => {
     <v-stepper-window>
       <v-stepper-window-item :value="1">
         <v-card flat>
+          <!-- v-model:model-value="newsPermissionSelect"
+            @update:modelValue="setPermission" -->
           <v-select
-            v-model:model-value="newsPermissionSelect"
-            @update:modelValue="setPermission"
+            v-model="news.confidentiality"
             variant="underlined"
-            label="Permission"
-            :items="['User', 'Moderator', 'Admin']"
+            label="Confidentiality"
+            :items="['public', 'restricted', 'secret']"
           ></v-select>
           <v-text-field v-model="news.title" variant="underlined" label="Title"></v-text-field>
           <v-text-field

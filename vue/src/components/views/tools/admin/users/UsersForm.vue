@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { UserInput } from "../../../../../models/admin/users/UserInput";
-import { IPermission } from "../../../../../interfaces/user/IPermission";
+import { UserEntity } from "../../../../../models/user/UserEntity";
+import { User } from "../../../../../models/user/User";
 
 const emit = defineEmits(["save-data"]);
 
@@ -14,28 +15,21 @@ const props = defineProps<{
   componentProps: IComponentProps;
 }>();
 
-const item = ref<any>(props.componentProps.editedItem);
-
+const userEntity: UserEntity = props.componentProps.editedItem;
+const user: User = new User().build(userEntity);
 const inputs = ref<Array<UserInput>>([]);
 
 (async (): Promise<void> => {
   inputs.value = await props.componentProps.inputs;
 
   if (inputs.value && inputs.value.length > 0) {
-    const permission = () => {
-      const p: IPermission = item.value.permission;
-      if (p.control) return "Admin";
-      if (p.write) return "Moderator";
-      else return "User";
-    };
-
     const info = () => {
-      const position: string = item.value.info?.position || "";
+      const position: string = userEntity.info?.position || "";
 
-      const department: string = item.value.info?.department || "";
+      const department: string = userEntity.info?.department || "";
 
       const decisionMaker = ((): string => {
-        const d: boolean = item.value.info?.decisionMaker;
+        const d: boolean = userEntity.info?.decisionMaker ?? false;
         if (d) return "Yes";
         else if (d === false) return "No";
         else return "";
@@ -44,11 +38,9 @@ const inputs = ref<Array<UserInput>>([]);
       return { position, department, decisionMaker };
     };
 
-    inputs.value[0].val = permission();
-    inputs.value[1].val = info().position;
-    inputs.value[2].val = info().department;
-    inputs.value[3].val = info().decisionMaker;
-    inputs.value[4].val = item.value.permission.confidentiality;
+    inputs.value[0].val = info().position;
+    inputs.value[1].val = info().department;
+    inputs.value[2].val = info().decisionMaker;
   }
 })();
 
@@ -57,7 +49,8 @@ watch(
   (newInputValues) => {
     if (newInputValues.some((v) => !!v.val)) {
       emit("save-data", {
-        item: item.value,
+        user: user,
+        item: userEntity,
         inputs: newInputValues,
       });
     }

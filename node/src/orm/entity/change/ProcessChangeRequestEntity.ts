@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { IProcessChangeRequest } from "../../../interfaces/change/IProcessChangeRequest";
 import { ProcessChangeNotice } from "./ProcessChangeNoticeEntity";
-import { IUser } from "../../../interfaces/user/IUser";
+import { IUser } from "../../../interfaces/user/UserTypes";
 import { IProcessChangeRequestBase } from "../../../interfaces/change/IProcessChangeRequestBase";
 import { Helper } from "../../../models/common/Helper";
 import { NotificationBuilder } from "../user/NotificationBuilder";

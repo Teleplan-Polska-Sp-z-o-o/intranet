@@ -33,6 +33,10 @@ const uaC = {
             explore: "Дослідити",
           },
         },
+        viewDocument: {
+          small: "Маленький",
+          large: "Великий",
+        },
         tools: {
           documents: {
             title: "Документи",

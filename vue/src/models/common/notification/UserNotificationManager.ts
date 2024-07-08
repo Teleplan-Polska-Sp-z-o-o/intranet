@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Endpoints } from "../../../config/Endpoints";
 import { nodeConfig } from "../../../config/env";
-import { IUser } from "../../../interfaces/user/IUser";
+import { IUser } from "../../../interfaces/user/UserTypes";
 import { INotificationEntity } from "../../../interfaces/user/notification/INotificationEntity";
 import { UserNotification } from "./UserNotification";
 import { ENotificationState } from "../../../interfaces/user/notification/ENotificationState";

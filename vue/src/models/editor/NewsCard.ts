@@ -1,11 +1,11 @@
 import { INewsCard } from "../../interfaces/editor/INewsCard";
 import { INewsEntity } from "../../interfaces/editor/INewsEntity";
-import { IPermission } from "../../interfaces/user/IPermission";
+import { TConfidentiality } from "../../interfaces/user/UserTypes";
 
-class NewsCard implements INewsCard {
+class NewsCard implements INewsCard, INewsEntity {
   id: number;
   ref: string;
-  permission: IPermission;
+  confidentiality: TConfidentiality;
   title: string;
   subtitle: string;
   content: string;
@@ -16,7 +16,7 @@ class NewsCard implements INewsCard {
   constructor(news: INewsEntity) {
     this.id = news.id;
     this.ref = news.ref;
-    this.permission = news.permission;
+    this.confidentiality = news.confidentiality;
     this.title = news.title;
     this.subtitle = news.subtitle;
     this.content = news.content;

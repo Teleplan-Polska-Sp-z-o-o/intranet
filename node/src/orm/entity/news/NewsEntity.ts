@@ -1,17 +1,16 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { Permission } from "../../../models/user/Permission";
-import { IPermission } from "../../../interfaces/user/IPermission";
+import { INews } from "../../../interfaces/news/INews";
 
 @Entity()
-export class News {
+export class News implements INews {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   ref: string;
 
-  @Column({ type: "jsonb" })
-  permission: IPermission;
+  @Column()
+  confidentiality: string;
 
   @Column()
   title: string;
@@ -27,17 +26,26 @@ export class News {
 
   constructor(
     ref: string = "",
-    permission: IPermission = new Permission(),
+    confidentiality: string = "",
     title: string = "",
     subtitle: string = "",
     content: string = "",
     bgImage: string = ""
   ) {
     this.ref = ref;
-    this.permission = permission;
+    this.confidentiality = confidentiality;
     this.title = title;
     this.subtitle = subtitle;
     this.content = content;
     this.bgImage = bgImage;
   }
+
+  editColumns = (obj: INews) => {
+    this.ref = obj.ref;
+    this.confidentiality = obj.confidentiality;
+    this.title = obj.title;
+    this.subtitle = obj.subtitle;
+    this.content = obj.content;
+    this.bgImage = obj.bgImage;
+  };
 }

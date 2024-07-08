@@ -1,7 +1,7 @@
-import { TConfidentiality } from "./TConfidentiality";
+import { IUser, TConfidentiality, UserGroup } from "./UserTypes";
 import { LDAPUser } from "./TLDAP";
 
-interface IUserEntity {
+interface IUserEntity extends IUser {
   domain: string;
   id: number;
   permission: {
@@ -9,7 +9,7 @@ interface IUserEntity {
     write: boolean;
     control: boolean;
     confidentiality: TConfidentiality;
-    id: number;
+    groups: Array<UserGroup>;
   };
   settings: {
     theme: string;
