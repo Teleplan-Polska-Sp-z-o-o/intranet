@@ -86,11 +86,11 @@ const getUsers = async (req: Request, res: Response) => {
     //   .find({ relations: ["permission", "settings"] });
 
     if (!users)
-      res
+      return res
         .status(404)
         .json({ users, message: "Users not found.", statusMessage: HttpResponseMessage.GET_ERROR });
 
-    res
+    return res
       .status(200)
       .json({ users, message: "Users found.", statusMessage: HttpResponseMessage.GET_SUCCESS });
   } catch (err) {
@@ -110,11 +110,6 @@ const userAuth = async (req: Request, res: Response) => {
     ldap.username.toLowerCase();
 
     const ldapUser = await ldap.authenticate();
-    if (!ldapUser)
-      return res.status(204).json({
-        message: "Invalid username or password.",
-        statusMessage: HttpResponseMessage.POST_ERROR,
-      });
 
     const token = ldap.generateJwt(ldapUser);
     const admins = adminsConfig.admins;

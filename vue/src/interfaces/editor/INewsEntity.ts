@@ -1,9 +1,9 @@
-import { IPermission } from "../user/UserTypes";
+import { TConfidentiality } from "../user/UserTypes";
 
 interface INewsEntity {
   id: number;
   ref: string;
-  permission: IPermission;
+  confidentiality: TConfidentiality;
   title: string;
   subtitle: string;
   content: string;

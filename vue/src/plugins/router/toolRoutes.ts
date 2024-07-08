@@ -54,7 +54,7 @@ export const toolRoutes = {
           },
         },
         {
-          path: ":fileName/:fileLangs/:fileUUID",
+          path: ":tab/:fileName/:fileLangs/:fileUUID",
           name: "viewDocuments",
           component: DocumentView,
           meta: {

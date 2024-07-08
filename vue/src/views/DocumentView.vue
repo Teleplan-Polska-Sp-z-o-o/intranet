@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
 import "vue-pdf-embed/dist/style/index.css";
 import "vue-pdf-embed/dist/style/annotationLayer.css";
@@ -111,6 +111,26 @@ const decreaseScale = () => {
     sliderScale.value = +(sliderScale.value - 0.1).toFixed(1);
   }
 };
+
+// Prevent default Ctrl + Scroll behavior and handle scaling
+const handleCtrlScroll = (event: WheelEvent) => {
+  if (event.ctrlKey) {
+    event.preventDefault();
+    if (event.deltaY < 0) {
+      increaseScale();
+    } else {
+      decreaseScale();
+    }
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("wheel", handleCtrlScroll, { passive: false });
+});
+
+onUnmounted(() => {
+  window.removeEventListener("wheel", handleCtrlScroll);
+});
 </script>
 
 <template>

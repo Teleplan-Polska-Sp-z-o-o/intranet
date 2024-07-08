@@ -9,7 +9,7 @@ const upload = multer({ dest: `${__dirname}/../../uploads/news` });
 
 router.post("/news", upload.any(), addNews);
 router.put("/news", upload.any(), editNews);
-router.get("/news/:permission/:skip/:take", getNews);
+router.get("/news/:confidentiality/:skip/:take", getNews);
 router.delete("/news/:id", removeNews);
 
 export { router as editorRoutes };

@@ -202,5 +202,5 @@ export const usePermissionStore = defineStore("auth", () => {
     else return "user";
   };
 
-  return { check, filterTools, filterToolTabs, set, translatePermissionToStringCode };
+  return { check, filterTools, filterToolTabs, get, set, translatePermissionToStringCode };
 });

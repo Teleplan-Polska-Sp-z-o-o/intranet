@@ -1,46 +1,54 @@
 <script setup lang="ts">
-import { ref, watch, watchEffect } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
+import { RouteLocationNormalizedLoaded, useRouter } from "vue-router";
 import { Breadcrumb } from "../../interfaces/common/Breadcrumb";
 import { MetaBreadcrumbs } from "../../interfaces/common/MetaBreadcrumbs";
 
 const { t } = useI18n();
-const router = useRouter();
 
-const getBreadcrumbs = (): Array<Breadcrumb> => {
-  const matchedRoutes = router.currentRoute.value.matched;
+const exceptionOrBaseHref = (route: RouteLocationNormalizedLoaded, routeRecordPath: string) => {
+  if (routeRecordPath.includes("/tool/documents")) {
+    return `/tool/documents/browse/${route.params.tab}`;
+  } else return routeRecordPath;
+};
 
+const getBreadcrumbs = (route: RouteLocationNormalizedLoaded): Array<Breadcrumb> => {
   const breadcrumbs: Array<Breadcrumb> = [];
 
-  for (const routeRecord of matchedRoutes) {
+  for (const routeRecord of route.matched) {
     const { path, meta } = routeRecord;
 
     const typedMeta: MetaBreadcrumbs = meta.breadcrumbs as MetaBreadcrumbs;
-
     if (!typedMeta.include) continue;
 
     const breadcrumb: Breadcrumb = {
       title: t(`common.default_layout.breadcrumbs.${typedMeta.parent}.${typedMeta.name}`),
-      disabled: typedMeta.disabled ?? false,
-      href: typedMeta.path ? typedMeta.path : path,
+      disabled: false,
+      href: typedMeta.path ? typedMeta.path : exceptionOrBaseHref(route, path),
     };
 
     breadcrumbs.push(breadcrumb);
   }
 
+  breadcrumbs[breadcrumbs.length - 1].disabled = true;
+
   return breadcrumbs;
 };
 
-const breadcrumbs = ref<Array<Breadcrumb>>(getBreadcrumbs());
+const breadcrumbs = ref<Array<Breadcrumb>>([]);
 
-watch(router.currentRoute, () => {
-  breadcrumbs.value = getBreadcrumbs();
-});
+watch(
+  useRouter().currentRoute,
+  (route) => {
+    breadcrumbs.value = getBreadcrumbs(route);
+  },
+  { immediate: true }
+);
 
-watchEffect(() => {
-  breadcrumbs.value = getBreadcrumbs();
-});
+// watchEffect(() => {
+//   breadcrumbs.value = getBreadcrumbs();
+// });
 </script>
 
 <template>

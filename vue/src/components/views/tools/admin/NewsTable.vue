@@ -33,7 +33,7 @@ const handleSaveData = (data: any) => {
 
   const base = {
     ref: data.ref,
-    permission: data.permission,
+    confidentiality: data.confidentiality,
     title: data.title,
     subtitle: data.subtitle,
     content: data.content,

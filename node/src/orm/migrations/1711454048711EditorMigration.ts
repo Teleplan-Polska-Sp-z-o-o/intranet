@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
+import { Confidentiality1718179454316 } from "./1718179454316ConfidentialityMigration";
 
 export class Editor1711454048711 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -17,9 +18,13 @@ export class Editor1711454048711 implements MigrationInterface {
             name: "ref",
             type: "varchar",
           },
+          // {
+          //   name: "permission",
+          //   type: "jsonb",
+          // },
           {
-            name: "permission",
-            type: "jsonb",
+            name: "confidentiality",
+            type: "varchar",
           },
           {
             name: "title",
