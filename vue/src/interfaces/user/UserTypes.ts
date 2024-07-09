@@ -1,3 +1,5 @@
+import { UserEntity } from "../../models/user/UserEntity";
+
 interface IPermission {
   id: number;
   read: boolean;
@@ -83,6 +85,16 @@ class StaticGroups {
     };
   }
 }
+
+interface IUserLoginDetails {
+  id: number;
+  user: UserEntity;
+  loginTime: Date;
+  logoutTime: Date | null;
+  duration: number;
+}
+
+export { type IUserLoginDetails };
 
 export {
   type IPermission,

@@ -11,7 +11,7 @@ import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
 import CompetenceTable from "../../components/views/tools/matrix/competence/CompetenceTable.vue";
 import { useRoute, useRouter } from "vue-router";
-import SimpleDocumentsPostedChart from "../../components/common/chartjs/SimpleDocumentsPostedChart.vue";
+import SimpleDocumentsPostedChart from "../../components/common/chartjs/documents/SimpleDocumentsPostedChart.vue";
 import { ToolTab } from "../../interfaces/common/ToolTabTypes";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";

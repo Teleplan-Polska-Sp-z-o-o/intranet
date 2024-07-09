@@ -3,6 +3,7 @@ import { UserPermission } from "./UserPermissionEntity";
 import { UserSettings } from "./UserSettingsEntity";
 import { UserNotification } from "./UserNotificationEntity";
 import { UserInfo } from "./UserInfoEntity";
+import { UserLoginDetails } from "./UserLoginDetailsEntity";
 
 @Entity()
 export class User {
@@ -27,6 +28,9 @@ export class User {
 
   @OneToMany(() => UserNotification, (notification) => notification.user)
   notification: Array<UserNotification>;
+
+  @OneToMany(() => UserLoginDetails, (loginDetails) => loginDetails.user)
+  loginDetails: Array<UserLoginDetails>;
 
   constructor(
     username: string,
