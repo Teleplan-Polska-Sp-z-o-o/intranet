@@ -149,7 +149,7 @@ const submitLogin = (): void => {
                     color="primary"
                     label="Domain"
                     v-model="data.domain"
-                    :items="['reconext.com']"
+                    :items="['reconext.com', 'tgn.teleplan.com']"
                     :rules="domainRules"
                     required
                   ></v-select>
