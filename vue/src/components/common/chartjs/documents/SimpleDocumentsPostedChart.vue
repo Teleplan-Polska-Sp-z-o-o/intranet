@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { DocumentManager } from "../../../models/document/DocumentManager";
-import { IDocumentEntity } from "../../../interfaces/document/IDocumentEntity";
-import { Chips } from "../../../models/document/Chips";
+import { DocumentManager } from "../../../../models/document/DocumentManager";
+import { IDocumentEntity } from "../../../../interfaces/document/IDocumentEntity";
+import { Chips } from "../../../../models/document/Chips";
 import { useRoute } from "vue-router";
 import { LineChart } from "vue-chart-3";
 import {
@@ -17,7 +17,8 @@ import {
   Legend,
 } from "chart.js";
 import { useI18n } from "vue-i18n";
-import { getUniqueColor } from "./colors";
+import { ChartHelper } from "../../../../models/common/chartjs/ChartHelper";
+import { ChartData } from "../../../../models/common/chartjs/ChartData";
 
 const { t } = useI18n();
 
@@ -35,26 +36,7 @@ Chart.register(
 const documentManager: DocumentManager = new DocumentManager();
 const documentEntities = ref<Array<IDocumentEntity>>([]);
 
-class ChartData {
-  label: string;
-  data: Array<number> = [];
-  fill: boolean = false;
-
-  borderColor: string;
-  backgroundColor: string;
-
-  tension: number = 0.4;
-
-  constructor(postBy: string, data: Array<number>) {
-    this.label = postBy;
-    this.data = data;
-
-    const color = getUniqueColor();
-
-    this.borderColor = color;
-    this.backgroundColor = `${color.slice(0, -1)}, 0.2)`;
-  }
-}
+const chartHelper = new ChartHelper();
 
 const processDocumentEntities = (entities: Array<IDocumentEntity>): Array<ChartData> => {
   try {
@@ -79,7 +61,9 @@ const processDocumentEntities = (entities: Array<IDocumentEntity>): Array<ChartD
       }
     });
 
-    return Object.entries(userStats).map(([postBy, data]) => new ChartData(postBy, data));
+    return Object.entries(userStats).map(
+      ([postBy, data]) => new ChartData(postBy, data, chartHelper)
+    );
   } catch (error) {
     console.log(`processDocumentEntities at SimpleDocumentsPostedChart, ${error}`);
     return [];
@@ -150,15 +134,13 @@ const options = ref({
       <v-card-subtitle>
         {{ $t(`tools.chart.post.subtitle`) }}
       </v-card-subtitle>
-      <div class="chart-container">
-        <LineChart :chart-data="data" :options="options" />
-      </div>
+      <LineChart class="chart-height" :chart-data="data" :options="options" />
     </v-card-text>
   </v-card>
 </template>
 
 <style scoped>
-.chart-container {
+.chart-height {
   height: 400px;
 }
 </style>

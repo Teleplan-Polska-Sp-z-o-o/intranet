@@ -50,12 +50,29 @@ app.use("/api/competence", competenceRoutes);
 
 // import { msalRoutes } from "./routes/msalRoutes";
 // app.use("/api/msal", msalRoutes);
+import { Scheduler } from "./models/common/Scheduler";
+const scheduler = new Scheduler();
+
+// Schedule the cleanup task to run every day at midnight
+scheduler.scheduleTask(
+  "0 0 * * *",
+  () => {
+    UserHeartbeat.cleanOldRecords()
+      .then(() => console.log("Old records cleaned up successfully"))
+      .catch((err) => console.error("Failed to clean old records:", err));
+  },
+  "CleanOldRecordsTask"
+);
+
+scheduler.startAllTasks();
 
 // DataSource instance initialize
 import { dataSource } from "./config/orm/dataSource";
 import { websocketController } from "./controllers/common/websocketController";
 import * as fs from "fs";
 import https from "https";
+
+import { UserHeartbeat } from "./models/websocket/UserHeartbeat";
 
 dataSource
   .initialize()

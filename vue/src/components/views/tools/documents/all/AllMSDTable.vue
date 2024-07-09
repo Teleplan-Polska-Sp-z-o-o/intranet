@@ -94,7 +94,7 @@ const searchTitle = t(`tools.common.search`);
 const selectLanguage = t(`${tPath}.select_lang`);
 
 const navigateToRoute = (file: Array<string>) => {
-  const url = `/tool/documents/${file.at(0)}/${file.at(1)}/${file.at(2)}`;
+  const url = `/tool/documents/${props.tab}/${file.at(0)}/${file.at(1)}/${file.at(2)}`;
   window.open(url, "_blank");
 };
 

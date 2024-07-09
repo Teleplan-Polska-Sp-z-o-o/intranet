@@ -11,11 +11,13 @@ import { refreshToken, verifyToken } from "../controllers/user/tokenController";
 
 import express from "express";
 import multer from "multer";
+import { getLoginDetails } from "../controllers/user/userHeartbeatController";
 
 const router = express.Router();
 const decodeFormData = multer().none();
 
 // Define routes
+router.get("/login-details", getLoginDetails);
 router.get("/one/:username", getUser);
 router.get("/all/:equalOrAbovePermission?", getUsers);
 router.post("/auth", userAuth);

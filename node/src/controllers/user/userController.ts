@@ -41,7 +41,7 @@ const getUser = async (req: Request, res: Response) => {
         .status(404)
         .json({ user, message: "User not found.", statusMessage: HttpResponseMessage.GET_ERROR });
 
-    res
+    return res
       .status(200)
       .json({ user, message: "User found.", statusMessage: HttpResponseMessage.GET_SUCCESS });
   } catch (err) {
@@ -127,13 +127,12 @@ const createUser = async (
 
   return await entityManager
     .getRepository(UserEntity)
-    .save(new UserEntity(ldap.username, ldap.domain, permission, settings, info));
+    .save(new UserEntity(ldap.username.toLowerCase(), ldap.domain, permission, settings, info));
 };
 
 const userAuth = async (req: Request, res: Response) => {
   try {
     let ldap = new LDAP(req.body);
-    ldap.username.toLowerCase();
 
     const ldapUser = await ldap.authenticate();
     const token = ldap.generateJwt(ldapUser);
@@ -151,31 +150,6 @@ const userAuth = async (req: Request, res: Response) => {
 
       // Create new UserEntity if user doesn't exist in database
       if (!userExist) {
-        // const permissionEntity: UserPermission = isAdmin
-        //   ? new UserPermission(new Permission("admin"))
-        //   : new UserPermission();
-
-        // const permission = await transactionalEntityManager
-        //   .getRepository(UserPermission)
-        //   .save(permissionEntity);
-
-        // await helperSetPermissionGroups(groups, permission, transactionalEntityManager);
-
-        // const settings = await transactionalEntityManager
-        //   .getRepository(UserSettings)
-        //   .save(new UserSettings());
-
-        // const info = await transactionalEntityManager
-
-        //   .getRepository(UserInfo)
-        //   .save(new UserInfo().build(new UserInformation(), ldapUser));
-
-        // await transactionalEntityManager
-        //   .getRepository(UserEntity)
-        //   .save(new UserEntity(ldap.username, ldap.domain, permission, settings, info));
-
-        // userExist = await findUser(ldap.username);
-
         userExist = await createUser(isAdmin, groups, ldap, ldapUser, transactionalEntityManager);
 
         return res.status(201).json({
@@ -204,7 +178,6 @@ const userAuth = async (req: Request, res: Response) => {
         }
 
         const userPermission: UserPermission = userExist.permission;
-
         if (!Array.isArray(userPermission.groups) || userPermission.groups.length === 0) {
           await helperSetPermissionGroups(groups, userPermission, transactionalEntityManager);
         }

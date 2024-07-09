@@ -1,3 +1,5 @@
+import { User } from "../../orm/entity/user/UserEntity";
+
 interface IPermission {
   read: boolean;
   write: boolean;
@@ -67,6 +69,16 @@ class StaticGroups {
     };
   }
 }
+
+interface IUserLoginDetails {
+  id: number;
+  user: User;
+  loginTime: Date;
+  logoutTime: Date | null;
+  duration: number;
+}
+
+export { IUserLoginDetails };
 
 export {
   StaticGroups,
