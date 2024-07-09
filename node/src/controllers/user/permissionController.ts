@@ -24,7 +24,7 @@ const helperSetPermissionGroups = async (
 ) => {
   try {
     // Step 1: Retrieve existing groups and subgroups
-    const existingGroups = permissionEntity.groups;
+    const existingGroups = permissionEntity.groups || [];
 
     // Step 2: Determine groups and subgroups to delete
     const newGroupNames = Object.keys(groups);
