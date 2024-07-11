@@ -144,7 +144,6 @@ const submitLogin = (): void => {
                   ></v-text-field
                 ></v-row>
                 <v-row>
-                  <!-- , 'tgn.teleplan.com' -->
                   <v-select
                     color="primary"
                     label="Domain"

@@ -3,7 +3,7 @@ import { dataSource } from "../../config/orm/dataSource";
 import { HttpResponseMessage } from "../../enums/response";
 import { ProcessChangeNotice } from "../../orm/entity/change/ProcessChangeNoticeEntity";
 
-const getNoticeUpdates = async (req: Request, res: Response) => {
+const getNoticeUpdates = async (req: Request<{ id: number }>, res: Response) => {
   try {
     const { id } = req.params;
 

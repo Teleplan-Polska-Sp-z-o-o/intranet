@@ -2,7 +2,9 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
   IPermission,
+  IPermissionGroups,
   IUser,
+  StaticGroups,
   TPermissionStringCode,
   UserGroup,
   UserSubgroup,
@@ -42,9 +44,10 @@ export const usePermissionStore = defineStore("auth", () => {
   const check = async (
     iUser: IUser,
     routeGroup: RouteGroup,
-    onlyCheckGroup: boolean = false
+    onlyCheckGroup: boolean = false,
+    iUserPermission?: IPermission
   ): Promise<boolean> => {
-    const permission: IPermission = await get(iUser);
+    const permission: IPermission = iUserPermission || (await get(iUser));
     set(permission);
 
     let requiredGroup: UserGroup | undefined = undefined;
@@ -113,23 +116,34 @@ export const usePermissionStore = defineStore("auth", () => {
     userInfo: IUser,
     tools: Array<T>
   ): Promise<T[]> => {
+    const permission: IPermission = await get(userInfo);
+
+    const orderedGroups: IPermissionGroups = StaticGroups.getAdminGroups();
+
     // Map tools to promises that resolve to the tool or null
     const toolPromises = tools.map(async (tool) => {
       if (RouterHelper.isTPermissionGroup(tool.meta.group)) {
         try {
-          const toolAccess = await check(userInfo, new RouteGroup(tool.meta.group, null), true);
+          const toolAccess = await check(
+            userInfo,
+            new RouteGroup(tool.meta.group, null),
+            true,
+            permission
+          );
           if (!toolAccess) return null;
 
-          const permission: IPermission = await get(userInfo);
-          const firstSubgroup: string | undefined = permission.groups
-            .find((group) => group.name === tool.meta.group)
-            ?.subgroups.at(0)?.name as string | undefined;
+          // Find the group in the user's permissions
+          const userGroup = permission.groups.find((group) => group.name === tool.meta.group);
+          if (!userGroup) return null;
 
-          if (!firstSubgroup) {
-            return null;
-          }
+          // Get the first subgroup name based on the order in orderedGroups
+          const firstSubgroupName = orderedGroups[tool.meta.group]?.find((subgroupName) =>
+            userGroup.subgroups.some((subgroup) => subgroup.name === subgroupName)
+          );
 
-          tool.href = `${tool.meta.baseHref}${firstSubgroup}`;
+          if (!firstSubgroupName) return null;
+
+          tool.href = `${tool.meta.baseHref}${firstSubgroupName}`;
           return tool;
         } catch (error) {
           console.error(`Error processing tool ${tool.meta.group}: ${error}`);
@@ -158,6 +172,7 @@ export const usePermissionStore = defineStore("auth", () => {
     userInfo: IUser,
     toolTabs: Array<T>
   ): Promise<T[]> => {
+    const permission: IPermission = await get(userInfo);
     // Map tools to promises that resolve to the tool or null
     const toolTabsPromises = toolTabs.map(async (toolTab) => {
       if (
@@ -167,7 +182,9 @@ export const usePermissionStore = defineStore("auth", () => {
         try {
           const toolTabAccess = await check(
             userInfo,
-            new RouteGroup(toolTab.meta.group, toolTab.meta.subgroup)
+            new RouteGroup(toolTab.meta.group, toolTab.meta.subgroup),
+            false,
+            permission
           );
           if (!toolTabAccess) return null;
 

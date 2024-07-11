@@ -247,7 +247,7 @@ const removeUser = async (req: Request, res: Response) => {
     await dataSource.transaction(async (transactionalEntityManager) => {
       const userToRemove = await transactionalEntityManager
         .getRepository(UserEntity)
-        .findOne({ where: { id } });
+        .findOne({ where: { id: Number(id) } });
 
       if (!userToRemove) {
         return res.status(404).json({

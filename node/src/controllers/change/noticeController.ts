@@ -162,13 +162,18 @@ const editNotice = async (req: Request, res: Response) => {
   }
 };
 
-const assessNotice = async (req: Request, res: Response) => {
+const assessNotice = async (
+  req: Request<{
+    assessment: "approve" | "rejection";
+  }>,
+  res: Response
+) => {
   try {
     const body = req.body;
 
     const assesser: User = JSON.parse(body.assesser);
     const id: number = JSON.parse(body.noticeId);
-    const { assessment }: { assessment: "approve" | "rejection" } = req.params;
+    const { assessment } = req.params;
 
     if (!assesser.info.decisionMaker) {
       return res.status(401).json({
@@ -268,9 +273,9 @@ const assessNotice = async (req: Request, res: Response) => {
   }
 };
 
-const getNotice = async (req: Request, res: Response) => {
+const getNotice = async (req: Request<{ id: number }>, res: Response) => {
   try {
-    const { id }: { id: number } = req.params;
+    const { id } = req.params;
     const objectConfig = {
       where: { id, processChangeNotice: Not(IsNull()) },
       relations: ["processChangeNotice"],

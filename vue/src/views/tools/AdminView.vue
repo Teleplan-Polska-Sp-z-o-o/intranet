@@ -10,7 +10,7 @@ import InfoTable from "../../components/views/tools/admin/users/InfoTable.vue";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
 import { ToolTab } from "../../interfaces/common/ToolTabTypes";
-import AverageDurationChart from "../../components/common/chartjs/users/AverageDurationChart.vue";
+// import AverageDurationChart from "../../components/common/chartjs/users/AverageDurationChart.vue";
 import LoggedInCard from "../../components/common/chartjs/users/LoggedInCard.vue";
 import TotalLoginsChart from "../../components/common/chartjs/users/TotalLoginsChart.vue";
 
@@ -146,9 +146,9 @@ if (userInfo) {
                     @responseStatus="handleResponseStatus"
                     tab="user-info"
                   ></info-table>
-                  <average-duration-chart
+                  <!-- <average-duration-chart
                     class="bg-surface-2 pa-4 ma-1 mb-5"
-                  ></average-duration-chart>
+                  ></average-duration-chart> -->
                   <logged-in-card class="bg-surface-2 pa-4 ma-1 mb-5"></logged-in-card>
                   <total-logins-chart class="bg-surface-2 pa-4 ma-1"></total-logins-chart>
                 </v-window-item>

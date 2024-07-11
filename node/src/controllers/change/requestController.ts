@@ -220,9 +220,12 @@ const editRequest = async (req: Request, res: Response) => {
   }
 };
 
-const closeRequest = async (req: Request, res: Response) => {
+const closeRequest = async (
+  req: Request<{ assessment: "Implementation" | "Rejection" }>,
+  res: Response
+) => {
   try {
-    const { assessment }: { assessment: "Implementation" | "Rejection" } = req.params;
+    const { assessment } = req.params;
     const body = req.body;
 
     const id: number = JSON.parse(body.requestId);
@@ -287,9 +290,9 @@ const closeRequest = async (req: Request, res: Response) => {
   }
 };
 
-const removeRequest = async (req: Request, res: Response) => {
+const removeRequest = async (req: Request<{ id: number }>, res: Response) => {
   try {
-    const { id }: { id: number } = req.params;
+    const { id } = req.params;
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       const request = await transactionalEntityManager
@@ -368,7 +371,7 @@ const getRequests = async (_req: Request, res: Response) => {
 //   }
 // };
 
-const getRequest = async (req: Request, res: Response) => {
+const getRequest = async (req: Request<{ id: number }>, res: Response) => {
   try {
     const { id } = req.params;
 

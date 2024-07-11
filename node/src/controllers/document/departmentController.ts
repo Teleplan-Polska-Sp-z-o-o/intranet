@@ -33,7 +33,7 @@ const addDepartment = async (req: Request, res: Response) => {
   }
 };
 
-const editDepartment = async (req: Request, res: Response) => {
+const editDepartment = async (req: Request<{ id: number; name: string }>, res: Response) => {
   try {
     const { id, name } = req.params;
 
@@ -72,9 +72,9 @@ const editDepartment = async (req: Request, res: Response) => {
   }
 };
 
-const removeDepartment = async (req: Request, res: Response) => {
+const removeDepartment = async (req: Request<{ id: number }>, res: Response) => {
   try {
-    const { id }: { id: number } = req.params;
+    const { id } = req.params;
 
     const department = await dataSource.getRepository(Department).findOne({ where: { id } });
 

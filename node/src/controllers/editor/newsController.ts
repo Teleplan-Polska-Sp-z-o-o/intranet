@@ -7,7 +7,9 @@ import { dataSource } from "../../config/orm/dataSource";
 import { serverConfig } from "../../config/server";
 import { EntityManager } from "typeorm";
 import he from "he";
-import { TConfidentiality, TPermissionStringCode } from "../../interfaces/user/UserTypes";
+import { TConfidentiality } from "../../interfaces/user/UserTypes";
+import { MulterRequest } from "../../interfaces/common/MulterRequest";
+import { UPLOADS_PATH } from "../../config/routes";
 
 const saveNewsFile = (file: any, ref: string, bg: boolean): string => {
   const param = { bg: bg.toString(), uuid: ref };
@@ -19,7 +21,7 @@ const saveNewsFile = (file: any, ref: string, bg: boolean): string => {
     newFileName = `${name}_qs_${queryString}${ext}`;
   }
 
-  fs.renameSync(file.path, path.join(__dirname, "..", "..", "..", "uploads", "news", newFileName));
+  fs.renameSync(file.path, path.join(UPLOADS_PATH, "news", newFileName));
 
   return newFileName;
 };
@@ -50,7 +52,7 @@ const removeUnusedImages = async (manager: EntityManager) => {
   }
 
   // get all files from the news directory
-  const uploadsDir = path.join(__dirname, "..", "..", "..", "uploads", "news");
+  const uploadsDir = path.join(UPLOADS_PATH, "news");
   const files = fs.readdirSync(uploadsDir);
 
   // remove files that are not in the imagesInUse array
@@ -62,12 +64,14 @@ const removeUnusedImages = async (manager: EntityManager) => {
   });
 };
 
-const addNews = async (req: Request, res: Response) => {
+const addNews = async (req: MulterRequest, res: Response) => {
   try {
+    console.log(req.headers);
+
     switch (req.headers.ckeditor) {
       case "true":
         // store content image
-        const newFileName = saveNewsFile(req.files.at(0), req.headers.ref, false);
+        const newFileName = saveNewsFile(req.files.at(0), req.headers.ref as string, false);
 
         return res.status(200).json({
           url: `${serverConfig.origin}:${serverConfig.port}/uploads/news/${newFileName}`,
@@ -102,8 +106,6 @@ const addNews = async (req: Request, res: Response) => {
           message: "News added successfully.",
           statusMessage: HttpResponseMessage.PUT_SUCCESS,
         });
-
-        break;
     }
   } catch (error) {
     console.error("Error adding news:", error);
@@ -114,7 +116,7 @@ const addNews = async (req: Request, res: Response) => {
   }
 };
 
-const editNews = async (req: Request, res: Response) => {
+const editNews = async (req: MulterRequest, res: Response) => {
   try {
     const body = req.body;
     const base = JSON.parse(body.base);
@@ -127,7 +129,8 @@ const editNews = async (req: Request, res: Response) => {
       });
 
       // clean old bg image
-      const uploadsDir = path.join(__dirname, "..", "..", "..", "uploads", "news");
+      const uploadsDir = path.join(UPLOADS_PATH, "news");
+
       const files = fs.readdirSync(uploadsDir);
 
       const fileToDelete = files.find((file) => file === newsToUpdate.bgImage);
@@ -155,12 +158,12 @@ const editNews = async (req: Request, res: Response) => {
 
       return res.status(200).json({
         edited: newsToUpdate,
-        message: "News added successfully.",
+        message: "News edited successfully.",
         statusMessage: HttpResponseMessage.PUT_SUCCESS,
       });
     });
   } catch (error) {
-    console.error("Error adding news:", error);
+    console.error("Error editing news:", error);
     return res.status(500).json({
       message: "Unknown error occurred. Failed to add news.",
       statusMessage: HttpResponseMessage.UNKNOWN,
@@ -168,13 +171,12 @@ const editNews = async (req: Request, res: Response) => {
   }
 };
 
-const getNews = async (req: Request, res: Response) => {
+const getNews = async (
+  req: Request<{ confidentiality: TConfidentiality; skip: number; take: number }>,
+  res: Response
+) => {
   try {
-    const {
-      confidentiality,
-      skip,
-      take,
-    }: { confidentiality: TConfidentiality; skip: number; take: number } = req.params;
+    const { confidentiality, skip, take } = req.params;
 
     let query = dataSource.getRepository(News).createQueryBuilder("news");
 
@@ -216,7 +218,7 @@ const getNews = async (req: Request, res: Response) => {
   }
 };
 
-const removeNews = async (req: Request, res: Response) => {
+const removeNews = async (req: Request<{ id: number }>, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -233,7 +235,7 @@ const removeNews = async (req: Request, res: Response) => {
       }
 
       const newsRef = newsToRemove.ref;
-      const directory = path.join(__dirname, "..", "..", "..", "uploads", "news");
+      const directory = path.join(UPLOADS_PATH, "news");
       const files = fs.readdirSync(directory);
       // Filter files that contain the document's reference in their names
       const filesToDelete = files.filter((file) => file.includes(newsRef));
