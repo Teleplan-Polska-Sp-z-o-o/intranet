@@ -144,12 +144,11 @@ const submitLogin = (): void => {
                   ></v-text-field
                 ></v-row>
                 <v-row>
-                  <!-- , 'tgn.teleplan.com' -->
                   <v-select
                     color="primary"
                     label="Domain"
                     v-model="data.domain"
-                    :items="['reconext.com']"
+                    :items="['reconext.com', 'tgn.teleplan.com']"
                     :rules="domainRules"
                     required
                   ></v-select>

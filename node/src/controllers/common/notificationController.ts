@@ -13,13 +13,12 @@ const saveNotification = async (notification: UserNotification) => {
   }
 };
 
-const editNotification = async (req: Request, res: Response) => {
+const editNotification = async (
+  req: Request<{ userId: number; notificationId: number; state: string }>,
+  res: Response
+) => {
   try {
-    const {
-      userId,
-      notificationId,
-      state,
-    }: { userId: number; notificationId: number; state: string } = req.params;
+    const { userId, notificationId, state } = req.params;
 
     let updatedNotification: UserNotification;
 
@@ -63,10 +62,12 @@ const editNotification = async (req: Request, res: Response) => {
   }
 };
 
-const getNotifications = async (req: Request, res: Response) => {
+const getNotifications = async (
+  req: Request<{ id: number; limit: number | "undefined"; state: string }>,
+  res: Response
+) => {
   try {
-    const { id, limit, state }: { id: number; limit: number | "undefined"; state: string } =
-      req.params;
+    const { id, limit, state } = req.params;
 
     let notifications: Array<UserNotification> = [];
     await dataSource.transaction(async (transactionalEntityManager) => {

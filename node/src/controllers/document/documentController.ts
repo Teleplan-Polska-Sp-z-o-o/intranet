@@ -14,8 +14,10 @@ import { IDocOptions } from "../../interfaces/document/IDocOptions";
 import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { Competence } from "../../orm/entity/document/CompetenceEntity";
 import { Utils } from "../common/Utils";
+import { MulterRequest } from "../../interfaces/common/MulterRequest";
+import { UPLOADS_PATH } from "../../config/routes";
 
-const addDocument = async (req: Request, res: Response) => {
+const addDocument = async (req: MulterRequest, res: Response) => {
   try {
     const body = req.body;
 
@@ -72,10 +74,7 @@ const addDocument = async (req: Request, res: Response) => {
         const newFileName = `${savedDocument.name}_qs_${queryString}.pdf`;
 
         // Rename and move file to destination folder
-        fs.renameSync(
-          file.path,
-          path.join(__dirname, "..", "..", "..", "uploads", "documents", newFileName)
-        );
+        fs.renameSync(file.path, path.join(UPLOADS_PATH, "documents", newFileName));
       }
 
       // add competences
@@ -126,7 +125,7 @@ const addDocument = async (req: Request, res: Response) => {
   }
 };
 
-const editDocument = async (req: Request, res: Response) => {
+const editDocument = async (req: MulterRequest, res: Response) => {
   try {
     const body = req.body;
 
@@ -175,7 +174,7 @@ const editDocument = async (req: Request, res: Response) => {
         const queryString = new URLSearchParams(oldParams).toString();
 
         const oldFileName = `${oldDocName}_qs_${queryString}.pdf`;
-        fs.unlinkSync(path.join(__dirname, "..", "..", "..", "uploads", "documents", oldFileName));
+        fs.unlinkSync(path.join(UPLOADS_PATH, "documents", oldFileName));
       }
 
       for (const [index, file] of uploadedFiles.entries()) {
@@ -194,10 +193,7 @@ const editDocument = async (req: Request, res: Response) => {
 
         const newFileName = `${updatedDocument.name}_qs_${queryString}.pdf`;
 
-        fs.renameSync(
-          file.path,
-          path.join(__dirname, "..", "..", "..", "uploads", "documents", newFileName)
-        );
+        fs.renameSync(file.path, path.join(UPLOADS_PATH, "documents", newFileName));
       }
       // add competences
       const competenceIds = base.competences.map((competence: any) =>
@@ -246,7 +242,7 @@ const editDocument = async (req: Request, res: Response) => {
   }
 };
 
-const removeDocument = async (req: Request, res: Response) => {
+const removeDocument = async (req: Request<{ id: number }>, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -263,7 +259,7 @@ const removeDocument = async (req: Request, res: Response) => {
       }
 
       const documentRef = documentToRemove.ref;
-      const directory = path.join(__dirname, "..", "..", "..", "uploads", "documents");
+      const directory = path.join(UPLOADS_PATH, "documents");
       const files = fs.readdirSync(directory);
       // Filter files that contain the document's reference in their names
       const filesToDelete = files.filter((file) => file.includes(documentRef));
@@ -309,17 +305,16 @@ const confidentialRestriction = (confidentiality: TConfidentiality) => {
   }
 };
 
-const getDocuments = async (req: Request, res: Response) => {
+const getDocuments = async (
+  req: Request<{
+    type: "Instruction" | "Visual" | "all";
+    reduce: "true" | "false";
+    confidentiality: TConfidentiality;
+  }>,
+  res: Response
+) => {
   try {
-    const {
-      type,
-      reduce,
-      confidentiality,
-    }: {
-      type: "Instruction" | "Visual" | "all";
-      reduce: "true" | "false";
-      confidentiality: TConfidentiality;
-    } = req.params;
+    const { type, reduce, confidentiality } = req.params;
 
     let docOptions: IDocOptions = {
       relations: ["languages", "subcategory", "competences"],
@@ -377,7 +372,15 @@ const getDocuments = async (req: Request, res: Response) => {
   }
 };
 
-const getDocumentsByDep = async (req: Request, res: Response) => {
+const getDocumentsByDep = async (
+  req: Request<{
+    departmentName: string;
+    type: string;
+    reduce: "true" | "false";
+    confidentiality: TConfidentiality;
+  }>,
+  res: Response
+) => {
   try {
     const { departmentName, type, reduce, confidentiality } = req.params;
 
@@ -463,7 +466,16 @@ const getDocumentsByDep = async (req: Request, res: Response) => {
   }
 };
 
-const getDocumentsByDepCat = async (req: Request, res: Response) => {
+const getDocumentsByDepCat = async (
+  req: Request<{
+    departmentName: string;
+    categoryName: string;
+    type: string;
+    reduce: "true" | "false";
+    confidentiality: TConfidentiality;
+  }>,
+  res: Response
+) => {
   try {
     const { departmentName, categoryName, type, reduce, confidentiality } = req.params;
 
@@ -570,7 +582,17 @@ const getDocumentsByDepCat = async (req: Request, res: Response) => {
   }
 };
 
-const getDocumentsByDepCatSub = async (req: Request, res: Response) => {
+const getDocumentsByDepCatSub = async (
+  req: Request<{
+    departmentName: string;
+    categoryName: string;
+    subcategoryName: string;
+    type: string;
+    reduce: "true" | "false";
+    confidentiality: TConfidentiality;
+  }>,
+  res: Response
+) => {
   try {
     const { departmentName, categoryName, subcategoryName, type, reduce, confidentiality } =
       req.params;

@@ -80,9 +80,9 @@ const editCompetence = async (req: Request, res: Response) => {
   }
 };
 
-const removeCompetence = async (req: Request, res: Response) => {
+const removeCompetence = async (req: Request<{ id: number }>, res: Response) => {
   try {
-    const { id }: { id: number } = req.params;
+    const { id } = req.params;
 
     const competence: Competence = await dataSource
       .getRepository(Competence)

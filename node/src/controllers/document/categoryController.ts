@@ -37,7 +37,7 @@ const addCategory = async (req: Request, res: Response) => {
   }
 };
 
-const editCategory = async (req: Request, res: Response) => {
+const editCategory = async (req: Request<{ id: number; name: string }>, res: Response) => {
   try {
     const { id, name } = req.params;
 
@@ -70,7 +70,7 @@ const editCategory = async (req: Request, res: Response) => {
   }
 };
 
-const removeCategory = async (req: Request, res: Response) => {
+const removeCategory = async (req: Request<{ id: number }>, res: Response) => {
   try {
     const { id } = req.params;
 

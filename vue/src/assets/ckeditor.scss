@@ -32,6 +32,10 @@
   padding-bottom: 4px !important;
 }
 
+.v-theme--dark .ck-override-vuetify-styles + .ck {
+  color: white !important;
+}
+
 // theirs
 
 .ck-override-vuetify-styles + {

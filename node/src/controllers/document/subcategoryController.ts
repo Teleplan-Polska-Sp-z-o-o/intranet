@@ -38,7 +38,7 @@ const addSubcategory = async (req: Request, res: Response) => {
   }
 };
 
-const editSubcategory = async (req: Request, res: Response) => {
+const editSubcategory = async (req: Request<{ id: number; name: string }>, res: Response) => {
   try {
     const { id, name } = req.params;
 
@@ -69,7 +69,7 @@ const editSubcategory = async (req: Request, res: Response) => {
   }
 };
 
-const removeSubcategory = async (req: Request, res: Response) => {
+const removeSubcategory = async (req: Request<{ id: number }>, res: Response) => {
   try {
     const { id } = req.params;
 

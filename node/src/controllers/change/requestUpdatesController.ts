@@ -5,7 +5,7 @@ import { HttpResponseMessage } from "../../enums/response";
 import { ProcessChangeRequest } from "../../orm/entity/change/ProcessChangeRequestEntity";
 // import { FindManyOptions } from "typeorm";
 
-const getRequestUpdates = async (req: Request, res: Response) => {
+const getRequestUpdates = async (req: Request<{ id: number }>, res: Response) => {
   try {
     const { id } = req.params;
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { RouteLocationNormalizedLoaded, useRouter } from "vue-router";
 import { Breadcrumb } from "../../interfaces/common/Breadcrumb";
@@ -38,17 +38,18 @@ const getBreadcrumbs = (route: RouteLocationNormalizedLoaded): Array<Breadcrumb>
 
 const breadcrumbs = ref<Array<Breadcrumb>>([]);
 
-watch(
-  useRouter().currentRoute,
-  (route) => {
-    breadcrumbs.value = getBreadcrumbs(route);
-  },
-  { immediate: true }
-);
+// watch(
+//   useRouter().currentRoute,
+//   (route) => {
+//     breadcrumbs.value = getBreadcrumbs(route);
+//   },
+//   { immediate: true }
+// );
 
-// watchEffect(() => {
-//   breadcrumbs.value = getBreadcrumbs();
-// });
+watchEffect(() => {
+  const route: RouteLocationNormalizedLoaded = useRouter().currentRoute.value;
+  breadcrumbs.value = getBreadcrumbs(route);
+});
 </script>
 
 <template>

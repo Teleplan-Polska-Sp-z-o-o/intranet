@@ -1,78 +1,18 @@
-import express from "express";
-// import session from "express-session";
-import cors from "cors";
 import "reflect-metadata";
 
-// create and setup express app
-import { corsOptionsDelegate } from "./config/cors";
+import { createExpressApp } from "./config/expressApp";
+import { mountRoutes } from "./config/routes";
+const app = mountRoutes(createExpressApp());
 
-import expressWs from "express-ws";
-const app = express();
-
-app.use(express.json());
-app.use(cors(corsOptionsDelegate));
-
-import { serverConfig } from "./config/server";
-
-// Routes
-import { userRoutes } from "./routes/userRoutes";
-import { permissionRoutes } from "./routes/permissionRoutes";
-import { documentRoutes } from "./routes/documentRoutes";
-import { departmentRoutes } from "./routes/departmentRoutes";
-import { categoryRoutes } from "./routes/categoryRoutes";
-import { subcategoryRoutes } from "./routes/subcategoryRoutes";
-import { editorRoutes } from "./routes/editorRoutes";
-import { changeRoutes } from "./routes/changeRoutes";
-import { notificationRoutes } from "./routes/notificationRoutes";
-import { serverRoutes } from "./routes/serverRoutes";
-import { competenceRoutes } from "./routes/competenceRoutes";
-
-import path from "path";
-
-app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
-
-// user
-app.use("/api/user/permission", permissionRoutes);
-app.use("/api/user", userRoutes);
-
-// document/department/category/subcategory
-app.use("/api/document/department", departmentRoutes);
-app.use("/api/document/category", categoryRoutes);
-app.use("/api/document/subcategory", subcategoryRoutes);
-app.use("/api/document", documentRoutes);
-//
-
-app.use("/api/editor", editorRoutes);
-app.use("/api/change", changeRoutes);
-app.use("/api/notification", notificationRoutes);
-app.use("/api/server", serverRoutes);
-app.use("/api/competence", competenceRoutes);
-
-// import { msalRoutes } from "./routes/msalRoutes";
-// app.use("/api/msal", msalRoutes);
-import { Scheduler } from "./models/common/Scheduler";
-const scheduler = new Scheduler();
-
-// Schedule the cleanup task to run every day at midnight
-scheduler.scheduleTask(
-  "0 0 * * *",
-  () => {
-    UserHeartbeat.cleanOldRecords()
-      .then(() => console.log("Old records cleaned up successfully"))
-      .catch((err) => console.error("Failed to clean old records:", err));
-  },
-  "CleanOldRecordsTask"
-);
-
-scheduler.startAllTasks();
+import { mountScheduledTasks } from "./config/scheduler";
+mountScheduledTasks();
 
 // DataSource instance initialize
 import { dataSource } from "./config/orm/dataSource";
-import { websocketController } from "./controllers/common/websocketController";
+import { mountWsRoute } from "./config/ws";
+import { serverConfig } from "./config/server";
 import * as fs from "fs";
 import https from "https";
-
-import { UserHeartbeat } from "./models/websocket/UserHeartbeat";
 
 dataSource
   .initialize()
@@ -81,10 +21,7 @@ dataSource
 
     if (serverConfig.test) {
       // Initialize express-ws with the HTTP server
-      expressWs(app);
-      app.ws("/", websocketController);
-
-      app.listen(serverConfig.port, () =>
+      mountWsRoute(app).listen(serverConfig.port, () =>
         console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
       );
     } else {
@@ -97,11 +34,7 @@ dataSource
       const httpsServer = https.createServer(credentials, app);
 
       // Initialize express-ws with the HTTPS server
-      expressWs(app, httpsServer);
-      app.ws("/", websocketController);
-
-      // Listen on specified port for HTTPS
-      httpsServer.listen(serverConfig.port, () =>
+      mountWsRoute(app, httpsServer).listen(serverConfig.port, () =>
         console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
       );
     }

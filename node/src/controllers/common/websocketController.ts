@@ -1,8 +1,15 @@
 import { IUser } from "../../interfaces/user/UserTypes";
 import { ISocketConnection } from "../../interfaces/websocket/ISocketConnection";
 import { WebsocketConnections } from "../../models/websocket/WebsocketConnections";
+import { WebsocketRequestHandler } from "express-ws";
+import { Request, NextFunction } from "express";
+import { WebSocket } from "ws";
 
-const websocketController = (ws: any, _req: Request) => {
+const websocketController: WebsocketRequestHandler = (
+  ws: WebSocket,
+  req: Request,
+  next: NextFunction
+) => {
   const WC: WebsocketConnections = WebsocketConnections.getInstance();
 
   ws.on("message", function (msg: string) {
@@ -26,9 +33,16 @@ const websocketController = (ws: any, _req: Request) => {
     }
   });
 
-  ws.onclose = () => {
+  ws.on("close", (code, reason) => {
+    console.log(`Connection closed: ${code} - ${reason.toString()}`);
     WC.removeClosedConnections();
-  };
+  });
+
+  ws.on("error", (error) => {
+    console.error("WebSocket error:", error);
+    ws.close(1000, "WebSocket error occurred");
+    WC.removeClosedConnections();
+  });
 };
 
 const getWebSocketConnections = (): Array<ISocketConnection> => {
