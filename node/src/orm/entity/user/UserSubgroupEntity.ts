@@ -13,9 +13,9 @@ export class UserSubgroup {
 
   constructor() {}
 
-  public build = (name: string, group: UserGroup): UserSubgroup => {
+  public build(name: string, group: UserGroup): UserSubgroup {
     this.name = name;
     this.group = group;
     return this;
-  };
+  }
 }

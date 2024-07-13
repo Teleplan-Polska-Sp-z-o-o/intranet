@@ -89,8 +89,8 @@ class StaticGroups {
 interface IUserLoginDetails {
   id: number;
   user: UserEntity;
-  loginTime: Date;
-  logoutTime: Date | null;
+  loginTime: string;
+  logoutTime: string | null;
   duration: number;
 }
 

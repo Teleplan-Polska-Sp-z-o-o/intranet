@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { RouteLocationNormalizedLoaded, useRouter } from "vue-router";
 import { Breadcrumb } from "../../interfaces/common/Breadcrumb";
 import { MetaBreadcrumbs } from "../../interfaces/common/MetaBreadcrumbs";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
+const router = useRouter();
 
 const exceptionOrBaseHref = (route: RouteLocationNormalizedLoaded, routeRecordPath: string) => {
   if (routeRecordPath.includes("/tool/documents")) {
@@ -36,20 +37,27 @@ const getBreadcrumbs = (route: RouteLocationNormalizedLoaded): Array<Breadcrumb>
   return breadcrumbs;
 };
 
+const updateBreadcrumbs = () => {
+  const route = router.currentRoute.value;
+  breadcrumbs.value = getBreadcrumbs(route);
+};
+
 const breadcrumbs = ref<Array<Breadcrumb>>([]);
 
-// watch(
-//   useRouter().currentRoute,
-//   (route) => {
-//     breadcrumbs.value = getBreadcrumbs(route);
-//   },
-//   { immediate: true }
-// );
+watch(
+  router.currentRoute,
+  (route) => {
+    breadcrumbs.value = getBreadcrumbs(route);
+  },
+  { immediate: true }
+);
 
-watchEffect(() => {
-  const route: RouteLocationNormalizedLoaded = useRouter().currentRoute.value;
-  breadcrumbs.value = getBreadcrumbs(route);
-});
+watch(
+  () => locale.value,
+  () => {
+    updateBreadcrumbs();
+  }
+);
 </script>
 
 <template>

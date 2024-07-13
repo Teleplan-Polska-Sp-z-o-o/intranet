@@ -1,7 +1,21 @@
+import moment from "moment";
+import "moment-timezone";
 import { TConfidentiality } from "../../interfaces/user/UserTypes";
 
 class Helper {
   constructor() {}
+
+  /**
+   * Converts an ISO date string to the local time zone of the user's system.
+   *
+   * @param isoDateString - The ISO date string to be converted.
+   * @returns The date string formatted to the local time zone of the user's system.
+   */
+  public static convertToLocalTime = (isoDateString: string): string => {
+    const timezone = moment.tz.guess(); // Automatically detect the user's local timezone
+    const localTime = moment.tz(isoDateString, timezone).format("YYYY-MM-DD HH:mm:ssZ");
+    return localTime;
+  };
 
   public static dateWithoutTimezone = (date: Date) => {
     const tzOffset = date.getTimezoneOffset() * 60000; //offset in milliseconds

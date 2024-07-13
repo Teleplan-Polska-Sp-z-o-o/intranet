@@ -4,11 +4,14 @@ import expressWs from "express-ws";
 import https from "https";
 import { Server } from "http";
 
-const mountWsRoute = (app: Express, server?: Server | https.Server): expressWs.Application => {
+const mountWsRoute = (
+  app: Express,
+  server?: Server | https.Server
+): Server | https.Server | expressWs.Application => {
   const wsInstance = expressWs(app, server);
   const wsApp: expressWs.Application = wsInstance.app;
   wsApp.ws("/", websocketController);
-  return wsApp;
+  return server ? server : wsApp;
 };
 
 export { mountWsRoute };

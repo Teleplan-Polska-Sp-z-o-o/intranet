@@ -33,7 +33,7 @@ export class UserNotification implements INotification {
 
   constructor() {}
 
-  public builder = (builder: Partial<INotification>): UserNotification => {
+  public builder(builder: Partial<INotification>): UserNotification {
     this.state = builder.state;
     this.source = builder.source;
     this.action = builder.action;
@@ -44,5 +44,5 @@ export class UserNotification implements INotification {
     this.user = builder.user;
 
     return this;
-  };
+  }
 }

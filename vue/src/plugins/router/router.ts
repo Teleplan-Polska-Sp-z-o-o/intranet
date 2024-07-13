@@ -5,6 +5,7 @@ import { useUserStore } from "../../stores/userStore.ts";
 import { IUser, TPermissionGroup, TPermissionSubgroup } from "../../interfaces/user/UserTypes.ts";
 import { RouteGroup } from "../../models/common/router/RouteGroup.ts";
 import { RouterHelper } from "../../models/common/router/RouterHelper.ts";
+import { useWebsocketStore } from "../../stores/websocketStore.ts";
 
 // 3. Create the router instance and pass the `routes` option
 
@@ -35,7 +36,7 @@ const routeRequiredGroupAndSubgroup = (to: RouteLocationNormalized): RouteGroup 
   return new RouteGroup(permissionGroup, permissionSubgroup);
 };
 
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach(async (to, from, next) => {
   try {
     if (to.meta.title) {
       const title = typeof to.meta.title === "function" ? to.meta.title(to) : to.meta.title;
@@ -70,9 +71,25 @@ router.beforeEach(async (to, _from, next) => {
         next();
       }
     }
+
+    if (to.path === "/" && from.path !== "/") {
+      const websocketStore = useWebsocketStore();
+      websocketStore.closeConnection();
+    }
   } catch (error) {
     console.log(error);
     next(false); // Cancel navigation in case of an error
+  }
+});
+
+router.afterEach(async (to, _from) => {
+  try {
+    if (to.path !== "/") {
+      const websocketStore = useWebsocketStore();
+      websocketStore.openConnection();
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 

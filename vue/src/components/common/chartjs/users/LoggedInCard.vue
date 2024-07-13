@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { UserLoginDetailsManager } from "../../../../models/user/UserLoginDetailsManager";
 import { IUserLoginDetails } from "../../../../interfaces/user/UserTypes";
+import { Helper } from "../../../../models/common/Helper";
 
 const userLoginDetailsManager: UserLoginDetailsManager = new UserLoginDetailsManager();
 const loginDetailEntities = ref<Array<IUserLoginDetails>>([]);
@@ -21,6 +22,38 @@ const processLoginDetails = (entities: Array<IUserLoginDetails>): number => {
 };
 
 const currentlyLoggedIn = ref<number>(0);
+
+const tableEntities = computed(() => {
+  const filtered = loginDetailEntities.value.filter((detail) => !detail.logoutTime);
+  const mappedFiltered = filtered.map((record) => {
+    const currentTime = new Date().toISOString();
+    const currentLocalTime = new Date(Helper.convertToLocalTime(currentTime));
+    const loginLocalTime = new Date(Helper.convertToLocalTime(record.loginTime));
+    const durationInMilliseconds = currentLocalTime.getTime() - loginLocalTime.getTime();
+    const durationInMinutes = Math.floor(durationInMilliseconds / 1000 / 60);
+
+    const timeRegex = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/;
+    const ISOLoginLocalTime = Helper.convertToLocalTime(record.loginTime);
+    const loginLocalTimeWithoutTimezone = ISOLoginLocalTime.match(timeRegex)?.[0];
+    return {
+      ...record,
+      loginTime: loginLocalTimeWithoutTimezone,
+      duration: durationInMinutes,
+    };
+  });
+  return mappedFiltered;
+});
+const tableSearch = ref<string>("");
+const tableHeaders: any = [
+  {
+    align: "start",
+    key: "user.username",
+    sortable: true,
+    title: "Username",
+  },
+  { key: "loginTime", sortable: true, title: "Login Time" },
+  { key: "duration", sortable: true, title: "Current Duration (mins)" },
+];
 
 const route = useRoute();
 watch(
@@ -44,6 +77,32 @@ watch(
       <v-card-text
         ><div class="mx-auto text-h3">{{ currentlyLoggedIn }}</div></v-card-text
       >
+
+      <v-text-field
+        v-model="tableSearch"
+        label="Search"
+        prepend-inner-icon="mdi-magnify"
+        variant="outlined"
+        density="compact"
+        color="primary"
+        hide-details
+        single-line
+        :rounded="true"
+      ></v-text-field>
+
+      <v-data-table
+        :headers="tableHeaders"
+        :items="tableEntities"
+        :search="tableSearch"
+        :items-per-page-options="[
+          { value: 5, title: '5' },
+          { value: 10, title: '10' },
+          { value: 15, title: '15' },
+          { value: 20, title: '20' },
+          { value: -1, title: '$vuetify.dataFooter.itemsPerPageAll' },
+        ]"
+        class="bg-surface-2"
+      ></v-data-table>
     </v-card-text>
   </v-card>
 </template>

@@ -10,9 +10,11 @@ import InfoTable from "../../components/views/tools/admin/users/InfoTable.vue";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
 import { ToolTab } from "../../interfaces/common/ToolTabTypes";
-// import AverageDurationChart from "../../components/common/chartjs/users/AverageDurationChart.vue";
+import LoginUniqueUserDistributionChart from "../../components/common/chartjs/users/LoginUniqueUserDistributionChart.vue";
+import NewUsersChart from "../../components/common/chartjs/users/NewUsersChart.vue";
 import LoggedInCard from "../../components/common/chartjs/users/LoggedInCard.vue";
 import TotalLoginsChart from "../../components/common/chartjs/users/TotalLoginsChart.vue";
+import ReturningUsersChart from "../../components/common/chartjs/users/ReturningUsersChart.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -146,11 +148,15 @@ if (userInfo) {
                     @responseStatus="handleResponseStatus"
                     tab="user-info"
                   ></info-table>
-                  <!-- <average-duration-chart
-                    class="bg-surface-2 pa-4 ma-1 mb-5"
-                  ></average-duration-chart> -->
+
                   <logged-in-card class="bg-surface-2 pa-4 ma-1 mb-5"></logged-in-card>
-                  <total-logins-chart class="bg-surface-2 pa-4 ma-1"></total-logins-chart>
+                  <login-unique-user-distribution-chart
+                    class="bg-surface-2 pa-4 ma-1 mb-5"
+                  ></login-unique-user-distribution-chart>
+                  <total-logins-chart class="bg-surface-2 pa-4 ma-1 mb-5"></total-logins-chart>
+
+                  <new-users-chart class="bg-surface-2 pa-4 ma-1 mb-5"></new-users-chart>
+                  <returning-users-chart class="bg-surface-2 pa-4 ma-1"></returning-users-chart>
                 </v-window-item>
                 <v-window-item :value="2">
                   <permissions-table-info class="mb-5 ma-1"></permissions-table-info>

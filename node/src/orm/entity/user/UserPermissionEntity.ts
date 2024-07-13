@@ -26,25 +26,25 @@ export class UserPermission {
     this.confidentiality = confidentiality;
   }
 
-  public setPermission = (permission: Permission): UserPermission => {
+  public setPermission(permission: Permission): UserPermission {
     this.read = permission.read;
     this.write = permission.write;
     this.control = permission.control;
     return this;
-  };
-  public setConfidentiality = (confidentiality: TConfidentiality): UserPermission => {
+  }
+  public setConfidentiality(confidentiality: TConfidentiality): UserPermission {
     this.confidentiality = confidentiality;
     return this;
-  };
+  }
 
-  public addToGroup = (group: UserGroup): UserPermission => {
+  public addToGroup(group: UserGroup): UserPermission {
     if (!Array.isArray(this.groups) || this.groups.length === 0) this.groups = [];
     if (!this.groups.includes(group)) this.groups.push(group);
     return this;
-  };
+  }
 
-  public removeFromGroup = (group: UserGroup): UserPermission => {
+  public removeFromGroup(group: UserGroup): UserPermission {
     if (this.groups.includes(group)) this.groups = this.groups.filter((grp) => grp.id !== group.id);
     return this;
-  };
+  }
 }

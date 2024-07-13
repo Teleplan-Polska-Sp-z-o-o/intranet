@@ -20,7 +20,7 @@ export class UserInfo {
 
   constructor() {}
 
-  public sanitizeAndAssignLDAPObject = (ldapUser: ILdapUser | null): UserInfo => {
+  public sanitizeAndAssignLDAPObject(ldapUser: ILdapUser | null): UserInfo {
     if (ldapUser === null) {
       this.LDAPObject = "";
       return this;
@@ -77,14 +77,14 @@ export class UserInfo {
 
     this.LDAPObject = JSON.stringify(sanitizedLdapObject);
     return this;
-  };
+  }
 
-  public build = (info: UserInformation, fromLDAP: ILdapUser = null) => {
+  public build(info: UserInformation, fromLDAP: ILdapUser = null) {
     this.position = info.position;
     this.department = info.department;
     this.decisionMaker = info.decisionMaker;
     if (fromLDAP) this.sanitizeAndAssignLDAPObject(fromLDAP);
 
     return this;
-  };
+  }
 }

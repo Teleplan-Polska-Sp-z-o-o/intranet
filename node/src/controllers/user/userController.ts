@@ -12,6 +12,7 @@ import { UserInformation } from "../../models/user/UserInformation";
 import { DataSource, EntityManager } from "typeorm";
 import { helperSetPermissionGroups } from "./permissionController";
 import { Permission } from "../../models/user/Permission";
+import { UserHeartbeat } from "../../models/websocket/UserHeartbeat";
 
 const findUser = async (
   where: string | number,
@@ -127,7 +128,7 @@ const createUser = async (
 
   return await entityManager
     .getRepository(UserEntity)
-    .save(new UserEntity(ldap.username.toLowerCase(), ldap.domain, permission, settings, info));
+    .save(new UserEntity(ldap.username, ldap.domain, permission, settings, info));
 };
 
 const userAuth = async (req: Request, res: Response) => {

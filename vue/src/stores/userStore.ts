@@ -64,17 +64,16 @@ export const useUserStore = defineStore("user", () => {
 
   const verifyToken = async (): Promise<boolean> => {
     try {
-      const token: string | false = getToken();
-      if (!token) return false;
+      const token: string | false = useUserStore().getToken();
+      if (!token) {
+        console.error("No token found");
+        userToken.value = "";
+        localStorage.setItem("token", "");
+        return false;
+      }
 
       const tokenManager = new UserTokenManager();
       const response = await tokenManager.verify(JSON.stringify(token));
-
-      if (!response) {
-        userToken.value = "";
-        localStorage.setItem("token", "");
-      }
-
       return response;
     } catch (error) {
       console.error("Error verifying user token:", error);

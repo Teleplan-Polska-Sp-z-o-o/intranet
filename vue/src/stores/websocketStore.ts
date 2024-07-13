@@ -2,21 +2,24 @@ import { defineStore } from "pinia";
 // import { ComputedRef, computed, ref, watch } from "vue";
 import { ref, watch } from "vue";
 import { WebsocketConnections } from "../models/common/WebsocketConnections";
+import { useUserStore } from "./userStore";
 // import { ENotificationSource } from "../interfaces/user/notification/ENotificationSource";
 // import { INotificationEntity } from "../interfaces/user/notification/INotificationEntity";
 // import { UserNotification } from "../models/common/notification/UserNotification";
 
-let intervalInitialized = false;
-
 export const useWebsocketStore = defineStore("websocket", () => {
   const receivedMessages = ref<Array<MessageEvent<any>>>([]);
 
-  const instance = ref<WebSocket>(WebsocketConnections.getInstance());
+  const openConnection = () => {
+    if (!instance.value) instance.value = WebsocketConnections.getInstance();
+  };
 
-  const instanceReadyState = ref<number>(instance.value.readyState);
+  const instance = ref<WebSocket | undefined>(undefined);
+
+  // const instanceReadyState = ref<number>(instance.value.readyState);
 
   const checkOnMessage = () => {
-    if (instance.value.onmessage === null) {
+    if (instance.value && instance.value.onmessage === null) {
       instance.value.onmessage = async (event: MessageEvent<any>) => {
         console.log(event);
         receivedMessages.value.push(event);
@@ -24,21 +27,24 @@ export const useWebsocketStore = defineStore("websocket", () => {
     }
   };
 
-  checkOnMessage();
+  watch(
+    () => instance.value,
+    () => {
+      checkOnMessage();
+    },
+    { deep: true }
+  );
 
   const indicateWebSocketClosureState = (_readyState: number) => {
     // instanceReadyState.value = readyState;
   };
 
-  watch(instanceReadyState, (newValue) => {
-    if (newValue === 2 || newValue === 3) {
-      try {
-        instance.value = WebsocketConnections.getInstance();
-      } catch (error) {
-        console.error(`WebSocketStore was unable to reconnect: ${error}`);
-      }
+  const closeConnection = () => {
+    if (instance.value && instance.value.readyState !== 3) {
+      instance.value.close();
+      instance.value = undefined;
     }
-  });
+  };
 
   const checkConnection = () => {
     if (!instance.value || instance.value.readyState === 2 || instance.value.readyState === 3) {
@@ -52,38 +58,20 @@ export const useWebsocketStore = defineStore("websocket", () => {
   };
 
   const initializeInterval = () => {
-    if (!intervalInitialized) {
-      intervalInitialized = true;
-      setInterval(() => {
-        checkConnection();
-      }, 60000);
-    }
+    setInterval(() => {
+      useUserStore()
+        .verifyToken()
+        .then((isVerified: boolean) => {
+          if (isVerified) checkConnection();
+          else closeConnection();
+        })
+        .catch((error) => {
+          console.error("Token verification failed with error:", error.message || error);
+        });
+    }, 300000); // 5 minutes interval
   };
 
   initializeInterval();
 
-  // const getNotificationBySource = (
-  //   source: ENotificationSource
-  // ): ComputedRef<Array<UserNotification>> => {
-  //   return computed<Array<UserNotification>>(() => {
-  //     const data = receivedMessages.value.map(
-  //       (messageEvent: MessageEvent<any>) => messageEvent.data
-  //     );
-
-  //     const notifications: Array<UserNotification> = data.map(
-  //       (notificationEntityJSON: string): UserNotification => {
-  //         const notificationEntity: INotificationEntity = JSON.parse(notificationEntityJSON);
-  //         return new UserNotification(notificationEntity);
-  //       }
-  //     );
-
-  //     const filteredBySource: Array<UserNotification> = notifications.filter(
-  //       (notification) => notification.source === source
-  //     );
-
-  //     return filteredBySource;
-  //   });
-  // };
-
-  return { receivedMessages, indicateWebSocketClosureState };
+  return { openConnection, receivedMessages, indicateWebSocketClosureState, closeConnection };
 });

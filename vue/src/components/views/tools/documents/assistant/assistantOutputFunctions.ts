@@ -3,8 +3,11 @@ import {
   TAssistantResponseMessage,
 } from "../../../../../interfaces/assistants/TAssistantResponse";
 
-const _handleLink = (reference: { title: string; url: string }): boolean => {
-  if (reference.url.includes("/node/uploads/documents/") && reference.title.includes("_qs_")) {
+const _handleLink = (reference: {
+  title: string;
+  url: string;
+}): { title: string; url: string } | false => {
+  if (reference.url.includes("/home/bydintranet/intranet/") && reference.title.includes("_qs_")) {
     const parts = reference.url.split("/");
     const lastPart = parts[parts.length - 1];
 
@@ -36,7 +39,7 @@ const _handleLink = (reference: { title: string; url: string }): boolean => {
     const docsViewRoute = "/tool/documents";
     const url = `${docsViewRoute}/${doc.fileName}/${doc.fileLangs}/${doc.fileUUID}`;
     reference.url = url;
-    return true;
+    return reference;
   } else return false;
 };
 
@@ -93,11 +96,13 @@ const outputMessage = (message: TAssistantResponseMessage, conversationKey: stri
         </a>`;
           for (let i = 0; i < m.data.length; i++) {
             let btn = m.data[i];
-            const generateLink = _handleLink(btn);
-            if (!generateLink) return "";
-            btn = btnTemplate(btn);
+            const newBtn = _handleLink(btn);
+            if (!newBtn) return "";
+            btn = btnTemplate(newBtn);
+
             if (i === 0) btn = `<br>${btn}`;
             else if (i < m.data.length - 1) btn = `${btn}<br>`;
+            console.log(btn);
             return btn;
           }
         } else return Object.hasOwn(m, "message") ? m.message : m?.data;

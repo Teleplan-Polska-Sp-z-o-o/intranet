@@ -14,7 +14,7 @@ class LDAP {
   } as const;
 
   constructor(login?: ILogin) {
-    this.username = login?.username || "";
+    this.username = login?.username.toLocaleLowerCase() || "";
     this.domain = login?.domain || "";
     this.password = login?.password || "";
   }

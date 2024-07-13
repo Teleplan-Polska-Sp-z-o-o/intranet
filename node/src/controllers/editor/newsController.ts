@@ -66,8 +66,6 @@ const removeUnusedImages = async (manager: EntityManager) => {
 
 const addNews = async (req: MulterRequest, res: Response) => {
   try {
-    console.log(req.headers);
-
     switch (req.headers.ckeditor) {
       case "true":
         // store content image

@@ -33,13 +33,12 @@ const websocketController: WebsocketRequestHandler = (
     }
   });
 
-  ws.on("close", (code, reason) => {
-    console.log(`Connection closed: ${code} - ${reason.toString()}`);
+  ws.on("close", () => {
     WC.removeClosedConnections();
   });
 
   ws.on("error", (error) => {
-    console.error("WebSocket error:", error);
+    console.error("WebSocket error:", error.toString());
     ws.close(1000, "WebSocket error occurred");
     WC.removeClosedConnections();
   });
