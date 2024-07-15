@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import alertResponseStatus from "../components/common/alertResponseStatus.vue";
+// import alertResponseStatus from "../components/common/alertResponseStatus.vue";
 import ApplicationWindow from "../components/views/settings/ApplicationWindow.vue";
-import { IResponseStatus } from "../interfaces/common/IResponseStatus";
+// import { IResponseStatus } from "../interfaces/common/IResponseStatus";
 import NotificationCenterWindow from "../components/views/settings/NotificationCenterWindow.vue";
 
-const responseStatus = ref<IResponseStatus | null>(null);
-const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value = status);
+// const responseStatus = ref<IResponseStatus | null>(null);
+// const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value = status);
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -45,11 +45,11 @@ const tabs = [
 
 <template>
   <v-container class="layout-view-container bg-background">
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12">
         <alert-response-status :status="responseStatus" :persist="false" />
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row>
       <v-col>
         <v-container
@@ -86,7 +86,7 @@ const tabs = [
             <v-col class="h-100">
               <v-window v-model="currentTab" class="w-100">
                 <v-window-item :value="1">
-                  <application-window @response-status="handleResponseStatus" />
+                  <application-window />
                 </v-window-item>
                 <v-window-item :value="2">
                   <notification-center-window />

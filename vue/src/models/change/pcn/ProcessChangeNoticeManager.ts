@@ -6,6 +6,7 @@ import { ResponseStatus } from "../../common/ResponseStatus";
 import { IProcessChangeRequest } from "../../../interfaces/change/IProcessChangeRequest";
 import { ProcessChangeNoticeFields } from "./ProcessChangeNoticeFields";
 import { IProcessChangeNoticeUpdates } from "../../../interfaces/change/IProcessChangeNoticeUpdates";
+import { useAlertStore } from "../../../stores/alertStore";
 
 class ProcessChangeNoticeManager {
   constructor() {}
@@ -21,10 +22,16 @@ class ProcessChangeNoticeManager {
       formData
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.edited;
   };
@@ -33,17 +40,23 @@ class ProcessChangeNoticeManager {
     formData: FormData,
     assessment: "approve" | "rejection",
     status: boolean = true
-  ): Promise<{ response: ResponseStatus; assessed: IProcessChangeRequest }> => {
+  ): Promise<{ assessed: IProcessChangeRequest }> => {
     const response = await axios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/${assessment}`,
       formData
     );
     if (status) {
-      return {
-        response: new ResponseStatus({
+      useAlertStore().process(
+        new ResponseStatus({
           code: response.status,
           message: response.data.statusMessage,
-        }),
+        })
+      );
+      return {
+        // response: new ResponseStatus({
+        //   code: response.status,
+        //   message: response.data.statusMessage,
+        // }),
         assessed: response.data.assessed,
       };
     }
@@ -58,10 +71,16 @@ class ProcessChangeNoticeManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/${id}`
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.deleted;
   };

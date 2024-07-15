@@ -3,11 +3,11 @@ import { computed, ref, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import DialogInput from "../../../../tools/DialogInput.vue";
 import { useI18n } from "vue-i18n";
-import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
+// import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import { CompetenceManager } from "../../../../../models/document/CompetenceManager";
 import { useUserStore } from "../../../../../stores/userStore";
 
-const emit = defineEmits(["responseStatus"]);
+// const emit = defineEmits(["responseStatus"]);
 
 const props = defineProps<{
   tab: string;
@@ -51,7 +51,7 @@ const handleSaveData = (data: any) => {
   }
 };
 
-const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
+// const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
 
 <template>
@@ -69,7 +69,6 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableEdit="true"
     :tableDialogComponent="DialogInput"
     :tableDialogComponentProps="{ label: 'Name', property: 'name' }"
-    @responseStatus="handleResponseStatus"
   >
   </crud-table>
 </template>

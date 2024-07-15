@@ -1,101 +1,78 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, ComputedRef, onMounted, onUnmounted, Ref, ref } from "vue";
 import VuePdfEmbed from "vue-pdf-embed";
 import "vue-pdf-embed/dist/style/index.css";
 import "vue-pdf-embed/dist/style/annotationLayer.css";
 import "vue-pdf-embed/dist/style/textLayer.css";
-import { useRoute } from "vue-router";
-import { nodeConfig } from "../config/env";
-import { DocumentManager } from "../models/document/DocumentManager";
-import { useUserStore } from "../stores/userStore";
-import alertResponseStatus from "../components/common/alertResponseStatus.vue";
-import { IResponseStatus } from "../interfaces/common/IResponseStatus";
-import { ResponseStatus } from "../models/common/ResponseStatus";
-import { IUserEntity } from "../interfaces/user/IUserEntity";
-import { Helper } from "../models/common/Helper";
 import { useI18n } from "vue-i18n";
+import { DocumentViewer } from "../models/document/DocumentViewer/DocumentViewer";
 
-const route = useRoute();
-const params = route.params;
+const loading: Ref<boolean> = ref<boolean>(true);
+const loaded: Ref<boolean> = ref<boolean>(false);
 
-const loading = ref<boolean>(true);
+const documentViewer: DocumentViewer = new DocumentViewer();
+const amIAuthorized: Ref<boolean> = ref<boolean>(false);
+const source: Ref<string | null> = ref<string | null>(null);
 
-const docManager = new DocumentManager();
+documentViewer.amIAuthorized().then((result) => {
+  amIAuthorized.value = result;
+  if (result) {
+    source.value = documentViewer.getSource();
+  }
+});
 
-const confidentialityPassed = ref<boolean>(false);
-const responseStatus = ref<IResponseStatus | null>(null);
-const test = async () => {
-  try {
-    const desiredDocument = await docManager.getByUuidAndLangs(
-      params.fileUUID as string,
-      params.fileLangs as string
-    );
+const pageCount: Ref<number | undefined> = ref<number | undefined>(undefined);
+const pageNumber: Ref<number> = ref<number>(1);
 
-    const userInfo: IUserEntity | false = useUserStore().info();
-    if (!userInfo) throw new Error("unknown");
+const pageMessage: ComputedRef<string> = computed(() => {
+  return t("common.default_layout.pages.viewDocument.pageMessage", {
+    currentPage: pageNumber.value,
+    totalPages: pageCount.value,
+  });
+});
 
-    const confidentialityRestrictions = Helper.confidentialRestriction(
-      desiredDocument.confidentiality
-    );
-    confidentialityPassed.value = confidentialityRestrictions?.includes(
-      userInfo.permission.confidentiality
-    );
+const scrollToTop = (): void => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
 
-    if (!confidentialityPassed.value) throw new Error("unauthorized");
-
-    return;
-  } catch (error) {
-    loading.value = false;
-    console.log(error);
-    if (
-      error instanceof Error &&
-      (error.message === "unknown" || error.message === "unauthorized")
-    ) {
-      responseStatus.value = new ResponseStatus({ code: 400, message: error.message });
-    } else {
-      console.log(`test at DocumentView, ${error}`);
-    }
+const isPrev = computed<boolean>(() => pageNumber.value >= 2);
+const prev = (): void => {
+  if (isPrev.value) {
+    pageNumber.value--;
+    scrollToTop();
   }
 };
 
-test();
-
-const backend = `${nodeConfig.origin}:${nodeConfig.port}/uploads/documents/`;
-const doc = `${params.fileName}_qs_langs=${params.fileLangs}&uuid=${params.fileUUID}`;
-const pdfSource = ref<any>(`${backend}${doc}.pdf`);
-
-const pageCount = ref<number | undefined>(undefined);
-const page = ref<number>(1);
-
-const index = computed(() => `${page.value}/${pageCount.value}`);
-
-const isPrev = computed<boolean>(() => page.value >= 2);
-const prev = (): void => {
-  if (isPrev.value) page.value--;
-};
-
-const isNext = computed<boolean>(() => !!(pageCount.value && page.value < pageCount.value));
+const isNext = computed<boolean>(() => !!(pageCount.value && pageNumber.value < pageCount.value));
 const next = (): void => {
-  if (isNext.value) page.value++;
+  if (isNext.value) {
+    pageNumber.value++;
+    scrollToTop();
+  }
 };
 
-const handleDocumentLoad = ({ numPages }: { numPages: number }): void => {
+const handleLoaded = ({ numPages }: { numPages: number }): void => {
   pageCount.value = numPages;
-};
-
-const handleDocumentRender = (): void => {
   loading.value = false;
+  loaded.value = true;
 };
 
-const sliderScale = ref<number>(0.8);
+const handleRendered = (): void => {};
 
+// page size
+const sliderScale = ref<number>(0.7);
 const formatNumber = (num: number) => {
   return (num * 10).toFixed(0).padStart(2, "0");
 };
 const pdfClassExtension = computed(() => formatNumber(sliderScale.value));
 const { t } = useI18n();
 const ticks = computed(() => ({
-  0.6: t("common.default_layout.pages.viewDocument.small"),
+  0.4: t("common.default_layout.pages.viewDocument.small"),
+  0.5: "",
+  0.6: "",
   0.7: "",
   0.8: "",
   0.9: "",
@@ -107,11 +84,10 @@ const increaseScale = () => {
   }
 };
 const decreaseScale = () => {
-  if (sliderScale.value > 0.6) {
+  if (sliderScale.value > 0.4) {
     sliderScale.value = +(sliderScale.value - 0.1).toFixed(1);
   }
 };
-
 // Prevent default Ctrl + Scroll behavior and handle scaling
 const handleCtrlScroll = (event: WheelEvent) => {
   if (event.ctrlKey) {
@@ -123,11 +99,9 @@ const handleCtrlScroll = (event: WheelEvent) => {
     }
   }
 };
-
 onMounted(() => {
   window.addEventListener("wheel", handleCtrlScroll, { passive: false });
 });
-
 onUnmounted(() => {
   window.removeEventListener("wheel", handleCtrlScroll);
 });
@@ -135,35 +109,12 @@ onUnmounted(() => {
 
 <template>
   <v-container class="layout-view-container bg-background">
-    <v-row class="justify-center align-center">
-      <alert-response-status
-        v-if="responseStatus"
-        :status="responseStatus"
-        :persist="true"
-      ></alert-response-status>
-      <v-progress-circular
-        v-if="loading && !responseStatus"
-        color="primary"
-        indeterminate
-      ></v-progress-circular>
+    <v-row class="justify-center align-center position-relative">
+      <v-progress-circular v-if="loading" color="primary" indeterminate></v-progress-circular>
 
-      <h1 v-if="!loading && !responseStatus" class="text-h4">{{ params.fileName }} {{ index }}</h1>
-    </v-row>
-    <v-row class="justify-center align-center w-50 mx-auto">
-      <v-slider
-        v-if="!loading && !responseStatus"
-        v-model="sliderScale"
-        :max="1"
-        :min="0.6"
-        append-icon="mdi-image-size-select-actual"
-        prepend-icon="mdi-image-size-select-large"
-        :ticks="ticks"
-        :step="0.1"
-        show-ticks="always"
-        @click:append="increaseScale"
-        @click:prepend="decreaseScale"
-        color="primary"
-      ></v-slider>
+      <h1 v-if="loaded && amIAuthorized" class="text-body-2 position-absolute">
+        {{ pageMessage }}
+      </h1>
     </v-row>
     <v-row class="justify-center align-center">
       <v-btn
@@ -171,6 +122,7 @@ onUnmounted(() => {
         :disabled="!isPrev"
         icon="mdi-arrow-left-thick"
         class="ml-4 arrow arrow-left"
+        color="primary"
       >
       </v-btn>
       <v-btn
@@ -178,22 +130,40 @@ onUnmounted(() => {
         :disabled="!isNext"
         icon="mdi-arrow-right-thick"
         class="mr-4 arrow arrow-right"
+        color="primary"
       >
       </v-btn>
+      <!-- :max-width="200" -->
+      <v-slider
+        v-if="loaded && amIAuthorized"
+        v-model="sliderScale"
+        :max="1"
+        :min="0.4"
+        append-icon="mdi-image-size-select-actual"
+        prepend-icon="mdi-image-size-select-large"
+        :ticks="ticks"
+        :step="0.1"
+        show-ticks="always"
+        @click:append="increaseScale"
+        @click:prepend="decreaseScale"
+        color="secondary"
+        direction="vertical"
+        class="slider ml-7"
+      ></v-slider>
 
       <v-col
         class="pdfDocumentView"
         :class="`canvas-scale-${pdfClassExtension}`"
-        v-if="confidentialityPassed && !responseStatus"
+        v-if="amIAuthorized"
       >
         <vue-pdf-embed
           ref="pdfEmbed"
           annotation-layer
           text-layer
-          :source="pdfSource"
-          @loaded="handleDocumentLoad"
-          @rendered="handleDocumentRender"
-          :page="page"
+          :source="source"
+          @loaded="handleLoaded"
+          @rendered="handleRendered"
+          :page="pageNumber"
         />
       </v-col>
     </v-row>
@@ -203,7 +173,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .arrow {
   position: fixed;
-  top: 50%;
+  top: 65%;
   transform: translateY(-50%);
   z-index: 999;
 
@@ -215,12 +185,33 @@ onUnmounted(() => {
     right: 0;
   }
 }
+.slider {
+  position: fixed;
+  top: 40%;
+  left: 0;
+  transform: translateY(-50%);
+  z-index: 999;
+}
 </style>
 
 <style lang="scss">
 .pdfDocumentView {
   position: relative;
 
+  &.canvas-scale-04 {
+    canvas {
+      width: 40% !important;
+      height: 40% !important;
+      margin: auto !important;
+    }
+  }
+  &.canvas-scale-05 {
+    canvas {
+      width: 50% !important;
+      height: 50% !important;
+      margin: auto !important;
+    }
+  }
   &.canvas-scale-06 {
     canvas {
       width: 60% !important;

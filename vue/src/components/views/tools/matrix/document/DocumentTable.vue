@@ -9,10 +9,10 @@ import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import Stepper from "./Stepper.vue";
 import { useI18n } from "vue-i18n";
 import { watchEffect } from "vue";
-import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
+// import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import { useUserStore } from "../../../../../stores/userStore";
 
-const emit = defineEmits(["table", "responseStatus"]);
+const emit = defineEmits(["table"]);
 
 // dictionary
 // const { t } = useI18n();
@@ -129,7 +129,7 @@ const disableAdd = computed(() => {
   return !!!chips.value.subcategoryName;
 });
 
-const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
+// const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
 
 <template>
@@ -149,7 +149,6 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableEdit="true"
     :tableDialogComponent="Stepper"
     :tableDialogComponentProps="{}"
-    @responseStatus="handleResponseStatus"
   >
     <template v-slot:table-key-slot="{ item }">
       <v-list-item class="pl-0" density="compact" v-for="(lang, i) in languages(item)" :key="i">

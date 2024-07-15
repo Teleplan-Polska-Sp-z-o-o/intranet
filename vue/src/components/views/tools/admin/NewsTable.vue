@@ -4,9 +4,9 @@ import CrudTable from "../../../../components/tools/CrudTable.vue";
 import { NewsManager } from "../../../../models/editor/NewsManager";
 import NewsStepper from "./NewsStepper.vue";
 import { useI18n } from "vue-i18n";
-import { IResponseStatus } from "../../../../interfaces/common/IResponseStatus";
+// import { IResponseStatus } from "../../../../interfaces/common/IResponseStatus";
 
-const emit = defineEmits(["responseStatus"]);
+// const emit = defineEmits(["responseStatus"]);
 
 const props = defineProps<{
   tab: string;
@@ -49,7 +49,7 @@ const handleSaveData = (data: any) => {
 
 const manager = new NewsManager();
 
-const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
+// const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
 
 <template>
@@ -67,7 +67,6 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableEdit="true"
     :tableDialogComponent="NewsStepper"
     :tableDialogComponentProps="{}"
-    @responseStatus="handleResponseStatus"
   >
   </crud-table>
 </template>

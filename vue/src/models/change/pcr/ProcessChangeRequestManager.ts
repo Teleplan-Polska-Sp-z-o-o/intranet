@@ -6,6 +6,7 @@ import { ResponseStatus } from "../../common/ResponseStatus";
 import { IProcessChangeRequest } from "../../../interfaces/change/IProcessChangeRequest";
 import { ProcessChangeRequestBase } from "./ProcessChangeRequestBase";
 import { IProcessChangeRequestUpdates } from "../../../interfaces/change/IProcessChangeRequestUpdates";
+import { useAlertStore } from "../../../stores/alertStore";
 
 class ProcessChangeRequestManager {
   constructor() {}
@@ -21,10 +22,16 @@ class ProcessChangeRequestManager {
       formData
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.added;
   };
@@ -38,10 +45,16 @@ class ProcessChangeRequestManager {
       formData
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.edited;
   };
@@ -50,17 +63,19 @@ class ProcessChangeRequestManager {
     formData: FormData,
     assessment: "Implementation" | "Rejection",
     status: boolean = true
-  ): Promise<{ response: ResponseStatus; closed: IProcessChangeRequest }> => {
+  ): Promise<{ closed: IProcessChangeRequest }> => {
     const response = await axios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${assessment}`,
       formData
     );
     if (status) {
-      return {
-        response: new ResponseStatus({
+      useAlertStore().process(
+        new ResponseStatus({
           code: response.status,
           message: response.data.statusMessage,
-        }),
+        })
+      );
+      return {
         closed: response.data.closed,
       };
     }
@@ -75,10 +90,16 @@ class ProcessChangeRequestManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${id}`
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.deleted;
   };

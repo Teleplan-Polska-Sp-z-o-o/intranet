@@ -5,6 +5,7 @@ import { Endpoints } from "../../config/Endpoints";
 import { Chip } from "./Chip";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
+import { useAlertStore } from "../../stores/alertStore";
 
 class CategoriesManager {
   constructor() {}
@@ -25,10 +26,16 @@ class CategoriesManager {
       requestData
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
 
     return response.data.added;
@@ -54,10 +61,16 @@ class CategoriesManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${id}/${name}`
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.edited;
   };
@@ -70,10 +83,16 @@ class CategoriesManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${id}`
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.deleted;
   };

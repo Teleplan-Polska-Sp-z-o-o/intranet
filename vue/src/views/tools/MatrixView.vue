@@ -7,8 +7,8 @@ import DocumentTable from "../../components/views/tools/matrix/document/Document
 import ChipFilters from "../../components/tools/ChipFilters.vue";
 import { IChips, ILevel } from "../../interfaces/document/DocumentTypes";
 import { Chips } from "../../models/document/Chips";
-import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
-import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
+// import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
+// import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
 import CompetenceTable from "../../components/views/tools/matrix/competence/CompetenceTable.vue";
 import { useRoute, useRouter } from "vue-router";
 import SimpleDocumentsPostedChart from "../../components/common/chartjs/documents/SimpleDocumentsPostedChart.vue";
@@ -105,8 +105,8 @@ const handleTable = (newValue: ILevel): void => {
   }, 0);
 };
 
-const responseStatus = ref<IResponseStatus | null>(null);
-const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value = status);
+// const responseStatus = ref<IResponseStatus | null>(null);
+// const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value = status);
 
 // filter tabs
 const userInfo = useUserStore().info();
@@ -117,18 +117,21 @@ if (userInfo) {
     .filterToolTabs<ToolTab>(userInfo, tabs)
     .then((fTT) => {
       filteredToolTabs.value = fTT;
-      currentTabValue.value = getTab(filteredToolTabs.value.at(0)?.meta.subgroup, true) as number;
+      currentTabValue.value = getTab(
+        filteredToolTabs.value.find((tab) => route.path.includes(tab.meta.subgroup))?.meta.subgroup,
+        true
+      ) as number;
     });
 }
 </script>
 
 <template>
   <v-container class="layout-view-container bg-background">
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12">
         <alert-response-status :status="responseStatus" :persist="false" />
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row>
       <v-col>
         <v-container
@@ -173,7 +176,6 @@ if (userInfo) {
                     @table="handleTable"
                     :chips="chips"
                     :tab="tabs.at(0)!.name"
-                    @responseStatus="handleResponseStatus"
                     class="bg-surface-2 pa-4 ma-1"
                   ></department-table>
                 </v-window-item>
@@ -192,7 +194,6 @@ if (userInfo) {
                     @table="handleTable"
                     :chips="chips"
                     :tab="tabs.at(1)!.name"
-                    @responseStatus="handleResponseStatus"
                     class="bg-surface-2 pa-4 ma-1 mb-5"
                   ></document-table>
                   <simple-documents-posted-chart
@@ -204,7 +205,6 @@ if (userInfo) {
                     @table="handleTable"
                     :chips="chips"
                     :tab="tabs.at(2)!.name"
-                    @responseStatus="handleResponseStatus"
                     class="bg-surface-2 pa-4 ma-1"
                   ></competence-table>
                 </v-window-item>

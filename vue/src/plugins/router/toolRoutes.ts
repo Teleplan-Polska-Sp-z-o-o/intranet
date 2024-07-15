@@ -63,7 +63,7 @@ export const toolRoutes = {
             breadcrumbs: {
               include: true,
               parent: "tool.documents",
-              name: "view",
+              name: (route: RouteLocationNormalized) => route.params.fileName,
               path: "",
               disabled: true,
             },

@@ -23,9 +23,13 @@ const websocketController: WebsocketRequestHandler = (
       if (isIUser(parsedMsg?.user)) {
         const existingIndex = WC.findIndexOfConnection(parsedMsg);
         if (existingIndex === -1) {
-          WC.addConnection({ ws, user: parsedMsg.user });
+          WC.addConnection({ ws, user: parsedMsg.user, lastHeartbeat: Date.now() });
         } else {
-          WC.replaceConnection(existingIndex, { ws, user: parsedMsg.user });
+          WC.replaceConnection(existingIndex, {
+            ws,
+            user: parsedMsg.user,
+            lastHeartbeat: Date.now(),
+          });
         }
       }
     } catch (error) {
@@ -33,15 +37,15 @@ const websocketController: WebsocketRequestHandler = (
     }
   });
 
-  ws.on("close", () => {
-    WC.removeClosedConnections();
-  });
+  // ws.on("close", () => {
+  //   WC.removeClosedConnections();
+  // });
 
-  ws.on("error", (error) => {
-    console.error("WebSocket error:", error.toString());
-    ws.close(1000, "WebSocket error occurred");
-    WC.removeClosedConnections();
-  });
+  // ws.on("error", (error) => {
+  //   console.error("WebSocket error:", error.toString());
+  //   ws.close(1000, "WebSocket error occurred");
+  //   WC.removeClosedConnections();
+  // });
 };
 
 const getWebSocketConnections = (): Array<ISocketConnection> => {

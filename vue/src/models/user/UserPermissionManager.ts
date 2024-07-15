@@ -5,6 +5,7 @@ import { UserEntity } from "./UserEntity";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { UserManager } from "./UserManager";
+import { useAlertStore } from "../../stores/alertStore";
 
 class UserPermissionManager extends UserManager {
   constructor() {
@@ -22,10 +23,16 @@ class UserPermissionManager extends UserManager {
       reqData
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.edited;
   };

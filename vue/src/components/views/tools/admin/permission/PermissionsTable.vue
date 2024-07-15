@@ -3,7 +3,7 @@ import { ref, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import { Permission } from "../../../../../models/user/Permission";
 import { useI18n } from "vue-i18n";
-import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
+// import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import PermissionForm from "./PermissionForm.vue";
 import {
   IPermission,
@@ -15,7 +15,7 @@ import { UserPermissionManager } from "../../../../../models/user/UserPermission
 import { UserEntity } from "../../../../../models/user/UserEntity";
 import { User } from "../../../../../models/user/User";
 
-const emit = defineEmits(["table", "responseStatus"]);
+const emit = defineEmits(["table"]);
 
 const props = defineProps<{
   tab: string;
@@ -68,7 +68,7 @@ const permission = (item: any) => {
   else return "user";
 };
 
-const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
+// const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
 
 <template>
@@ -85,7 +85,6 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableDelete="true"
     :tableDialogComponent="PermissionForm"
     :tableDialogComponentProps="{}"
-    @responseStatus="handleResponseStatus"
   >
     <template v-slot:table-key-slot="{ item }">
       <span class="text-body-2">{{ permission(item) }}</span>

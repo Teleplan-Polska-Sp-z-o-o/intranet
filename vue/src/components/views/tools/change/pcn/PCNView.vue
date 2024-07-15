@@ -5,14 +5,14 @@ import { PDFHelper } from "../../../../../models/common/PDF/PDFHelper";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import PCNAcceptOrReject from "./PCNAcceptOrReject.vue";
-import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
+// import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 import { useEditorStore } from "../../../../../stores/editorStore";
 import { IProcessChangeNoticeUpdates } from "../../../../../interfaces/change/IProcessChangeNoticeUpdates";
 import { IProcessChangeNotice } from "../../../../../interfaces/change/IProcessChangeNotice";
 // import { v4 as uuidv4 } from "uuid";
 
-const emit = defineEmits(["responseStatus", "loadItems"]);
+const emit = defineEmits(["loadItems"]);
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -296,10 +296,10 @@ const request = computed(() => {
 
 const router = useRouter();
 
-const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChangeNotice }) => {
+const handleClose = (closeData: { closed: IProcessChangeNotice }) => {
   try {
     if (tab.value === "pcn") {
-      emit("responseStatus", closeData.response);
+      // emit("responseStatus", closeData.response);
       emit("loadItems");
 
       item.value.processChangeNotice = closeData.closed;

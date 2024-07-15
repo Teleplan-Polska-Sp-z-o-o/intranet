@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
+// import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
 import PCRTable from "../../components/views/tools/change/pcr/PCRTable.vue";
 import PCNTable from "../../components/views/tools/change/pcn/PCNTable.vue";
 import { useRoute, useRouter } from "vue-router";
-import { ResponseStatus } from "../../models/common/ResponseStatus";
+// import { ResponseStatus } from "../../models/common/ResponseStatus";
 import { ToolTab } from "../../interfaces/common/ToolTabTypes";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
@@ -77,8 +77,8 @@ watch(
   }
 );
 
-const responseStatus = ref<ResponseStatus | null>(null);
-const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value = status);
+// const responseStatus = ref<ResponseStatus | null>(null);
+// const handleResponseStatus = (status: ResponseStatus) => (responseStatus.value = status);
 
 // filter tabs
 const userInfo = useUserStore().info();
@@ -89,18 +89,21 @@ if (userInfo) {
     .filterToolTabs<ToolTab>(userInfo, tabs)
     .then((fTT) => {
       filteredToolTabs.value = fTT;
-      currentTabValue.value = getTab(filteredToolTabs.value.at(0)?.meta.subgroup, true) as number;
+      currentTabValue.value = getTab(
+        filteredToolTabs.value.find((tab) => route.path.includes(tab.meta.subgroup))?.meta.subgroup,
+        true
+      ) as number;
     });
 }
 </script>
 
 <template>
   <v-container class="layout-view-container bg-background">
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12">
         <alert-response-status :status="responseStatus" :persist="false" />
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row>
       <v-col>
         <v-container
@@ -135,18 +138,10 @@ if (userInfo) {
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
                 <v-window-item :value="1">
-                  <p-c-r-table
-                    class="bg-surface-2 pa-4 ma-1"
-                    @responseStatus="handleResponseStatus"
-                    :tab="currentTab"
-                  ></p-c-r-table>
+                  <p-c-r-table class="bg-surface-2 pa-4 ma-1" :tab="currentTab"></p-c-r-table>
                 </v-window-item>
                 <v-window-item :value="2">
-                  <p-c-n-table
-                    class="bg-surface-2 pa-4 ma-1"
-                    @responseStatus="handleResponseStatus"
-                    :tab="currentTab"
-                  ></p-c-n-table>
+                  <p-c-n-table class="bg-surface-2 pa-4 ma-1" :tab="currentTab"></p-c-n-table>
                 </v-window-item>
                 <v-window-item :value="3"> </v-window-item>
               </v-window>

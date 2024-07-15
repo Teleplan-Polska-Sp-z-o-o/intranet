@@ -1,7 +1,7 @@
 interface MetaBreadcrumbs {
   include: boolean;
   parent: string;
-  name: string;
+  name: string | Function;
   path: string;
   disabled: boolean;
 }

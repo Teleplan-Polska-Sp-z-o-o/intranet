@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
+import FooterSnackbar from "./FooterSnackbar.vue";
 const smallScreen = window.innerWidth < 960;
 
 const slides = [
@@ -27,6 +28,7 @@ const slides = [
 </script>
 
 <template>
+  <footer-snackbar></footer-snackbar>
   <v-footer class="layout-footer d-flex w-100 bg-primary-container text-on-primary-container">
     <div class="d-flex w-100">
       <v-carousel

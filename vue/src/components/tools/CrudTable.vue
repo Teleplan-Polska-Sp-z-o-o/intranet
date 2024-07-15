@@ -2,8 +2,8 @@
 import { computed, nextTick, ref, watch, watchEffect } from "vue";
 import TableDialog from "./TableDialog.vue";
 import TableFlow from "./TableFlow.vue";
-import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
-import { ResponseStatus } from "../../models/common/ResponseStatus";
+// import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
+// import { ResponseStatus } from "../../models/common/ResponseStatus";
 import CopyToClipboard from "./CopyToClipboard.vue";
 import TableFilters from "./TableFilters.vue";
 
@@ -44,7 +44,7 @@ const props = defineProps<{
   filtersCallback?: Function;
 }>();
 
-const emit = defineEmits(["save-data", "emit-table-change", "responseStatus"]);
+const emit = defineEmits(["save-data", "emit-table-change"]);
 
 const headers = ref<any>(props.headers);
 
@@ -123,11 +123,11 @@ const reqData = ref<any>(props.reqData);
 
 const disableAdd = ref<boolean>(props.disableAdd === undefined ? false : props.disableAdd);
 
-const responseStatus = ref<IResponseStatus | null>(null);
+// const responseStatus = ref<IResponseStatus | null>(null);
 
-watchEffect(() => {
-  emit("responseStatus", responseStatus.value);
-});
+// watchEffect(() => {
+//   emit("responseStatus", responseStatus.value);
+// });
 
 const verified = ref<boolean>(false);
 
@@ -212,15 +212,17 @@ const closeDelete = async () => {
 const deleteItemConfirm = async () => {
   try {
     dialogDeleteLoading.value = true;
-    responseStatus.value = await manager.value.delete(editedItem.value.id, true);
+    // responseStatus.value =
+    await manager.value.delete(editedItem.value.id, true);
     if (props.emitTableChange) emit("emit-table-change");
     load();
   } catch (error: any) {
     console.error(`Crud Table at deleteItemConfirm, ${error}`);
-    responseStatus.value = new ResponseStatus({
-      code: error.response.status,
-      message: error.response.data.statusMessage,
-    });
+    // responseStatus.value =
+    // new ResponseStatus({
+    //   code: error.response.status,
+    //   message: error.response.data.statusMessage,
+    // });
   } finally {
     dialogDeleteLoading.value = false;
     closeDelete();
@@ -232,14 +234,17 @@ const save = async () => {
     const data: any = reqData.value;
 
     dialogLoading.value = true;
-    if (editedIndex.value > -1) responseStatus.value = await manager.value.put(data, true);
-    else responseStatus.value = await manager.value.post(data, true);
+    if (editedIndex.value > -1)
+      // responseStatus.value =
+      await manager.value.put(data, true);
+    // responseStatus.value =
+    else await manager.value.post(data, true);
   } catch (error: any) {
     console.error(`Crud Table at save, ${error}`);
-    responseStatus.value = new ResponseStatus({
-      code: error.response.status,
-      message: error.response.data.statusMessage,
-    });
+    // responseStatus.value = new ResponseStatus({
+    //   code: error.response.status,
+    //   message: error.response.data.statusMessage,
+    // });
   } finally {
     load();
     if (props.emitTableChange) emit("emit-table-change");

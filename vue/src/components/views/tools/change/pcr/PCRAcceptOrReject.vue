@@ -3,7 +3,7 @@ import { computed, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { useUserStore } from "../../../../../stores/userStore";
-import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
+// import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { IProcessChangeRequest } from "../../../../../interfaces/change/IProcessChangeRequest";
 import { ProcessChangeRequestBase } from "../../../../../models/change/pcr/ProcessChangeRequestBase";
 
@@ -40,10 +40,7 @@ const acceptOrReject = async () => {
   const assessment: "Implementation" | "Rejection" =
     props.variant === "accept" ? "Implementation" : "Rejection";
 
-  const close: { response: ResponseStatus; closed: IProcessChangeRequest } = await manager.close(
-    formData,
-    assessment
-  );
+  const close: { closed: IProcessChangeRequest } = await manager.close(formData, assessment);
   dialog.value = false;
 
   emit("close", close);

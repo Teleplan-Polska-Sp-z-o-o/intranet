@@ -132,7 +132,10 @@ if (userInfo) {
     .filterToolTabs<ToolTab>(userInfo, tabs)
     .then((fTT) => {
       filteredToolTabs.value = fTT;
-      currentTabValue.value = getTab(filteredToolTabs.value.at(0)?.meta.subgroup, true) as number;
+      currentTabValue.value = getTab(
+        filteredToolTabs.value.find((tab) => route.path.includes(tab.meta.subgroup))?.meta.subgroup,
+        true
+      ) as number;
     });
 }
 </script>

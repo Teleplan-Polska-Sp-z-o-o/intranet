@@ -2,7 +2,7 @@
 import { ref, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import { useI18n } from "vue-i18n";
-import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
+// import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import { UserManager } from "../../../../../models/user/UserManager";
 import { IUserInput } from "../../../../../interfaces/admin/users/IUserInput";
 import { UserInput } from "../../../../../models/admin/users/UserInput";
@@ -11,7 +11,7 @@ import { DepartmentsManager } from "../../../../../models/document/DepartmentsMa
 import { IUserInfo } from "../../../../../interfaces/admin/users/IUserInfo";
 import { User } from "../../../../../models/user/User";
 
-const emit = defineEmits(["table", "responseStatus"]);
+const emit = defineEmits(["table"]);
 
 const props = defineProps<{
   tab: string;
@@ -98,7 +98,7 @@ const decisionMaker = (item: any) => {
   else return "No";
 };
 
-const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
+// const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
 
 <template>
@@ -115,7 +115,6 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableDelete="true"
     :tableDialogComponent="UsersForm"
     :tableDialogComponentProps="{ inputs: componentProps() }"
-    @responseStatus="handleResponseStatus"
   >
     <template v-slot:table-key-slot-2="{ item }">
       <span class="text-body-2">{{ decisionMaker(item) }}</span>

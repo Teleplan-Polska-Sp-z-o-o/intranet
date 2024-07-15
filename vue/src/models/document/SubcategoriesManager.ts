@@ -5,6 +5,7 @@ import { Endpoints } from "../../config/Endpoints";
 import { Chip } from "./Chip";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
+import { useAlertStore } from "../../stores/alertStore";
 
 class SubcategoriesManager {
   constructor() {}
@@ -26,10 +27,16 @@ class SubcategoriesManager {
       requestData
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.added;
   };
@@ -55,10 +62,16 @@ class SubcategoriesManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentSubcategory}/${id}/${name}`
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.edited;
   };
@@ -71,10 +84,16 @@ class SubcategoriesManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentSubcategory}/${id}`
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.deleted;
   };

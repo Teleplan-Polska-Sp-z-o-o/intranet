@@ -6,16 +6,17 @@ import { nodeConfig } from "../../../config/env";
 import { Endpoints } from "../../../config/Endpoints";
 import { ISettings } from "../../../interfaces/user/UserTypes";
 import { Settings } from "../../../models/user/Settings";
-import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";
+// import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../../models/common/ResponseStatus";
 import { useSettingsStore } from "../../../stores/settingsStore";
 import { useI18n } from "vue-i18n";
+import { useAlertStore } from "../../../stores/alertStore";
 
 const settingsStore = useSettingsStore();
 const settings: ISettings = settingsStore.info();
 
-const responseStatus = ref<IResponseStatus | null>(null);
-const emit = defineEmits(["response-status"]);
+// const responseStatus = ref<IResponseStatus | null>(null);
+// const emit = defineEmits(["response-status"]);
 
 const { t, locale } = useI18n();
 
@@ -39,18 +40,31 @@ watch(theme, () => {
   axios
     .put(reqUrl, reqData)
     .then(function (response) {
-      responseStatus.value = new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
-      emit("response-status", responseStatus.value);
+      // responseStatus.value = new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+
+      // emit("response-status", responseStatus.value);
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     })
     .catch(function (error) {
-      responseStatus.value = new ResponseStatus({
-        code: error.response.status,
-        message: error.response.data.statusMessage,
-      });
-      emit("response-status", responseStatus.value);
+      // responseStatus.value = new ResponseStatus({
+      //   code: error.response.status,
+      //   message: error.response.data.statusMessage,
+      // });
+      // emit("response-status", responseStatus.value);
+      useAlertStore().process(
+        new ResponseStatus({
+          code: error.response.status,
+          message: error.response.data.statusMessage,
+        })
+      );
     });
 });
 
@@ -79,18 +93,30 @@ watch(language, () => {
   axios
     .put(reqUrl, reqData)
     .then(function (response) {
-      responseStatus.value = new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
-      emit("response-status", responseStatus.value);
+      // responseStatus.value = new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      // emit("response-status", responseStatus.value);
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     })
     .catch(function (error) {
-      responseStatus.value = new ResponseStatus({
-        code: error.response.status,
-        message: error.response.data.statusMessage,
-      });
-      emit("response-status", responseStatus.value);
+      // responseStatus.value = new ResponseStatus({
+      //   code: error.response.status,
+      //   message: error.response.data.statusMessage,
+      // });
+      // emit("response-status", responseStatus.value);
+      useAlertStore().process(
+        new ResponseStatus({
+          code: error.response.status,
+          message: error.response.data.statusMessage,
+        })
+      );
     });
 });
 

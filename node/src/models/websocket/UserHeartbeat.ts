@@ -8,6 +8,9 @@ import { SimpleUser } from "../user/SimpleUser";
 class UserHeartbeat {
   constructor() {}
 
+  static HEARTBEAT_INTERVAL = 60 * 1000;
+  static HEARTBEAT_TIMEOUT = 20 * 1000;
+
   static getLastLoginRecord = async (
     user: IUser,
     entityManager: EntityManager | DataSource

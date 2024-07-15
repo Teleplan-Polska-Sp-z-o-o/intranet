@@ -24,7 +24,10 @@ const getBreadcrumbs = (route: RouteLocationNormalizedLoaded): Array<Breadcrumb>
     if (!typedMeta.include) continue;
 
     const breadcrumb: Breadcrumb = {
-      title: t(`common.default_layout.breadcrumbs.${typedMeta.parent}.${typedMeta.name}`),
+      title:
+        typeof typedMeta.name === "string"
+          ? t(`common.default_layout.breadcrumbs.${typedMeta.parent}.${typedMeta.name}`)
+          : typedMeta.name(route),
       disabled: false,
       href: typedMeta.path ? typedMeta.path : exceptionOrBaseHref(route, path),
     };

@@ -2,7 +2,6 @@
 import { computed, ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "../../../../../stores/userStore";
-import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { IProcessChangeRequest } from "../../../../../interfaces/change/IProcessChangeRequest";
 import { ProcessChangeNoticeManager } from "../../../../../models/change/pcn/ProcessChangeNoticeManager";
 import { IProcessChangeNotice } from "../../../../../interfaces/change/IProcessChangeNotice";
@@ -44,8 +43,7 @@ const acceptOrReject = async () => {
     const assessment: "approve" | "rejection" =
       props.variant === "accept" ? "approve" : "rejection";
 
-    const close: { response: ResponseStatus; assessed: IProcessChangeRequest } =
-      await manager.assess(formData, assessment);
+    const close: { assessed: IProcessChangeRequest } = await manager.assess(formData, assessment);
     dialog.value = false;
 
     emit("close", close);

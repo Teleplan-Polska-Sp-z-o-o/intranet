@@ -2,8 +2,8 @@
 import { ref, watch } from "vue";
 import PermissionsTable from "../../components/views/tools/admin/permission/PermissionsTable.vue";
 import NewsTable from "../../components/views/tools/admin/NewsTable.vue";
-import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
-import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
+// import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
+// import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
 import PermissionsTableInfo from "../../components/views/tools/admin/permission/PermissionsTableInfo.vue";
 import { useRoute, useRouter } from "vue-router";
 import InfoTable from "../../components/views/tools/admin/users/InfoTable.vue";
@@ -85,8 +85,8 @@ watch(
   }
 );
 
-const responseStatus = ref<IResponseStatus | null>(null);
-const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value = status);
+// const responseStatus = ref<IResponseStatus | null>(null);
+// const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value = status);
 
 // filter tabs
 const userInfo = useUserStore().info();
@@ -97,18 +97,21 @@ if (userInfo) {
     .filterToolTabs<ToolTab>(userInfo, tabs)
     .then((fTT) => {
       filteredToolTabs.value = fTT;
-      currentTabValue.value = getTab(filteredToolTabs.value.at(0)?.meta.subgroup, true) as number;
+      currentTabValue.value = getTab(
+        filteredToolTabs.value.find((tab) => route.path.includes(tab.meta.subgroup))?.meta.subgroup,
+        true
+      ) as number;
     });
 }
 </script>
 
 <template>
   <v-container class="layout-view-container bg-background">
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12">
         <alert-response-status :status="responseStatus" :persist="false" />
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row>
       <v-col>
         <v-container
@@ -143,11 +146,7 @@ if (userInfo) {
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
                 <v-window-item :value="1">
-                  <info-table
-                    class="bg-surface-2 pa-4 ma-1 mb-5"
-                    @responseStatus="handleResponseStatus"
-                    tab="user-info"
-                  ></info-table>
+                  <info-table class="bg-surface-2 pa-4 ma-1 mb-5" tab="user-info"></info-table>
 
                   <logged-in-card class="bg-surface-2 pa-4 ma-1 mb-5"></logged-in-card>
                   <login-unique-user-distribution-chart
@@ -162,16 +161,11 @@ if (userInfo) {
                   <permissions-table-info class="mb-5 ma-1"></permissions-table-info>
                   <permissions-table
                     class="bg-surface-2 pa-4 ma-1"
-                    @responseStatus="handleResponseStatus"
                     tab="user-permissions"
                   ></permissions-table>
                 </v-window-item>
                 <v-window-item :value="3">
-                  <news-table
-                    class="bg-surface-2 pa-4 ma-1"
-                    @responseStatus="handleResponseStatus"
-                    tab="news"
-                  ></news-table>
+                  <news-table class="bg-surface-2 pa-4 ma-1" tab="news"></news-table>
                 </v-window-item>
               </v-window>
             </v-col>

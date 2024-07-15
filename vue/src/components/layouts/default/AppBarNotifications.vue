@@ -43,7 +43,6 @@ watch(
 watch(
   websocketStore.receivedMessages,
   () => {
-    console.log("getinNotif");
     getNotifications();
   },
   { deep: true }

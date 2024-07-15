@@ -36,6 +36,7 @@ const plC = {
         viewDocument: {
           small: "Mały",
           large: "Duży",
+          pageMessage: "Strona {currentPage} z {totalPages}",
         },
         tools: {
           documents: {
@@ -126,6 +127,7 @@ const plC = {
       delete_success: "Zasób został pomyślnie usunięty.",
       unknown: "Nieznany błąd. Spróbuj ponownie później.",
       unauthorized: "Brak autoryzacji do wykonania tej akcji.",
+      unknownMessage: "Nieznana wiadomość.",
     },
   },
 };

@@ -36,6 +36,7 @@ const uaC = {
         viewDocument: {
           small: "Маленький",
           large: "Великий",
+          pageMessage: "Сторінка {currentPage} з {totalPages}",
         },
         tools: {
           documents: {
@@ -126,6 +127,7 @@ const uaC = {
       delete_success: "Pecypc успішно видалено.",
       unknown: "Невідома помилка. Будь ласка, спробуйте знову пізніше.",
       unauthorized: "Відсутні права доступу для виконання цієї дії.",
+      unknownMessage: "Невідоме повідомлення.",
     },
   },
 };

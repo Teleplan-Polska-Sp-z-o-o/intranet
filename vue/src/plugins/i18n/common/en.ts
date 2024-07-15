@@ -36,6 +36,7 @@ const enC = {
         viewDocument: {
           small: "Small",
           large: "Large",
+          pageMessage: "Page {currentPage} out of {totalPages}",
         },
         tools: {
           documents: {
@@ -128,6 +129,8 @@ const enC = {
       unauthorized: "Unauthorized access to perform this action.",
 
       auth_invalid_credentials: "Invalid username or password.",
+
+      unknownMessage: "Unknown message.",
     },
   },
 };

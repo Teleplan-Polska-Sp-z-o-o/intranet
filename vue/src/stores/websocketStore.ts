@@ -21,7 +21,6 @@ export const useWebsocketStore = defineStore("websocket", () => {
   const checkOnMessage = () => {
     if (instance.value && instance.value.onmessage === null) {
       instance.value.onmessage = async (event: MessageEvent<any>) => {
-        console.log(event);
         receivedMessages.value.push(event);
       };
     }
@@ -62,13 +61,14 @@ export const useWebsocketStore = defineStore("websocket", () => {
       useUserStore()
         .verifyToken()
         .then((isVerified: boolean) => {
-          if (isVerified) checkConnection();
-          else closeConnection();
+          if (isVerified) {
+            checkConnection();
+          } else closeConnection();
         })
         .catch((error) => {
           console.error("Token verification failed with error:", error.message || error);
         });
-    }, 300000); // 5 minutes interval
+    }, 300000);
   };
 
   initializeInterval();

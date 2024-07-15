@@ -5,6 +5,7 @@ import { UserEntity } from "./UserEntity";
 import { IUserEntity } from "../../interfaces/user/IUserEntity";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
+import { useAlertStore } from "../../stores/alertStore";
 
 class UserManager {
   constructor() {}
@@ -36,10 +37,16 @@ class UserManager {
       reqData
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.edited;
   };
@@ -52,10 +59,16 @@ class UserManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/${id}`
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.deleted;
   };

@@ -7,7 +7,7 @@ import { useRoute, useRouter } from "vue-router";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { IProcessChangeRequestUpdates } from "../../../../../interfaces/change/IProcessChangeRequestUpdates";
 import PCRAcceptOrReject from "./PCRAcceptOrReject.vue";
-import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
+// import { ResponseStatus } from "../../../../../models/common/ResponseStatus";
 import { useEditorStore } from "../../../../../stores/editorStore";
 import { UserManager } from "../../../../../models/user/UserManager";
 // import { v4 as uuidv4 } from "uuid";
@@ -263,10 +263,10 @@ const request = computed(() => {
 
 const router = useRouter();
 
-const handleClose = (closeData: { response: ResponseStatus; closed: IProcessChangeRequest }) => {
+const handleClose = (closeData: { closed: IProcessChangeRequest }) => {
   try {
     if (tab.value === "pcr") {
-      emit("responseStatus", closeData.response);
+      // emit("responseStatus", closeData.response);
       emit("loadItems");
 
       item.value = closeData.closed;

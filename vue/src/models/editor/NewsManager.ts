@@ -9,6 +9,7 @@ import { ResponseStatus } from "../common/ResponseStatus";
 import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { useUserStore } from "../../stores/userStore";
 import { User } from "../user/User";
+import { useAlertStore } from "../../stores/alertStore";
 
 class NewsManager {
   constructor() {}
@@ -24,10 +25,16 @@ class NewsManager {
       formData
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.added;
   };
@@ -41,10 +48,16 @@ class NewsManager {
       formData
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.edited;
   };
@@ -74,10 +87,16 @@ class NewsManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.News}/${id}`
     );
     if (status) {
-      return new ResponseStatus({
-        code: response.status,
-        message: response.data.statusMessage,
-      });
+      // return new ResponseStatus({
+      //   code: response.status,
+      //   message: response.data.statusMessage,
+      // });
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
     }
     return response.data.deleted;
   };

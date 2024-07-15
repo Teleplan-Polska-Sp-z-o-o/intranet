@@ -3,7 +3,7 @@ import { ref, watch, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";
 import { useI18n } from "vue-i18n";
-import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
+// import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import PCRStepper from "./PCRStepper.vue";
 import { IProcessChangeRequestBase } from "../../../../../interfaces/change/IProcessChangeRequestBase";
 import { IUser } from "../../../../../interfaces/user/UserTypes";
@@ -14,7 +14,7 @@ import { usePCRStore } from "../../../../../stores/change/pcrStore";
 import { nodeConfig } from "../../../../../config/env";
 import { IProcessChangeNotice } from "../../../../../interfaces/change/IProcessChangeNotice";
 
-const emit = defineEmits(["responseStatus"]);
+// const emit = defineEmits(["responseStatus"]);
 
 const props = defineProps<{
   tab: string;
@@ -81,7 +81,7 @@ const handleSaveData = (
 
 const manager = new ProcessChangeRequestManager();
 
-const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
+// const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 
 const loadItems = ref<true | undefined>(undefined);
 const handleLoadItems = () => {
@@ -180,7 +180,6 @@ const copyHeadersCustoms = (headerKey: string, rowValue: string | object) => {
     :tableEdit="true"
     :tableDialogComponent="PCRStepper"
     :tableDialogComponentProps="{}"
-    @responseStatus="handleResponseStatus"
     :copy="true"
     :copyHeadersOrder="copyHeadersOrder"
     :copyHeadersCustoms="copyHeadersCustoms"
@@ -196,12 +195,7 @@ const copyHeadersCustoms = (headerKey: string, rowValue: string | object) => {
       <span v-show="false">{{ item }}</span>
     </template>
     <template v-slot:table-key-slot-2="{ item }">
-      <p-c-r-view
-        :tab="props.tab"
-        :item="item"
-        @loadItems="handleLoadItems"
-        @responseStatus="handleResponseStatus"
-      ></p-c-r-view>
+      <p-c-r-view :tab="props.tab" :item="item" @loadItems="handleLoadItems"></p-c-r-view>
     </template>
   </crud-table>
 </template>

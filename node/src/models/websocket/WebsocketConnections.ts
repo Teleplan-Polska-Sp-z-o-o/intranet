@@ -2,6 +2,7 @@ import { dataSource } from "../../config/orm/dataSource";
 import { IUser } from "../../interfaces/user/UserTypes";
 import { ISocketConnection } from "../../interfaces/websocket/ISocketConnection";
 import { UserHeartbeat } from "./UserHeartbeat";
+import { WebSocket } from "ws";
 
 class WebsocketConnections {
   private static instance: WebsocketConnections;
@@ -25,6 +26,8 @@ class WebsocketConnections {
       await UserHeartbeat.updateLogoutDetails(conn.user);
     }
     await UserHeartbeat.saveLoginDetails(conn.user);
+
+    this.setupHeartbeat(conn.ws);
   }
 
   public async replaceConnection(existingIndex: number, conn: ISocketConnection): Promise<void> {
@@ -38,6 +41,8 @@ class WebsocketConnections {
         await UserHeartbeat.updateLogoutDetails(conn.user);
       }
       await UserHeartbeat.saveLoginDetails(conn.user);
+
+      this.setupHeartbeat(conn.ws);
     }
   }
 
@@ -48,6 +53,7 @@ class WebsocketConnections {
   }
 
   public async removeClosedConnections(): Promise<void> {
+    const currentTime = Date.now();
     const closedConnections = this.connections.filter((connection) => {
       return connection.ws.readyState !== 1;
     });
@@ -57,19 +63,47 @@ class WebsocketConnections {
     }
 
     this.connections = this.connections.filter((connection) => {
-      return connection.ws.readyState === 1;
+      return (
+        connection.ws.readyState === 1 &&
+        currentTime - connection.lastHeartbeat <=
+          UserHeartbeat.HEARTBEAT_INTERVAL + UserHeartbeat.HEARTBEAT_TIMEOUT
+      );
     });
   }
 
   public getConnections = (): Array<ISocketConnection> => this.connections;
 
-  public async handleHeartbeat(): Promise<void> {
-    for (const connection of this.connections) {
-      if (connection.ws.readyState !== 1) {
-        await UserHeartbeat.updateLogoutDetails(connection.user);
+  private setupHeartbeat(ws: WebSocket) {
+    ws.on("pong", () => {
+      const connection = this.connections.find((conn) => conn.ws === ws);
+      if (connection) {
+        connection.lastHeartbeat = Date.now();
       }
-    }
-    this.connections = this.connections.filter((connection) => connection.ws.readyState === 1);
+    });
+
+    const pingInterval = setInterval(() => {
+      if (ws.readyState === 1) {
+        ws.ping((error: Error) => {
+          if (error) {
+            ws.close(1000, "Ping error occurred");
+            this.removeClosedConnections();
+          }
+        });
+      } else {
+        clearInterval(pingInterval);
+      }
+    }, UserHeartbeat.HEARTBEAT_INTERVAL);
+
+    ws.on("close", () => {
+      clearInterval(pingInterval);
+      this.removeClosedConnections();
+    });
+
+    ws.on("error", (error: Error) => {
+      ws.close(1000, "WebSocket error occurred");
+      clearInterval(pingInterval);
+      this.removeClosedConnections();
+    });
   }
 }
 

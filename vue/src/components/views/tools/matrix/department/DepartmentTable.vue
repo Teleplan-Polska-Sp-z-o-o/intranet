@@ -8,9 +8,9 @@ import { CategoriesManager } from "../../../../../models/document/CategoriesMana
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import DialogInput from "../../../../tools/DialogInput.vue";
 import { useI18n } from "vue-i18n";
-import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
+// import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 
-const emit = defineEmits(["table", "responseStatus"]);
+const emit = defineEmits(["table"]);
 
 const props = defineProps<{
   chips: IChips;
@@ -82,7 +82,7 @@ const handleSaveData = (data: any) => {
   reqData.value = rd;
 };
 
-const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
+// const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
 
 <template>
@@ -103,7 +103,6 @@ const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus",
     :tableEdit="true"
     :tableDialogComponent="DialogInput"
     :tableDialogComponentProps="{ label: 'Name', property: 'name' }"
-    @responseStatus="handleResponseStatus"
   >
   </crud-table>
 </template>
