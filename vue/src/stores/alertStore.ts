@@ -1,26 +1,22 @@
 import { defineStore } from "pinia";
 import { ResponseStatus } from "../models/common/ResponseStatus";
 import { computed, ComputedRef, Ref, ref } from "vue";
-import { Alert, Color } from "../interfaces/common/AlertTypes";
+import { Alert } from "../interfaces/common/AlertTypes";
 
 export const useAlertStore = defineStore("alert", () => {
-  const timeout: Ref<number> = ref<number>(6000);
-  const display: Ref<boolean> = ref<boolean>(false);
-  const message: Ref<string> = ref<string>("");
-
-  const color: Ref<Color> = ref<Color>("info");
+  const alertRef: Ref<Alert> = ref<Alert>({
+    timeout: 6000,
+    display: false,
+    message: "",
+    color: "info",
+  });
 
   /**
    * Computed property to get current alert state.
    * @returns {Alert} The current alert state.
    */
   const alert: ComputedRef<Alert> = computed(() => {
-    return {
-      timeout: timeout.value,
-      display: display.value,
-      message: message.value,
-      color: color.value,
-    };
+    return alertRef.value;
   });
 
   /**
@@ -30,7 +26,7 @@ export const useAlertStore = defineStore("alert", () => {
    */
   const process = (status: ResponseStatus | string, persist: boolean = false): void => {
     try {
-      display.value = false;
+      alertRef.value.display = false;
 
       let statusMessage: string = "";
       let statusCode = 0;
@@ -42,20 +38,18 @@ export const useAlertStore = defineStore("alert", () => {
         statusMessage = status;
       }
 
-      message.value = statusMessage;
+      alertRef.value.message = statusMessage;
 
       if (statusCode >= 200 && statusCode < 300) {
-        color.value = "success";
+        alertRef.value.color = "success";
       } else if (statusCode >= 300 && statusCode < 500) {
-        color.value = "error";
+        alertRef.value.color = "error";
       } else {
-        color.value = "info";
+        alertRef.value.color = "info";
       }
 
-      if (persist) timeout.value = -1;
-      else timeout.value = 6000;
-
-      display.value = true;
+      alertRef.value.display = true;
+      alertRef.value.timeout = persist ? -1 : 6000;
     } catch (error) {
       console.error(
         `alertStore at process: ${error instanceof Error ? error.message : String(error)}`

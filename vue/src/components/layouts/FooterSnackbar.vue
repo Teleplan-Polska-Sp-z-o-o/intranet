@@ -9,15 +9,14 @@ const snackbarDisplay: Ref<boolean> = ref<boolean>(false);
 const snackbarTimeout: Ref<number> = ref<number>(6000);
 const snackbarColor: Ref<Color> = ref<Color>("info");
 const snackbarMessage: Ref<string> = ref<string>("");
+
 const { t } = useI18n();
 
 watch(
   () => alertStore.alert,
   (alert: Alert) => {
-    if (alert.message) {
-      snackbarTimeout.value = alert.timeout;
+    if (alert.display === true) {
       snackbarColor.value = alert.color;
-
       const message = t(`common.status_message.${alert.message}`);
       if (message.includes("common.status_message")) {
         snackbarMessage.value = t(`common.status_message.unknownMessage`);
@@ -26,6 +25,11 @@ watch(
       }
 
       snackbarDisplay.value = alert.display;
+      snackbarTimeout.value = 0;
+
+      setTimeout(() => {
+        snackbarTimeout.value = alert.timeout;
+      }, 0);
     }
   },
   { deep: true }
