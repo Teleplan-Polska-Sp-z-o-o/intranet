@@ -9,7 +9,7 @@ import { EntityManager } from "typeorm";
 import he from "he";
 import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { MulterRequest } from "../../interfaces/common/MulterRequest";
-import { UPLOADS_PATH } from "../../config/routes";
+import { UPLOADS_PATH } from "../../config/routeConstants";
 
 const saveNewsFile = (file: any, ref: string, bg: boolean): string => {
   const param = { bg: bg.toString(), uuid: ref };

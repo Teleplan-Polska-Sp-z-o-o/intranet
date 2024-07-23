@@ -2,7 +2,7 @@
 import { ref, watch } from "vue";
 import { UserInput } from "../../../../../models/admin/users/UserInput";
 import { UserEntity } from "../../../../../models/user/UserEntity";
-import { User } from "../../../../../models/user/User";
+import { SimpleUser } from "../../../../../models/user/SimpleUser";
 
 const emit = defineEmits(["save-data"]);
 
@@ -16,7 +16,7 @@ const props = defineProps<{
 }>();
 
 const userEntity: UserEntity = props.componentProps.editedItem;
-const user: User = new User().build(userEntity);
+const user: SimpleUser = new SimpleUser().build(userEntity);
 const inputs = ref<Array<UserInput>>([]);
 
 (async (): Promise<void> => {

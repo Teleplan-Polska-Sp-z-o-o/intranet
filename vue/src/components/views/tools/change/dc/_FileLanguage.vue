@@ -14,6 +14,19 @@ const transFile = {
 };
 
 const fileData = ref<IFileItem>(transFile);
+const parsedFileData = computed(() => {
+  return fileData.value.file ?? null;
+});
+const updateFileData = (file: File | File[]) => {
+  if (Array.isArray(file)) {
+    fileData.value.file = file;
+  } else {
+    if (!Array.isArray(fileData.value.file)) {
+      fileData.value.file = [];
+    }
+    fileData.value.file.push(file);
+  }
+};
 
 const languages = [
   { name: "en", value: "en" },
@@ -40,11 +53,12 @@ watchEffect(() => {
   <div class="d-flex">
     <div class="w-50">
       <v-file-input
-        v-model="fileData.file"
-        label="Document"
-        accept=".pdf"
+        :label="$t(`tools.change.tabs.dcr.stepper.fileInputs.document`)"
+        accept=".docx"
         variant="underlined"
         class="flex-4 text-no-wrap overflow-hidden mr-4"
+        :modelValue="parsedFileData"
+        @update:modelValue="updateFileData"
       >
       </v-file-input>
     </div>
@@ -52,7 +66,7 @@ watchEffect(() => {
     <div class="d-flex w-50">
       <v-select
         :items="languages"
-        label="Languages"
+        :label="$t(`tools.change.tabs.dcr.stepper.fileInputs.languages`)"
         v-model="fileData.langs"
         multiple
         variant="underlined"

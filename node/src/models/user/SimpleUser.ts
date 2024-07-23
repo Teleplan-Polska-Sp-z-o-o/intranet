@@ -18,6 +18,16 @@ class SimpleUser implements IUser {
 
     return this;
   };
+
+  public getNormalizedUsername(): string {
+    if (!this.username) throw Error("Username is empty string.");
+    const parts = this.username.split(".");
+
+    const removeNumbers = (s: string) => s.replace(/\d+/g, "");
+    const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+
+    return `${capitalize(removeNumbers(parts[0]))} ${capitalize(removeNumbers(parts[1]))}`;
+  }
 }
 
 export { SimpleUser };

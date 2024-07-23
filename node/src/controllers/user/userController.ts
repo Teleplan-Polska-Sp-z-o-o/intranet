@@ -12,7 +12,6 @@ import { UserInformation } from "../../models/user/UserInformation";
 import { DataSource, EntityManager } from "typeorm";
 import { helperSetPermissionGroups } from "./permissionController";
 import { Permission } from "../../models/user/Permission";
-import { UserHeartbeat } from "../../models/websocket/UserHeartbeat";
 
 const findUser = async (
   where: string | number,
@@ -277,4 +276,40 @@ const removeUser = async (req: Request, res: Response) => {
   }
 };
 
-export { getUser, getUsers, userAuth, editUser, removeUser };
+const getUsersByGroupAndSubgroup = async (req: Request, res: Response) => {
+  try {
+    const { group, subgroup } = req.params;
+
+    let queryBuilder = dataSource
+      .getRepository(UserEntity)
+      .createQueryBuilder("user")
+      .leftJoinAndSelect("user.permission", "permission")
+      .leftJoinAndSelect("user.settings", "settings")
+      .leftJoinAndSelect("user.info", "info")
+      .leftJoinAndSelect("permission.groups", "groups")
+      .leftJoinAndSelect("groups.subgroups", "subgroups")
+      .where("groups.name = :group", { group });
+
+    if (subgroup) queryBuilder = queryBuilder.andWhere("subgroups.name = :subgroup", { subgroup });
+
+    const users: Array<UserEntity> = await queryBuilder.getMany();
+
+    if (!users)
+      return res
+        .status(404)
+        .json({ users, message: "Users not found.", statusMessage: HttpResponseMessage.GET_ERROR });
+
+    return res
+      .status(200)
+      .json({ users, message: "Users found.", statusMessage: HttpResponseMessage.GET_SUCCESS });
+  } catch (err) {
+    console.error("Error retrieving users:", err);
+    return res.status(500).json({
+      err,
+      message: "Unknown error occurred. Failed to retrieve users.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
+export { getUser, getUsers, userAuth, editUser, removeUser, getUsersByGroupAndSubgroup };

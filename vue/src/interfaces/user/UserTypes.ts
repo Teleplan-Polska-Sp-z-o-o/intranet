@@ -24,7 +24,7 @@ interface IUser {
 }
 
 type TPermissionDocumentsSubgroup = "instructions" | "visuals" | "msd" | "assistant";
-type TPermissionChangeSubgroup = "pcr" | "pcn" | "dcn";
+type TPermissionChangeSubgroup = "pcr" | "pcn" | "dcr" | "dcn";
 type TPermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type TPermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
 
@@ -74,7 +74,7 @@ class StaticGroups {
   public static getAdminGroups(): IPermissionGroups {
     return {
       documents: ["instructions", "visuals", "msd", "assistant"],
-      change: ["pcr", "pcn", "dcn"],
+      change: ["pcr", "pcn", "dcr", "dcn"],
       matrix: ["departments", "documents", "competences"],
       admin: ["user-info", "user-permissions", "news"],
     };

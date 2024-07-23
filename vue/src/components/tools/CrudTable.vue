@@ -106,6 +106,7 @@ const editedItem = ref<any>({ ...item.value });
 const ComponentProps = computed(() => {
   return {
     ...props.tableDialogComponentProps,
+    items: items.value,
     editedItem: editedItem.value,
   };
 });
@@ -356,6 +357,14 @@ const handleFilters = (filters: { callback: Function }) => {
 
       <template v-slot:item.custom2="{ item }">
         <slot name="table-key-slot-2" :item="item"></slot>
+      </template>
+
+      <template v-slot:item.custom3="{ item }">
+        <slot name="table-key-slot-3" :item="item"></slot>
+      </template>
+
+      <template v-slot:item.custom4="{ item }">
+        <slot name="table-key-slot-4" :item="item"></slot>
       </template>
 
       <template v-slot:item.actions="{ item }">

@@ -51,13 +51,13 @@ class DocumentManager {
     let params: string = `/all/false/${confidentiality}`;
     switch (lvl) {
       case 1:
-        params = `/${reqData.departmentName}/all/false/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/all/false/${confidentiality}`;
         break;
       case 2:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/all/false/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/${reqData.categoryName}/all/false/${confidentiality}`;
         break;
       case 3:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/all/false/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/all/false/${confidentiality}`;
         break;
 
       default:
@@ -120,6 +120,13 @@ class DocumentManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/uuidLangs/${uuid}/${langs}`
     );
     return response.data.document;
+  };
+
+  public getByNumber = async (number: string): Promise<IDocumentEntity[]> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/by/${number}`
+    );
+    return response.data.documents;
   };
 }
 

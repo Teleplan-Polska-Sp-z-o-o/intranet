@@ -3,6 +3,8 @@ import { ref, watch } from "vue";
 // import alertResponseStatus from "../../components/common/alertResponseStatus.vue";
 import PCRTable from "../../components/views/tools/change/pcr/PCRTable.vue";
 import PCNTable from "../../components/views/tools/change/pcn/PCNTable.vue";
+import DCRTable from "../../components/views/tools/change/dc/DCRTable.vue";
+import DCNTable from "../../components/views/tools/change/dc/DCNTable.vue";
 import { useRoute, useRouter } from "vue-router";
 // import { ResponseStatus } from "../../models/common/ResponseStatus";
 import { ToolTab } from "../../interfaces/common/ToolTabTypes";
@@ -15,7 +17,7 @@ const tabs: ToolTab[] = [
   {
     id: 1,
     name: "pcr",
-    icon: "mdi-invoice-text-send-outline",
+    icon: "mdi-invoice-text-arrow-right-outline",
     meta: {
       group: "change",
       subgroup: "pcr",
@@ -24,17 +26,30 @@ const tabs: ToolTab[] = [
   {
     id: 2,
     name: "pcn",
-    icon: "mdi-bulletin-board",
+    icon: "mdi-invoice-text-check-outline",
     meta: {
       group: "change",
       subgroup: "pcn",
     },
   },
-  // {
-  //   id: 3,
-  //   name: "dcn",
-  //   icon: "mdi-bell-outline",
-  // },
+  {
+    id: 3,
+    name: "dcr",
+    icon: "mdi-file-document-arrow-right-outline",
+    meta: {
+      group: "change",
+      subgroup: "dcr",
+    },
+  },
+  {
+    id: 4,
+    name: "dcn",
+    icon: "mdi-file-document-check-outline",
+    meta: {
+      group: "change",
+      subgroup: "dcn",
+    },
+  },
 ];
 
 const router = useRouter();
@@ -57,8 +72,11 @@ const getTab = (
     case "pcn":
       return getNumericValue ? 2 : "pcn";
 
+    case "dcr":
+      return getNumericValue ? 3 : "dcr";
+
     case "dcn":
-      return getNumericValue ? 3 : "dcn";
+      return getNumericValue ? 4 : "dcn";
 
     default:
       return getNumericValue ? 1 : "pcr";
@@ -99,11 +117,6 @@ if (userInfo) {
 
 <template>
   <v-container class="layout-view-container bg-background">
-    <!-- <v-row>
-      <v-col cols="12">
-        <alert-response-status :status="responseStatus" :persist="false" />
-      </v-col>
-    </v-row> -->
     <v-row>
       <v-col>
         <v-container
@@ -143,7 +156,12 @@ if (userInfo) {
                 <v-window-item :value="2">
                   <p-c-n-table class="bg-surface-2 pa-4 ma-1" :tab="currentTab"></p-c-n-table>
                 </v-window-item>
-                <v-window-item :value="3"> </v-window-item>
+                <v-window-item :value="3">
+                  <d-c-r-table class="bg-surface-2 pa-4 ma-1" :tab="currentTab"></d-c-r-table>
+                </v-window-item>
+                <v-window-item :value="4">
+                  <d-c-n-table class="bg-surface-2 pa-4 ma-1" :tab="currentTab"></d-c-n-table>
+                </v-window-item>
               </v-window>
             </v-col>
           </v-row>

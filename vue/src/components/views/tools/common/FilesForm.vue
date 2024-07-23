@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import FileLanguage from "./FileLanguage.vue";
-import { IFileItem } from "../../../../../interfaces/document/DocumentTypes";
-import { FileItem } from "../../../../../models/document/FileItem";
+import { FileItem } from "../../../../models/document/FileItem";
+import { IFileItem } from "../../../../interfaces/document/DocumentTypes";
 
 const emit = defineEmits(["files"]);
 
 const props = defineProps<{
   retrieved: Array<IFileItem>;
+  accept: Array<".docx" | ".pdf">;
 }>();
 
 const files = ref<Array<IFileItem>>([]);
@@ -33,20 +34,21 @@ const handleFileChange = (fileData: IFileItem) => {
 const removeFile = (id: number) =>
   (files.value = files.value.filter((fileItem) => fileItem.id !== id));
 
-const filterFiles = () => {
-  return files.value.filter(
+const filterFiles = (files: Array<IFileItem>) => {
+  const filtered = files.filter(
     (fileItem) =>
       fileItem.file !== undefined &&
       fileItem.file.length > 0 &&
       fileItem.langs !== undefined &&
       fileItem.langs.length > 0
   );
+  return filtered;
 };
 
 watch(
   files,
-  () => {
-    emit("files", filterFiles());
+  (newFiles) => {
+    emit("files", filterFiles(newFiles));
   },
   { deep: true }
 );
@@ -66,10 +68,15 @@ if (props.retrieved.length > 0) {
       class="rounded-lg pa-4"
       :height="56"
     >
-      <v-icon icon="mdi-plus" :size="24" /> File
+      <v-icon icon="mdi-plus" :size="24" />
     </v-btn>
     <div v-for="file in files" :key="file.id" class="d-flex align-center w-100">
-      <FileLanguage @file-change="handleFileChange" :file="file" class="flex-grow-1" />
+      <FileLanguage
+        @file-change="handleFileChange"
+        :file="file"
+        :accept="props.accept"
+        class="flex-grow-1"
+      />
       <v-btn
         @click="() => removeFile(file.id)"
         class="ml-4"
@@ -87,7 +94,7 @@ if (props.retrieved.length > 0) {
       color="primary"
       variant="tonal"
       prepend-icon="mdi-plus"
-      >File</v-btn
+      >{{ $t(`tools.change.tabs.dcr.stepper.fileInputs.file`) }}</v-btn
     >
   </div>
 </template>

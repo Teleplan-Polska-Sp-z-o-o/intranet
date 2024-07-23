@@ -47,6 +47,10 @@ export const useEditorStore = defineStore("editor", () => {
           return formString(
             '<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>'
           );
+        case "affected":
+          return formString(
+            '<p><span style="color:hsl(0,0%,60%);">Describe changes in this revision.</span></p>'
+          );
 
         default:
           throw new Error(`Default key for ${key} not set.`);

@@ -7,7 +7,7 @@ import { IUser } from "../../interfaces/user/UserTypes";
 import { ProcessChangeNotice } from "../../orm/entity/change/ProcessChangeNoticeEntity";
 import { ProcessChangeRequestUpdates } from "../../orm/entity/change/ProcessChangeRequestUpdatesEntity";
 import { EmailHandler } from "../../models/common/Email/EmailHandler";
-import { PCREmailOptions } from "../../models/common/Email/PCREmailOptions";
+import { PCREmailOptions } from "../../models/common/Email/options/PCREmailOptions";
 
 const addRequest = async (req: Request, res: Response) => {
   try {

@@ -12,7 +12,7 @@ import {
 import { UserPermissionManager } from "../models/user/UserPermissionManager";
 import { RouteGroup } from "../models/common/router/RouteGroup";
 import { RouterHelper } from "../models/common/router/RouterHelper";
-import { User } from "../models/user/User";
+import { SimpleUser } from "../models/user/SimpleUser";
 
 export const usePermissionStore = defineStore("auth", () => {
   const storedRolePermission = ref<Partial<IPermission>>({
@@ -22,7 +22,7 @@ export const usePermissionStore = defineStore("auth", () => {
   });
 
   const get = async (iUser: IUser): Promise<IPermission> => {
-    const user: User = new User().build(iUser);
+    const user: SimpleUser = new SimpleUser().build(iUser);
     const permission: IPermission = (await new UserPermissionManager().getOne(JSON.stringify(user)))
       .permission;
 

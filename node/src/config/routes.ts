@@ -11,8 +11,8 @@ import { changeRoutes } from "../routes/changeRoutes";
 import { notificationRoutes } from "../routes/notificationRoutes";
 import { serverRoutes } from "../routes/serverRoutes";
 import { competenceRoutes } from "../routes/competenceRoutes";
-
-const UPLOADS_PATH = "/usr/src/app/uploads";
+import { documentChangeRoutes } from "../routes/documentChangeRoutes";
+import { UPLOADS_PATH } from "./routeConstants";
 
 const mountRoutes = (app: Express): Express => {
   app.use("/uploads", express.static(UPLOADS_PATH));
@@ -33,7 +33,9 @@ const mountRoutes = (app: Express): Express => {
   app.use("/api/server", serverRoutes);
   app.use("/api/competence", competenceRoutes);
 
+  app.use("/api/dc", documentChangeRoutes);
+
   return app;
 };
 
-export { mountRoutes, UPLOADS_PATH };
+export { mountRoutes };

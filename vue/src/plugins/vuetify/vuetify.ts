@@ -6,6 +6,7 @@ import "@mdi/font/css/materialdesignicons.css";
 import { ThemeDefinition, createVuetify } from "vuetify";
 import { components } from "./components.ts";
 import { directives } from "./directives.ts";
+import { labsComponents } from "./labs.ts";
 
 // https://m3.material.io/theme-builder#/custom
 // Primary: #2D7FBF (Dark blue)
@@ -97,7 +98,10 @@ const dark: ThemeDefinition = {
 };
 
 const vuetify = createVuetify({
-  components,
+  components: {
+    ...components,
+    ...labsComponents,
+  },
   directives,
   theme: {
     defaultTheme: "light",

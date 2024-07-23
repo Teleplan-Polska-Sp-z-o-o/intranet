@@ -49,13 +49,13 @@ class VisualManager {
     let params: string = `/Visual/true/${confidentiality}`;
     switch (lvl) {
       case 1:
-        params = `/${reqData.departmentName}/Visual/true/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/Visual/true/${confidentiality}`;
         break;
       case 2:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/Visual/true/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/${reqData.categoryName}/Visual/true/${confidentiality}`;
         break;
       case 3:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/Visual/true/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/Visual/true/${confidentiality}`;
         break;
 
       default:

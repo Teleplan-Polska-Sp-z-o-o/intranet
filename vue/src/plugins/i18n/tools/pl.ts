@@ -192,6 +192,141 @@ const plT = {
     change: {
       name: "Zmiana",
       tabs: {
+        dcr: {
+          name: "Prośba o zmianę dokumentu",
+          table: {
+            toolbar: "Prośby",
+            header: {
+              no: "Nr",
+              status: "Status",
+              priority: "Priorytet",
+              docxNumber: "Numer Dokumentu",
+              docxRevision: "Rewizja Dokumentu",
+              originator: "Wnioskodawca",
+              checker: "Sprawdzający",
+              approver: "Zatwierdzający",
+              review: "Przegląd",
+              // dialog: "Dialog",
+              actions: "Akcje",
+            },
+          },
+          review: {
+            tooltip: "Otwórz przegląd",
+            close: "Zamknij",
+            cancel: "Anuluj",
+            confirm: "Potwierdź",
+            title: "Przegląd",
+            timeline: "Oś czasu",
+            variant: {
+              approve: "zatwierdź",
+              check: "sprawdź",
+              reject: "odrzuć",
+              question: "Czy na pewno chcesz ${variant} ten wniosek o zmianę dokumentu?",
+            },
+            alert: {
+              reviewControlsAppearOnComplete:
+                "Elementy sterujące przeglądem pojawią się, gdy wniosek o zmianę dokumentu zostanie 'Zakończony'.",
+              reviewGranted: "Przegląd tego wniosku o zmianę dokumentu został przyznany.",
+              reviewControlsAppearOnChecked:
+                "Elementy sterujące przeglądem pojawią się po sprawdzeniu.",
+            },
+            commentOptional: "Komentarz (opcjonalnie)",
+            comment: "Komentarz",
+            files: "Pliki",
+            no_files: "Nie znaleziono plików",
+            changes: "Zmiany",
+          },
+          register: {
+            cancel: "Anuluj",
+            confirm: "Potwierdź",
+            register: "Zarejestruj",
+            unregister: "Wyrejestruj",
+            question: "Czy na pewno chcesz zmienić status rejestracji?",
+          },
+          stepper: {
+            actions: {
+              prev: "Poprzedni",
+              next: "Następny",
+              submit: "Przejrzyj swoje dane przed wysłaniem.",
+            },
+            info: {
+              reference_info_title: "Czym jest Referencja?",
+              reference_info_text:
+                "Referencja to unikalny identyfikator używany do rozróżniania zapisów dokumentów. Łączy ona żądanie zmiany dokumentu z już zarejestrowanym dokumentem, pomagając w rejestrowaniu nowej wersji. Wartość referencji można znaleźć w narzędziu macierzowym w zakładce dokumentu w rekordzie dokumentu, który ma zostać zaktualizowany. Dla nowych dokumentów, które nigdy wcześniej nie były zarejestrowane, można wybrać 'Utwórz nową referencję'. Po utworzeniu nowa referencja może zostać wklejona z żądania do formularza rejestracyjnego lub użyta do zaktualizowania istniejącej referencji dokumentu w macierzy, łącząc ją z żądaniem.",
+              check_and_approve_title: "Powiadomienia",
+              check_and_approve_text:
+                "Po zakończeniu lub aktualizacji wniosku o zmianę dokumentu powiadomienie zostaje wysłane do Sprawdzającego. Po przeprowadzeniu przeglądu powiadamiany jest Zatwierdzający. Po zatwierdzeniu wniosku powiadomienie otrzymuje Rejestrator. W przypadku niepowodzenia przeglądu informowany jest Wnioskodawca. Powiadomienia są dostarczane za pośrednictwem intranetu i poczty elektronicznej, a kopie (cc) są również wysyłane do innych decydentów w dziale, którzy mają dostęp do wniosku o zmianę dokumentu.",
+            },
+            fileInputs: {
+              file: "Plik (.docx)",
+              document: "Dokument",
+              languages: "Języki",
+            },
+            vStepperItem: {
+              "1": "Informacje",
+              "2": "Zmiany",
+              "3": "Pliki",
+              "4": "Recenzenci",
+              "5": "Szkolenie",
+              "6": "Weryfikuj",
+            },
+            vStepperWindowItem: {
+              "1": {
+                new: {
+                  name: "Aktualizacja dokumentu",
+                  hint: "",
+                },
+                docxNumber: {
+                  name: "Numer dokumentu",
+                  hint: "np. BYD-QA-SPE-MOD-0005",
+                },
+                docxRevision: "Rewizja Dokumentu",
+                docxReference: {
+                  name: "Referencja Dokumentu",
+                  hint: "",
+                },
+                priority: {
+                  name: "Priorytet",
+                  hint: "Określa pozycję żądania w tabeli. Niski priorytet jest umieszczony na końcu.",
+                },
+              },
+              "2": {
+                changes: "Zmiany",
+              },
+              "4": {
+                checker: {
+                  name: "Sprawdzający",
+                  hint: "Wpisz, aby wyszukać.",
+                },
+                approver: {
+                  name: "Zatwierdzający",
+                  hint: "Wpisz, aby wyszukać.",
+                },
+                registerer: "Rejestrujący",
+              },
+              "5": {
+                affectedCompetences: "Dotknięte Kompetencje",
+                requireAcknowledgmentOrTraining: "Wymaga Potwierdzenia lub Szkolenia",
+                trainingDetails: "Szczegóły Szkolenia",
+              },
+            },
+          },
+        },
+        dcn: {
+          name: "Powiadomienie o Zmianie Dokumentu",
+          table: {
+            toolbar: "Powiadomienie",
+            header: {
+              no: "Nr",
+              status: "Status",
+              docxNumber: "Numer Dokumentu",
+              docxRevision: "Rewizja Dokumentu",
+              docxReference: "Referencja Dokumentu",
+              registerer: "Rejestrujący",
+              info: "Informacje",
+            },
+          },
+        },
         pcr: {
           name: "Prośba o zmianę procesu",
           table: {

@@ -1,11 +1,11 @@
-import { emailConfig } from "../../../config/email";
-import { serverConfig } from "../../../config/server";
-import { IEmailContent } from "../../../interfaces/Email/IEmailContent";
-import { IEmailOptions } from "../../../interfaces/Email/IEmailOptions";
-import { ENotificationVariant } from "../../../interfaces/user/notification/ENotificationVariant";
-import { ProcessChangeNotice } from "../../../orm/entity/change/ProcessChangeNoticeEntity";
-import { User } from "../../../orm/entity/user/UserEntity";
-import { template } from "./template";
+import { emailConfig } from "../../../../config/email";
+import { serverConfig } from "../../../../config/server";
+import { IEmailContent } from "../../../../interfaces/Email/IEmailContent";
+import { IEmailOptions } from "../../../../interfaces/Email/IEmailOptions";
+import { ENotificationVariant } from "../../../../interfaces/user/notification/ENotificationVariant";
+import { ProcessChangeNotice } from "../../../../orm/entity/change/ProcessChangeNoticeEntity";
+import { User } from "../../../../orm/entity/user/UserEntity";
+import { template } from "../template";
 
 class PCNEmailOptions implements IEmailOptions {
   variant: ENotificationVariant;

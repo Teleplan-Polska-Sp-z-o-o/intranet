@@ -32,6 +32,10 @@ class UserNotification implements INotification {
 
   private mapSource(sourceString: string): ENotificationSource {
     switch (sourceString) {
+      case "DCR":
+        return ENotificationSource.DCR;
+      case "DCN":
+        return ENotificationSource.DCN;
       case "PCR":
         return ENotificationSource.PCR;
       case "PCN":

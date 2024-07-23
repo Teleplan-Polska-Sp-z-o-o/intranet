@@ -192,6 +192,144 @@ const enT = {
     change: {
       name: "Change",
       tabs: {
+        dcr: {
+          name: "Document Change Request",
+          table: {
+            toolbar: "Requests",
+            header: {
+              no: "No",
+              status: "Status",
+              priority: "Priority",
+              docxNumber: "Document Number",
+              docxRevision: "Document Revision",
+              originator: "Originator",
+              checker: "Checker",
+              approver: "Approver",
+              review: "Review",
+              // dialog: "Dialog",
+              actions: "Actions",
+            },
+          },
+          review: {
+            tooltip: "Open Review",
+            close: "Close",
+            cancel: "Cancel",
+            confirm: "Confirm",
+            title: "Review",
+            timeline: "Timeline",
+            variant: {
+              approve: "approve",
+              check: "check",
+              reject: "reject",
+              question: "Are you sure you want to {variant} this document change request?",
+            },
+            alert: {
+              reviewControlsAppearOnComplete:
+                "Review controls will appear once the document change request is 'Complete'.",
+              reviewGranted: "Review for this document change request has been granted.",
+              reviewControlsAppearOnChecked: "Review controls will appear once checked.",
+            },
+            commentOptional: "Comment (optional)",
+            comment: "Comment",
+            files: "Files",
+            no_files: "No files found",
+            changes: "Changes",
+          },
+          register: {
+            cancel: "Cancel",
+            confirm: "Confirm",
+            register: "Register",
+            unregister: "Unregister",
+            question: "Are you sure you want to change registration status?",
+          },
+          stepper: {
+            actions: {
+              prev: "Previous",
+              next: "Next",
+              submit: "Review your details before submitting.",
+            },
+            info: {
+              reference_info_title: "What is Reference?",
+              reference_info_text:
+                "A reference is a unique identifier used to distinguish document records. It connects a request to change a document with an already registered document, helping in registering a new revision. You can find the reference value in the matrix tool under the document tab in the document record of the document to update. For new documents that have never been registered before, you can select 'Create new reference.' Once created, this new reference can be pasted from the request into the registering form or used to update the existing reference of a document in the matrix, linking it with the request.",
+              check_and_approve_title: "Notifications",
+              check_and_approve_text:
+                "Upon completion or update of a document change request, a notification is issued to the Checker. After the request is reviewed, the Approver is notified. Once approval is granted, the Registerer receives a notification. In the event of a review failure, the Originator is informed. Notifications are delivered via the intranet and email, with copies (cc) also sent to other departmental decision makers who have access to the document change request.",
+            },
+            fileInputs: {
+              file: "File (.docx)",
+              document: "Document",
+              languages: "Languages",
+            },
+
+            vStepperItem: {
+              "1": "Info",
+              "2": "Changes",
+              "3": "Files",
+              "4": "Reviewers",
+              "5": "Training",
+              "6": "Verify",
+            },
+            vStepperWindowItem: {
+              "1": {
+                new: {
+                  name: "Document Update",
+                  hint: "",
+                },
+                docxNumber: {
+                  name: "Document Number",
+                  hint: "e.g., BYD-QA-SPE-MOD-0005",
+                },
+                docxRevision: "Document Revision",
+                docxReference: {
+                  name: "Document Reference",
+                  hint: "",
+                },
+                priority: {
+                  name: "Priority",
+                  hint: "Determines the position of the request in the table. Low is placed last.",
+                },
+              },
+              "2": {
+                changes: "Changes",
+              },
+              "3": {
+                files: "Files",
+              },
+              "4": {
+                checker: {
+                  name: "Checker",
+                  hint: "Type to search.",
+                },
+                approver: {
+                  name: "Approver",
+                  hint: "Type to search.",
+                },
+                registerer: "Registerer",
+              },
+              "5": {
+                affectedCompetences: "Affected Competences",
+                requireAcknowledgmentOrTraining: "Require Acknowledgment or Training",
+                trainingDetails: "Training Details",
+              },
+            },
+          },
+        },
+        dcn: {
+          name: "Document Change Notice",
+          table: {
+            toolbar: "Notices",
+            header: {
+              no: "No",
+              status: "Status",
+              docxNumber: "Document Number",
+              docxRevision: "Document Revision",
+              docxReference: "Document Reference",
+              registerer: "Registerer",
+              info: "Info",
+            },
+          },
+        },
         pcr: {
           name: "Process Change Request",
           table: {
@@ -360,9 +498,6 @@ const enT = {
               },
             },
           },
-        },
-        dcn: {
-          name: "Document Change Notice",
         },
       },
     },

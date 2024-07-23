@@ -12,7 +12,7 @@ import {
 } from "../../../../../interfaces/user/UserTypes";
 import { UserEntity } from "../../../../../models/user/UserEntity";
 import { Permission } from "../../../../../models/user/Permission";
-import { User } from "../../../../../models/user/User";
+import { SimpleUser } from "../../../../../models/user/SimpleUser";
 
 const emit = defineEmits(["save-data"]);
 
@@ -22,7 +22,7 @@ const props = defineProps<{
 
 // table record from props
 const userEntity: UserEntity = props.componentProps.editedItem;
-const user: User = new User().build(userEntity);
+const user: SimpleUser = new SimpleUser().build(userEntity);
 
 const userPermission: {
   read: boolean;
@@ -127,7 +127,7 @@ const sortedPermissionGroups: ComputedRef<Partial<IPermissionGroups>> = computed
 });
 
 const saveData: ComputedRef<{
-  user: User;
+  user: SimpleUser;
   permission: TPermissionStringCode;
   confidentiality: TConfidentiality;
   groups: Partial<IPermissionGroups>;
