@@ -149,10 +149,19 @@ const editDocument = async (req: MulterRequest, res: Response) => {
       }
 
       const oldDocName = documentToUpdate.name;
-      documentToUpdate.name = base.name;
-      documentToUpdate.description = base.description;
-      documentToUpdate.revision = base.revision;
-      documentToUpdate.confidentiality = base.confidentiality;
+
+      // documentToUpdate.name = base.name;
+      // documentToUpdate.description = base.description;
+      // documentToUpdate.revision = base.revision;
+      // documentToUpdate.confidentiality = base.confidentiality;
+
+      documentToUpdate.editDocument(
+        base.type,
+        base.name,
+        base.description,
+        base.revision,
+        base.confidentiality
+      );
 
       const documentToSave = new Utils().addRecordPutInfo<Document>(issuer, documentToUpdate);
 

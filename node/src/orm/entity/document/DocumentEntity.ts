@@ -95,21 +95,18 @@ export class Document {
     this.putByDate = null;
   }
 
-  // public editDocument = (
-  //   name: string,
-  //   description: string,
-  //   revision: number,
-  //   confidentiality: TConfidentiality = "public",
-  //   username: string
-  // ): Document => {
-  //   this.name = name;
-  //   this.description = description;
-  //   this.revision = revision;
-  //   this.confidentiality = confidentiality;
-
-  //   this.putBy = username;
-  //   this.putByDate = Helper.formatDate(new Date(), "document put");
-
-  //   return this;
-  // };
+  public editDocument(
+    type: string,
+    name: string,
+    description: string,
+    revision: number,
+    confidentiality: TConfidentiality = "public"
+  ): Document {
+    this.type = type;
+    this.name = name;
+    this.description = description;
+    this.revision = revision;
+    this.confidentiality = confidentiality;
+    return this;
+  }
 }
