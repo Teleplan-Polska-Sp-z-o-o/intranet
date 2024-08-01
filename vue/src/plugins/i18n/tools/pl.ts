@@ -192,6 +192,203 @@ const plT = {
     change: {
       name: "Zmiana",
       tabs: {
+        dcr: {
+          name: "Prośba o zmianę dokumentu",
+          table: {
+            toolbar: "Prośby",
+            header: {
+              no: "Nr",
+              tags: "Tagi",
+              status: "Status",
+              priority: "Priorytet",
+              docxNumber: "Nazwa Dokumentu",
+              docxRevision: "Rewizja Dokumentu",
+              originator: "Wnioskodawca",
+              checker: "Sprawdzający",
+              approver: "Zatwierdzający",
+              review: "Przegląd",
+              // dialog: "Dialog",
+              actions: "Akcje",
+            },
+          },
+          kpi: {
+            table: {
+              header: {
+                no: "Nr",
+                username: "Nazwa użytkownika",
+                role: "Rola",
+                since: "Data dostępności akcji",
+                taken: "Data wykonania akcji",
+                elapsed: "Czas, który upłynął",
+              },
+              toolbar: "Rewizje",
+            },
+            legend: {
+              title: "Legenda: Kolor upływającego czasu",
+              priority: "{priority} priorytet:",
+              days: "dni",
+            },
+            view: {
+              title: "Widok",
+              groupBy: "Wybierz grupowanie według",
+              group: {
+                no: "Nr",
+                username: "Nazwa użytkownika",
+                role: "Rola",
+                taken: "Podjęte",
+                priority: "Priorytet",
+              },
+            },
+            filters: {
+              title: "Filtry",
+              myActions: "Pokaż tylko moje działania",
+              departments: "Ogranicz do działów",
+            },
+          },
+          review: {
+            tooltip: "Otwórz Rewizje",
+            close: "Zamknij",
+            title: "Rewizja",
+            timeline: "Oś czasu",
+
+            comment: "Komentarz",
+            files: "Pliki",
+            no_files: "Nie znaleziono plików",
+            no_affected: "Brak opisu zmian",
+            changes: "Zmiany",
+
+            alert: {
+              reviewControlsAppearOnComplete:
+                "Kontrole rewizji pojawią się, gdy wniosek o zmianę dokumentu będzie 'Zakończony'.",
+              reviewGranted: "Rewizja dla tego wniosku o zmianę dokumentu została przyznana.",
+              reviewControlsAppearOnChecked: "Kontrole rewizji pojawią się po sprawdzeniu.",
+            },
+
+            reviewControls: {
+              cancel: "Anuluj",
+              confirm: "Potwierdź",
+              commentOptional: "Komentarz (opcjonalny)",
+
+              check: "Sprawdź",
+              approve: "Zatwierdź",
+              reject: "Odrzuć",
+              register: "Zarejestruj",
+              unregister: "Wyrejestruj",
+
+              variant: {
+                checked: "sprawdzony",
+                approved: "zatwierdzony",
+                registered: "zarejestrowany",
+                rejected: "odrzucony",
+                unregistered: "wyrejestrowany",
+
+                question:
+                  "Czy na pewno chcesz oznaczyć ten wniosek o zmianę dokumentu jako '{variant}'?",
+              },
+            },
+          },
+          stepper: {
+            actions: {
+              prev: "Poprzedni",
+              next: "Następny",
+              submit: "Przejrzyj swoje dane przed wysłaniem.",
+            },
+            info: {
+              reviewers_title: "Recenzenci",
+              reviewers_text:
+                "Aby osoba była możliwa do wyboru, Checker i Rejestrujący muszą mieć uprawnienia do dostępu do zmiany dokumentu. Approver musi również mieć status decydenta.",
+              check_and_approve_title: "Powiadomienia",
+              check_and_approve_text:
+                "Po zakończeniu lub aktualizacji wniosku o zmianę dokumentu powiadomienie zostaje wysłane do Sprawdzającego. Po przeprowadzeniu przeglądu powiadamiany jest Zatwierdzający. Po zatwierdzeniu wniosku powiadomienie otrzymuje Rejestrator. W przypadku niepowodzenia przeglądu informowany jest Wnioskodawca. Powiadomienia są dostarczane za pośrednictwem intranetu i poczty elektronicznej, a kopie (cc) są również wysyłane do innych decydentów w dziale, którzy mają dostęp do wniosku o zmianę dokumentu.",
+            },
+            error: {
+              revisionToLow:
+                "Znaleziono dokument z takim numerem, który ma rewizję {revision}. Proszę wprowadzić wyższą rewizję.",
+            },
+            message: {
+              revisionGreaterThanExpected:
+                "Wprowadziłeś numer rewizji, który jest większy od oczekiwanej kolejnej rewizji.",
+            },
+            vStepperItem: {
+              "1": "Informacje",
+              "2": "Zmiany",
+              "3": "Pliki",
+              "4": "Recenzenci",
+              "5": "Szkolenie",
+              "6": "Weryfikuj",
+            },
+            vStepperWindowItem: {
+              "1": {
+                tags: {
+                  name: "Tagi",
+                  hint: "Wprowadź charakterystyczne słowa kluczowe, które opisują zmiany w dokumencie",
+                },
+                source: {
+                  name: "Źródło Dokumentu",
+                  hint: "",
+                  previously_uploaded: "Wcześniej przesłane",
+                  not_previously_uploaded_new: "Nie przesłane wcześniej, nowy dokument",
+                  not_previously_uploaded_existing: "Nie przesłane wcześniej, istniejący dokument",
+                },
+                docxNumber: {
+                  name: "Nazwa Dokumentu",
+                  hint: "np. BYD-QA-SPE-MOD-0005",
+                },
+                docxRevision: "Rewizja Dokumentu",
+                docxReference: {
+                  name: "Referencja Dokumentu",
+                  hint: "",
+                },
+                priority: {
+                  name: "Priorytet",
+                  hint: "Określa pozycję żądania w tabeli. Niski priorytet jest umieszczony na końcu.",
+                  low: "Niski",
+                  medium: "Średni",
+                  high: "Wysoki",
+                },
+              },
+              "2": {
+                changes: "Zmiany",
+              },
+              "4": {
+                checker: {
+                  name: "Sprawdzający",
+                  hint: "Wpisz, aby wyszukać.",
+                },
+                approver: {
+                  name: "Zatwierdzający",
+                  hint: "Wpisz, aby wyszukać.",
+                },
+                registerer: "Rejestrujący",
+              },
+              "5": {
+                affectedCompetences: "Dotknięte Kompetencje",
+                requireAcknowledgmentOrTraining: {
+                  name: "Wymaga Potwierdzenia lub Szkolenia",
+                  acknowledgment: "Potwierdzenie",
+                  training: "Szkolenie",
+                },
+                trainingDetails: "Szczegóły Szkolenia",
+              },
+            },
+          },
+        },
+        dcn: {
+          name: "Powiadomienie o Zmianie Dokumentu",
+          table: {
+            toolbar: "Powiadomienie",
+            header: {
+              no: "Nr",
+              tags: "Tagi",
+              status: "Status",
+              docxNumber: "Nazwa Dokumentu",
+              docxRevision: "Rewizja Dokumentu",
+              docxReference: "Referencja Dokumentu",
+              registerer: "Rejestrujący",
+              info: "Informacje",
+            },
+          },
+        },
         pcr: {
           name: "Prośba o zmianę procesu",
           table: {

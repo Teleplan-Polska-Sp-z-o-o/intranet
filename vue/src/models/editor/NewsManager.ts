@@ -8,7 +8,7 @@ import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { useUserStore } from "../../stores/userStore";
-import { User } from "../user/User";
+import { SimpleUser } from "../user/SimpleUser";
 import { useAlertStore } from "../../stores/alertStore";
 
 class NewsManager {
@@ -70,7 +70,7 @@ class NewsManager {
     const userInfo = useUserStore().info();
     let conf: TConfidentiality = "public";
     if (userInfo) {
-      const user: User = new User().build(userInfo);
+      const user: SimpleUser = new SimpleUser().build(userInfo);
       conf = confidentiality ? (await usePermissionStore().get(user)).confidentiality : "secret";
     }
     const response = await axios.get(

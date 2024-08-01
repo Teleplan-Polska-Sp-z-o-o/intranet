@@ -2,6 +2,7 @@ import {
   editUser,
   getUser,
   getUsers,
+  getUsersByGroupAndSubgroup,
   removeUser,
   userAuth,
 } from "../controllers/user/userController";
@@ -20,6 +21,7 @@ const decodeFormData = multer().none();
 router.get("/login-details", getLoginDetails);
 router.get("/one/:username", getUser);
 router.get("/all/:equalOrAbovePermission?", getUsers);
+router.get("/group-subgroup/:group/:subgroup?", getUsersByGroupAndSubgroup);
 router.post("/auth", userAuth);
 router.delete("/:id", removeUser);
 

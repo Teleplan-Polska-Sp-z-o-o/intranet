@@ -80,7 +80,12 @@ const filtered = computed(() => {
     if (search.value) {
       return itemsFiltered.filter((item: any) => {
         for (const key of props.searchBy) {
-          const value = item[key]?.toString().toLowerCase();
+          const keys: string[] = key.split(".");
+          let value: any = item[keys[0]];
+          for (let i = 1; i < keys.length; i++) {
+            value = value?.[keys[i]];
+          }
+          value = JSON.stringify(value)?.toLowerCase();
           const searchTerm = search.value.toLowerCase();
           if (value && value.includes(searchTerm)) {
             return true;
@@ -106,6 +111,7 @@ const editedItem = ref<any>({ ...item.value });
 const ComponentProps = computed(() => {
   return {
     ...props.tableDialogComponentProps,
+    gotItems: items.value,
     editedItem: editedItem.value,
   };
 });
@@ -356,6 +362,14 @@ const handleFilters = (filters: { callback: Function }) => {
 
       <template v-slot:item.custom2="{ item }">
         <slot name="table-key-slot-2" :item="item"></slot>
+      </template>
+
+      <template v-slot:item.custom3="{ item }">
+        <slot name="table-key-slot-3" :item="item"></slot>
+      </template>
+
+      <template v-slot:item.custom4="{ item }">
+        <slot name="table-key-slot-4" :item="item"></slot>
       </template>
 
       <template v-slot:item.actions="{ item }">

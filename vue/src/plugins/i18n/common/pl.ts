@@ -98,6 +98,17 @@ const plC = {
           },
           user: {
             name: "UŻYTKOWNIK",
+            "1": {
+              subheader: "Informacje",
+              position: "Stanowisko",
+              department: "Dział",
+              decision_maker: "Decydent",
+            },
+            "2": {
+              subheader: "Uprawnienia",
+              confidentiality: "Poufność",
+              groups: "Grupy",
+            },
           },
         },
       },
@@ -128,6 +139,21 @@ const plC = {
       unknown: "Nieznany błąd. Spróbuj ponownie później.",
       unauthorized: "Brak autoryzacji do wykonania tej akcji.",
       unknownMessage: "Nieznana wiadomość.",
+      decision_maker_error:
+        "Żądanie dotyczy użytkownika, który nie ma uprawnień do podejmowania decyzji.",
+      tool_access_error:
+        "Żądanie dotyczy użytkownika, który nie ma dostępu do odpowiedniego narzędzia.",
+      reference_format_error: "Wartość referencji ma nieprawidłowy format.",
+      reference_already_contains_error: "Jakiś dokument już zawiera tę referencje.",
+    },
+    component: {
+      file_form: {
+        info_title: "Akceptowane formaty",
+        info_text: "Formularz akceptuje pliki z rozszerzeniami: '{accepts}'",
+        add_file: "Plik",
+        document: "Dokument",
+        langs: "Języki",
+      },
     },
   },
 };

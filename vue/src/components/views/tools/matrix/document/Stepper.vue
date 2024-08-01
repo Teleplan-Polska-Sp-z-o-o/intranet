@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from "vue";
 import VerifyTables from "./VerifyTables.vue";
-import FilesForm from "./FilesForm.vue";
+import FilesForm from "../../common/FilesForm.vue";
 import { IFileItem, ICompetence } from "../../../../../interfaces/document/DocumentTypes";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
 import { nodeConfig } from "../../../../../config/env";
@@ -190,7 +190,11 @@ watchEffect(() => {
 
       <v-stepper-window-item :value="2">
         <v-card flat>
-          <files-form @files="handleFiles" :retrieved="retrievedFiles"></files-form>
+          <files-form
+            @files="handleFiles"
+            :retrieved="retrievedFiles"
+            :accept="['.pdf']"
+          ></files-form>
         </v-card>
       </v-stepper-window-item>
 

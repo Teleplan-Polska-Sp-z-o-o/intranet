@@ -16,6 +16,7 @@ export class DocumentEntity implements IDocumentEntity {
   postByDate: string;
   putBy: string | null;
   putByDate: string | null;
+  approved: boolean;
 
   constructor() {
     this.id = 0;
@@ -32,5 +33,6 @@ export class DocumentEntity implements IDocumentEntity {
     this.postByDate = "";
     this.putBy = null;
     this.putByDate = null;
+    this.approved = false;
   }
 }

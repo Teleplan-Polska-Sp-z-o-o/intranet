@@ -42,7 +42,7 @@ enum PermissionGroup {
 }
 
 type PermissionDocumentsSubgroup = "instructions" | "visuals" | "msd" | "assistant";
-type PermissionChangeSubgroup = "pcr" | "pcn" | "dcn";
+type PermissionChangeSubgroup = "pcr" | "pcn" | "dcr";
 type PermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type PermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
 
@@ -58,7 +58,7 @@ class StaticGroups {
   public static getAdminGroups(): PermissionGroups {
     return {
       [PermissionGroup.DOCUMENTS]: ["instructions", "visuals", "msd", "assistant"],
-      [PermissionGroup.CHANGE]: ["pcr", "pcn", "dcn"],
+      [PermissionGroup.CHANGE]: ["pcr", "pcn", "dcr"],
       [PermissionGroup.MATRIX]: ["departments", "documents", "competences"],
       [PermissionGroup.ADMIN]: ["user-info", "user-permissions", "news"],
     };

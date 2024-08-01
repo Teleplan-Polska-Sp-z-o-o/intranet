@@ -72,6 +72,18 @@ class UserManager {
     }
     return response.data.deleted;
   };
+
+  public getByGroupAndSubgroup = async (
+    group: string,
+    subgroup?: string
+  ): Promise<Array<IUserEntity>> => {
+    const response = await axios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Users}/group-subgroup/${group}${
+        subgroup ? `/${subgroup}` : ""
+      }`
+    );
+    return response.data.users;
+  };
 }
 
 export { UserManager };

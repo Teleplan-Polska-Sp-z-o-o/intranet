@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watchEffect } from "vue";
 import { Editor } from "./ckeditor";
 import { useEditorStore } from "../../stores/editorStore";
 import { nodeConfig } from "../../config/env";
@@ -17,6 +17,9 @@ const props = defineProps<{
 }>();
 
 const editorData = ref<string>(editorStore.get(props.editorKey));
+const noKeyBodyWithBase = editorStore.getDefault(undefined, true);
+const keyBodyWithoutBase = editorStore.getDefault(props.editorKey, true);
+const keyBodyWithBase = editorStore.getDefault(props.editorKey, true);
 
 const eRef = editorStore.getRef();
 
@@ -79,12 +82,29 @@ if (props.endpoint) {
 emit("ref", eRef);
 
 // div.ck-override-vuetify-styles is the preceding styling element for ck output - see ckeditor.scss
-watch(editorData, (newV) => {
-  editorStore.save(
-    `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content">${newV}</div>`,
-    props.editorKey
-  );
-  emit("editorDataChange", props.editorKey);
+// watch(editorData, (newV) => {
+//   editorStore.save(
+//     `<div class="ck-override-vuetify-styles"></div><div class="ck ck-content">${newV}</div>`,
+//     props.editorKey
+//   );
+//   emit("editorDataChange", props.editorKey);
+// });
+const handleFocus = () => {
+  if (editorStore.get(props.editorKey) === keyBodyWithBase) {
+    editorData.value = "";
+  }
+};
+const handleBlur = () => {
+  if (editorStore.get(props.editorKey) === noKeyBodyWithBase) {
+    editorData.value = keyBodyWithoutBase;
+  }
+};
+
+watchEffect(() => {
+  editorStore.save(editorData.value, props.editorKey);
+  if (editorData.value !== "") {
+    emit("editorDataChange", props.editorKey);
+  }
 });
 </script>
 
@@ -94,6 +114,8 @@ watch(editorData, (newV) => {
     :editor="editor"
     :config="editorConfig"
     v-model="editorData"
+    @focus="handleFocus"
+    @blur="handleBlur"
   ></ckeditor>
 </template>
 

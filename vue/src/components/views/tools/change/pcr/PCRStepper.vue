@@ -57,7 +57,7 @@ editorStore.save(
 editorStore.save(
   changeDescription
     ? changeDescription
-    : `<p><span style="color:hsl(0, 0%, 60%);">Change Description</span></p>`,
+    : `<p><span style="color:hsl(0,0%,60%);">Change Description</span></p>`,
   changeDescriptionKey
 );
 

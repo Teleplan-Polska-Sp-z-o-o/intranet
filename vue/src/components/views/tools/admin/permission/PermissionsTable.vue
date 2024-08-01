@@ -13,7 +13,7 @@ import {
 } from "../../../../../interfaces/user/UserTypes";
 import { UserPermissionManager } from "../../../../../models/user/UserPermissionManager";
 import { UserEntity } from "../../../../../models/user/UserEntity";
-import { User } from "../../../../../models/user/User";
+import { SimpleUser } from "../../../../../models/user/SimpleUser";
 
 const emit = defineEmits(["table"]);
 
@@ -43,7 +43,7 @@ const searchTitle = t(`tools.common.search`);
 const reqData = ref<any>(null);
 
 const handleSaveData = (data: {
-  user: User;
+  user: SimpleUser;
   permission: TPermissionStringCode;
   confidentiality: TConfidentiality;
   groups: Partial<IPermissionGroups>;
@@ -75,7 +75,7 @@ const permission = (item: any) => {
   <crud-table
     :headers="headers"
     :sortBy="[{ key: 'username', order: 'asc' }]"
-    :searchBy="['username', 'domain']"
+    :searchBy="['username', 'domain', 'permission.confidentiality', 'permission.groups']"
     :toolbarTitle="toolbarTitle"
     :searchTitle="searchTitle"
     :manager="manager"

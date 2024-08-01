@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, ComputedRef } from "vue";
 import { useRouter } from "vue-router";
 import { UserNotification } from "../../../models/common/notification/UserNotification";
 import { ENotificationState } from "../../../interfaces/user/notification/ENotificationState";
@@ -21,7 +21,7 @@ const notificationManager = new UserNotificationManager();
 const notifications = ref<Array<UserNotification>>([]);
 
 const search = ref<string>("");
-const notificationsFiltered = computed(() => {
+const notificationsFiltered: ComputedRef<UserNotification[]> = computed<UserNotification[]>(() => {
   if (search.value) {
     return notifications.value.filter((notification: any) => {
       for (const key of ["title", "subtitle", "receivedDate"]) {
@@ -37,8 +37,8 @@ const notificationsFiltered = computed(() => {
         }
       }
       return false;
-    });
-  } else return notifications.value;
+    }) as UserNotification[];
+  } else return notifications.value as UserNotification[];
 });
 
 const getNotifications = async (menu?: { [key: string]: boolean }) => {
@@ -102,6 +102,22 @@ const handleNotificationClick = (item: any) => {
 };
 
 onMounted(() => getNotifications(menu.value));
+
+// selection and removal
+const select = ref<boolean>(false);
+const selected = ref<UserNotification[]>([]);
+watch(select, (newS) => {
+  if (!newS) selected.value = [];
+});
+const manager = new UserNotificationManager();
+const deleteSelected = async () => {
+  for (const [index, item] of selected.value.entries()) {
+    const deleted = await manager.delete(item.id, index === selected.value.length - 1);
+    notifications.value = notifications.value.filter(
+      (notification) => notification.id !== deleted.id
+    );
+  }
+};
 </script>
 
 <template>
@@ -109,6 +125,18 @@ onMounted(() => getNotifications(menu.value));
     <v-data-iterator :items="notificationsFiltered" :items-per-page="5" lines="three">
       <template v-slot:header>
         <v-toolbar>
+          <v-checkbox
+            class="px-4"
+            v-model="select"
+            :indeterminate="select === true"
+            hide-details
+          ></v-checkbox>
+          <v-btn
+            v-if="selected.length && select"
+            icon="mdi-delete"
+            variant="text"
+            @click="deleteSelected"
+          ></v-btn>
           <v-menu location="bottom" offset="10px">
             <template v-slot:activator="{ props }">
               <v-btn icon="mdi-menu" variant="text" v-bind="props"></v-btn>
@@ -146,20 +174,38 @@ onMounted(() => getNotifications(menu.value));
       </template>
 
       <template v-slot:default="{ items }">
-        <template v-for="(item, index) in items" :key="item.value">
+        <template v-for="(item, index) in items" :key="item.raw.id">
           <v-list-item
             :href="undefined"
-            @click="handleNotificationClick(item)"
             :class="index !== notificationsLength - 1 ? 'pb-2' : ''"
             :variant="item.raw.state === ENotificationState.Unread ? 'tonal' : 'text'"
           >
+            <!-- ="{ isActive }" -->
+            <!-- <template v-slot:prepend v-if="select">
+              <v-list-item-action start>
+                <v-checkbox-btn v-model="selected" :value="item.raw"></v-checkbox-btn> -->
+
+            <!-- :model-value="isActive"
+                  @input="() => handleSelect(isActive, item.raw)" -->
+            <!-- </v-list-item-action>
+            </template> -->
             <template v-slot:prepend>
-              <v-icon :icon="item.raw.action"></v-icon>
+              <v-checkbox-btn
+                v-if="select"
+                class="pr-4"
+                v-model="selected"
+                :value="item.raw"
+              ></v-checkbox-btn>
+              <v-avatar :color="item.raw.getColor()">
+                <v-icon :icon="item.raw.action" size="small"></v-icon>
+              </v-avatar>
             </template>
 
-            <v-list-item-title>{{ item.raw.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ item.raw.getTime() }}</v-list-item-subtitle>
-            <span> {{ item.raw.subtitle }}</span>
+            <div @click="handleNotificationClick(item)" class="cursor-pointer">
+              <v-list-item-title>{{ item.raw.title }}</v-list-item-title>
+              <v-list-item-subtitle>{{ item.raw.getTime() }}</v-list-item-subtitle>
+              <span> {{ item.raw.subtitle }}</span>
+            </div>
 
             <template v-slot:append class="pl-8">
               {{ item.raw.getTimeElapsed() }}

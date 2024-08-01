@@ -5,6 +5,7 @@ import { useRoute, useRouter } from "vue-router";
 import ApplicationWindow from "../components/views/settings/ApplicationWindow.vue";
 // import { IResponseStatus } from "../interfaces/common/IResponseStatus";
 import NotificationCenterWindow from "../components/views/settings/NotificationCenterWindow.vue";
+import UserDetailsWindow from "../components/views/settings/UserDetailsWindow.vue";
 
 // const responseStatus = ref<IResponseStatus | null>(null);
 // const handleResponseStatus = (status: IResponseStatus) => (responseStatus.value = status);
@@ -14,9 +15,12 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
 const route = useRoute();
 
-const currentTab = ref<number>(1);
+const currentTab = ref<number>(0);
 
 switch (route.params.tab) {
+  case "user":
+    currentTab.value = 0;
+    break;
   case "application":
     currentTab.value = 1;
     break;
@@ -30,6 +34,11 @@ switch (route.params.tab) {
 }
 
 const tabs = [
+  {
+    id: 0,
+    name: "user",
+    icon: "mdi-badge-account",
+  },
   {
     id: 1,
     name: "application",
@@ -85,6 +94,9 @@ const tabs = [
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
               <v-window v-model="currentTab" class="w-100">
+                <v-window-item :value="0">
+                  <user-details-window />
+                </v-window-item>
                 <v-window-item :value="1">
                   <application-window />
                 </v-window-item>

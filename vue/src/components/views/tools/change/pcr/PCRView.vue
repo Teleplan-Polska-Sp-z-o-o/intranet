@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { IProcessChangeRequest } from "../../../../../interfaces/change/IProcessChangeRequest";
 import { nodeConfig } from "../../../../../config/env";
-import { PDFHelper } from "../../../../../models/common/PDF/PDFHelper";
+import { PDFHelper } from "../../../../../models/common/Files/PDFHelper";
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ProcessChangeRequestManager } from "../../../../../models/change/pcr/ProcessChangeRequestManager";

@@ -1,8 +1,8 @@
 import { Request } from "express";
-import { MulterFile } from "multer";
+import { File } from "multer";
 
 interface MulterRequest extends Request {
-  files?: MulterFile[];
+  files?: File[];
 }
 
 export { MulterRequest };

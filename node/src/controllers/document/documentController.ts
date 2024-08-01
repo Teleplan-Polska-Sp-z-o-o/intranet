@@ -5,7 +5,6 @@ import { dataSource } from "../../config/orm/dataSource";
 import { Subcategory } from "../../orm/entity/document/SubcategoryEntity";
 import * as fs from "fs";
 import * as path from "path";
-import { v4 as uuidv4 } from "uuid";
 import { Language } from "../../orm/entity/document/LanguageEntity";
 import { Department } from "../../orm/entity/document/DepartmentEntity";
 import { Category } from "../../orm/entity/document/CategoryEntity";
@@ -15,7 +14,7 @@ import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { Competence } from "../../orm/entity/document/CompetenceEntity";
 import { Utils } from "../common/Utils";
 import { MulterRequest } from "../../interfaces/common/MulterRequest";
-import { UPLOADS_PATH } from "../../config/routes";
+import { DOCUMENTS_FOLDER, UPLOADS_PATH } from "../../config/routeConstants";
 
 const addDocument = async (req: MulterRequest, res: Response) => {
   try {
@@ -40,8 +39,8 @@ const addDocument = async (req: MulterRequest, res: Response) => {
         },
       });
 
-      let document = new Document(
-        uuidv4(),
+      let document = new Document().build(
+        // base.ref,
         base.type,
         base.name,
         base.description,
@@ -74,7 +73,7 @@ const addDocument = async (req: MulterRequest, res: Response) => {
         const newFileName = `${savedDocument.name}_qs_${queryString}.pdf`;
 
         // Rename and move file to destination folder
-        fs.renameSync(file.path, path.join(UPLOADS_PATH, "documents", newFileName));
+        fs.renameSync(file.path, path.join(UPLOADS_PATH, DOCUMENTS_FOLDER, newFileName));
       }
 
       // add competences
@@ -118,10 +117,18 @@ const addDocument = async (req: MulterRequest, res: Response) => {
     });
   } catch (error) {
     console.error("Error adding document: ", error);
-    return res.status(500).json({
-      message: "Failed to add document.",
-      statusMessage: HttpResponseMessage.UNKNOWN,
-    });
+    switch (error.message) {
+      case "Reference value is of invalid format.":
+        return res.status(400).json({
+          message: error.message,
+          statusMessage: HttpResponseMessage.REFERENCE_FORMAT_ERROR,
+        });
+      default:
+        return res.status(500).json({
+          message: "Failed to add document.",
+          statusMessage: HttpResponseMessage.UNKNOWN,
+        });
+    }
   }
 };
 
@@ -149,18 +156,21 @@ const editDocument = async (req: MulterRequest, res: Response) => {
       }
 
       const oldDocName = documentToUpdate.name;
-
       // documentToUpdate.name = base.name;
       // documentToUpdate.description = base.description;
       // documentToUpdate.revision = base.revision;
       // documentToUpdate.confidentiality = base.confidentiality;
 
-      documentToUpdate.editDocument(
+      const oldRef = documentToUpdate.ref;
+
+      await documentToUpdate.editDocument(
+        // base.ref,
         base.type,
         base.name,
         base.description,
         base.revision,
         base.confidentiality
+        // transactionalEntityManager
       );
 
       const documentToSave = new Utils().addRecordPutInfo<Document>(issuer, documentToUpdate);
@@ -178,12 +188,12 @@ const editDocument = async (req: MulterRequest, res: Response) => {
 
         const oldParams = {
           langs: language.name,
-          uuid: updatedDocument.ref,
+          uuid: oldRef,
         };
         const queryString = new URLSearchParams(oldParams).toString();
 
         const oldFileName = `${oldDocName}_qs_${queryString}.pdf`;
-        fs.unlinkSync(path.join(UPLOADS_PATH, "documents", oldFileName));
+        fs.unlinkSync(path.join(UPLOADS_PATH, DOCUMENTS_FOLDER, oldFileName));
       }
 
       for (const [index, file] of uploadedFiles.entries()) {
@@ -202,7 +212,7 @@ const editDocument = async (req: MulterRequest, res: Response) => {
 
         const newFileName = `${updatedDocument.name}_qs_${queryString}.pdf`;
 
-        fs.renameSync(file.path, path.join(UPLOADS_PATH, "documents", newFileName));
+        fs.renameSync(file.path, path.join(UPLOADS_PATH, DOCUMENTS_FOLDER, newFileName));
       }
       // add competences
       const competenceIds = base.competences.map((competence: any) =>
@@ -244,12 +254,57 @@ const editDocument = async (req: MulterRequest, res: Response) => {
     });
   } catch (error) {
     console.error("Error editing document: ", error);
-    return res.status(500).json({
-      message: "Failed to edit document.",
-      statusMessage: HttpResponseMessage.UNKNOWN,
-    });
+    switch (error.message) {
+      case "Some document already contains this reference.":
+        return res.status(400).json({
+          message: error.message,
+          statusMessage: HttpResponseMessage.REFERENCE_ALREADY_CONTAINS_ERROR,
+        });
+      default:
+        return res.status(500).json({
+          message: "Failed to edit document.",
+          statusMessage: HttpResponseMessage.UNKNOWN,
+        });
+    }
   }
 };
+
+// const approveDocument = async (req: Request<{ ref: string }>, res: Response) => {
+//   try {
+//     const ref = req.body.ref;
+
+//     await dataSource.transaction(async (transactionalEntityManager) => {
+//       const documentToUpdate = await transactionalEntityManager.getRepository(Document).findOne({
+//         where: {
+//           ref,
+//         },
+//       });
+
+//       if (!documentToUpdate) {
+//         return res.status(404).json({
+//           message: "Document not found.",
+//           statusMessage: HttpResponseMessage.PUT_ERROR,
+//         });
+//       }
+
+//       const updatedDocument = await transactionalEntityManager
+//         .getRepository(Document)
+//         .save(documentToUpdate);
+
+//       return res.status(200).json({
+//         edited: JSON.stringify(updatedDocument),
+//         message: "Document approved successfully",
+//         statusMessage: HttpResponseMessage.PUT_SUCCESS,
+//       });
+//     });
+//   } catch (error) {
+//     console.error("Error approving document: ", error);
+//     return res.status(500).json({
+//       message: "Failed to approve document.",
+//       statusMessage: HttpResponseMessage.UNKNOWN,
+//     });
+//   }
+// };
 
 const removeDocument = async (req: Request<{ id: number }>, res: Response) => {
   try {
@@ -268,7 +323,7 @@ const removeDocument = async (req: Request<{ id: number }>, res: Response) => {
       }
 
       const documentRef = documentToRemove.ref;
-      const directory = path.join(UPLOADS_PATH, "documents");
+      const directory = path.join(UPLOADS_PATH, DOCUMENTS_FOLDER);
       const files = fs.readdirSync(directory);
       // Filter files that contain the document's reference in their names
       const filesToDelete = files.filter((file) => file.includes(documentRef));
@@ -734,7 +789,7 @@ const getDocumentByUuidAndLangs = async (req: Request, res: Response) => {
     const docsIds: number[] = docs.map((doc) => doc.id);
     const docWithLangs: Language = await dataSource.getRepository(Language).findOne({
       where: {
-        document: In(docsIds),
+        document: { id: In(docsIds) },
         name: langs,
       },
       relations: ["document"],
@@ -754,6 +809,37 @@ const getDocumentByUuidAndLangs = async (req: Request, res: Response) => {
   }
 };
 
+const getDocumentsByNumber = async (req: Request<{ number: string }>, res: Response) => {
+  try {
+    const { number } = req.params;
+    const docOptions = {
+      where: {
+        name: number,
+      },
+    };
+
+    const documents: Array<Document> = await dataSource.getRepository(Document).find(docOptions);
+    if (!documents) {
+      return res.status(404).json({
+        message: "Documents not found",
+        statusMessage: HttpResponseMessage.GET_ERROR,
+      });
+    }
+
+    return res.status(200).json({
+      documents: documents,
+      message: "Documents retrieved successfully",
+      statusMessage: HttpResponseMessage.GET_SUCCESS,
+    });
+  } catch (error) {
+    console.error("Error retrieving documents: ", error);
+    return res.status(500).json({
+      message: "Failed to retrieve documents.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
 export {
   addDocument,
   editDocument,
@@ -763,4 +849,5 @@ export {
   getDocumentsByDepCat,
   getDocumentsByDepCatSub,
   getDocumentByUuidAndLangs,
+  getDocumentsByNumber,
 };

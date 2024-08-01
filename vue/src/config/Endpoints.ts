@@ -1,4 +1,8 @@
 enum Endpoints {
+  uploads = "/uploads",
+  documentsFolder = "/documents",
+  dcDocumentsFolder = "/dc_documents",
+
   Users = "/api/user",
   Msal = "/api/msal",
 
@@ -23,6 +27,7 @@ enum Endpoints {
   // change
   ChangeRequest = "/api/change/request",
   ChangeNotice = "/api/change/notice",
+  ChangeDocument = "/api/dc",
 
   //notification
   Notification = "/api/notification",

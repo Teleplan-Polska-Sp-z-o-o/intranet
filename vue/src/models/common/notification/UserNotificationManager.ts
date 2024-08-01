@@ -5,6 +5,8 @@ import { IUser } from "../../../interfaces/user/UserTypes";
 import { INotificationEntity } from "../../../interfaces/user/notification/INotificationEntity";
 import { UserNotification } from "./UserNotification";
 import { ENotificationState } from "../../../interfaces/user/notification/ENotificationState";
+import { useAlertStore } from "../../../stores/alertStore";
+import { ResponseStatus } from "../ResponseStatus";
 
 class UserNotificationManager {
   constructor() {}
@@ -24,7 +26,20 @@ class UserNotificationManager {
     return response.data.edited;
   };
 
-  public delete = async () => {};
+  public delete = async (id: number, status: boolean = false): Promise<UserNotification> => {
+    const response = await axios.delete(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Notification}/${id}`
+    );
+    if (status) {
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
+    }
+    return response.data.deleted;
+  };
 
   public get = async (
     user: IUser,

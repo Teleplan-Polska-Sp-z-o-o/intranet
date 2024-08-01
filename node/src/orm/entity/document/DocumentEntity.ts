@@ -6,11 +6,13 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  EntityManager,
 } from "typeorm";
 import { Competence } from "./CompetenceEntity";
 import { Subcategory } from "./SubcategoryEntity";
 import { Language } from "./LanguageEntity";
 import { TConfidentiality } from "../../../interfaces/user/UserTypes";
+import { v4 as uuidv4 } from "uuid";
 
 @Entity()
 export class Document {
@@ -35,13 +37,6 @@ export class Document {
   @ManyToOne(() => Subcategory, (subcategory) => subcategory.documents)
   subcategory: Subcategory;
 
-  // @ManyToOne(() => Competence, (competence) => competence.documents, { nullable: true })
-  // competence: Competence;
-  // @ManyToMany(() => Competence)
-  // @JoinTable({
-  //   name: "document_competence",
-  // })
-  // competences: Array<Competence>;
   @ManyToMany(() => Competence, { nullable: true })
   @JoinTable({
     name: "document_competence",
@@ -71,16 +66,28 @@ export class Document {
   @Column()
   putByDate: string | null;
 
-  constructor(
-    ref: string,
+  isUUIDv4(value: string): boolean {
+    const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const testResult = uuidv4Regex.test(value);
+    if (!testResult) {
+      throw new Error(`Reference value is of invalid format.`);
+    }
+    return testResult;
+  }
+
+  constructor() {}
+
+  build(
+    // ref: string,
     type: string,
     name: string,
     description: string,
     revision: number,
     subcategory: Subcategory,
     confidentiality: TConfidentiality = "public"
-  ) {
-    this.ref = ref;
+  ): this {
+    // this.ref = this.isUUIDv4(ref) ? ref : uuidv4();
+    this.ref = uuidv4();
     this.type = type;
     this.name = name;
     this.description = description;
@@ -93,15 +100,34 @@ export class Document {
 
     this.putBy = null;
     this.putByDate = null;
+
+    return this;
   }
 
-  public editDocument(
+  async isThereReferenceOfValue(reference: string, em: EntityManager): Promise<true> {
+    this.isUUIDv4(reference);
+
+    const document = await em.getRepository(Document).findOne({
+      where: {
+        ref: reference,
+      },
+    });
+
+    if (document) throw new Error(`Some document already contains this reference.`);
+    else return true;
+  }
+
+  async editDocument(
+    // ref: string,
     type: string,
     name: string,
     description: string,
     revision: number,
     confidentiality: TConfidentiality = "public"
-  ): Document {
+    // em: EntityManager
+  ): Promise<Document> {
+    // await this.isThereReferenceOfValue(ref, em);
+    // this.ref = ref;
     this.type = type;
     this.name = name;
     this.description = description;

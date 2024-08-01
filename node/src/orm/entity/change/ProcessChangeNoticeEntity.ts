@@ -19,7 +19,7 @@ import { saveNotification } from "../../../controllers/common/notificationContro
 import { getWebSocketConnections } from "../../../controllers/common/websocketController";
 import { ProcessChangeNoticeFields } from "../../../models/change/pcn/ProcessChangeNoticeFields";
 import { EmailHandler } from "../../../models/common/Email/EmailHandler";
-import { PCNEmailOptions } from "../../../models/common/Email/PCNEmailOptions";
+import { PCNEmailOptions } from "../../../models/common/Email/options/PCNEmailOptions";
 import { ENotificationVariant } from "../../../interfaces/user/notification/ENotificationVariant";
 
 @Entity()

@@ -98,6 +98,17 @@ const enC = {
           },
           user: {
             name: "USER",
+            "1": {
+              subheader: "Info",
+              position: "Position",
+              department: "Department",
+              decision_maker: "Decision Maker",
+            },
+            "2": {
+              subheader: "Permissions",
+              confidentiality: "Confidentiality",
+              groups: "Groups",
+            },
           },
         },
       },
@@ -129,8 +140,22 @@ const enC = {
       unauthorized: "Unauthorized access to perform this action.",
 
       auth_invalid_credentials: "Invalid username or password.",
-
       unknownMessage: "Unknown message.",
+
+      decision_maker_error:
+        "The request concerns a user who has no permission for decision making.",
+      tool_access_error: "The request concerns a user who has no access to the relevant tool.",
+      reference_format_error: "Reference value is of invalid format.",
+      reference_already_contains_error: "Some document already contains this reference.",
+    },
+    component: {
+      file_form: {
+        info_title: "Accepted Formats",
+        info_text: "Form accepts files with extensions: '{accepts}'",
+        add_file: "File",
+        document: "Document",
+        langs: "Languages",
+      },
     },
   },
 };

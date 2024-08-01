@@ -71,7 +71,7 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
       </v-tooltip>
     </template>
 
-    <v-card :loading="loading" color="primary" variant="outlined" class="bg-background rounded-xl">
+    <v-card :loading="loading" color="primary" variant="text" class="bg-background rounded-xl">
       <v-card-title :class="smallScreen ? 'px-4' : 'px-10'">
         <span class="text-h5">{{ title }}</span>
       </v-card-title>

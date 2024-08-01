@@ -192,6 +192,207 @@ const enT = {
     change: {
       name: "Change",
       tabs: {
+        dcr: {
+          name: "Document Change Request",
+          table: {
+            toolbar: "Requests",
+            header: {
+              no: "No",
+              tags: "Tags",
+              status: "Status",
+              priority: "Priority",
+              docxNumber: "Document Name",
+              docxRevision: "Document Revision",
+              originator: "Originator",
+              checker: "Checker",
+              approver: "Approver",
+              registerer: "Registerer",
+              review: "Review",
+              actions: "Actions",
+            },
+          },
+          kpi: {
+            table: {
+              header: {
+                no: "No",
+                username: "Username",
+                role: "Role",
+                since: "Action Available Date",
+                taken: "Action Taken Date",
+                elapsed: "Time Elapsed",
+              },
+              toolbar: "Reviews",
+            },
+            legend: {
+              title: "Legend: Time Elapsed Color",
+              priority: "{priority} priority:",
+              days: "days",
+            },
+            view: {
+              title: "View",
+              groupBy: "Select Group By",
+              group: {
+                no: "No",
+                username: "Username",
+                role: "Role",
+                taken: "Taken",
+                priority: "Priority",
+              },
+            },
+            filters: {
+              title: "Filters",
+              myActions: "Show only my actions",
+              departments: "Restrict to departments",
+            },
+          },
+
+          review: {
+            tooltip: "Open Review",
+            close: "Close",
+            title: "Review",
+            timeline: "Timeline",
+
+            comment: "Comment",
+            files: "Files",
+            no_files: "No files found",
+            no_affected: "No description of changes",
+            changes: "Changes",
+
+            alert: {
+              reviewControlsAppearOnComplete:
+                "Review controls will appear once the document change request is 'Complete'.",
+              reviewGranted: "Review for this document change request has been granted.",
+              reviewControlsAppearOnChecked: "Review controls will appear once checked.",
+            },
+
+            reviewControls: {
+              cancel: "Cancel",
+              confirm: "Confirm",
+              commentOptional: "Comment (optional)",
+
+              check: "Check",
+              approve: "Approve",
+              reject: "Reject",
+              register: "Register",
+              unregister: "Unregister",
+
+              variant: {
+                check: "checked",
+                approve: "approved",
+                reject: "rejected",
+                register: "registered",
+                unregister: "unregistered",
+
+                question: "Are you sure you want to mark this document change as '{variant}'?",
+              },
+            },
+          },
+
+          stepper: {
+            actions: {
+              prev: "Previous",
+              next: "Next",
+              submit: "Review your details before submitting.",
+            },
+            info: {
+              reviewers_title: "Reviewers",
+              reviewers_text:
+                "To be selectable, the Checker and Registerer must have permission to access the document change request. The Approver must also have decision maker status.",
+              check_and_approve_title: "Notifications",
+              check_and_approve_text:
+                "Upon completion or update of a document change request, a notification is issued to the Checker. After the request is reviewed, the Approver is notified. Once approval is granted, the Registerer receives a notification. In the event of a review failure, the Originator is informed. Notifications are delivered via the intranet and email, with copies (cc) also sent to other departmental decision makers who have access to the document change request.",
+            },
+            error: {
+              revisionToLow:
+                "Found an uploaded document of such number having revision {revision}. Please enter a higher revision.",
+            },
+            message: {
+              revisionGreaterThanExpected:
+                "You have entered a revision number which is greater than the next expected revision.",
+            },
+            vStepperItem: {
+              "1": "Info",
+              "2": "Changes",
+              "3": "Files",
+              "4": "Reviewers",
+              "5": "Training",
+              "6": "Verify",
+            },
+            vStepperWindowItem: {
+              "1": {
+                tags: {
+                  name: "Tags",
+                  hint: "Enter characteristic keywords that describe the changes in the document",
+                },
+                source: {
+                  name: "Document Source",
+                  hint: "",
+                  previously_uploaded: "Previously uploaded",
+                  not_previously_uploaded_new: "Not previously uploaded, new document",
+                  not_previously_uploaded_existing: "Not previously uploaded, existing document",
+                },
+                docxNumber: {
+                  name: "Document Name",
+                  hint: "e.g., BYD-QA-SPE-MOD-0005",
+                },
+                docxRevision: "Document Revision",
+                docxReference: {
+                  name: "Document Reference",
+                  hint: "",
+                },
+                priority: {
+                  name: "Priority",
+                  hint: "Determines the position of the request in the table. Low is placed last.",
+                  low: "Low",
+                  medium: "Medium",
+                  high: "High",
+                },
+              },
+              "2": {
+                changes: "Changes",
+              },
+              "3": {
+                files: "Files",
+              },
+              "4": {
+                checker: {
+                  name: "Checker",
+                  hint: "Type to search.",
+                },
+                approver: {
+                  name: "Approver",
+                  hint: "Type to search.",
+                },
+                registerer: "Registerer",
+              },
+              "5": {
+                affectedCompetences: "Affected Competences",
+                requireAcknowledgmentOrTraining: {
+                  name: "Require Acknowledgment or Training",
+                  acknowledgment: "Acknowledgment",
+                  training: "Training",
+                },
+                trainingDetails: "Training Details",
+              },
+            },
+          },
+        },
+        dcn: {
+          name: "Document Change Notice",
+          table: {
+            toolbar: "Notices",
+            header: {
+              no: "No",
+              tags: "Tags",
+              status: "Status",
+              docxNumber: "Document Name",
+              docxRevision: "Document Revision",
+              docxReference: "Document Reference",
+              registerer: "Registerer",
+              info: "Info",
+            },
+          },
+        },
         pcr: {
           name: "Process Change Request",
           table: {
@@ -360,9 +561,6 @@ const enT = {
               },
             },
           },
-        },
-        dcn: {
-          name: "Document Change Notice",
         },
       },
     },

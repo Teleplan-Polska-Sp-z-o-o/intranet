@@ -10,6 +10,10 @@ enum HttpResponseMessage {
   UNKNOWN = "unknown",
 
   AUTH_INVALID_CREDENTIALS = "auth_invalid_credentials",
+  DECISION_MAKER_ERROR = "decision_maker_error",
+  TOOL_ACCESS_ERROR = "tool_access_error",
+  REFERENCE_FORMAT_ERROR = "reference_format_error",
+  REFERENCE_ALREADY_CONTAINS_ERROR = "reference_already_contains_error",
 }
 
 // enum HttpUserResponseMessage {}

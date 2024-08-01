@@ -9,7 +9,7 @@ import { UserInput } from "../../../../../models/admin/users/UserInput";
 import UsersForm from "./UsersForm.vue";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
 import { IUserInfo } from "../../../../../interfaces/admin/users/IUserInfo";
-import { User } from "../../../../../models/user/User";
+import { SimpleUser } from "../../../../../models/user/SimpleUser";
 
 const emit = defineEmits(["table"]);
 
@@ -69,7 +69,7 @@ const componentProps = async (): Promise<Array<UserInput>> => {
   return array;
 };
 
-const handleSaveData = (data: { user: User; item: any; inputs: Array<UserInput> }) => {
+const handleSaveData = (data: { user: SimpleUser; item: any; inputs: Array<UserInput> }) => {
   if (!data) return;
   const position = data.inputs.at(0)?.val || null;
   const department = data.inputs.at(1)?.val || null;

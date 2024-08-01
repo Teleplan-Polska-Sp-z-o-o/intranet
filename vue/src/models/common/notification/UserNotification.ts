@@ -6,6 +6,7 @@ import { INotificationEntity } from "../../../interfaces/user/notification/INoti
 import moment from "moment";
 
 class UserNotification implements INotification {
+  [key: string]: any;
   id: number;
   state: ENotificationState;
   source: ENotificationSource;
@@ -32,6 +33,10 @@ class UserNotification implements INotification {
 
   private mapSource(sourceString: string): ENotificationSource {
     switch (sourceString) {
+      case "DCR":
+        return ENotificationSource.DCR;
+      case "DCN":
+        return ENotificationSource.DCN;
       case "PCR":
         return ENotificationSource.PCR;
       case "PCN":
@@ -101,6 +106,20 @@ class UserNotification implements INotification {
     const formattedDate: string = date.format("MM/DD/YYYY");
 
     return formattedDate;
+  }
+
+  public getColor(): string {
+    switch (this.action) {
+      case ENotificationAction.ViewDetails:
+        return "#4285F4";
+      case ENotificationAction.AcceptOrReject:
+        return "#34A853";
+      case ENotificationAction.ReplyOrRespond:
+        return "#FBBC05";
+
+      default:
+        return "#9E9E9E";
+    }
   }
 }
 

@@ -19,13 +19,13 @@ class MSDManager extends DocumentManager {
     let params: string = `/MSD/true/${confidentiality}`;
     switch (lvl) {
       case 1:
-        params = `/${reqData.departmentName}/MSD/true/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/MSD/true/${confidentiality}`;
         break;
       case 2:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/MSD/true/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/${reqData.categoryName}/MSD/true/${confidentiality}`;
         break;
       case 3:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/MSD/true/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/MSD/true/${confidentiality}`;
         break;
 
       default:

@@ -33,7 +33,7 @@ const menuItems = [
   },
   {
     id: 3,
-    link: "/pages/settings/application",
+    link: "/pages/settings/user",
     content: "settings",
     icon: "cogs",
     onClick: "",
@@ -75,9 +75,9 @@ const hello = computed(() => t("common.default_layout.drawer.hello"));
         :key="item.id"
         :link="item.link ? true : undefined"
         :to="item.link"
-        @click="item.onClick"
         :class="item.content === 'logout' ? 'mt-12' : ''"
       >
+        <!-- @click="item.onClick" -->
         <v-list-item-icon>
           <v-icon :icon="`mdi-${item.icon}`"></v-icon>
         </v-list-item-icon>

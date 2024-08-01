@@ -49,13 +49,13 @@ class InstructionManager {
     let params: string = `/Instruction/true/${confidentiality}`;
     switch (lvl) {
       case 1:
-        params = `/${reqData.departmentName}/Instruction/true/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/Instruction/true/${confidentiality}`;
         break;
       case 2:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/Instruction/true/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/${reqData.categoryName}/Instruction/true/${confidentiality}`;
         break;
       case 3:
-        params = `/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/Instruction/true/${confidentiality}`;
+        params = `/by/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/Instruction/true/${confidentiality}`;
         break;
 
       default:
