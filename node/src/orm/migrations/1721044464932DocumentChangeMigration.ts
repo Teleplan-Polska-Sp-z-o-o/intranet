@@ -156,6 +156,16 @@ export class DocumentChange1721044464932 implements MigrationInterface {
             type: "jsonb",
             isNullable: false,
           },
+          {
+            name: "docxSource",
+            type: "varchar",
+            isNullable: false,
+          },
+          {
+            name: "tags",
+            type: "varchar",
+            isNullable: true,
+          },
         ],
       })
     );

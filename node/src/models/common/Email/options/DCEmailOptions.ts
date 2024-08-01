@@ -28,10 +28,16 @@ class DCREmailOptions implements IEmailOptions {
         return `DCR Checked`;
       case EDCNotificationVariant.Approved:
         return `DCR Approved`;
+      case EDCNotificationVariant.Registered:
+        return `DCR Registered`;
+      case EDCNotificationVariant.Unregistered:
+        return `DCR Unregistered`;
       case EDCNotificationVariant.CheckFailed:
         return `DCR Check Failed`;
       case EDCNotificationVariant.ApprovalFailed:
         return `DCR Approval Failed`;
+      case EDCNotificationVariant.RegisterFailed:
+        return `DCR Register Failed`;
       default:
         return `Notification`;
     }
@@ -52,10 +58,32 @@ class DCREmailOptions implements IEmailOptions {
         return `DCR ${request.no} has been checked. ${formalName}, it is now awaiting your approval.`;
       case EDCNotificationVariant.Approved:
         return `DCR ${request.no} has been approved. ${formalName}, it is now awaiting registration.`;
+      case EDCNotificationVariant.Registered:
+        return `DCR ${request.no} has been registered. Comment: ${
+          request.registererComment || `N/A`
+        }`;
+      case EDCNotificationVariant.Unregistered:
+        return `DCR ${request.no} has been unregistered. Comment: ${
+          request.registererComment || `N/A`
+        }`;
       case EDCNotificationVariant.CheckFailed:
-        return `DCR ${request.no} check has failed. ${formalName}, please review the issues. Comment: ${request.checkerComment}`;
+        return `DCR ${
+          request.no
+        } check has failed. ${formalName}, please review the issues. Comment: ${
+          request.checkerComment || `N/A`
+        }`;
       case EDCNotificationVariant.ApprovalFailed:
-        return `DCR ${request.no} approval has failed. ${formalName}, please review the issues. Comment: ${request.approverComment}`;
+        return `DCR ${
+          request.no
+        } approval has failed. ${formalName}, please review the issues. Comment: ${
+          request.approverComment || `N/A`
+        }`;
+      case EDCNotificationVariant.RegisterFailed:
+        return `DCR ${
+          request.no
+        } register has failed. ${formalName}, please review the issues. Comment: ${
+          request.approverComment || `N/A`
+        }`;
     }
   }
 

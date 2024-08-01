@@ -8,9 +8,11 @@ import { User } from "../../../orm/entity/user/UserEntity";
 import { EDCNotificationVariant } from "../../../interfaces/user/notification/ENotificationVariant";
 import {
   TDocumentChange,
-  IAssessment,
+  IReview,
 } from "../../../interfaces/change/document/request/DocumentChangeTypes";
 import { Not } from "typeorm";
+
+const enableMailAndNotification = true;
 
 const addDCR = async (req: MulterRequest, res: Response) => {
   try {
@@ -23,7 +25,7 @@ const addDCR = async (req: MulterRequest, res: Response) => {
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       const dcrRepository = transactionalEntityManager.getRepository(DocumentChange);
-      let dcr = new DocumentChange().build(obj, issuer).setStatus(issuer);
+      let dcr = new DocumentChange().build(obj, issuer);
       dcr = await dcrRepository.save(dcr);
 
       if (req.files) {
@@ -34,17 +36,19 @@ const addDCR = async (req: MulterRequest, res: Response) => {
       }
 
       const count = await dcrRepository.count({ where: { year: dcr.year } });
-      await dcrRepository.save(dcr.setNo(count));
+      await dcrRepository.save(dcr.setNo(count).setStatus(issuer));
 
-      const recipients: {
-        to: User;
-        cc: Array<User>;
-      } = await dcr.notification(
-        transactionalEntityManager,
-        "checker",
-        EDCNotificationVariant.Completed
-      );
-      if (recipients) dcr.sendEmails(recipients, EDCNotificationVariant.Completed);
+      if (dcr.status === "Complete" && enableMailAndNotification) {
+        const recipients: {
+          to: User;
+          cc: Array<User>;
+        } = await dcr.notification(
+          transactionalEntityManager,
+          "checker",
+          EDCNotificationVariant.Completed
+        );
+        if (recipients) dcr.sendEmails(recipients, EDCNotificationVariant.Completed);
+      }
 
       return res.status(201).json({
         added: dcr,
@@ -106,9 +110,10 @@ const editDCR = async (req: MulterRequest, res: Response) => {
         });
       }
 
+      const preEditStatus = dcr.status;
       const isTheSame = dcr.compareWithFields(fields);
       if (!isTheSame) {
-        dcr.editEntity(obj).unassess().setStatus(issuer);
+        dcr.editEntity(obj).unassess();
       }
 
       if (req.files) {
@@ -119,17 +124,19 @@ const editDCR = async (req: MulterRequest, res: Response) => {
         }
       }
 
-      await dcrRepository.save(dcr);
+      await dcrRepository.save(dcr.setStatus(issuer));
 
-      const recipients: {
-        to: User;
-        cc: Array<User>;
-      } = await dcr.notification(
-        transactionalEntityManager,
-        "checker",
-        EDCNotificationVariant.Updated
-      );
-      if (recipients) dcr.sendEmails(recipients, EDCNotificationVariant.Updated);
+      if (dcr.status !== "Draft" && enableMailAndNotification) {
+        let notificationVariant = EDCNotificationVariant.Updated;
+        if (dcr.status === "Complete" && preEditStatus !== "Complete")
+          notificationVariant = EDCNotificationVariant.Completed;
+
+        const recipients: {
+          to: User;
+          cc: Array<User>;
+        } = await dcr.notification(transactionalEntityManager, "checker", notificationVariant);
+        if (recipients) dcr.sendEmails(recipients, notificationVariant);
+      }
 
       return res.status(200).json({
         edited: dcr,
@@ -167,7 +174,7 @@ const editDCR = async (req: MulterRequest, res: Response) => {
 const assessDCR = async (req: Request<{ id: number }>, res: Response) => {
   try {
     const body = req.body;
-    const assessment: IAssessment = JSON.parse(body.assessment);
+    const assessment: IReview = JSON.parse(body.assessment);
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       const dcrRepository = transactionalEntityManager.getRepository(DocumentChange);
@@ -175,15 +182,17 @@ const assessDCR = async (req: Request<{ id: number }>, res: Response) => {
 
       const assessResult = dcr.assess(assessment.issuer, assessment.decision, assessment.comment);
 
-      const recipients: {
-        to: User;
-        cc: Array<User>;
-      } = await dcr.notification(
-        transactionalEntityManager,
-        assessResult.usernameVariant,
-        assessResult.notificationVariant
-      );
-      if (recipients) dcr.sendEmails(recipients, assessResult.notificationVariant);
+      if (enableMailAndNotification) {
+        const recipients: {
+          to: User;
+          cc: Array<User>;
+        } = await dcr.notification(
+          transactionalEntityManager,
+          assessResult.usernameVariant,
+          assessResult.notificationVariant
+        );
+        if (recipients) dcr.sendEmails(recipients, assessResult.notificationVariant);
+      }
 
       await dcrRepository.save(dcr.setStatus(assessment.issuer));
 
@@ -215,13 +224,15 @@ const assessDCR = async (req: Request<{ id: number }>, res: Response) => {
   }
 };
 
-const registration = async (req: Request<{ id: number; registered: string }>, res: Response) => {
+const registration = async (req: Request<{ id: number }>, res: Response) => {
   try {
-    const { id, registered } = req.params;
+    console.log("registration");
+    const body = req.body;
+    const registration: IReview = JSON.parse(body.registration);
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       const dcrRepository = transactionalEntityManager.getRepository(DocumentChange);
-      const dcr = await dcrRepository.findOne({ where: { id } });
+      const dcr = await dcrRepository.findOne({ where: { id: registration.id } });
 
       if (!dcr) {
         return res.status(404).json({
@@ -230,10 +241,32 @@ const registration = async (req: Request<{ id: number; registered: string }>, re
         });
       }
 
-      if (registered === "true") dcr.register();
+      let registrationResult = {
+        usernameVariant: "originator" as "originator",
+        notificationVariant: EDCNotificationVariant.Unregistered,
+        this: dcr,
+      };
+
+      if (registration.decision)
+        registrationResult = dcr.register(
+          registration.issuer,
+          registration.decision,
+          registration.comment
+        );
       else dcr.unregister();
 
-      await dcrRepository.save(dcr);
+      if (enableMailAndNotification) {
+        const recipients: {
+          to: User;
+          cc: Array<User>;
+        } = await dcr.notification(
+          transactionalEntityManager,
+          registrationResult.usernameVariant,
+          registrationResult.notificationVariant
+        );
+        if (recipients) dcr.sendEmails(recipients, registrationResult.notificationVariant);
+      }
+      await dcrRepository.save(dcr.setStatus(registration.issuer).changeNo());
 
       return res.status(200).json({
         registered: dcr,

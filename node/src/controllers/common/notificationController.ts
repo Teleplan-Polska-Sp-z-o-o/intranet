@@ -120,4 +120,45 @@ const getNotifications = async (
   }
 };
 
-export { saveNotification, editNotification, getNotifications };
+const deleteNotification = async (req: Request<{ id: number }>, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const deleteNotificationOptions = {
+        where: {
+          id,
+        },
+      };
+
+      const notification = await transactionalEntityManager
+        .getRepository(UserNotification)
+        .findOne(deleteNotificationOptions);
+
+      if (!notification) {
+        return res.status(404).json({
+          message: "Notification not found",
+          statusMessage: HttpResponseMessage.DELETE_ERROR,
+        });
+      }
+
+      const deleted = await transactionalEntityManager
+        .getRepository(UserNotification)
+        .remove(notification);
+
+      return res.status(200).json({
+        deleted,
+        message: "Notification deleted successfully",
+        statusMessage: HttpResponseMessage.DELETE_SUCCESS,
+      });
+    });
+  } catch (error) {
+    console.error("Error deleting notification: ", error);
+    return res.status(500).json({
+      message: "Unknown error occurred. Failed to delete notification.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
+export { saveNotification, editNotification, getNotifications, deleteNotification };

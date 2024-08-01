@@ -7,6 +7,11 @@ import { User } from "../../../../orm/entity/user/UserEntity";
 
 type TStatus = "Draft" | "Complete" | "Checked" | "Approved" | "Rejected" | "Registered";
 
+type TSourceTitle =
+  | "previously_uploaded"
+  | "not_previously_uploaded_new"
+  | "not_previously_uploaded_existing";
+
 interface IDocumentChangeSelfProcessing {
   id: number;
   no: string | null;
@@ -24,6 +29,7 @@ interface IDocumentChangeSelfProcessing {
 }
 
 interface IDocumentChangeFields {
+  tags: string | null;
   priority: "low" | "medium" | "high";
   affected: string;
   docxNumber: string | null;
@@ -42,16 +48,18 @@ interface IDocumentChangeFields {
    * JSON Array of request file names
    */
   fileNames: string;
+  docxSource: TSourceTitle;
 }
 
-interface IDocumentChangeAssessment {
+interface IDocumentChangeReview {
   checkerComment: string | null;
   checked: boolean | null;
   checkedDate: Date | null;
   approverComment: string | null;
   approved: boolean | null;
   approvedDate: Date | null;
-  registered: boolean;
+  registererComment: string | null;
+  registered: boolean | null;
   registeredDate: Date | null;
 }
 
@@ -64,6 +72,7 @@ interface IDocumentChangeTimeline {
 
 interface IDocumentChangeFunctions {
   setNo(countOfRequestsInYear: number): this;
+  changeNo(): this;
   saveFiles(
     langs: Array<{
       langs: Array<string>;
@@ -81,7 +90,15 @@ interface IDocumentChangeFunctions {
     this: DocumentChange;
   };
   unassess(): this;
-  register(): this;
+  register(
+    by: string,
+    decision: boolean,
+    comment: string | null
+  ): {
+    usernameVariant: "originator";
+    notificationVariant: EDCNotificationVariant;
+    this: DocumentChange;
+  };
   unregister(): this;
   compareWithFields(fields: DocumentChangeFields): boolean;
   editEntity(from: TDocumentChange): this;
@@ -98,10 +115,10 @@ interface IDocumentChangeFunctions {
 
 type TDocumentChange = IDocumentChangeSelfProcessing &
   IDocumentChangeFields &
-  IDocumentChangeAssessment &
+  IDocumentChangeReview &
   IDocumentChangeTimeline;
 
-interface IAssessment {
+interface IReview {
   id: number;
   issuer: string;
   decision: boolean;
@@ -121,8 +138,9 @@ export {
   TDocumentChange,
   IDocumentChangeFields,
   IDocumentChangeFunctions,
-  IAssessment,
+  IReview,
   TStatus,
   ITimelineElement,
   TTimeline,
+  TSourceTitle,
 };

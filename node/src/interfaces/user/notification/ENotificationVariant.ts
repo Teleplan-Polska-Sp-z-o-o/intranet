@@ -23,8 +23,11 @@ enum EDCNotificationVariant {
   Updated = "updated",
   Checked = "checked",
   Approved = "approved",
+  Registered = "registered",
+  Unregistered = "unregistered",
   CheckFailed = "check failed",
   ApprovalFailed = "approval failed",
+  RegisterFailed = "register failed",
 }
 
 export { ENotificationVariant, EDCNotificationVariant };

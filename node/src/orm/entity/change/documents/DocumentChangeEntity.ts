@@ -2,7 +2,7 @@ import { Entity, Column, EntityManager, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { File } from "multer";
 import { AbstractBaseOrmEntity } from "../../../../interfaces/common/AbstractBaseOrmEntity";
-import { DOCX_DOCUMENTS_FOLDER, UPLOADS_PATH } from "../../../../config/routeConstants";
+import { DC_DOCUMENTS_FOLDER, UPLOADS_PATH } from "../../../../config/routeConstants";
 import * as fs from "fs";
 import path from "path";
 import { DocumentChangeFields } from "../../../../models/change/dc/DocumentChangeFields";
@@ -20,8 +20,10 @@ import {
   IDocumentChangeFunctions,
   TTimeline,
   TStatus,
+  TSourceTitle,
 } from "../../../../interfaces/change/document/request/DocumentChangeTypes";
 import { TimelineElement } from "../../../../models/change/dc/TimelineElement";
+import { TimeHelper } from "../../../../models/common/TimeHelper";
 
 @Entity()
 class DocumentChange
@@ -86,8 +88,11 @@ class DocumentChange
   @Column({ type: "varchar", nullable: false })
   registerer: string; //
 
+  @Column({ type: "varchar", nullable: true })
+  registererComment: string | null; //
+
   @Column({ type: "boolean", nullable: false })
-  registered: boolean; ///
+  registered: boolean | null; ///
 
   @Column({ type: "timestamp", nullable: true })
   registeredDate: Date | null; ///
@@ -105,10 +110,16 @@ class DocumentChange
   trainingDetails: string | null; //
 
   @Column({ type: "varchar", nullable: false })
-  status: "Draft" | "Complete" | "Checked" | "Approved" | "Rejected" | "Registered"; ///
+  status: TStatus; ///
 
   @Column({ type: "jsonb", nullable: false })
   fileNames: string;
+
+  @Column({ type: "varchar", nullable: false })
+  docxSource: TSourceTitle;
+
+  @Column({ type: "varchar", nullable: true })
+  tags: string | null;
 
   isUUIDv4(value: string): boolean {
     const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -132,7 +143,7 @@ class DocumentChange
     this.docxNumber = from.docxNumber;
     this.docxRevision = from.docxRevision;
     this.docxReference = this.isUUIDv4(from.docxReference) ? from.docxReference : uuidv4();
-    // this.docxReference = uuidv4();
+    this.status = from.status;
     this.checker = from.checker;
     this.approver = from.approver;
     this.registerer = from.registerer;
@@ -142,6 +153,8 @@ class DocumentChange
     this.requireAcknowledgmentOrTraining = from.requireAcknowledgmentOrTraining;
     this.trainingDetails = from.trainingDetails;
     this.fileNames = from.fileNames;
+    this.docxSource = from.docxSource;
+    this.tags = from.tags;
 
     return this;
   }
@@ -158,6 +171,12 @@ class DocumentChange
     } catch (error) {
       console.log(error);
     }
+  }
+
+  changeNo(): this {
+    if (this.registered === true) this.no.replace("DCR", "DCN");
+    if (this.registered === false) this.no.replace("DCN", "DCR");
+    return this;
   }
 
   saveFiles(
@@ -184,8 +203,9 @@ class DocumentChange
         const languages = langs[index].langs.join("_");
         const params = { langs: languages, uuid: this.docxReference };
         const queryString = new URLSearchParams(params).toString();
-        const saveAs = `${name}_qs_${queryString}.docx`;
-        fs.renameSync(file.path, path.join(UPLOADS_PATH, DOCX_DOCUMENTS_FOLDER, saveAs));
+        const extension = path.extname(file.originalname);
+        const saveAs = `${name}_qs_${queryString}${extension}`;
+        fs.renameSync(file.path, path.join(UPLOADS_PATH, DC_DOCUMENTS_FOLDER, saveAs));
         fileNames.push(saveAs);
       }
       this.fileNames = JSON.stringify(fileNames);
@@ -198,7 +218,7 @@ class DocumentChange
 
   deleteFiles(ref: string): boolean {
     try {
-      const directory = path.join(UPLOADS_PATH, DOCX_DOCUMENTS_FOLDER);
+      const directory = path.join(UPLOADS_PATH, DC_DOCUMENTS_FOLDER);
       const files = fs.readdirSync(directory);
       const filesToDelete = files.filter((file) => file.includes(ref));
       for (const file of filesToDelete) {
@@ -262,22 +282,37 @@ class DocumentChange
     return this;
   }
 
-  register(): this {
+  register(
+    by: string,
+    decision: boolean,
+    comment: string | null
+  ): {
+    usernameVariant: "originator";
+    notificationVariant: EDCNotificationVariant;
+    this: DocumentChange;
+  } {
     const checked = this.checked === true;
     const approved = this.approved === true;
-    if (checked && approved) {
-      this.registered = true;
+
+    let notificationVariant:
+      | EDCNotificationVariant.Registered
+      | EDCNotificationVariant.RegisterFailed;
+    if (by === this.registerer && checked && approved) {
+      this.registered = decision;
+      this.registererComment = comment;
       this.registeredDate = new Date();
-      this.status = "Registered";
+
+      notificationVariant = decision
+        ? EDCNotificationVariant.Registered
+        : EDCNotificationVariant.RegisterFailed;
     } else throw new Error("In order to register, dcr has to be checked and approved.");
 
-    return this;
+    return { usernameVariant: "originator", notificationVariant, this: this };
   }
 
   unregister(): this {
-    this.registered = false;
+    this.registered = null;
     this.registeredDate = null;
-    this.status = "Approved";
     return this;
   }
 
@@ -321,6 +356,9 @@ class DocumentChange
           comment = this.approverComment;
         }
         break;
+      case "Registered":
+        comment = this.registererComment;
+        break;
 
       default:
         comment = undefined;
@@ -342,8 +380,9 @@ class DocumentChange
     const fieldsFilled = fields.areFieldsFilled();
     const checked = this.checked === true;
     const approved = this.approved === true;
-    const isRejected = this.checked === false || this.approved === false;
-    const isRegistered = this.registered;
+    const isRejected =
+      this.checked === false || this.approved === false || this.registered === false;
+    const isRegistered = this.registered === true;
 
     if (!fieldsFilled) {
       this.status = "Draft";
@@ -378,10 +417,62 @@ class DocumentChange
     this.affectedCompetences = from.affectedCompetences;
     this.requireAcknowledgmentOrTraining = from.requireAcknowledgmentOrTraining;
     this.trainingDetails = from.trainingDetails;
+    this.docxSource = from.docxSource;
+    this.tags = from.tags;
 
     return this;
   }
   // add info above dcr about mailing requirements
+
+  remindReview(minHoursPassed: number = 24): {
+    usernameVariant: "originator" | "checker" | "approver" | "registerer";
+    notificationVariant: EDCNotificationVariant;
+  } | null {
+    const request: DocumentChange = this;
+    const date = request.ormUpdateDate;
+    const isoLocalTime = TimeHelper.convertToLocalTime(date);
+    const hoursPassed = TimeHelper.timePassedSince(isoLocalTime, "hours");
+
+    if (hoursPassed <= minHoursPassed) return null;
+
+    switch (request.status) {
+      case "Complete":
+        return {
+          usernameVariant: "checker",
+          notificationVariant: EDCNotificationVariant.Completed,
+        };
+
+      case "Checked":
+        return {
+          usernameVariant: "approver",
+          notificationVariant: EDCNotificationVariant.Checked,
+        };
+      case "Approved":
+        return {
+          usernameVariant: "registerer",
+          notificationVariant: EDCNotificationVariant.Approved,
+        };
+      case "Rejected":
+        if (request.checked === false) {
+          return {
+            usernameVariant: "originator",
+            notificationVariant: EDCNotificationVariant.CheckFailed,
+          };
+        } else if (request.approved === false) {
+          return {
+            usernameVariant: "originator",
+            notificationVariant: EDCNotificationVariant.ApprovalFailed,
+          };
+        } else if (request.registered === false) {
+          return {
+            usernameVariant: "originator",
+            notificationVariant: EDCNotificationVariant.RegisterFailed,
+          };
+        }
+      default:
+        break;
+    }
+  }
 
   /**
    * Sends a notification to the primary recipient and CCs based on the given variant.
@@ -418,10 +509,7 @@ class DocumentChange
 
     if (to.length === 0) throw new Error("Primary recipient not found.");
 
-    if (
-      (dbUsername === this.checker || dbUsername === this.approver) &&
-      !to.at(0).info.decisionMaker
-    )
+    if (dbUsername === this.approver && !to.at(0).info.decisionMaker)
       throw new Error("Primary recipient is not a decision maker.");
 
     if (
@@ -444,16 +532,18 @@ class DocumentChange
       relations: toOptions.relations,
     };
 
-    const cc: User[] = (await entityManager.getRepository(User).find(ccOptions)).filter((user) => {
-      return user.permission.groups.some((group) => {
-        return (
-          group.name === "change" &&
-          group.subgroups.some((subgroup) => {
-            return subgroup.name === "dcr";
-          })
-        );
-      });
-    });
+    const cc: User[] = (await entityManager.getRepository(User).find(ccOptions))
+      .filter((user) => {
+        return user.permission.groups.some((group) => {
+          return (
+            group.name === "change" &&
+            group.subgroups.some((subgroup) => {
+              return subgroup.name === "dcr";
+            })
+          );
+        });
+      })
+      .filter((user) => user.username !== to.at(0).username);
 
     const recipients = to.concat(cc);
 
@@ -489,6 +579,26 @@ class DocumentChange
           link: `/tool/change/browse/dcr/${this.id}`,
         };
         break;
+      case EDCNotificationVariant.Registered:
+        notificationAction = ENotificationAction.ViewDetails;
+        body = {
+          title: `DCR Registered`,
+          subtitle: `DCR ${this.no} has been registered. Comment: ${
+            this.registererComment || "N/A"
+          }`,
+          link: `/tool/change/browse/dcr/${this.id}`,
+        };
+        break;
+      case EDCNotificationVariant.Unregistered:
+        notificationAction = ENotificationAction.ViewDetails;
+        body = {
+          title: `DCR Unregistered`,
+          subtitle: `DCR ${this.no} has been unregistered. Comment: ${
+            this.registererComment || "N/A"
+          }`,
+          link: `/tool/change/browse/dcr/${this.id}`,
+        };
+        break;
       case EDCNotificationVariant.CheckFailed:
         notificationAction = ENotificationAction.ViewDetails;
         body = {
@@ -502,6 +612,18 @@ class DocumentChange
         body = {
           title: `DCR Approval Failed`,
           subtitle: `DCR ${this.no} approval has failed. ${username}, please review the issues. Comment: ${this.approverComment}`,
+          link: `/tool/change/browse/dcr/${this.id}`,
+        };
+        break;
+      case EDCNotificationVariant.RegisterFailed:
+        notificationAction = ENotificationAction.ViewDetails;
+        body = {
+          title: `DCR Register Failed`,
+          subtitle: `DCR ${
+            this.no
+          } register has failed. ${username}, please review the issues. Comment: ${
+            this.approverComment || "N/A"
+          }`,
           link: `/tool/change/browse/dcr/${this.id}`,
         };
         break;
