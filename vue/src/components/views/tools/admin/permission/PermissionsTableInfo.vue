@@ -10,11 +10,6 @@ const list = [
   },
   {
     id: 1,
-    title: "Permission",
-    text: "Defines the user's roles such as User, Moderator, and Admin. These permissions ensure a diverse range of control over write, read, and administrative capabilities.",
-  },
-  {
-    id: 2,
     title: "Groups",
     text: "Groups determine which tools are visible and accessible to the user. Subgroups within each group represent the specific tabs within a tool that the user can view and interact with.",
   },

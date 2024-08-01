@@ -2,14 +2,9 @@ import { UserEntity } from "../../models/user/UserEntity";
 
 interface IPermission {
   id: number;
-  read: boolean;
-  write: boolean;
-  control: boolean;
   confidentiality: TConfidentiality;
   groups: Array<UserGroup>;
 }
-
-type TPermissionStringCode = "user" | "moderator" | "admin";
 
 interface ISettings {
   id: number | null;
@@ -98,7 +93,6 @@ export { type IUserLoginDetails };
 
 export {
   type IPermission,
-  type TPermissionStringCode,
   type ISettings,
   type IUser,
   type UserSubgroup,

@@ -2,7 +2,7 @@ import { Not } from "typeorm";
 import { Scheduler } from "../models/common/Scheduler";
 import { UserHeartbeat } from "../models/websocket/UserHeartbeat";
 import { DocumentChange } from "../orm/entity/change/documents/DocumentChangeEntity";
-import { dataSource } from "./orm/dataSource";
+import { dataSource } from "./dataSource";
 import { User } from "../orm/entity/user/UserEntity";
 import { EDCNotificationVariant } from "../interfaces/user/notification/ENotificationVariant";
 

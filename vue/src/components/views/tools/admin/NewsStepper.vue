@@ -35,18 +35,6 @@ const nextable = computed(() => activeStep.value < 4);
 const bgImage = ref<Array<File>>([]);
 const news = ref<INewsEntity>(props.componentProps.editedItem);
 
-// const setPermission = (val: string | null) => {
-//   if (val) news.value.permission = new Permission(val as TPermissionStringCode);
-// };
-
-// const getPermission = (per: IPermission) => {
-//   const permissionStore = usePermissionStore();
-//   const code = permissionStore.translatePermissionToStringCode(per) as TPermissionStringCode;
-//   return code;
-// };
-
-// const newsPermissionSelect = ref<string>("user");
-
 watchEffect(() => {
   news.value = props.componentProps.editedItem;
 });
@@ -55,7 +43,6 @@ const editorStore = useEditorStore();
 
 (async () => {
   const newsRef = news.value.ref;
-  // newsPermissionSelect.value = getPermission(news.value.permission);
   const newsConfidentiality: TConfidentiality = news.value.confidentiality;
   const newsTitle = news.value.title;
   const newsSubtitle = news.value.subtitle;

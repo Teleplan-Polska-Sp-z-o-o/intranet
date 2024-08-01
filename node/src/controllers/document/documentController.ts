@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Document } from "../../orm/entity/document/DocumentEntity";
 import { HttpResponseMessage } from "../../enums/response";
-import { dataSource } from "../../config/orm/dataSource";
+import { dataSource } from "../../config/dataSource";
 import { Subcategory } from "../../orm/entity/document/SubcategoryEntity";
 import * as fs from "fs";
 import * as path from "path";

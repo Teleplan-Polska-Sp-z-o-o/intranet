@@ -1,11 +1,5 @@
 import { User } from "../../orm/entity/user/UserEntity";
 
-interface IPermission {
-  read: boolean;
-  write: boolean;
-  control: boolean;
-}
-
 interface ISettings {
   id: number | null;
   theme: string;
@@ -29,8 +23,6 @@ interface IUserInfo {
   department: string | null;
   decisionMaker: boolean | null;
 }
-
-type TPermissionStringCode = "user" | "moderator" | "admin";
 
 type TConfidentiality = "public" | "restricted" | "secret";
 
@@ -90,12 +82,4 @@ export {
   PermissionGroups,
 };
 
-export {
-  IPermission,
-  ISettings,
-  IUser,
-  ILogin,
-  IUserInfo,
-  TPermissionStringCode,
-  TConfidentiality,
-};
+export { ISettings, IUser, ILogin, IUserInfo, TConfidentiality };

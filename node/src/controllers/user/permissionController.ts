@@ -1,14 +1,13 @@
 import { Request, Response } from "express";
-import { dataSource } from "../../config/orm/dataSource";
+import { dataSource } from "../../config/dataSource";
 import { User } from "../../orm/entity/user/UserEntity";
-import { IPermission, PermissionGroups, TConfidentiality } from "../../interfaces/user/UserTypes";
+import { PermissionGroups, TConfidentiality } from "../../interfaces/user/UserTypes";
 import { UserPermission } from "../../orm/entity/user/UserPermissionEntity";
 import { IUser } from "../../interfaces/user/UserTypes";
 import { HttpResponseMessage } from "../../enums/response";
 import { EntityManager } from "typeorm";
 import { UserGroup } from "../../orm/entity/user/UserGroupEntity";
 import { UserSubgroup } from "../../orm/entity/user/UserSubgroupEntity";
-import { Permission } from "../../models/user/Permission";
 
 const findUser = async (user: IUser, em: EntityManager): Promise<User> => {
   return em.getRepository(User).findOne({
@@ -108,7 +107,6 @@ const editPermission = async (req: Request, res: Response) => {
     const body = req.body;
 
     const user: IUser = JSON.parse(body.user);
-    const permission: IPermission = JSON.parse(body.permission);
     const confidentiality: TConfidentiality = JSON.parse(body.confidentiality);
     const groups: Partial<PermissionGroups> = JSON.parse(body.groups);
 
@@ -122,9 +120,7 @@ const editPermission = async (req: Request, res: Response) => {
         });
       }
 
-      const userPermission = userEntity.permission
-        .setPermission(new Permission(permission))
-        .setConfidentiality(confidentiality);
+      const userPermission = userEntity.permission.setConfidentiality(confidentiality);
 
       await transactionalEntityManager.getRepository(UserPermission).save(userPermission);
       await helperSetPermissionGroups(groups, userPermission, transactionalEntityManager);

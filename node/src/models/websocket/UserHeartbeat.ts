@@ -1,5 +1,5 @@
 import { UserLoginDetails } from "../../orm/entity/user/UserLoginDetailsEntity";
-import { dataSource } from "../../config/orm/dataSource";
+import { dataSource } from "../../config/dataSource";
 import { IUser } from "../../interfaces/user/UserTypes";
 import { User } from "../../orm/entity/user/UserEntity";
 import { DataSource, EntityManager } from "typeorm";

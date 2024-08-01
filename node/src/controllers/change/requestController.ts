@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { dataSource } from "../../config/orm/dataSource";
+import { dataSource } from "../../config/dataSource";
 import { HttpResponseMessage } from "../../enums/response";
 import { ProcessChangeRequest } from "../../orm/entity/change/ProcessChangeRequestEntity";
 import { IProcessChangeRequestBase } from "../../interfaces/change/IProcessChangeRequestBase";

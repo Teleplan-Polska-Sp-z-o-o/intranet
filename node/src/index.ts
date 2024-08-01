@@ -8,7 +8,7 @@ import { mountScheduledTasks } from "./config/scheduler";
 mountScheduledTasks();
 
 // DataSource instance initialize
-import { dataSource } from "./config/orm/dataSource";
+import { dataSource } from "./config/dataSource";
 import { mountWsRoute } from "./config/ws";
 import { serverConfig } from "./config/server";
 import * as fs from "fs";

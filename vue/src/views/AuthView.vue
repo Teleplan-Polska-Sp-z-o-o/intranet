@@ -2,12 +2,10 @@
 import { VForm } from "vuetify/lib/components/VForm/index.mjs";
 import { ref, computed } from "vue";
 import axios from "axios";
-import { usePermissionStore } from "../stores/permissionStore";
 import { useUserStore } from "../stores/userStore";
 import { useRouter } from "vue-router";
 import { nodeConfig } from "../config/env";
 import { Endpoints } from "../config/Endpoints";
-import { Permission } from "../models/user/Permission";
 import { useSettingsStore } from "../stores/settingsStore";
 import { ResponseStatus } from "../models/common/ResponseStatus";
 import { IResponseStatus } from "../interfaces/common/IResponseStatus";
@@ -18,7 +16,6 @@ import { UserEntity } from "../models/user/UserEntity";
 const router = useRouter();
 
 // Stores
-const permissionStore = usePermissionStore();
 const userStore = useUserStore();
 const settingsStore = useSettingsStore();
 
@@ -86,8 +83,6 @@ const submitLogin = (): void => {
         const user: UserEntity = response.data.userExist;
         userStore.set(new UserEntity().buildFromUserEntity(user));
         userStore.setToken(response.data.token);
-        const permission = { ...user.permission };
-        permissionStore.set(new Permission(permission));
         settingsStore.set(user.settings);
         router.push({ path: "/pages" });
       })

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { dataSource } from "../../config/orm/dataSource";
+import { dataSource } from "../../config/dataSource";
 import { Settings } from "../../models/user/Settings";
 import { User } from "../../orm/entity/user/UserEntity";
 import { UserSettings } from "../../orm/entity/user/UserSettingsEntity";

@@ -6,12 +6,10 @@ import {
   StaticGroups,
   TConfidentiality,
   UserGroup,
-  TPermissionStringCode,
   TPermissionSubgroup,
   TPermissionSubgroupArray,
 } from "../../../../../interfaces/user/UserTypes";
 import { UserEntity } from "../../../../../models/user/UserEntity";
-import { Permission } from "../../../../../models/user/Permission";
 import { SimpleUser } from "../../../../../models/user/SimpleUser";
 
 const emit = defineEmits(["save-data"]);
@@ -40,10 +38,6 @@ const groups: ComputedRef<Array<TPermissionGroup>> = computed<Array<TPermissionG
 );
 
 // models
-const userPermissionStringCodeItems: Array<TPermissionStringCode> = ["user", "moderator", "admin"];
-const userPermissionStringCode: Ref<TPermissionStringCode> = ref<TPermissionStringCode>(
-  new Permission(userPermission).getPermissionStringType()
-);
 const userConfidentialityItems: Array<TConfidentiality> = ["public", "restricted", "secret"];
 const userConfidentiality: Ref<TConfidentiality> = ref<TConfidentiality>(
   userPermission.confidentiality
@@ -128,13 +122,11 @@ const sortedPermissionGroups: ComputedRef<Partial<IPermissionGroups>> = computed
 
 const saveData: ComputedRef<{
   user: SimpleUser;
-  permission: TPermissionStringCode;
   confidentiality: TConfidentiality;
   groups: Partial<IPermissionGroups>;
 }> = computed(() => {
   return {
     user: user,
-    permission: userPermissionStringCode.value,
     confidentiality: userConfidentiality.value,
     groups: sortedPermissionGroups.value,
   };
@@ -146,12 +138,6 @@ watchEffect(() => {
 </script>
 
 <template>
-  <v-select
-    v-model="userPermissionStringCode"
-    label="Permission"
-    :items="userPermissionStringCodeItems"
-  ></v-select>
-
   <v-select
     v-model="userConfidentiality"
     label="Confidentiality"

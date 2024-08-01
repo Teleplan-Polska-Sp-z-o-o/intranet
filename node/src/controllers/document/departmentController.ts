@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { dataSource } from "../../config/orm/dataSource";
+import { dataSource } from "../../config/dataSource";
 import { Department } from "../../orm/entity/document/DepartmentEntity";
 import { HttpResponseMessage } from "../../enums/response";
 

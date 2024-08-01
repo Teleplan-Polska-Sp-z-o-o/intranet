@@ -1,37 +1,27 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
-import { TConfidentiality, IPermission } from "../../../interfaces/user/UserTypes";
+import { TConfidentiality } from "../../../interfaces/user/UserTypes";
 import { UserGroup } from "./UserGroupEntity";
-import { Permission } from "../../../models/user/Permission";
 
 @Entity()
 export class UserPermission {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
-  read: boolean;
-  @Column()
-  write: boolean;
-  @Column()
-  control: boolean;
+  // @Column()
+  // read: boolean;
+  // @Column()
+  // write: boolean;
+  // @Column()
+  // control: boolean;
   @Column()
   confidentiality: TConfidentiality;
 
   @OneToMany(() => UserGroup, (group) => group.permission)
   groups: Array<UserGroup>;
 
-  constructor(permission: IPermission | null = null, confidentiality: TConfidentiality = "public") {
-    this.read = permission?.read ?? true;
-    this.write = permission?.write ?? false;
-    this.control = permission?.control ?? false;
+  constructor(confidentiality: TConfidentiality = "public") {
     this.confidentiality = confidentiality;
   }
 
-  public setPermission(permission: Permission): UserPermission {
-    this.read = permission.read;
-    this.write = permission.write;
-    this.control = permission.control;
-    return this;
-  }
   public setConfidentiality(confidentiality: TConfidentiality): UserPermission {
     this.confidentiality = confidentiality;
     return this;

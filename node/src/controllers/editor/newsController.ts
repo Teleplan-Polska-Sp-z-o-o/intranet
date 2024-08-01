@@ -3,7 +3,7 @@ import { HttpResponseMessage } from "../../enums/response";
 import { News } from "../../orm/entity/news/NewsEntity";
 import * as fs from "fs";
 import * as path from "path";
-import { dataSource } from "../../config/orm/dataSource";
+import { dataSource } from "../../config/dataSource";
 import { serverConfig } from "../../config/server";
 import { EntityManager } from "typeorm";
 import he from "he";

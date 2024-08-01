@@ -169,7 +169,6 @@ const enT = {
             toolbar: "User Permissions",
             header: {
               username: "Username",
-              permission: "Permission",
               confidentiality: "Confidentiality",
               groups: "Groups",
               actions: "Actions",

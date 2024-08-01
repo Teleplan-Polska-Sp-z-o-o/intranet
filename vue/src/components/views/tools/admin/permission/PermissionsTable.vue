@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
-import { Permission } from "../../../../../models/user/Permission";
 import { useI18n } from "vue-i18n";
 // import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 import PermissionForm from "./PermissionForm.vue";
-import {
-  IPermission,
-  IPermissionGroups,
-  TConfidentiality,
-  TPermissionStringCode,
-} from "../../../../../interfaces/user/UserTypes";
+import { IPermissionGroups, TConfidentiality } from "../../../../../interfaces/user/UserTypes";
 import { UserPermissionManager } from "../../../../../models/user/UserPermissionManager";
 import { UserEntity } from "../../../../../models/user/UserEntity";
 import { SimpleUser } from "../../../../../models/user/SimpleUser";
@@ -32,7 +26,6 @@ const headers: any = [
     title: t(`${tPath}.header.confidentiality`),
     key: "permission.confidentiality",
   },
-  { title: t(`${tPath}.header.permission`), key: "custom", sortable: false },
   { title: t(`${tPath}.header.groups`), key: "custom2", minWidth: 200, sortable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
@@ -44,7 +37,6 @@ const reqData = ref<any>(null);
 
 const handleSaveData = (data: {
   user: SimpleUser;
-  permission: TPermissionStringCode;
   confidentiality: TConfidentiality;
   groups: Partial<IPermissionGroups>;
 }) => {
@@ -52,7 +44,6 @@ const handleSaveData = (data: {
 
   const formData: FormData = new FormData();
   formData.append("user", JSON.stringify(data.user));
-  formData.append("permission", JSON.stringify(new Permission(data.permission)));
   formData.append("confidentiality", JSON.stringify(data.confidentiality));
   formData.append("groups", JSON.stringify(data.groups));
 
@@ -60,13 +51,6 @@ const handleSaveData = (data: {
 };
 
 const manager = new UserPermissionManager();
-
-const permission = (item: any) => {
-  const p: IPermission = item.permission;
-  if (p.control) return "admin";
-  if (p.write) return "moderator";
-  else return "user";
-};
 
 // const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
@@ -86,9 +70,6 @@ const permission = (item: any) => {
     :tableDialogComponent="PermissionForm"
     :tableDialogComponentProps="{}"
   >
-    <template v-slot:table-key-slot="{ item }">
-      <span class="text-body-2">{{ permission(item) }}</span>
-    </template>
     <template v-slot:table-key-slot-2="{ item }: { item: UserEntity }">
       <div>
         <template

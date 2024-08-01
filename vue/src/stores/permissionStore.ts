@@ -1,11 +1,9 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
 import {
   IPermission,
   IPermissionGroups,
   IUser,
   StaticGroups,
-  TPermissionStringCode,
   UserGroup,
   UserSubgroup,
 } from "../interfaces/user/UserTypes";
@@ -15,30 +13,12 @@ import { RouterHelper } from "../models/common/router/RouterHelper";
 import { SimpleUser } from "../models/user/SimpleUser";
 
 export const usePermissionStore = defineStore("auth", () => {
-  const storedRolePermission = ref<Partial<IPermission>>({
-    read: false,
-    write: false,
-    control: false,
-  });
-
   const get = async (iUser: IUser): Promise<IPermission> => {
     const user: SimpleUser = new SimpleUser().build(iUser);
     const permission: IPermission = (await new UserPermissionManager().getOne(JSON.stringify(user)))
       .permission;
 
     return permission;
-  };
-
-  const set = (userPermission: IPermission): boolean => {
-    try {
-      storedRolePermission.value.read = userPermission.read;
-      storedRolePermission.value.write = userPermission.write;
-      storedRolePermission.value.control = userPermission.control;
-    } catch (e) {
-      return false;
-    }
-
-    return true;
   };
 
   const check = async (
@@ -48,7 +28,6 @@ export const usePermissionStore = defineStore("auth", () => {
     iUserPermission?: IPermission
   ): Promise<boolean> => {
     const permission: IPermission = iUserPermission || (await get(iUser));
-    set(permission);
 
     let requiredGroup: UserGroup | undefined = undefined;
     if (routeGroup.routePermissionGroup !== null) {
@@ -66,35 +45,6 @@ export const usePermissionStore = defineStore("auth", () => {
 
     return true;
   };
-
-  // const filterTabs = <
-  //   T extends {
-  //     href: string;
-  //     meta: {
-  //       group: string;
-  //       baseHref: string;
-  //     };
-  //   }
-  // >(
-  //   userInfo: IUser,
-  //   tools: Array<T>
-  // ): T[] => {
-  //   return tools.filter(async (tool) => {
-  //     if (RouterHelper.isTPermissionGroup(tool.meta.group)) {
-  //       const toolAccess = await check(userInfo, new RouteGroup(tool.meta.group, null), true);
-  //       if (toolAccess === false) return false;
-  //       const permission: IPermission = await get(userInfo);
-  //       const firstSubgroup: string | undefined = permission.groups
-  //         .find((group) => group.name === tool.meta.group)
-  //         ?.subgroups.at(0)?.name as string | undefined;
-
-  //       if (firstSubgroup === undefined) return false;
-  //       tool.href = `${tool.meta.baseHref}${firstSubgroup}`;
-
-  //       return toolAccess;
-  //     } else true;
-  //   });
-  // };
 
   /**
    * Filters tools based on user permissions and updates their href property.
@@ -208,18 +158,5 @@ export const usePermissionStore = defineStore("auth", () => {
     return filteredTools;
   };
 
-  /**
-   *
-   * @param permission (Optional) If none given, function will return StringCode based on user stored permission.
-   * @returns (TPermissionStringCode) "user" | "moderator" | "admin"
-   */
-  const translatePermissionToStringCode = (
-    permission: IPermission | null = null
-  ): TPermissionStringCode => {
-    if (permission ? permission.control : storedRolePermission.value.control) return "admin";
-    if (permission ? permission.write : storedRolePermission.value.write) return "moderator";
-    else return "user";
-  };
-
-  return { check, filterTools, filterToolTabs, get, set, translatePermissionToStringCode };
+  return { check, filterTools, filterToolTabs, get };
 });

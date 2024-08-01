@@ -5,9 +5,6 @@ interface IUserEntity extends IUser {
   domain: string;
   id: number;
   permission: {
-    read: boolean;
-    write: boolean;
-    control: boolean;
     confidentiality: TConfidentiality;
     groups: Array<UserGroup>;
   };

@@ -1,22 +1,10 @@
 import { AuthenticationOptions } from "ldap-authentication";
 import { ILogin } from "../interfaces/user/UserTypes";
-// import * as dotenv from "dotenv";
-
-// dotenv.config({ path: "./.env" });
 
 const getLDAPConfig = (loginData: ILogin): AuthenticationOptions => {
-  // const intranetUser = {
-  //   username: process.env.INTRANET_USER,
-  //   password: process.env.INTRANET_PASSWORD,
-  // };
-
   if (!loginData.username || !loginData.domain || !loginData.password) {
     throw new Error("Login data must include username, domain, and password.");
   }
-
-  // if (!intranetUser.username || !intranetUser.password) {
-  //   throw new Error("Intranet user credentials must be set in environment variables.");
-  // }
 
   const getUserSearchBase = (): string => {
     switch (loginData.domain) {
@@ -28,7 +16,6 @@ const getLDAPConfig = (loginData: ILogin): AuthenticationOptions => {
         throw new Error(`Domain doesn't match any switch cases.`);
     }
   };
-  // const x = ["cn", "title", "department", "company"];
 
   const ldapHost = `ldap://${loginData.domain}`;
   const userDn = `${loginData.username}@${loginData.domain}`;

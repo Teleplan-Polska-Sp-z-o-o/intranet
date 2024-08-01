@@ -1,4 +1,4 @@
-import { dataSource } from "../../config/orm/dataSource";
+import { dataSource } from "../../config/dataSource";
 import { IUser } from "../../interfaces/user/UserTypes";
 import { ISocketConnection } from "../../interfaces/websocket/ISocketConnection";
 import { UserHeartbeat } from "./UserHeartbeat";

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { dataSource } from "../../config/orm/dataSource";
+import { dataSource } from "../../config/dataSource";
 import { User, User as UserEntity } from "../../orm/entity/user/UserEntity";
 import { LDAP } from "../../models/user/LDAP";
 import { UserPermission } from "../../orm/entity/user/UserPermissionEntity";
@@ -11,7 +11,7 @@ import { PermissionGroups, StaticGroups } from "../../interfaces/user/UserTypes"
 import { UserInformation } from "../../models/user/UserInformation";
 import { DataSource, EntityManager } from "typeorm";
 import { helperSetPermissionGroups } from "./permissionController";
-import { Permission } from "../../models/user/Permission";
+// import { Permission } from "../../models/user/Permission";
 
 const findUser = async (
   where: string | number,
@@ -104,17 +104,12 @@ const getUsers = async (req: Request, res: Response) => {
 };
 
 const createUser = async (
-  isAdmin: boolean,
   groups: Partial<PermissionGroups> | PermissionGroups,
   ldap: LDAP,
   ldapUser: any,
   entityManager: EntityManager
 ): Promise<User> => {
-  const permissionEntity: UserPermission = isAdmin
-    ? new UserPermission(new Permission("admin"))
-    : new UserPermission();
-
-  const permission = await entityManager.getRepository(UserPermission).save(permissionEntity);
+  const permission = await entityManager.getRepository(UserPermission).save(new UserPermission());
 
   await helperSetPermissionGroups(groups, permission, entityManager);
 
@@ -150,7 +145,7 @@ const userAuth = async (req: Request, res: Response) => {
 
       // Create new UserEntity if user doesn't exist in database
       if (!userExist) {
-        userExist = await createUser(isAdmin, groups, ldap, ldapUser, transactionalEntityManager);
+        userExist = await createUser(groups, ldap, ldapUser, transactionalEntityManager);
 
         return res.status(201).json({
           userExist,

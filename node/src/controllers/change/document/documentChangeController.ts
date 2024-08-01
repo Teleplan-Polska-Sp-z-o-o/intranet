@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { DocumentChange } from "../../../orm/entity/change/documents/DocumentChangeEntity";
 import { MulterRequest } from "../../../interfaces/common/MulterRequest";
 import { HttpResponseMessage } from "../../../enums/response";
-import { dataSource } from "../../../config/orm/dataSource";
+import { dataSource } from "../../../config/dataSource";
 import { DocumentChangeFields } from "../../../models/change/dc/DocumentChangeFields";
 import { User } from "../../../orm/entity/user/UserEntity";
 import { EDCNotificationVariant } from "../../../interfaces/user/notification/ENotificationVariant";
