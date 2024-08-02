@@ -18,45 +18,6 @@ if (![TEST_ORIGIN, ORIGIN].includes(nodeConfig.origin)) {
     `Invalid nodeConfig origin at env.ts. [TEST_ORIGIN, ORIGIN] doesn't include result of window.location.origin`
   );
 }
-// const fetchPing = async (
-//   origin: string = window.location.origin,
-//   port: number = 3000
-// ): Promise<ServerConfig> =>
-//   (await axios.get(`${origin}:${port}${Endpoints.ServerConfig}/ping`)).data.config;
-
-// const getNodeConfig = async () => {
-//   try {
-//     switch (window.location.origin) {
-//       case TEST_ORIGIN:
-//         nodeConfig = await fetchPing(TEST_ORIGIN);
-//         break;
-//       case ORIGIN:
-//         nodeConfig = await fetchPing(ORIGIN);
-//         break;
-
-//       default:
-//         console.warn(
-//           `switch for window.location.origin at getNodeConfig at env.ts could not find a case, trying to fetch nodeConfig from ${
-//             window.location.origin
-//           }:${3000}`
-//         );
-//         nodeConfig = await fetchPing();
-
-//         break;
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-// getNodeConfig();
-
-// old
-// const nodeConfig: ServerConfig = {
-//   origin: "http://172.20.176.1",
-//   // origin: "https://bydintranet.reconext.com",
-//   port: 3000,
-// };
 
 interface AssistantConfig {
   url: string;

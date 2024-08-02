@@ -5,9 +5,9 @@ import FilesForm from "../../common/FilesForm.vue";
 import { IFileItem, ICompetence } from "../../../../../interfaces/document/DocumentTypes";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
 import { nodeConfig } from "../../../../../config/env";
-import axios from "axios";
 import { FileItem } from "../../../../../models/document/FileItem";
 import { CompetenceManager } from "../../../../../models/document/CompetenceManager";
+import jwtAxios from "../../../../../config/axios/jwtAxios";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -61,7 +61,7 @@ const competences = ref<Array<ICompetence>>([]);
       const fileUrl = `${nodeConfig.origin}:${nodeConfig.port}/uploads/documents/${fileName}.pdf`;
 
       try {
-        const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
+        const response = await jwtAxios.get(fileUrl, { responseType: "arraybuffer" });
         const fileContent = response.data;
 
         const blob = new Blob([fileContent]);

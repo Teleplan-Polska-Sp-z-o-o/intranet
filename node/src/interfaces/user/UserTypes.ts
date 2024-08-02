@@ -6,11 +6,14 @@ interface ISettings {
   language: string;
 }
 
-interface ILogin {
+interface Passport {
   username: string;
   domain: string;
-  password: string;
 }
+
+type ILogin = Passport & {
+  password: string;
+};
 
 interface IUser {
   id: number;

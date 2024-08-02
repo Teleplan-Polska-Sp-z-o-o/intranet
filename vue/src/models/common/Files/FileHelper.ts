@@ -1,7 +1,7 @@
-import axios from "axios";
-import { Endpoints } from "../../../config/Endpoints";
+import { Endpoints } from "../../../config/axios/Endpoints";
 import { nodeConfig } from "../../../config/env";
 import { CommonTypes } from "../../../interfaces/common/CommonTypes";
+import jwtAxios from "../../../config/axios/jwtAxios";
 
 class FileHelper {
   filename: string;
@@ -39,7 +39,7 @@ class FileHelper {
 
       const endpoint = CommonTypes.FileTypes.DocEndpoint[this.folder];
       const fileUrl = `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.uploads}${endpoint}/${this.filename}`;
-      const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
+      const response = await jwtAxios.get(fileUrl, { responseType: "arraybuffer" });
       const fileContent = response.data;
       this.blob = new Blob([fileContent]);
       this.file = new File([this.blob], this.filename, { type: response.headers["content-type"] });

@@ -1,6 +1,5 @@
-import axios from "axios";
 import { nodeConfig } from "../../config/env";
-import { Endpoints } from "../../config/Endpoints";
+import { Endpoints } from "../../config/axios/Endpoints";
 import { IDocumentEntity } from "../../interfaces/document/IDocumentEntity";
 import { DocumentEntity } from "./DocumentEntity";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
@@ -8,6 +7,7 @@ import { ResponseStatus } from "../common/ResponseStatus";
 import { useUserStore } from "../../stores/userStore";
 import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { useAlertStore } from "../../stores/alertStore";
+import jwtAxios from "../../config/axios/jwtAxios";
 
 class DocumentManager {
   constructor() {}
@@ -18,7 +18,7 @@ class DocumentManager {
     formData: FormData,
     status: boolean = false
   ): Promise<Array<IDocumentEntity> | IResponseStatus> => {
-    const response = await axios.post(
+    const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}`,
       formData
     );
@@ -64,7 +64,7 @@ class DocumentManager {
         break;
     }
 
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}${params}`
     );
     return response.data.documents;
@@ -74,7 +74,7 @@ class DocumentManager {
     formData: FormData,
     status: boolean = false
   ): Promise<Array<IDocumentEntity> | IResponseStatus> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}`,
       formData
     );
@@ -97,7 +97,7 @@ class DocumentManager {
     id: number,
     status: boolean = false
   ): Promise<Array<IDocumentEntity> | IResponseStatus> => {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/${id}`
     );
     if (status) {
@@ -116,14 +116,14 @@ class DocumentManager {
   };
 
   public getByUuidAndLangs = async (uuid: string, langs: string): Promise<IDocumentEntity> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/uuidLangs/${uuid}/${langs}`
     );
     return response.data.document;
   };
 
   public getByNumber = async (number: string): Promise<IDocumentEntity[]> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/by/${number}`
     );
     return response.data.documents;

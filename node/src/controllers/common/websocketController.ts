@@ -37,15 +37,14 @@ const websocketController: WebsocketRequestHandler = (
     }
   });
 
-  // ws.on("close", () => {
-  //   WC.removeClosedConnections();
-  // });
+  ws.on("close", () => {
+    WC.removeClosedConnections();
+  });
 
-  // ws.on("error", (error) => {
-  //   console.error("WebSocket error:", error.toString());
-  //   ws.close(1000, "WebSocket error occurred");
-  //   WC.removeClosedConnections();
-  // });
+  ws.on("error", (error) => {
+    ws.close(1000, "WebSocket error occurred");
+    WC.removeClosedConnections();
+  });
 };
 
 const getWebSocketConnections = (): Array<ISocketConnection> => {

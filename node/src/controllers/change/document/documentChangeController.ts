@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { DocumentChange } from "../../../orm/entity/change/documents/DocumentChangeEntity";
-import { MulterRequest } from "../../../interfaces/common/MulterRequest";
 import { HttpResponseMessage } from "../../../enums/response";
 import { dataSource } from "../../../config/dataSource";
 import { DocumentChangeFields } from "../../../models/change/dc/DocumentChangeFields";
@@ -14,7 +13,7 @@ import { Not } from "typeorm";
 
 const enableMailAndNotification = true;
 
-const addDCR = async (req: MulterRequest, res: Response) => {
+const addDCR = async (req: Request, res: Response) => {
   try {
     const body = req.body;
     const issuer: string = JSON.parse(body.issuer);
@@ -88,7 +87,7 @@ const addDCR = async (req: MulterRequest, res: Response) => {
   }
 };
 
-const editDCR = async (req: MulterRequest, res: Response) => {
+const editDCR = async (req: Request, res: Response) => {
   try {
     const body = req.body;
     const issuer: string = JSON.parse(body.issuer);

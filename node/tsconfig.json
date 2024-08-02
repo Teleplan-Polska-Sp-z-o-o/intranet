@@ -10,17 +10,8 @@
     "resolveJsonModule": true, // Enable importing JSON files
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "typeRoots": ["./node_modules/@types", "/.types"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "types.d.ts"]
 }
-
-// "compilerOptions": {
-//   "module": "NodeNext",
-//   "moduleResolution": "NodeNext",
-//   "target": "ES2021",
-//   "sourceMap": true,
-//   "outDir": "dist",
-//   "experimentalDecorators": true,
-//   "emitDecoratorMetadata": true
-// },

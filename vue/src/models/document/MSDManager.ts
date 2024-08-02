@@ -1,9 +1,9 @@
-import axios from "axios";
 import { nodeConfig } from "../../config/env";
-import { Endpoints } from "../../config/Endpoints";
+import { Endpoints } from "../../config/axios/Endpoints";
 import { IDocumentEntity } from "../../interfaces/document/IDocumentEntity";
 import { useUserStore } from "../../stores/userStore";
 import { DocumentManager } from "./DocumentManager";
+import jwtAxios from "../../config/axios/jwtAxios";
 
 class MSDManager extends DocumentManager {
   public get = async (reqData: any): Promise<Array<IDocumentEntity>> => {
@@ -32,7 +32,7 @@ class MSDManager extends DocumentManager {
         break;
     }
 
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}${params}`
     );
     return response.data.documents;

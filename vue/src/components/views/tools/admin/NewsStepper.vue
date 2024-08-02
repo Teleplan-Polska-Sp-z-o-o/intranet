@@ -6,9 +6,9 @@ import VerifyTables from "./VerifyTables.vue";
 import { useEditorStore } from "../../../../stores/editorStore";
 import { watch } from "vue";
 import { nodeConfig } from "../../../../config/env";
-import { Endpoints } from "../../../../config/Endpoints";
-import axios from "axios";
+import { Endpoints } from "../../../../config/axios/Endpoints";
 import { TConfidentiality } from "../../../../interfaces/user/UserTypes";
+import jwtAxios from "../../../../config/axios/jwtAxios";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -57,7 +57,7 @@ const editorStore = useEditorStore();
 
     const fileUrl = constructBgImgSrc();
     try {
-      const response = await axios.get(fileUrl, { responseType: "arraybuffer" });
+      const response = await jwtAxios.get(fileUrl, { responseType: "arraybuffer" });
       const fileContent = response.data;
       const blob = new Blob([fileContent]);
       //?.split(".")[0]

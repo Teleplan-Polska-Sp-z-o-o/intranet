@@ -12,7 +12,7 @@ import { refreshToken, verifyToken } from "../controllers/user/tokenController";
 
 import express from "express";
 import multer from "multer";
-import { getLoginDetails } from "../controllers/user/userHeartbeatController";
+import { getLoginDetails } from "../controllers/user/userLoginDetailsController";
 
 const router = express.Router();
 const decodeFormData = multer().none();

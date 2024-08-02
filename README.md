@@ -154,12 +154,30 @@ To facilitate seamless development, it's important to note that Vue and Node app
 
 ## API
 
-To access exposed endpoints, you need to include an API key in the query parameters of your request. Here's how you can use the API key query parameter:
+### Headers
 
-- **Parameter Name:** `api-key`
-- **Example:** `http://your-domain.com/api/endpoint?api-key=your-api-key`
+To access API endpoints, include the JWT in the `Authorization` header of your requests:
 
-The API key serves as an authentication mechanism for authorized access. Securely store and manage it to prevent unauthorized use.
+- **Header Name:** `Authorization`
+- **Header Value:** `Bearer <your-jwt-token>`
+
+```http
+GET /api/protected-endpoint HTTP/1.1
+Host: your-domain.com
+Authorization: Bearer your-jwt-token
+```
+
+### User Session Management
+
+Reconext Intranet uses JWT (JSON Web Token) for user authentication and session management. When a user logs in, a JWT is issued, which must be included in subsequent API requests.
+
+1. **JWT Verification**: The middleware verifies the JWT token provided in the `Authorization` header of each request.
+
+2. **Session Tracking**: `UserSessionManager` manages active user sessions by automatically logging out inactive users after a specified timeout.
+
+3. **Automatic Timeout**: If the user is inactive for a period longer than the configured timeout, they will be automatically removed from the active session list.
+
+4. **Session Extension**: Each valid API request extends the user's session by resetting the timeout duration.
 
 ### Endpoints
 

@@ -5,7 +5,7 @@ import axios from "axios";
 import { useUserStore } from "../stores/userStore";
 import { useRouter } from "vue-router";
 import { nodeConfig } from "../config/env";
-import { Endpoints } from "../config/Endpoints";
+import { Endpoints } from "../config/axios/Endpoints";
 import { useSettingsStore } from "../stores/settingsStore";
 import { ResponseStatus } from "../models/common/ResponseStatus";
 import { IResponseStatus } from "../interfaces/common/IResponseStatus";

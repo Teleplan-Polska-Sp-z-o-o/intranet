@@ -1,11 +1,11 @@
-import axios from "axios";
-import { Endpoints } from "../../../config/Endpoints";
+import { Endpoints } from "../../../config/axios/Endpoints";
 import { nodeConfig } from "../../../config/env";
 import { ResponseStatus } from "../../common/ResponseStatus";
 import { useAlertStore } from "../../../stores/alertStore";
 import { DocumentChange } from "./DocumentChange";
 import { BaseManager } from "../../common/BaseManager";
 import { DocumentChangeTypes } from "../../../interfaces/change/dcr/DocumentChangeTypes";
+import jwtAxios from "../../../config/axios/jwtAxios";
 
 class DocumentChangeNoticeManager extends BaseManager<DocumentChangeTypes.TDocumentChange> {
   constructor() {
@@ -25,7 +25,7 @@ class DocumentChangeNoticeManager extends BaseManager<DocumentChangeTypes.TDocum
     formData: FormData,
     status: boolean = false
   ): Promise<DocumentChangeTypes.TDocumentChange> => {
-    const response = await axios.post(
+    const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}`,
       formData
     );
@@ -50,7 +50,7 @@ class DocumentChangeNoticeManager extends BaseManager<DocumentChangeTypes.TDocum
     formData: FormData,
     status: boolean = false
   ): Promise<DocumentChangeTypes.TDocumentChange> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}`,
       formData
     );
@@ -75,7 +75,7 @@ class DocumentChangeNoticeManager extends BaseManager<DocumentChangeTypes.TDocum
     id: number,
     status: boolean = false
   ): Promise<DocumentChangeTypes.TDocumentChange> => {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/${id}`
     );
     if (status) {
@@ -93,7 +93,7 @@ class DocumentChangeNoticeManager extends BaseManager<DocumentChangeTypes.TDocum
    * Retrieves all registered DocumentChange
    */
   public get = async (): Promise<Array<DocumentChange>> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/registered`
     );
     return response.data.got;
@@ -109,7 +109,7 @@ class DocumentChangeNoticeManager extends BaseManager<DocumentChangeTypes.TDocum
     formData: FormData,
     status: boolean = true
   ): Promise<{ assessed: DocumentChange }> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/assess`,
       formData
     );
@@ -137,7 +137,7 @@ class DocumentChangeNoticeManager extends BaseManager<DocumentChangeTypes.TDocum
     formData: FormData,
     status: boolean = true
   ): Promise<DocumentChange> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/registration`,
       formData
     );

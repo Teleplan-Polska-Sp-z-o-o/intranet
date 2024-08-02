@@ -13,10 +13,9 @@ import { IDocOptions } from "../../interfaces/document/IDocOptions";
 import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { Competence } from "../../orm/entity/document/CompetenceEntity";
 import { Utils } from "../common/Utils";
-import { MulterRequest } from "../../interfaces/common/MulterRequest";
 import { DOCUMENTS_FOLDER, UPLOADS_PATH } from "../../config/routeConstants";
 
-const addDocument = async (req: MulterRequest, res: Response) => {
+const addDocument = async (req: Request, res: Response) => {
   try {
     const body = req.body;
 
@@ -132,7 +131,7 @@ const addDocument = async (req: MulterRequest, res: Response) => {
   }
 };
 
-const editDocument = async (req: MulterRequest, res: Response) => {
+const editDocument = async (req: Request, res: Response) => {
   try {
     const body = req.body;
 

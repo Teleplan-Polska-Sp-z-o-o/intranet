@@ -14,6 +14,7 @@ enum HttpResponseMessage {
   TOOL_ACCESS_ERROR = "tool_access_error",
   REFERENCE_FORMAT_ERROR = "reference_format_error",
   REFERENCE_ALREADY_CONTAINS_ERROR = "reference_already_contains_error",
+  UNAUTHORIZED = "unauthorized",
 }
 
 // enum HttpUserResponseMessage {}

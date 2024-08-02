@@ -1,11 +1,11 @@
-import axios from "axios";
 import { nodeConfig } from "../../config/env";
-import { Endpoints } from "../../config/Endpoints";
+import { Endpoints } from "../../config/axios/Endpoints";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { Competence } from "./Competence";
 import { ICompetence } from "../../interfaces/document/DocumentTypes";
 import { useAlertStore } from "../../stores/alertStore";
+import jwtAxios from "../../config/axios/jwtAxios";
 
 class CompetenceManager {
   constructor() {}
@@ -16,7 +16,7 @@ class CompetenceManager {
     reqData: FormData,
     status: boolean = false
   ): Promise<Array<ICompetence> | IResponseStatus> => {
-    const response = await axios.post(
+    const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Competence}`,
       reqData
     );
@@ -36,7 +36,7 @@ class CompetenceManager {
   };
 
   public get = async (_reqData?: any): Promise<Array<ICompetence>> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Competence}`
     );
     return response.data.got;
@@ -46,7 +46,7 @@ class CompetenceManager {
     reqData: FormData,
     status: boolean = false
   ): Promise<Array<ICompetence> | IResponseStatus> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Competence}`,
       reqData
     );
@@ -69,7 +69,7 @@ class CompetenceManager {
     id: number,
     status: boolean = false
   ): Promise<Array<ICompetence> | IResponseStatus> => {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Competence}/${id}`
     );
     if (status) {

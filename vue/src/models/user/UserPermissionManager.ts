@@ -1,11 +1,11 @@
-import axios from "axios";
 import { nodeConfig } from "../../config/env";
-import { Endpoints } from "../../config/Endpoints";
+import { Endpoints } from "../../config/axios/Endpoints";
 import { UserEntity } from "./UserEntity";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { UserManager } from "./UserManager";
 import { useAlertStore } from "../../stores/alertStore";
+import jwtAxios from "../../config/axios/jwtAxios";
 
 class UserPermissionManager extends UserManager {
   constructor() {
@@ -18,7 +18,7 @@ class UserPermissionManager extends UserManager {
     reqData: FormData,
     status: boolean = false
   ): Promise<Array<any> | IResponseStatus> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.UserPermission}`,
       reqData
     );
@@ -38,7 +38,7 @@ class UserPermissionManager extends UserManager {
   };
 
   public getOne = async (iUserJson: string): Promise<UserEntity> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.UserPermission}/${iUserJson}`
     );
     return response.data.user;

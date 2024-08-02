@@ -1,8 +1,9 @@
 import { authenticate } from "ldap-authentication";
-import { ILogin } from "../../interfaces/user/UserTypes";
+import { ILogin, IUser } from "../../interfaces/user/UserTypes";
 import { getLDAPConfig } from "../../config/ldap";
 import { serverConfig } from "../../config/server";
 import { JwtPayload, Secret, SignOptions, sign, verify } from "jsonwebtoken";
+import { User } from "../../orm/entity/user/UserEntity";
 
 class LDAP {
   username: string;
@@ -19,30 +20,46 @@ class LDAP {
     this.password = login?.password || "";
   }
 
-  public authenticate = async (loginObj?: ILogin): Promise<any> => {
-    try {
-      if (loginObj) {
-        this.username = loginObj.username;
-        this.domain = loginObj.domain;
-        this.password = loginObj.password;
-      } else if (!this.username || !this.domain || !this.password) {
-        throw new Error(
-          `LDAP object expects user credentials. None has been provided in constructor, 'authenticate' at this point requires providing user credentials.`
-        );
-      }
+  private isUser(payload: string | Buffer | object): payload is User {
+    return (
+      typeof payload === "object" &&
+      payload !== null &&
+      "id" in payload &&
+      "username" in payload &&
+      "domain" in payload
+    );
+  }
 
-      const fromLogin: ILogin = {
-        username: this.username,
-        domain: this.domain,
-        password: this.password,
-      };
-
-      const options = getLDAPConfig(fromLogin);
-
-      return authenticate(options);
-    } catch (error) {
-      throw new Error(`authenticate at LDAP, ${error}`);
+  public passport(user: object) {
+    if (!this.isUser(user)) {
+      throw new Error(`passport function at LDAP expects User object from database.`);
     }
+
+    return { id: user.id, username: user.username, domain: user.domain };
+  }
+
+  public auth = async (loginObj?: ILogin): Promise<this> => {
+    if (loginObj) {
+      this.username = loginObj.username;
+      this.domain = loginObj.domain;
+      this.password = loginObj.password;
+    } else if (!this.username || !this.domain || !this.password) {
+      throw new Error(
+        `LDAP object expects user credentials. None has been provided in constructor, 'auth' at this point requires providing user credentials.`
+      );
+    }
+
+    const fromLogin: ILogin = {
+      username: this.username,
+      domain: this.domain,
+      password: this.password,
+    };
+
+    const options = getLDAPConfig(fromLogin);
+
+    await authenticate(options);
+
+    return this;
   };
 
   public generateJwt = (
@@ -50,6 +67,13 @@ class LDAP {
     overrideOptions?: SignOptions & { secret: string }
   ): string => {
     try {
+      // Validate if payload is a User object
+      if (this.isUser(payload)) {
+        payload = { ...payload }; // Ensure it's treated as an object
+      } else {
+        throw new Error("Payload must be a User object, a string, or a Buffer");
+      }
+
       const secretKey: Secret = serverConfig.apiKey;
 
       if (overrideOptions && overrideOptions.secret !== secretKey) {
@@ -58,7 +82,11 @@ class LDAP {
         delete overrideOptions.secret;
 
       const options: SignOptions = this.DEFAULT_OPTIONS;
-      const token: string = sign(payload, secretKey, overrideOptions ? overrideOptions : options);
+      const token: string = sign(
+        this.passport(payload),
+        secretKey,
+        overrideOptions ? overrideOptions : options
+      );
       return token;
     } catch (error) {
       console.log(`generateJwt at LDAP, ${error}`);

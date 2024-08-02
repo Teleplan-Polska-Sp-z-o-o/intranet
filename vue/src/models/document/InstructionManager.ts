@@ -1,12 +1,12 @@
-import axios from "axios";
 import { nodeConfig } from "../../config/env";
-import { Endpoints } from "../../config/Endpoints";
+import { Endpoints } from "../../config/axios/Endpoints";
 import { IDocumentEntity } from "../../interfaces/document/IDocumentEntity";
 import { DocumentEntity } from "./DocumentEntity";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { useUserStore } from "../../stores/userStore";
 import { useAlertStore } from "../../stores/alertStore";
+import jwtAxios from "../../config/axios/jwtAxios";
 
 class InstructionManager {
   constructor() {}
@@ -17,7 +17,7 @@ class InstructionManager {
     formData: FormData,
     status: boolean = false
   ): Promise<Array<IDocumentEntity> | IResponseStatus> => {
-    const response = await axios.post(
+    const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}`,
       formData
     );
@@ -62,7 +62,7 @@ class InstructionManager {
         break;
     }
 
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}${params}`
     );
     return response.data.documents;
@@ -72,7 +72,7 @@ class InstructionManager {
     formData: FormData,
     status: boolean = false
   ): Promise<Array<IDocumentEntity> | IResponseStatus> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}`,
       formData
     );
@@ -95,7 +95,7 @@ class InstructionManager {
     id: number,
     status: boolean = false
   ): Promise<Array<IDocumentEntity> | IResponseStatus> => {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/${id}`
     );
     if (status) {

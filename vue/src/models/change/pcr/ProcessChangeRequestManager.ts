@@ -1,5 +1,4 @@
-import axios from "axios";
-import { Endpoints } from "../../../config/Endpoints";
+import { Endpoints } from "../../../config/axios/Endpoints";
 import { nodeConfig } from "../../../config/env";
 import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../common/ResponseStatus";
@@ -7,6 +6,7 @@ import { IProcessChangeRequest } from "../../../interfaces/change/IProcessChange
 import { ProcessChangeRequestBase } from "./ProcessChangeRequestBase";
 import { IProcessChangeRequestUpdates } from "../../../interfaces/change/IProcessChangeRequestUpdates";
 import { useAlertStore } from "../../../stores/alertStore";
+import jwtAxios from "../../../config/axios/jwtAxios";
 
 class ProcessChangeRequestManager {
   constructor() {}
@@ -17,7 +17,7 @@ class ProcessChangeRequestManager {
     formData: FormData,
     status: boolean = false
   ): Promise<Array<IProcessChangeRequest> | IResponseStatus> => {
-    const response = await axios.post(
+    const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}`,
       formData
     );
@@ -40,7 +40,7 @@ class ProcessChangeRequestManager {
     formData: FormData,
     status: boolean = false
   ): Promise<Array<IProcessChangeRequest> | IResponseStatus> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}`,
       formData
     );
@@ -64,7 +64,7 @@ class ProcessChangeRequestManager {
     assessment: "Implementation" | "Rejection",
     status: boolean = true
   ): Promise<{ closed: IProcessChangeRequest }> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${assessment}`,
       formData
     );
@@ -86,7 +86,7 @@ class ProcessChangeRequestManager {
     id: number,
     status: boolean = false
   ): Promise<Array<IProcessChangeRequest> | IResponseStatus> => {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${id}`
     );
     if (status) {
@@ -105,21 +105,21 @@ class ProcessChangeRequestManager {
   };
 
   public get = async (_blank: any): Promise<Array<IProcessChangeRequest>> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}`
     );
     return response.data.got;
   };
 
   public getRequest = async (id: number): Promise<IProcessChangeRequest> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/${id}`
     );
     return response.data.got;
   };
 
   public getRequestUpdates = async (id: number): Promise<Array<IProcessChangeRequestUpdates>> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeRequest}/updates/${id}`
     );
     return response.data.got;

@@ -1,9 +1,9 @@
-import { useRouter } from "vue-router";
-import { useUserStore } from "../../stores/userStore";
-import axios from "axios";
+// import { useRouter } from "vue-router";
+// import { useUserStore } from "../../stores/userStore";
 import { nodeConfig } from "../../config/env";
 import { useAssistantStore } from "../../stores/assistantStore";
 import { ICreateConversation } from "../../interfaces/assistants/TAssistantResponse";
+import jwtAxios from "../../config/axios/jwtAxios";
 
 class AiAssistant {
   // config
@@ -12,7 +12,7 @@ class AiAssistant {
   private static createEndpoint: string = `https://global.repengineering.io/ai/api/v1/conversations`;
 
   private conversationKey: string = "";
-  private token: string | null = null; // jwt token, created by constructor
+  // private token: string | null = null; // jwt token, created by constructor
   private headers: { headers: Record<string, string> }; // created by constructor
   private id: string = ""; // created by createConversation
   private questionEndpoint: string | null = null; // created by createConversation
@@ -21,16 +21,14 @@ class AiAssistant {
     this.conversationKey = conversationKey;
 
     // token
-    const token = useUserStore().getToken();
-    if (token) this.token = token;
-    else useRouter().push({ path: `/` });
+    // const token = useUserStore().getToken();
+    // if (token) this.token = token;
+    // else useRouter().push({ path: `/` });
     //
 
     this.headers = {
       headers: {
-        "Content-Type": "application/json",
         "X-Request-Origin": AiAssistant.domain,
-        Authorization: `Bearer ${this.token}`,
         Accept: "application/json",
       },
     };
@@ -43,7 +41,7 @@ class AiAssistant {
       instance = new AiAssistant(this.conversationKey);
     }
 
-    const response: ICreateConversation = await axios.post(
+    const response: ICreateConversation = await jwtAxios.post(
       AiAssistant.createEndpoint,
       undefined,
       instance ? instance.headers : this.headers
@@ -74,7 +72,7 @@ class AiAssistant {
 
       useAssistantStore().store(payload, this.conversationKey);
 
-      const response: any = await axios.post(this.questionEndpoint, payload, this.headers);
+      const response: any = await jwtAxios.post(this.questionEndpoint, payload, this.headers);
 
       const chunksToParseAndSubstring = response.data.split("\n\n").filter(Boolean);
       const chunksToParse = chunksToParseAndSubstring.map((data: string) => data.substring(6));
@@ -84,7 +82,7 @@ class AiAssistant {
         useAssistantStore().store(chunk, this.conversationKey);
       }
     } catch (error) {
-      console.error("Error in axios request:", error);
+      console.error("Error in jwtAxios request:", error);
       throw error; // Re-throw the error to be handled by the caller
     }
   };

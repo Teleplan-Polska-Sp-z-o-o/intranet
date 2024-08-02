@@ -106,7 +106,6 @@ const getUsers = async (req: Request, res: Response) => {
 const createUser = async (
   groups: Partial<PermissionGroups> | PermissionGroups,
   ldap: LDAP,
-  ldapUser: any,
   entityManager: EntityManager
 ): Promise<User> => {
   const permission = await entityManager.getRepository(UserPermission).save(new UserPermission());
@@ -118,7 +117,7 @@ const createUser = async (
   const info = await entityManager
 
     .getRepository(UserInfo)
-    .save(new UserInfo().build(new UserInformation(), ldapUser));
+    .save(new UserInfo().build(new UserInformation()));
 
   return await entityManager
     .getRepository(UserEntity)
@@ -128,9 +127,8 @@ const createUser = async (
 const userAuth = async (req: Request, res: Response) => {
   try {
     let ldap = new LDAP(req.body);
+    ldap = await ldap.auth();
 
-    const ldapUser = await ldap.authenticate();
-    const token = ldap.generateJwt(ldapUser);
     const admins = adminsConfig.admins;
     const isAdmin = admins.includes(ldap.username);
 
@@ -145,7 +143,7 @@ const userAuth = async (req: Request, res: Response) => {
 
       // Create new UserEntity if user doesn't exist in database
       if (!userExist) {
-        userExist = await createUser(groups, ldap, ldapUser, transactionalEntityManager);
+        userExist = await createUser(groups, ldap, transactionalEntityManager);
 
         return res.status(201).json({
           userExist,
@@ -157,33 +155,25 @@ const userAuth = async (req: Request, res: Response) => {
         if (!userExist.info || !hasTruthyValue) {
           const info = await transactionalEntityManager
             .getRepository(UserInfo)
-            .save(new UserInfo().build(new UserInformation(), ldapUser));
+            .save(new UserInfo().build(new UserInformation()));
           userExist.info = info;
           await transactionalEntityManager.getRepository(UserEntity).save(userExist);
-        }
-
-        if (!userExist.info.LDAPObject) {
-          let info = await transactionalEntityManager
-            .getRepository(UserInfo)
-            .findOne({ where: { id: userExist.id } });
-          info = await transactionalEntityManager
-            .getRepository(UserInfo)
-            .save(info.sanitizeAndAssignLDAPObject(ldapUser));
-          await transactionalEntityManager.getRepository(UserEntity).save((userExist.info = info));
         }
 
         const userPermission: UserPermission = userExist.permission;
         if (!Array.isArray(userPermission.groups) || userPermission.groups.length === 0) {
           await helperSetPermissionGroups(groups, userPermission, transactionalEntityManager);
         }
-
-        return res.status(200).json({
-          userExist,
-          token,
-          message: "Authentication successful.",
-          statusMessage: HttpResponseMessage.POST_SUCCESS,
-        });
       }
+
+      const token = ldap.generateJwt(userExist);
+
+      return res.status(200).json({
+        userExist,
+        token,
+        message: "Authentication successful.",
+        statusMessage: HttpResponseMessage.POST_SUCCESS,
+      });
     });
   } catch (err) {
     console.error(`Error authenticating user: ${JSON.stringify(req.body)}, error: ${err}`);

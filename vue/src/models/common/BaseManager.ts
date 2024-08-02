@@ -1,4 +1,4 @@
-import axios from "axios";
+import jwtAxios from "../../config/axios/jwtAxios";
 import { nodeConfig } from "../../config/env";
 import { useAlertStore } from "../../stores/alertStore";
 import { ResponseStatus } from "./ResponseStatus";
@@ -11,7 +11,7 @@ abstract class BaseManager<T> {
   public abstract new(): T;
 
   public async post(formData: FormData, status: boolean = false): Promise<T> {
-    const response = await axios.post(
+    const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}`,
       formData
     );
@@ -27,7 +27,7 @@ abstract class BaseManager<T> {
   }
 
   public async put(formData: FormData, status: boolean = false): Promise<T> {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}`,
       formData
     );
@@ -43,7 +43,7 @@ abstract class BaseManager<T> {
   }
 
   public async delete(id: number, status: boolean = false): Promise<T> {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/${id}`
     );
     if (status) {

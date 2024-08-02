@@ -44,7 +44,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     const userStore = useUserStore();
-    const isTokenVerified: boolean = await userStore.verifyToken();
+    const isTokenVerified: boolean = to.path !== "/" ? await userStore.verifyToken() : false;
     const isUser: false | IUser = userStore.info();
 
     const permissionStore = usePermissionStore();

@@ -1,11 +1,11 @@
-import axios from "axios";
 import { IChip, IChips, TDocumentType } from "../../interfaces/document/DocumentTypes";
 import { nodeConfig } from "../../config/env";
-import { Endpoints } from "../../config/Endpoints";
+import { Endpoints } from "../../config/axios/Endpoints";
 import { Chip } from "./Chip";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { useAlertStore } from "../../stores/alertStore";
+import jwtAxios from "../../config/axios/jwtAxios";
 
 class CategoriesManager {
   constructor() {}
@@ -21,7 +21,7 @@ class CategoriesManager {
       departmentName: reqData.departmentName,
     };
 
-    const response = await axios.post(
+    const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}`,
       requestData
     );
@@ -43,7 +43,7 @@ class CategoriesManager {
 
   public get = async (reqData: IChips, whereDocType?: TDocumentType): Promise<Array<IChip>> => {
     const departmentName: string = reqData.departmentName;
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${departmentName}${
         whereDocType ? `/${whereDocType}` : ""
       }`
@@ -57,7 +57,7 @@ class CategoriesManager {
   ): Promise<Array<IChip> | IResponseStatus> => {
     const id: string = reqData.id;
     const name: string = reqData.name;
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${id}/${name}`
     );
     if (status) {
@@ -79,7 +79,7 @@ class CategoriesManager {
     id: number,
     status: boolean = false
   ): Promise<Array<IChip> | IResponseStatus> => {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${id}`
     );
     if (status) {

@@ -1,6 +1,5 @@
-import axios from "axios";
 import { nodeConfig } from "../../config/env";
-import { Endpoints } from "../../config/Endpoints";
+import { Endpoints } from "../../config/axios/Endpoints";
 import { NewsEntity } from "./NewsEntity";
 import { INewsEntity } from "../../interfaces/editor/INewsEntity";
 import { usePermissionStore } from "../../stores/permissionStore";
@@ -10,6 +9,7 @@ import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { useUserStore } from "../../stores/userStore";
 import { SimpleUser } from "../user/SimpleUser";
 import { useAlertStore } from "../../stores/alertStore";
+import jwtAxios from "../../config/axios/jwtAxios";
 
 class NewsManager {
   constructor() {}
@@ -20,7 +20,7 @@ class NewsManager {
     formData: FormData,
     status: boolean = false
   ): Promise<Array<INewsEntity> | IResponseStatus> => {
-    const response = await axios.post(
+    const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.News}`,
       formData
     );
@@ -43,7 +43,7 @@ class NewsManager {
     formData: FormData,
     status: boolean = false
   ): Promise<Array<INewsEntity> | IResponseStatus> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.News}`,
       formData
     );
@@ -73,7 +73,7 @@ class NewsManager {
       const user: SimpleUser = new SimpleUser().build(userInfo);
       conf = confidentiality ? (await usePermissionStore().get(user)).confidentiality : "secret";
     }
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.News}/${conf}/${skip}/${take}`
     );
     return response.data.news;
@@ -83,7 +83,7 @@ class NewsManager {
     id: number,
     status: boolean = false
   ): Promise<Array<INewsEntity> | IResponseStatus> => {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.News}/${id}`
     );
     if (status) {

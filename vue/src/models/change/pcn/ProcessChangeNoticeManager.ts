@@ -1,5 +1,4 @@
-import axios from "axios";
-import { Endpoints } from "../../../config/Endpoints";
+import { Endpoints } from "../../../config/axios/Endpoints";
 import { nodeConfig } from "../../../config/env";
 import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../../common/ResponseStatus";
@@ -7,6 +6,7 @@ import { IProcessChangeRequest } from "../../../interfaces/change/IProcessChange
 import { ProcessChangeNoticeFields } from "./ProcessChangeNoticeFields";
 import { IProcessChangeNoticeUpdates } from "../../../interfaces/change/IProcessChangeNoticeUpdates";
 import { useAlertStore } from "../../../stores/alertStore";
+import jwtAxios from "../../../config/axios/jwtAxios";
 
 class ProcessChangeNoticeManager {
   constructor() {}
@@ -17,7 +17,7 @@ class ProcessChangeNoticeManager {
     formData: FormData,
     status: boolean = false
   ): Promise<Array<IProcessChangeRequest> | IResponseStatus> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}`,
       formData
     );
@@ -41,7 +41,7 @@ class ProcessChangeNoticeManager {
     assessment: "approve" | "rejection",
     status: boolean = true
   ): Promise<{ assessed: IProcessChangeRequest }> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/${assessment}`,
       formData
     );
@@ -67,7 +67,7 @@ class ProcessChangeNoticeManager {
     id: number,
     status: boolean = false
   ): Promise<Array<IProcessChangeRequest> | IResponseStatus> => {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/${id}`
     );
     if (status) {
@@ -86,21 +86,21 @@ class ProcessChangeNoticeManager {
   };
 
   public get = async (_blank: any): Promise<Array<IProcessChangeRequest>> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}`
     );
     return response.data.got;
   };
 
   public getNotice = async (id: number): Promise<IProcessChangeRequest> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/${id}`
     );
     return response.data.got;
   };
 
   public getNoticeUpdates = async (id: number): Promise<Array<IProcessChangeNoticeUpdates>> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeNotice}/updates/${id}`
     );
     return response.data.got;

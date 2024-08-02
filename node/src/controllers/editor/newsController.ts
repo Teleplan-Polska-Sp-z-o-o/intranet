@@ -8,7 +8,6 @@ import { serverConfig } from "../../config/server";
 import { EntityManager } from "typeorm";
 import he from "he";
 import { TConfidentiality } from "../../interfaces/user/UserTypes";
-import { MulterRequest } from "../../interfaces/common/MulterRequest";
 import { UPLOADS_PATH } from "../../config/routeConstants";
 
 const saveNewsFile = (file: any, ref: string, bg: boolean): string => {
@@ -64,7 +63,7 @@ const removeUnusedImages = async (manager: EntityManager) => {
   });
 };
 
-const addNews = async (req: MulterRequest, res: Response) => {
+const addNews = async (req: Request, res: Response) => {
   try {
     switch (req.headers.ckeditor) {
       case "true":
@@ -114,7 +113,7 @@ const addNews = async (req: MulterRequest, res: Response) => {
   }
 };
 
-const editNews = async (req: MulterRequest, res: Response) => {
+const editNews = async (req: Request, res: Response) => {
   try {
     const body = req.body;
     const base = JSON.parse(body.base);

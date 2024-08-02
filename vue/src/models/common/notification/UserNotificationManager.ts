@@ -1,5 +1,4 @@
-import axios from "axios";
-import { Endpoints } from "../../../config/Endpoints";
+import { Endpoints } from "../../../config/axios/Endpoints";
 import { nodeConfig } from "../../../config/env";
 import { IUser } from "../../../interfaces/user/UserTypes";
 import { INotificationEntity } from "../../../interfaces/user/notification/INotificationEntity";
@@ -7,6 +6,7 @@ import { UserNotification } from "./UserNotification";
 import { ENotificationState } from "../../../interfaces/user/notification/ENotificationState";
 import { useAlertStore } from "../../../stores/alertStore";
 import { ResponseStatus } from "../ResponseStatus";
+import jwtAxios from "../../../config/axios/jwtAxios";
 
 class UserNotificationManager {
   constructor() {}
@@ -20,14 +20,14 @@ class UserNotificationManager {
     id: number,
     state: ENotificationState
   ): Promise<UserNotification> => {
-    const response = await axios.put(
+    const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Notification}/${user.id}/${id}/${state}`
     );
     return response.data.edited;
   };
 
   public delete = async (id: number, status: boolean = false): Promise<UserNotification> => {
-    const response = await axios.delete(
+    const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Notification}/${id}`
     );
     if (status) {
@@ -46,7 +46,7 @@ class UserNotificationManager {
     state?: ENotificationState,
     limit?: number
   ): Promise<Array<UserNotification>> => {
-    const response = await axios.get(
+    const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Notification}/${user.id}/${
         state ? state : "all"
       }/${limit}`

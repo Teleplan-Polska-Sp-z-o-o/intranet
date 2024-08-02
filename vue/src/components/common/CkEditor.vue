@@ -3,7 +3,7 @@ import { ref, watchEffect } from "vue";
 import { Editor } from "./ckeditor";
 import { useEditorStore } from "../../stores/editorStore";
 import { nodeConfig } from "../../config/env";
-import { Endpoints } from "../../config/Endpoints";
+import { Endpoints } from "../../config/axios/Endpoints";
 
 const emit = defineEmits(["ref", "editorDataChange"]);
 

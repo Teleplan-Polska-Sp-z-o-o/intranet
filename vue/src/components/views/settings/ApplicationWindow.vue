@@ -3,7 +3,7 @@ import { computed, ref, watch } from "vue";
 import axios from "axios";
 import { useTheme } from "vuetify";
 import { nodeConfig } from "../../../config/env";
-import { Endpoints } from "../../../config/Endpoints";
+import { Endpoints } from "../../../config/axios/Endpoints";
 import { ISettings } from "../../../interfaces/user/UserTypes";
 import { Settings } from "../../../models/user/Settings";
 // import { IResponseStatus } from "../../../interfaces/common/IResponseStatus";

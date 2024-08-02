@@ -1,6 +1,5 @@
 import { Not } from "typeorm";
 import { Scheduler } from "../models/common/Scheduler";
-import { UserHeartbeat } from "../models/websocket/UserHeartbeat";
 import { DocumentChange } from "../orm/entity/change/documents/DocumentChangeEntity";
 import { dataSource } from "./dataSource";
 import { User } from "../orm/entity/user/UserEntity";
@@ -8,17 +7,6 @@ import { EDCNotificationVariant } from "../interfaces/user/notification/ENotific
 
 const mountScheduledTasks = () => {
   const scheduler = new Scheduler();
-
-  // Schedule the cleanup task to run every day at midnight
-  scheduler.scheduleTask(
-    "0 0 * * *",
-    () => {
-      UserHeartbeat.cleanOldRecords()
-        .then(() => console.log("Old records cleaned up successfully"))
-        .catch((err) => console.error("Failed to clean old records:", err));
-    },
-    "CleanOldRecordsTask"
-  );
 
   // Schedule the cleanup task to run every day at 8 AM local time
   scheduler.scheduleTask(
