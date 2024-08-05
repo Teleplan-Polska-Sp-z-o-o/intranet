@@ -10,8 +10,7 @@
     "resolveJsonModule": true, // Enable importing JSON files
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "skipLibCheck": true,
-    "typeRoots": ["./node_modules/@types", "/.types"]
+    "skipLibCheck": true
   },
   "include": ["src/**/*", "types.d.ts"]
 }

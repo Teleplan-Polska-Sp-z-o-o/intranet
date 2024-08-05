@@ -5,9 +5,10 @@ import { UserSessionManager } from "../../models/user/session/UserSessionManager
 
 const jwtMiddle = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const openPaths = ["/api/user/auth"];
+    const openPaths = ["/api/user/auth", "/uploads/documents/"];
 
-    if (openPaths.includes(req.path)) {
+    const isPathOpen = openPaths.some((path) => req.path.startsWith(path));
+    if (isPathOpen) {
       return next();
     }
 

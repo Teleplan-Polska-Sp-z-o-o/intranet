@@ -5,9 +5,6 @@ import { nodeConfig } from "../env";
 
 const jwtAxios = axios.create({
   baseURL: `${nodeConfig.origin}:${nodeConfig.port}`,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 jwtAxios.interceptors.request.use(

@@ -25,6 +25,8 @@ const addDocument = async (req: Request, res: Response) => {
     const issuer: string = JSON.parse(body.issuer);
     const uploadedFiles = req.files;
 
+    console.log(req.files);
+
     await dataSource.transaction(async (transactionalEntityManager) => {
       const subcategory = await transactionalEntityManager.getRepository(Subcategory).findOne({
         where: {
