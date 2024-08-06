@@ -1,5 +1,5 @@
 // authorization before front page
-import AuthView from "../../views/AuthView.vue";
+import AuthView from "../../views/auth/AuthView.vue";
 
 // base routes
 import { pagesRoutes } from "./pagesRoutes";

@@ -1,6 +1,21 @@
 const uaC = {
   common: {
     default_layout: {
+      auth: {
+        rules: {
+          login_req: "Необхідно ввести логін",
+          login_format: "Будь ласка, введіть логін у форматі: 'ім'я.прізвище'",
+          domain_req: "Необхідно вказати домен",
+          password_req: "Необхідно ввести пароль",
+        },
+        template: {
+          domain_label: "Домен входу в комп'ютер",
+          login_label: "Логін для входу в комп'ютер",
+          password_label: "Пароль для входу в комп'ютер",
+          password_massage: "Забули пароль?",
+          proceed: "Продовжити",
+        },
+      },
       bar: "Інтранет",
       drawer: {
         hello: "Pryvit",

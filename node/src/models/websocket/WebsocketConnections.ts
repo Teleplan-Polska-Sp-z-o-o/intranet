@@ -1,7 +1,5 @@
-import { dataSource } from "../../config/dataSource";
 import { IUser } from "../../interfaces/user/UserTypes";
 import { ISocketConnection } from "../../interfaces/websocket/ISocketConnection";
-import { WebSocket } from "ws";
 
 class WebsocketConnections {
   private static instance: WebsocketConnections;
@@ -16,15 +14,18 @@ class WebsocketConnections {
     return WebsocketConnections.instance;
   }
 
-  public async addConnection(conn: ISocketConnection): Promise<void> {
+  public addConnection(conn: ISocketConnection): void {
     this.connections.push(conn);
   }
 
-  public async replaceConnection(existingIndex: number, conn: ISocketConnection): Promise<void> {
-    const existingConnection = this.connections[existingIndex];
-    if (existingConnection.ws.readyState !== 1) {
-      this.connections[existingIndex] = conn;
-    }
+  // public async replaceConnection(existingIndex: number, conn: ISocketConnection): Promise<void> {
+  //   const existingConnection = this.connections[existingIndex];
+  //   if (existingConnection.ws.readyState !== 1) {
+  //     this.connections[existingIndex] = conn;
+  //   }
+  // }
+  public replaceConnection(existingIndex: number, conn: ISocketConnection): void {
+    this.connections[existingIndex] = conn;
   }
 
   public findIndexOfConnection(parsedMsg: { user: IUser }): number {
@@ -33,7 +34,7 @@ class WebsocketConnections {
     });
   }
 
-  public async removeClosedConnections(): Promise<void> {
+  public removeClosedConnections(): void {
     this.connections = this.connections.filter((connection) => {
       return connection.ws.readyState === 1;
     });

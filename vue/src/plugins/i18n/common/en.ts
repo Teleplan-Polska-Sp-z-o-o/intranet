@@ -1,6 +1,21 @@
 const enC = {
   common: {
     default_layout: {
+      auth: {
+        rules: {
+          login_req: "Login is required",
+          login_format: "Please enter the login in the format: 'name.surname'",
+          domain_req: "Domain is required",
+          password_req: "Password is required",
+        },
+        template: {
+          domain_label: "Computer Login Domain",
+          login_label: "Computer Login",
+          password_label: "Computer Password",
+          password_massage: "Forgot password?",
+          proceed: "Proceed",
+        },
+      },
       bar: "Intranet",
       drawer: {
         hello: "Hello",

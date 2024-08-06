@@ -5,7 +5,7 @@ import "vue-pdf-embed/dist/style/index.css";
 import "vue-pdf-embed/dist/style/annotationLayer.css";
 import "vue-pdf-embed/dist/style/textLayer.css";
 import { useI18n } from "vue-i18n";
-import { DocumentViewer } from "../models/document/DocumentViewer/DocumentViewer";
+import { DocumentViewer } from "../../models/document/DocumentViewer/DocumentViewer";
 
 const loading: Ref<boolean> = ref<boolean>(true);
 const loaded: Ref<boolean> = ref<boolean>(false);

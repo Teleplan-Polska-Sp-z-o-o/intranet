@@ -12,7 +12,7 @@ import { NotificationBuilder } from "../../user/NotificationBuilder";
 import { ENotificationSource } from "../../../../interfaces/user/notification/ENotificationSource";
 import { ENotificationAction } from "../../../../interfaces/user/notification/ENotificationAction";
 import { saveNotification } from "../../../../controllers/common/notificationController";
-import { getWebSocketConnections } from "../../../../controllers/common/websocketController";
+import { getWebSocketConnections } from "../../../../models/websocket/WebsocketManager";
 import { EmailHandler } from "../../../../models/common/Email/EmailHandler";
 import { DCREmailOptions } from "../../../../models/common/Email/options/DCEmailOptions";
 import {

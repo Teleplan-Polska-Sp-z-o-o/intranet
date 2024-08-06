@@ -2,7 +2,7 @@
 import { computed, ref, watch } from "vue";
 // import weather from "../components/common/weather.vue";
 import { useI18n } from "vue-i18n";
-// import frequentlyUsed from "../components/views/home/frequentlyUsed.vue";
+import frequentlyUsed from "../components/views/home/frequentlyUsed.vue";
 import { nodeConfig } from "../config/env";
 import { INewsEntity } from "../interfaces/editor/INewsEntity";
 import { INewsCard } from "../interfaces/editor/INewsCard";
@@ -16,6 +16,7 @@ const constructImgSrc = (item: INewsEntity): string => {
   const backend = `${nodeConfig.origin}:${nodeConfig.port}/uploads/news/`;
   return `${backend}${item.bgImage}`;
 };
+78;
 
 const newsPage = ref<number>(0);
 const news = ref<Array<INewsCard>>([]);
@@ -62,9 +63,9 @@ const exploreBtn = computed(() => t("common.default_layout.pages.home.card.explo
 
 <template>
   <v-container class="layout-view-container d-flex flex-column bg-background pt-0 mt-0">
-    <!-- <v-row>
+    <v-row>
       <frequently-used />
-    </v-row> -->
+    </v-row>
     <v-row>
       <v-col class="pt-0" :cols="boardCols">
         <v-infinite-scroll :items="news" :onLoad="load" color="secondary">

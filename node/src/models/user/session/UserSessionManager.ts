@@ -36,10 +36,16 @@ class UserSessionManager {
     if (this.activeUsers.has(userId)) {
       this.updateUserTimeout(userId, timeoutDuration);
     } else {
-      await dataSource.transaction(async (entityManager) => {
-        await UserLoginHelper.saveLoginDetails(userId, entityManager);
-      });
-      this.setUserTimeout(userId, timeoutDuration);
+      try {
+        await dataSource.transaction(async (entityManager) => {
+          const session = await UserLoginHelper.saveLoginDetails(userId, entityManager);
+          if (session) {
+            this.setUserTimeout(userId, timeoutDuration);
+          }
+        });
+      } catch (error) {
+        console.error(`Error adding user session: ${error}`);
+      }
     }
   }
 
@@ -90,6 +96,19 @@ class UserSessionManager {
    */
   public isUserActive(userId: number): boolean {
     return this.activeUsers.has(userId);
+  }
+
+  /**
+   * Clears all active sessions, logging users out and cleaning up resources.
+   */
+  public async clearAllSessions(): Promise<void> {
+    for (const userId of this.activeUsers.keys()) {
+      clearTimeout(this.activeUsers.get(userId)!);
+      await dataSource.transaction(async (entityManager) => {
+        await UserLoginHelper.updateLogoutDetails(userId, entityManager);
+      });
+    }
+    this.activeUsers.clear();
   }
 }
 

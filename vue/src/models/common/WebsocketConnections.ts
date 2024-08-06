@@ -2,6 +2,7 @@ import { nodeConfig } from "../../config/env";
 import { IUserEntity } from "../../interfaces/user/IUserEntity";
 import { useUserStore } from "../../stores/userStore";
 import { useWebsocketStore } from "../../stores/websocketStore";
+import { SimpleUser } from "../user/SimpleUser";
 
 class WebsocketConnections {
   private static instance: WebSocket;
@@ -13,11 +14,13 @@ class WebsocketConnections {
       const user: IUserEntity | false = useUserStore().info();
       if (user) {
         WebsocketConnections.instance = new WebSocket(
-          `${nodeConfig.origin?.replace("http", "ws")}:${nodeConfig.port}/`
+          `${nodeConfig.origin?.replace("http", "ws")}:${nodeConfig.port}/ws`
         );
         WebsocketConnections.instance.onopen = () => {
           console.log(`WebSocket connection established.`);
-          WebsocketConnections.instance.send(JSON.stringify({ user }));
+          WebsocketConnections.instance.send(
+            JSON.stringify({ user: new SimpleUser().build(user) })
+          );
         };
 
         WebsocketConnections.instance.onerror = () => {

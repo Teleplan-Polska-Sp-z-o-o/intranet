@@ -1,6 +1,21 @@
 const plC = {
   common: {
     default_layout: {
+      auth: {
+        rules: {
+          login_req: "Login jest wymagany",
+          login_format: "Proszę wpisać login w formacie: 'imię.nazwisko'",
+          domain_req: "Domena jest wymagana",
+          password_req: "Hasło jest wymagane",
+        },
+        template: {
+          domain_label: "Domena logowania do komputera",
+          login_label: "Login do komputera",
+          password_label: "Hasło do komputera",
+          password_massage: "Zapomniałeś hasła?",
+          proceed: "Kontynuuj",
+        },
+      },
       bar: "Intranet",
       drawer: {
         hello: "Cześć",

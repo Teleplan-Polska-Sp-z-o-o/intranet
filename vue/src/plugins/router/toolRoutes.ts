@@ -2,7 +2,7 @@ import DefaultLayout from "../../layouts/DefaultLayout.vue";
 
 import DocumentsView from "../../views/tools/DocumentsView.vue";
 import MatrixView from "../../views/tools/MatrixView.vue";
-import DocumentView from "../../views/DocumentView.vue";
+import DocumentView from "../../views/documents/DocumentView.vue";
 import AdminView from "../../views/tools/AdminView.vue";
 
 import ChangeView from "../../views/tools/ChangeView.vue";
