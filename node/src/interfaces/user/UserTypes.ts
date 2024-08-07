@@ -84,5 +84,14 @@ export {
   PermissionAdminSubgroup,
   PermissionGroups,
 };
-
 export { ISettings, IUser, ILogin, IUserInfo, TConfidentiality };
+
+export namespace UserTypes {
+  export namespace ToolStatistics {
+    export interface IFields {
+      id: number;
+      toolName: string;
+      enterCount: number;
+    }
+  }
+}

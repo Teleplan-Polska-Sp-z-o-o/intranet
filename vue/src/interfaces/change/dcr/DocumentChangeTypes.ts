@@ -1,3 +1,4 @@
+import { CommonTypes } from "../../common/CommonTypes";
 import { IFileItem } from "../../document/DocumentTypes";
 
 namespace DocumentChangeTypes {
@@ -14,12 +15,6 @@ namespace DocumentChangeTypes {
   export interface TSource {
     title: string;
     value: TSourceValue;
-  }
-
-  interface IOrmBase {
-    ormCreateDate: Date;
-    ormUpdateDate: Date | null;
-    ormVersion: number;
   }
 
   interface IDocumentChangeSelfProcessing {
@@ -83,7 +78,7 @@ namespace DocumentChangeTypes {
     timeline: string;
   }
 
-  export type TDocumentChange = IOrmBase &
+  export type TDocumentChange = CommonTypes.OrmTypes.IOrmBase &
     IDocumentChangeSelfProcessing &
     IDocumentChangeFields &
     IDocumentChangeReview &

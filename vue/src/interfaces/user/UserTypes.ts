@@ -1,4 +1,5 @@
 import { UserEntity } from "../../models/user/UserEntity";
+import { CommonTypes } from "../common/CommonTypes";
 
 interface IPermission {
   id: number;
@@ -87,6 +88,19 @@ interface IUserLoginDetails {
   loginTime: string;
   logoutTime: string | null;
   duration: number;
+}
+
+export namespace UserTypes {
+  export namespace ToolStatistics {
+    interface IFields {
+      id: number;
+      toolName: string;
+      enterCount: number;
+    }
+
+    export type StatisticsEntity = CommonTypes.OrmTypes.IOrmBase & IFields;
+    export type ToolFilteredStatistics = CommonTypes.Tools.IFilter & StatisticsEntity;
+  }
 }
 
 export { type IUserLoginDetails };

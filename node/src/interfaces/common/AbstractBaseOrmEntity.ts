@@ -1,4 +1,4 @@
-import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
 
 interface ICreate {
   /**

@@ -4,6 +4,7 @@ import {
   IPermissionGroups,
   IUser,
   StaticGroups,
+  TPermissionGroup,
   UserGroup,
   UserSubgroup,
 } from "../interfaces/user/UserTypes";
@@ -58,7 +59,7 @@ export const usePermissionStore = defineStore("auth", () => {
     T extends {
       href: string;
       meta: {
-        group: string;
+        group: TPermissionGroup;
         baseHref: string;
       };
     }

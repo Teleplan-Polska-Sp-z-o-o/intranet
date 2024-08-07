@@ -3,7 +3,7 @@ import { File } from "multer";
 
 declare module "express-serve-static-core" {
   interface Request {
-    user: JwtPayload;
+    user: SimpleUser;
     files?: File[];
   }
 }

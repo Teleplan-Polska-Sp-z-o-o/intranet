@@ -2,7 +2,7 @@
 import { computed, ref, watch } from "vue";
 // import weather from "../components/common/weather.vue";
 import { useI18n } from "vue-i18n";
-import frequentlyUsed from "../components/views/home/frequentlyUsed.vue";
+import UsedToolsShortcuts from "../components/views/home/UsedToolsShortcuts.vue";
 import { nodeConfig } from "../config/env";
 import { INewsEntity } from "../interfaces/editor/INewsEntity";
 import { INewsCard } from "../interfaces/editor/INewsCard";
@@ -64,7 +64,7 @@ const exploreBtn = computed(() => t("common.default_layout.pages.home.card.explo
 <template>
   <v-container class="layout-view-container d-flex flex-column bg-background pt-0 mt-0">
     <v-row>
-      <frequently-used />
+      <used-tools-shortcuts />
     </v-row>
     <v-row>
       <v-col class="pt-0" :cols="boardCols">

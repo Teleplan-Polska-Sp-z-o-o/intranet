@@ -4,6 +4,8 @@ import { getLDAPConfig } from "../../config/ldap";
 import { serverConfig } from "../../config/server";
 import { JwtPayload, Secret, SignOptions, sign, verify } from "jsonwebtoken";
 import { User } from "../../orm/entity/user/UserEntity";
+import { SimpleUser } from "./SimpleUser";
+import { decode } from "punycode";
 
 class LDAP {
   username: string;
@@ -29,6 +31,15 @@ class LDAP {
       "domain" in payload
     );
   }
+
+  private isSimpleUser = (user: JwtPayload): user is SimpleUser => {
+    return (
+      user &&
+      typeof user.id === "number" &&
+      typeof user.username === "string" &&
+      typeof user.domain === "string"
+    );
+  };
 
   public passport(user: object) {
     if (!this.isUser(user)) {
@@ -103,12 +114,20 @@ class LDAP {
     }
   };
 
-  public verifyJwt = (jwtToken: string): JwtPayload | false => {
+  public verifyJwt = (
+    jwtToken: string,
+    checkAndReturnSimpleUser: boolean = false
+  ): JwtPayload | SimpleUser | false => {
     try {
       const token: string = this.isJson(jwtToken) ? JSON.parse(jwtToken) : jwtToken;
       const secretKey: Secret = serverConfig.apiKey;
 
       const decoded: JwtPayload = verify(token, secretKey) as JwtPayload;
+
+      if (checkAndReturnSimpleUser) {
+        if (this.isSimpleUser(decoded)) return decoded as SimpleUser;
+        else return false;
+      }
 
       return decoded; // payload
     } catch (error) {

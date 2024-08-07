@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { WebsocketConnections } from "../models/common/WebsocketConnections";
 import { useUserStore } from "./userStore";
+import { useRouter } from "vue-router";
 // import { ENotificationSource } from "../interfaces/user/notification/ENotificationSource";
 // import { INotificationEntity } from "../interfaces/user/notification/INotificationEntity";
 // import { UserNotification } from "../models/common/notification/UserNotification";
@@ -65,7 +66,10 @@ export const useWebsocketStore = defineStore("websocket", () => {
             checkConnection();
           } else closeConnection();
         })
-        .catch((error) => {
+        .catch((error: any) => {
+          if (error.response && error.response.status === 401) {
+            useRouter().push("/");
+          }
           console.error("Token verification failed with error:", error.message || error);
         });
     }, 300000);

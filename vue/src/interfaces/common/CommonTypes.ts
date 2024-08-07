@@ -1,3 +1,5 @@
+import { TPermissionGroup } from "../user/UserTypes";
+
 namespace CommonTypes {
   export namespace FileTypes {
     export enum DocEndpoint {
@@ -16,6 +18,24 @@ namespace CommonTypes {
     } as const;
 
     export type Language = (typeof LANGUAGES)[keyof typeof LANGUAGES];
+  }
+
+  export namespace OrmTypes {
+    export interface IOrmBase {
+      ormCreateDate: Date;
+      ormUpdateDate: Date | null;
+      ormVersion: number;
+    }
+  }
+
+  export namespace Tools {
+    export interface IFilter {
+      href: string;
+      meta: {
+        group: TPermissionGroup;
+        baseHref: string;
+      };
+    }
   }
 }
 

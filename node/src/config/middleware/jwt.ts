@@ -2,6 +2,7 @@ import { HttpResponseMessage } from "../../enums/response";
 import { LDAP } from "../../models/user/LDAP";
 import { Request, Response, NextFunction } from "express";
 import { UserSessionManager } from "../../models/user/session/UserSessionManager";
+import { SimpleUser } from "../../models/user/SimpleUser";
 
 const jwtMiddle = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -21,7 +22,7 @@ const jwtMiddle = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    const result = new LDAP().verifyJwt(token.split(" ").at(1));
+    const result = new LDAP().verifyJwt(token.split(" ").at(1), true) as SimpleUser | false; // because of checkAndReturnSimpleUser: true;
     if (!result) {
       return res.status(401).json({
         message: "Invalid token.",

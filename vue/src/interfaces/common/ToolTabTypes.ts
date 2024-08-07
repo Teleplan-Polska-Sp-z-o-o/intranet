@@ -1,3 +1,5 @@
+import { TPermissionGroup } from "../user/UserTypes";
+
 interface Tool {
   id: number;
   name: string;
@@ -5,7 +7,7 @@ interface Tool {
   icon: string;
   image: string;
   meta: {
-    group: string;
+    group: TPermissionGroup;
     baseHref: string;
   };
 }

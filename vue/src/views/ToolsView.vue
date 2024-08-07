@@ -4,6 +4,8 @@ import { usePermissionStore } from "../stores/permissionStore";
 import { useUserStore } from "../stores/userStore";
 import { ref } from "vue";
 import { Tool } from "../interfaces/common/ToolTabTypes";
+import { UserToolStatisticsManager } from "../models/user/UserToolStatisticsManager";
+import { TPermissionGroup } from "../interfaces/user/UserTypes";
 
 let screen: string;
 const screenWidth: number = window.innerWidth;
@@ -35,7 +37,7 @@ const tools: Tool[] = [
     name: "documents",
     href: "",
     icon: "file-document",
-    image: "../tools/docs.png",
+    image: "../tools/documents.png",
     meta: {
       group: "documents",
       baseHref: "/tool/documents/browse/",
@@ -68,7 +70,7 @@ const tools: Tool[] = [
     name: "boss",
     href: "",
     icon: "account-tie",
-    image: "../tools/boss.png",
+    image: "../tools/admin.png",
     meta: {
       group: "admin",
       baseHref: "/tool/admin/browse/",
@@ -85,6 +87,11 @@ if (userInfo) {
 }
 
 const router = useRouter();
+
+const push = async (href: string, toolName: TPermissionGroup): Promise<void> => {
+  await new UserToolStatisticsManager().post(toolName);
+  router.push({ path: href });
+};
 </script>
 
 <template>
@@ -95,7 +102,7 @@ const router = useRouter();
           class="ma-4 bg-surface-1 text-on-surface rounded-xl elevation-6"
           rel="noopener"
           :href="undefined"
-          @click="router.push({ path: tool.href })"
+          @click="push(tool.href, tool.meta.group)"
         >
           <v-container>
             <v-row class="align-center">
