@@ -25,7 +25,7 @@ Reconext Intranet leverages a unified technological ecosystem, seamlessly integr
 1. Clone the project repository by running the following command in your desired server directory:
 
    ```bash
-   git clone https://github.com/MaciejZab/node-vue-postgres.git
+   git clone https://github.com/Teleplan-Polska-Sp-z-o-o/intranet.git
    ```
 
 2. Navigate to the project `root` directory and rename 'toAdjust.env' file to '.env', then configure settings according to your requirements.
@@ -143,13 +143,6 @@ To facilitate seamless development, it's important to note that Vue and Node app
    sudo git merge <source_branch>
    ```
 
-   Note: If there are merge conflicts, you will need to resolve them manually. Git will mark the conflicts in the affected files. After resolving conflicts, add the changed files and commit the merge.
-
-   ```bash
-   sudo git add <conflicted_files>
-   sudo git commit -m "Merge branch '<source_branch>' into <target_branch>"
-   ```
-
    Note: Ensure to push your changes after resolving conflicts.
 
 ## API
@@ -161,11 +154,11 @@ To access API endpoints, include the JWT in the `Authorization` header of your r
 - **Header Name:** `Authorization`
 - **Header Value:** `Bearer <your-jwt-token>`
 
-```http
-GET /api/protected-endpoint HTTP/1.1
-Host: your-domain.com
-Authorization: Bearer your-jwt-token
-```
+  ```http
+   GET /api/protected-endpoint HTTP/1.1
+   Host: your-domain.com
+   Authorization: Bearer your-jwt-token
+  ```
 
 ### User Session Management
 
@@ -178,6 +171,8 @@ Reconext Intranet uses JWT (JSON Web Token) for user authentication and session 
 3. **Automatic Timeout**: If the user is inactive for a period longer than the configured timeout, they will be automatically removed from the active session list.
 
 4. **Session Extension**: Each valid API request extends the user's session by resetting the timeout duration.
+
+5. **Container Changes Trigger Removal**: When the application container is updated or restarted, all active sessions are cleared, ensuring that users are logged out and required to reauthenticate upon reconnecting.
 
 ### Endpoints
 
@@ -204,7 +199,7 @@ Migrations are a way to manage database schema changes over time. Their purpose 
 To **create a migration** run the following command within the `/node` directory:
 
 ```bash
-npm run typeorm migration:create ./src/orm/migrations/migrationName
+npm run typeorm migration:create ./src/orm/migrations/<migrationName>
 ```
 
 There are two methods you must fill with your migration code: `up` and `down`. up has to contain the code you need to perform the migration. down has to revert whatever up changed. down method is used to revert the last migration.
@@ -212,16 +207,16 @@ There are two methods you must fill with your migration code: `up` and `down`. u
 To **create/update database schema** run the following command within the `/node` directory:
 
 ```bash
-   npm run typeorm migration:run -- -d ./src/config/orm/dataSource.ts
+   npm run typeorm migration:run -- -d ./src/config/dataSource.ts
 ```
 
 To **revert database schema** run the following command within the `/node` directory:
 
 ```bash
-   npm run typeorm migration:revert -- -d ./src/config/orm/dataSource.ts
+   npm run typeorm migration:revert -- -d ./src/config/dataSource.ts
 ```
 
-Migrations are stored in the directory specified by the `migrations` option in `node/src/config/orm/dataSource.ts`. The configuration looks like this:
+Migrations are stored in the directory specified by the `migrations` option in `node/src/config/dataSource.ts`. The configuration looks like this:
 
 migrations: [`${__dirname}/../../orm/migrations/*Migration.ts`]
 
