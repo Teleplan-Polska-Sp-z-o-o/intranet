@@ -106,8 +106,10 @@ const plT = {
           table: {
             toolbar: {
               departments: "Działy",
-              workstations: "Stanowiska pracy",
-              programs: "Programy",
+              // workstations: "Stanowiska pracy",
+              // programs: "Programy",
+              categories: "Kategorie",
+              subcategories: "Podkategorie",
             },
             header: {
               name: "Nazwa",
@@ -141,11 +143,6 @@ const plT = {
             },
           },
         },
-      },
-      departments: {
-        department: "Dział",
-        program: "Program",
-        workstation: "Stanowisko pracy",
       },
     },
     admin: {

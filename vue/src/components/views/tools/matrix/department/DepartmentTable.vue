@@ -36,15 +36,15 @@ watch(
     if (cat) {
       level.value = ILevel.Sub;
       manager.value = new SubcategoriesManager();
-      tableItem.value = "workstations";
+      tableItem.value = "subcategories"; // prev "workstations"
     } else if (dep) {
       level.value = ILevel.Cat;
       manager.value = new CategoriesManager();
-      tableItem.value = "programs";
+      tableItem.value = "categories"; // prev "programs"
     } else {
       level.value = ILevel.Dep;
       manager.value = new DepartmentsManager();
-      tableItem.value = "departments";
+      tableItem.value = "departments"; // prev "departments"
     }
 
     chips.value.departmentName = dep === undefined ? "" : dep;

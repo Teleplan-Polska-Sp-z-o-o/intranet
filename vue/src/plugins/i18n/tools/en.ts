@@ -106,8 +106,10 @@ const enT = {
           table: {
             toolbar: {
               departments: "Departments",
-              workstations: "Workstations",
-              programs: "Programs",
+              // workstations: "Workstations",
+              // programs: "Programs",
+              categories: "Categories",
+              subcategories: "Subcategories",
             },
             header: {
               name: "Name",
@@ -141,11 +143,6 @@ const enT = {
             },
           },
         },
-      },
-      departments: {
-        department: "Department",
-        program: "Program",
-        workstation: "Workstation",
       },
     },
     admin: {

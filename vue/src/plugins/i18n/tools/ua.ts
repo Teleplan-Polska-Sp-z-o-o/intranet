@@ -106,8 +106,10 @@ const uaT = {
           table: {
             toolbar: {
               departments: "Відділи",
-              workstations: "Робочі місця",
-              programs: "Програми",
+              // workstations: "Робочі місця",
+              // programs: "Програми",
+              categories: "Категорії",
+              subcategories: "Підкатегорії",
             },
             header: {
               name: "Назва",
