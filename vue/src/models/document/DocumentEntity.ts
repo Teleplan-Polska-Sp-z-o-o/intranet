@@ -8,7 +8,8 @@ export class DocumentEntity implements IDocumentEntity {
   name: string;
   description: string;
   revision: number;
-  subcategory: { name: string; id: number };
+  // subcategory: { name: string; id: number };
+  folderStructure: string[];
   competences: string[];
   languages: string[];
   confidentiality: TConfidentiality;
@@ -25,7 +26,7 @@ export class DocumentEntity implements IDocumentEntity {
     this.name = "";
     this.description = "";
     this.revision = 0;
-    this.subcategory = { name: "", id: 0 };
+    this.folderStructure = [];
     this.competences = [];
     this.languages = [];
     this.confidentiality = "public";

@@ -129,7 +129,7 @@ const docxNumberComplete: ComputedRef<boolean> = computed(() => {
 // );
 const documents = ref<Array<{ name: string; ref: string }>>([]);
 (async () => {
-  const documentManager: DocumentManager = new DocumentManager();
+  const documentManager: DocumentManager = new DocumentManager("all", true);
   const options: Array<IDocumentEntity> = await documentManager.get(new Chips());
   documents.value = options
     .filter((doc) =>
@@ -176,7 +176,7 @@ const highestRevisionByDocumentNumber = ref<number>(0);
 watch(
   () => documentChangeFields.value.docxNumber,
   async (newDocxNumber) => {
-    const manager: DocumentManager = new DocumentManager();
+    const manager: DocumentManager = new DocumentManager("all", true);
     const documents: IDocumentEntity[] = newDocxNumber
       ? await manager.getByNumber(newDocxNumber)
       : [];

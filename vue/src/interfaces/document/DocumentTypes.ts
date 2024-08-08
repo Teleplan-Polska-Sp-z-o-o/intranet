@@ -1,4 +1,4 @@
-type TDocumentType = "Instruction" | "Visual" | "MSD";
+type TDocumentType = "Instruction" | "Visual" | "MSD" | "all";
 
 interface IChip {
   id: number;

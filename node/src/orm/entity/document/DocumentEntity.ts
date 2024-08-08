@@ -2,17 +2,21 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
   OneToMany,
   ManyToMany,
   JoinTable,
   EntityManager,
+  ManyToOne,
 } from "typeorm";
 import { Competence } from "./CompetenceEntity";
-import { Subcategory } from "./SubcategoryEntity";
 import { Language } from "./LanguageEntity";
 import { TConfidentiality } from "../../../interfaces/user/UserTypes";
 import { v4 as uuidv4 } from "uuid";
+import * as fs from "fs";
+import * as path from "path";
+import { DOCUMENTS_FOLDER, UPLOADS_PATH } from "../../../config/routeConstants";
+import { File } from "multer";
+import { Subcategory } from "./SubcategoryEntity";
 
 @Entity()
 export class Document {
@@ -36,6 +40,9 @@ export class Document {
 
   @ManyToOne(() => Subcategory, (subcategory) => subcategory.documents)
   subcategory: Subcategory;
+
+  @Column("text", { array: true })
+  folderStructure: string[];
 
   @ManyToMany(() => Competence, { nullable: true })
   @JoinTable({
@@ -83,7 +90,8 @@ export class Document {
     name: string,
     description: string,
     revision: number,
-    subcategory: Subcategory,
+    // subcategory: Subcategory,
+    folderStructure: string[],
     confidentiality: TConfidentiality = "public"
   ): this {
     // this.ref = this.isUUIDv4(ref) ? ref : uuidv4();
@@ -92,7 +100,8 @@ export class Document {
     this.name = name;
     this.description = description;
     this.revision = revision;
-    this.subcategory = subcategory;
+    // this.subcategory = subcategory;
+    this.folderStructure = folderStructure;
     this.confidentiality = confidentiality;
 
     this.postBy = "";
@@ -134,5 +143,51 @@ export class Document {
     this.revision = revision;
     this.confidentiality = confidentiality;
     return this;
+  }
+
+  async saveFiles(files: File[], files_langs: any, em: EntityManager) {
+    for (const [index, file] of files.entries()) {
+      const languageName = files_langs[index].langs.join("_");
+
+      const savedLanguage = await em.getRepository(Language).save(new Language(languageName, this));
+
+      const params = {
+        langs: savedLanguage.name,
+        uuid: this.ref,
+      };
+
+      const queryString = new URLSearchParams(params).toString();
+
+      // Construct new file name
+      const newFileName = `${this.name}_qs_${queryString}.pdf`;
+
+      // Rename and move file to destination folder
+      fs.renameSync(file.path, path.join(UPLOADS_PATH, DOCUMENTS_FOLDER, newFileName));
+    }
+  }
+
+  removeFiles(): this {
+    const directory = path.join(UPLOADS_PATH, DOCUMENTS_FOLDER);
+    const files = fs.readdirSync(directory);
+    const filesToDelete = files.filter((file) => file.includes(this.ref));
+
+    filesToDelete.forEach((file) => {
+      const filePath = path.join(directory, file);
+      fs.unlinkSync(filePath);
+    });
+
+    return this;
+  }
+
+  static confidentialRestriction(confidentiality: TConfidentiality): string[] {
+    switch (confidentiality) {
+      case "restricted":
+        return ["secret"];
+      case "secret":
+        return [];
+
+      default:
+        return ["restricted", "secret"];
+    }
   }
 }

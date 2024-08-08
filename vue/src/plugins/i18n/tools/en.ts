@@ -20,6 +20,8 @@ const enT = {
       },
     },
     chips: {
+      filterBy: "Filter by folders",
+      empty: "This folder is empty",
       departments: "Departments",
       workstations: "Workstations",
       programs: "Programs",
@@ -124,7 +126,7 @@ const enT = {
               description: "Description",
               language: "Languages (files)",
               revision: "Revision",
-              subcategory: "Subcategory",
+              folderStructure: "Folder Structure",
               actions: "Actions",
             },
           },

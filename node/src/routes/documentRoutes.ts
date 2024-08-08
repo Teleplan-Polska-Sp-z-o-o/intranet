@@ -6,9 +6,6 @@ import {
   editDocument,
   getDocumentByUuidAndLangs,
   getDocuments,
-  getDocumentsByDep,
-  getDocumentsByDepCat,
-  getDocumentsByDepCatSub,
   getDocumentsByNumber,
   removeDocument,
 } from "../controllers/document/documentController";
@@ -22,17 +19,8 @@ const upload = multer({ dest: path.join(UPLOADS_PATH, DOCUMENTS_FOLDER) });
 router.post("/", upload.any(), addDocument);
 router.put("/", upload.any(), editDocument);
 router.delete("/:id", removeDocument);
-router.get("/uuidLangs/:uuid/:langs", getDocumentByUuidAndLangs);
-router.get("/:type/:reduce/:confidentiality", getDocuments);
 router.get("/by/:number", getDocumentsByNumber);
-router.get("/by/:departmentName/:type/:reduce/:confidentiality", getDocumentsByDep);
-router.get(
-  "/by/:departmentName/:categoryName/:type/:reduce/:confidentiality",
-  getDocumentsByDepCat
-);
-router.get(
-  "/by/:departmentName/:categoryName/:subcategoryName/:type/:reduce/:confidentiality",
-  getDocumentsByDepCatSub
-);
+router.get("/by/:uuid/:langs", getDocumentByUuidAndLangs);
+router.get("/by/:folderStructure/:type/:reduce/:confidentiality", getDocuments);
 
 export { router as documentRoutes };

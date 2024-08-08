@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { ref } from "vue";
 import { IChips, IFileItem } from "../../../../../interfaces/document/DocumentTypes";
 // import { useI18n } from "vue-i18n";
 import { DocumentManager } from "../../../../../models/document/DocumentManager";
@@ -10,9 +10,6 @@ import Stepper from "./Stepper.vue";
 import { useI18n } from "vue-i18n";
 import { watchEffect } from "vue";
 // import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
-import { useUserStore } from "../../../../../stores/userStore";
-
-const emit = defineEmits(["table"]);
 
 // dictionary
 // const { t } = useI18n();
@@ -25,15 +22,15 @@ const props = defineProps<{
   tab: string;
 }>();
 
-const chips = ref<IChips>(props.chips);
+// const chips = ref<IChips>(props.chips);
 
-watch(
-  () => props.chips,
-  async (newChips) => {
-    chips.value = newChips;
-  },
-  { deep: true }
-);
+// watch(
+//   () => props.chips,
+//   async (newChips) => {
+//     chips.value = newChips;
+//   },
+//   { deep: true }
+// );
 
 const { t } = useI18n();
 const tab = ref<string>(props.tab);
@@ -45,9 +42,9 @@ const headers: any = [
   { title: t(`${tPath}.header.type`), align: "start", key: "type" },
   { title: t(`${tPath}.header.confidentiality`), key: "confidentiality" },
   { title: t(`${tPath}.header.description`), key: "description", sortable: false },
-  { title: t(`${tPath}.header.language`), key: "custom", sortable: false },
+  { title: t(`${tPath}.header.language`), key: "custom", minWidth: 150, sortable: false },
   { title: t(`${tPath}.header.revision`), key: "revision" },
-  { title: t(`${tPath}.header.subcategory`), key: "custom2", sortable: false },
+  { title: t(`${tPath}.header.folderStructure`), key: "custom2", minWidth: 200, sortable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
 
@@ -64,27 +61,19 @@ const handleSaveData = (data: any) => {
   base.confidentiality = data.confidentiality;
   base.competences = data.competences;
 
-  handleReqData(base, data.files, chips.value);
+  base.folderStructure = Object.values(props.chips);
+  handleReqData(base, data.files);
 };
 
 const manager = new DocumentManager();
 
 const reqData = ref<any>(null);
 
-const handleReqData = (
-  base: Partial<IDocumentEntity>,
-  files: Array<IFileItem>,
-  chips: IChips
-): void => {
+const handleReqData = (base: Partial<IDocumentEntity>, files: Array<IFileItem>): void => {
   const formData: any = new FormData();
-
-  const user = useUserStore().info();
-  if (!user) throw new Error(`user evaluates to false.`);
 
   formData.append("base", JSON.stringify(base));
   formData.append("files", JSON.stringify(files));
-  formData.append("target", JSON.stringify(chips));
-  formData.append("issuer", JSON.stringify(user.username));
 
   interface Langs {
     langs: Array<string>;
@@ -105,31 +94,14 @@ const handleReqData = (
   reqData.value = formData;
 };
 
-enum LangDictionary {
-  en = "English",
-  pl = "Polish",
-  ua = "Ukrainian",
-}
-
-// Type alias mimicking the enum with string-based access
-type LangDictionaryStringMap = {
-  [key: string]: LangDictionary[keyof LangDictionary];
-};
-
-const languages = (item: any) => {
+const languages = (item: IDocumentEntity) => {
   return item?.languages.map((lang: string) => ({
     title: lang
       .split("_")
-      .map((code: string) => (LangDictionary as LangDictionaryStringMap)[code])
+      .map((code: string) => code)
       .join(", "),
   }));
 };
-
-const disableAdd = computed(() => {
-  return !!!chips.value.subcategoryName;
-});
-
-// const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
 
 <template>
@@ -142,7 +114,7 @@ const disableAdd = computed(() => {
     :manager="manager"
     @save-data="handleSaveData"
     :req-data="reqData"
-    :disableAdd="disableAdd"
+    :disableAdd="undefined"
     :chips="props.chips"
     :tableAdd="true"
     :tableDelete="true"
@@ -150,13 +122,27 @@ const disableAdd = computed(() => {
     :tableDialogComponent="Stepper"
     :tableDialogComponentProps="{}"
   >
-    <template v-slot:table-key-slot="{ item }">
-      <v-list-item class="pl-0" density="compact" v-for="(lang, i) in languages(item)" :key="i">
-        <v-list-item-title class="text-body-2"> {{ `${i + 1}) ${lang.title}` }}</v-list-item-title>
+    <template v-slot:table-key-slot="{ item }: { item: IDocumentEntity }">
+      <v-list-item
+        class="pl-0"
+        density="compact"
+        v-for="(lang, index) in languages(item)"
+        :key="index"
+      >
+        <v-list-item-title class="text-body-2">
+          {{ `${index + 1}) ${lang.title}` }}</v-list-item-title
+        >
       </v-list-item>
     </template>
-    <template v-slot:table-key-slot-2="{ item }">
-      {{ item.subcategory.name }}
+    <template v-slot:table-key-slot-2="{ item }: { item: IDocumentEntity }">
+      <v-list-item
+        class="pl-0"
+        density="compact"
+        v-for="(folder, index) in item.folderStructure"
+        :key="index"
+      >
+        <v-list-item-title class="text-body-2"> {{ `${index + 1}) ${folder}` }}</v-list-item-title>
+      </v-list-item>
     </template>
   </crud-table>
 </template>

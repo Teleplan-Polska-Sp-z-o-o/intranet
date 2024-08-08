@@ -7,10 +7,7 @@ interface IDocumentEntity {
   name: string;
   description: string;
   revision: number;
-  subcategory: {
-    name: string;
-    id: number;
-  };
+  folderStructure: string[];
   competences: Array<string>;
   languages: Array<string>;
   confidentiality: TConfidentiality;

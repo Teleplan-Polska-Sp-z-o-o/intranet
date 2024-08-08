@@ -20,6 +20,8 @@ const uaT = {
       },
     },
     chips: {
+      filterBy: "Фільтрувати за папками",
+      empty: "Ця папка порожня",
       departments: "Відділи",
       workstations: "Робочі місця",
       programs: "Програми",
@@ -124,7 +126,7 @@ const uaT = {
               description: "Опис",
               language: "Мови (файли)",
               revision: "Ревізія",
-              subcategory: "Підкатегорія",
+              folderStructure: "Структура Папок",
               actions: "Дії",
             },
           },

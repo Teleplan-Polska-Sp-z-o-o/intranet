@@ -8,9 +8,17 @@ import { useUserStore } from "../../stores/userStore";
 import { TConfidentiality } from "../../interfaces/user/UserTypes";
 import { useAlertStore } from "../../stores/alertStore";
 import jwtAxios from "../../config/axios/jwtAxios";
+import { IChips, TDocumentType } from "../../interfaces/document/DocumentTypes";
+import { usePermissionStore } from "../../stores/permissionStore";
 
 class DocumentManager {
-  constructor() {}
+  type: TDocumentType;
+  reduce: boolean;
+
+  constructor(type: TDocumentType = "all", reduce: boolean = false) {
+    this.type = type;
+    this.reduce = reduce;
+  }
 
   public new = () => new DocumentEntity();
 
@@ -23,10 +31,6 @@ class DocumentManager {
       formData
     );
     if (status) {
-      // return new ResponseStatus({
-      //   code: response.status,
-      //   message: response.data.statusMessage,
-      // });
       useAlertStore().process(
         new ResponseStatus({
           code: response.status,
@@ -37,35 +41,26 @@ class DocumentManager {
     return response.data.added;
   };
 
-  public get = async (reqData: any): Promise<Array<IDocumentEntity>> => {
-    let lvl: number = 0;
-    if (reqData.departmentName) lvl = 1;
-    if (reqData.categoryName) lvl = 2;
-    if (reqData.subcategoryName) lvl = 3;
+  public get = async (reqData: IChips): Promise<Array<IDocumentEntity>> => {
+    const folderStructure: string = JSON.stringify(Object.values(reqData));
 
     const userInfo = useUserStore().info();
-
     let confidentiality: TConfidentiality = "public";
-    if (userInfo) confidentiality = userInfo.permission.confidentiality;
-
-    let params: string = `/all/false/${confidentiality}`;
-    switch (lvl) {
-      case 1:
-        params = `/by/${reqData.departmentName}/all/false/${confidentiality}`;
-        break;
-      case 2:
-        params = `/by/${reqData.departmentName}/${reqData.categoryName}/all/false/${confidentiality}`;
-        break;
-      case 3:
-        params = `/by/${reqData.departmentName}/${reqData.categoryName}/${reqData.subcategoryName}/all/false/${confidentiality}`;
-        break;
-
-      default:
-        break;
+    if (userInfo) {
+      const permission = await usePermissionStore().get(userInfo);
+      confidentiality = permission.confidentiality;
     }
 
+    const params: string[] = [
+      "by",
+      folderStructure,
+      this.type,
+      this.reduce.toString(),
+      confidentiality,
+    ];
+
     const response = await jwtAxios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}${params}`
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/${params.join("/")}`
     );
     return response.data.documents;
   };
@@ -79,10 +74,6 @@ class DocumentManager {
       formData
     );
     if (status) {
-      // return new ResponseStatus({
-      //   code: response.status,
-      //   message: response.data.statusMessage,
-      // });
       useAlertStore().process(
         new ResponseStatus({
           code: response.status,
@@ -101,10 +92,6 @@ class DocumentManager {
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/${id}`
     );
     if (status) {
-      // return new ResponseStatus({
-      //   code: response.status,
-      //   message: response.data.statusMessage,
-      // });
       useAlertStore().process(
         new ResponseStatus({
           code: response.status,
@@ -117,7 +104,7 @@ class DocumentManager {
 
   public getByUuidAndLangs = async (uuid: string, langs: string): Promise<IDocumentEntity> => {
     const response = await jwtAxios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/uuidLangs/${uuid}/${langs}`
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/by/${uuid}/${langs}`
     );
     return response.data.document;
   };

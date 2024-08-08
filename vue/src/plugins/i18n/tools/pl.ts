@@ -20,6 +20,8 @@ const plT = {
       },
     },
     chips: {
+      filterBy: "Filtruj według folderów",
+      empty: "Ten folder jest pusty",
       departments: "Działy",
       workstations: "Stanowiska pracy",
       programs: "Programy",
@@ -124,7 +126,7 @@ const plT = {
               description: "Opis",
               language: "Języki (pliki)",
               revision: "Wersja",
-              subcategory: "Podkategoria",
+              folderStructure: "Struktura Folderów",
               actions: "Akcje",
             },
           },

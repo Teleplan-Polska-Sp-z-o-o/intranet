@@ -2,19 +2,18 @@
 import { ref, watch } from "vue";
 // import { ResponseStatus } from "../../../../models/common/ResponseStatus";
 import { IChips } from "../../../../../interfaces/document/DocumentTypes";
-import { InstructionManager } from "../../../../../models/document/InstructionManager";
+import { DocumentManager } from "../../../../../models/document/DocumentManager";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
 import CrudTable from "../../../../tools/CrudTable.vue";
 import { useI18n } from "vue-i18n";
-
-const emit = defineEmits(["table"]);
+import { Chips } from "../../../../../models/document/Chips";
 
 const props = defineProps<{
   chips: IChips;
   tab: string;
 }>();
 
-const manager = new InstructionManager();
+const manager = new DocumentManager("Instruction", true);
 
 const documents = ref<Array<IDocumentEntity>>([]);
 
@@ -42,11 +41,7 @@ const languages = (item: IDocumentEntity) => {
 
 (async () => {
   try {
-    documents.value = await manager.get({
-      department: "",
-      category: "",
-      subcategory: "",
-    });
+    documents.value = await manager.get(new Chips());
   } catch (error) {
     console.log(error);
   }
