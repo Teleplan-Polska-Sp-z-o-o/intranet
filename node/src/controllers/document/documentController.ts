@@ -123,7 +123,7 @@ const editDocument = async (req: Request, res: Response) => {
 
     const base = JSON.parse(body.base);
     const files_langs = JSON.parse(body.files_langs);
-    const issuer: string = JSON.parse(body.issuer);
+    const issuer: string = new SimpleUser().build(req.user).username;
     const uploadedFiles = req.files;
 
     await dataSource.transaction(async (transactionalEntityManager) => {
@@ -371,11 +371,17 @@ const getDocuments = async (
 
     const qb = dataSource.getRepository(Document).createQueryBuilder("document");
 
-    qb.leftJoinAndSelect("document.languages", "language")
-      .leftJoinAndSelect("document.competences", "competence")
-      .where("document.confidentiality NOT IN (:...confidentiality)", {
-        confidentiality: Document.confidentialRestriction(confidentiality),
+    qb.leftJoinAndSelect("document.languages", "language").leftJoinAndSelect(
+      "document.competences",
+      "competence"
+    );
+
+    const confidentialityArray = Document.confidentialRestriction(confidentiality);
+    if (confidentialityArray.length > 0) {
+      qb.where("document.confidentiality NOT IN (:...confidentiality)", {
+        confidentiality: confidentialityArray,
       });
+    }
 
     const chips: string[] = JSON.parse(folderStructure).filter((chip: string) => !!chip);
     if (chips.length > 0) {

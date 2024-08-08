@@ -130,7 +130,7 @@ watch(
                     :value="c.name"
                     variant="outlined"
                     filter
-                    class="my-0"
+                    class="mt-0"
                   >
                     {{ c.name }}
                   </v-chip>
