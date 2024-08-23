@@ -4,6 +4,7 @@ import { HttpResponseMessage } from "../../enums/response";
 import { Subcategory } from "../../orm/entity/document/SubcategoryEntity";
 import { Category } from "../../orm/entity/document/CategoryEntity";
 import { Department } from "../../orm/entity/document/DepartmentEntity";
+import { Document } from "../../orm/entity/document/DocumentEntity";
 
 const addSubcategory = async (req: Request, res: Response) => {
   try {
@@ -98,75 +99,132 @@ const removeSubcategory = async (req: Request<{ id: number }>, res: Response) =>
   }
 };
 
-const getSubcategories = async (req: Request, res: Response) => {
+// const getSubcategories = async (req: Request, res: Response) => {
+//   try {
+//     const { departmentName, categoryName, whereDocType } = req.params;
+
+//     await dataSource.transaction(async (transactionalEntityManager) => {
+//       const department = await transactionalEntityManager
+//         .getRepository(Department)
+//         .findOne({ where: { name: departmentName }, relations: ["categories"] });
+//       if (!department) {
+//         return res.status(200).json({
+//           got: [],
+//           message: "Department not specified",
+//           statusMessage: HttpResponseMessage.GET_ERROR,
+//         });
+//       }
+
+//       const category = department.categories.find((category) => category.name === categoryName);
+//       if (!category) {
+//         return res.status(200).json({
+//           got: [],
+//           message: "Category not specified",
+//           statusMessage: HttpResponseMessage.GET_ERROR,
+//         });
+//       }
+
+//       const subcategoriesQuery = transactionalEntityManager
+//         .getRepository(Subcategory)
+//         .createQueryBuilder("subcategory");
+
+//       const parsedWhereDocType: string[] | false = JSON.parse(whereDocType);
+//       if (Array.isArray(parsedWhereDocType) && !parsedWhereDocType.length) {
+//         return res.status(200).json({
+//           got: [],
+//           message: "Subcategories retrieved successfully",
+//           statusMessage: HttpResponseMessage.GET_SUCCESS,
+//         });
+//       } else if (Array.isArray(parsedWhereDocType) && parsedWhereDocType.length) {
+//         subcategoriesQuery
+//           .leftJoinAndSelect("subcategory.documents", "document")
+//           .where("document.type IN (:...documentTypes)", {
+//             documentTypes: parsedWhereDocType,
+//           });
+//       }
+
+//       subcategoriesQuery.andWhere("subcategory.categoryId = :categoryId", {
+//         categoryId: category.id,
+//       });
+
+//       const subcategories: Array<Subcategory> = await subcategoriesQuery.getMany();
+
+//       return res.status(200).json({
+//         got: subcategories,
+//         message: "Subcategories retrieved successfully",
+//         statusMessage: HttpResponseMessage.GET_SUCCESS,
+//       });
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving subcategories: ", error);
+//     return res.status(500).json({
+//       message: "Unknown error occurred. Failed to retrieve subcategories.",
+//       statusMessage: HttpResponseMessage.UNKNOWN,
+//     });
+//   }
+// };
+
+const getSubcategories = async (
+  req: Request<{ departmentName: string; categoryName: string; whereDocType: string }>,
+  res: Response
+) => {
   try {
-    // const { departmentName, categoryName } = req.params;
-
-    // const department = await dataSource
-    //   .getRepository(Department)
-    //   .findOne({ where: { name: departmentName }, relations: ["categories"] });
-
-    // if (!department) {
-    //   return res.status(404).json({
-    //     message: "Department not found",
-    //   });
-    // }
-
-    // const category = department.categories.find((category) => category.name === categoryName);
-
-    // if (!category) {
-    //   return res.status(404).json({
-    //     message: "Category not found within the department",
-    //   });
-    // }
-
-    // const subcategories = await dataSource.getRepository(Subcategory).find({ where: { category } });
-
     const { departmentName, categoryName, whereDocType } = req.params;
 
-    let subcategories: Array<Subcategory>;
+    const parsedWhereDocType: string[] | false = JSON.parse(whereDocType);
+
+    if (Array.isArray(parsedWhereDocType) && !parsedWhereDocType.length) {
+      return res.status(200).json({
+        got: [],
+        message: "No subcategories found matching the criteria.",
+        statusMessage: HttpResponseMessage.GET_SUCCESS,
+      });
+    }
+
     await dataSource.transaction(async (transactionalEntityManager) => {
-      const department = await transactionalEntityManager
-        .getRepository(Department)
-        .findOne({ where: { name: departmentName }, relations: ["categories"] });
-      if (!department) {
-        return res.status(404).json({
-          message: "Department not found",
-        });
+      // Step 1: Retrieve relevant documents and extract subcategory names based on departmentName and categoryName
+      let subcategoryNameList: string[] = [];
+
+      if (Array.isArray(parsedWhereDocType) && parsedWhereDocType.length) {
+        const documentQuery = transactionalEntityManager
+          .getRepository(Document)
+          .createQueryBuilder("document")
+          .select(`"document"."folderStructure"[3]`, "subcategoryName")
+          .where("document.type IN (:...documentTypes)", { documentTypes: parsedWhereDocType })
+          .andWhere(`"document"."folderStructure"[1] = :departmentName`, { departmentName })
+          .andWhere(`"document"."folderStructure"[2] = :categoryName`, { categoryName });
+
+        const subcategoryNames = await documentQuery.getRawMany();
+        subcategoryNameList = subcategoryNames.map(
+          (row: { subcategoryName: string }) => row.subcategoryName
+        );
       }
 
-      const category = department.categories.find((category) => category.name === categoryName);
-      if (!category) {
-        return res.status(404).json({
-          message: "Category not found within the department",
-        });
-      }
-
+      // Step 2: Query the subcategories based on extracted names and category
       const subcategoriesQuery = transactionalEntityManager
         .getRepository(Subcategory)
         .createQueryBuilder("subcategory");
 
-      if (whereDocType) {
-        subcategoriesQuery.leftJoinAndSelect("subcategory.documents", "document");
-      }
+      if (departmentName && categoryName)
+        subcategoriesQuery
+          .innerJoin("subcategory.category", "category")
+          .innerJoin("category.department", "department")
+          .where("department.name = :departmentName", { departmentName })
+          .andWhere("category.name = :categoryName", { categoryName });
 
-      subcategoriesQuery.where("subcategory.categoryId = :categoryId", {
-        categoryId: category.id,
-      });
-
-      if (whereDocType) {
-        subcategoriesQuery.andWhere("document.type = :documentType", {
-          documentType: whereDocType,
+      if (subcategoryNameList.length) {
+        subcategoriesQuery.where("subcategory.name IN (:...subcategoryNames)", {
+          subcategoryNames: subcategoryNameList,
         });
       }
 
-      subcategories = await subcategoriesQuery.getMany();
-    });
+      const subcategories = await subcategoriesQuery.getMany();
 
-    return res.status(200).json({
-      got: subcategories,
-      message: "Subcategories retrieved successfully",
-      statusMessage: HttpResponseMessage.GET_SUCCESS,
+      return res.status(200).json({
+        got: subcategories,
+        message: "Subcategories retrieved successfully",
+        statusMessage: HttpResponseMessage.GET_SUCCESS,
+      });
     });
   } catch (error) {
     console.error("Error retrieving subcategories: ", error);

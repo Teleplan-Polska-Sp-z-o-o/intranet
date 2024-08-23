@@ -8,10 +8,12 @@ import { IPermissionGroups, TConfidentiality } from "../../../../../interfaces/u
 import { UserPermissionManager } from "../../../../../models/user/UserPermissionManager";
 import { UserEntity } from "../../../../../models/user/UserEntity";
 import { SimpleUser } from "../../../../../models/user/SimpleUser";
+import { useCrudStore } from "../../../../../stores/crud/useCrudStore";
 
 const emit = defineEmits(["table"]);
 
 const props = defineProps<{
+  instanceId: string;
   tab: string;
 }>();
 
@@ -52,6 +54,9 @@ const handleSaveData = (data: {
 
 const manager = new UserPermissionManager();
 
+const crudStore = useCrudStore();
+crudStore.setManager(props.instanceId, manager);
+
 // const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
 
@@ -69,6 +74,7 @@ const manager = new UserPermissionManager();
     :tableDelete="true"
     :tableDialogComponent="PermissionForm"
     :tableDialogComponentProps="{}"
+    :instanceId="props.instanceId"
   >
     <template v-slot:table-key-slot-2="{ item }: { item: UserEntity }">
       <div>

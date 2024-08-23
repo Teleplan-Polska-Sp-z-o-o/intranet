@@ -5,6 +5,7 @@ import { IUserEntity } from "../../../interfaces/user/IUserEntity";
 import { TConfidentiality } from "../../../interfaces/user/UserTypes";
 import { useAlertStore } from "../../../stores/alertStore";
 import { ResponseStatus } from "../../common/ResponseStatus";
+import { EDocumentType } from "../../../interfaces/document/DocumentTypes";
 
 class DocumentViewer extends DocumentViewerBase {
   private source: string = "";
@@ -29,7 +30,10 @@ class DocumentViewer extends DocumentViewerBase {
   async amIAuthorized(): Promise<boolean> {
     try {
       const documentConfidentiality: TConfidentiality = (
-        await new DocumentManager().getByUuidAndLangs(this.fileUUID, this.fileLangs)
+        await new DocumentManager(Object.values(EDocumentType)).getByUuidAndLangs(
+          this.fileUUID,
+          this.fileLangs
+        )
       ).confidentiality;
 
       const getListOfConfidentialitiesThatCanAccess = () => {

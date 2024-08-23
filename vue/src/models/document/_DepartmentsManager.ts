@@ -2,12 +2,12 @@
 // import { nodeConfig } from "../../config/env";
 // import { Endpoints } from "../../config/axios/Endpoints";
 // import { Chip } from "./Chip";
-// import { ResponseStatus } from "../common/ResponseStatus";
 // import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
+// import { ResponseStatus } from "../common/ResponseStatus";
 // import { useAlertStore } from "../../stores/alertStore";
 // import jwtAxios from "../../config/axios/jwtAxios";
 
-// class CategoriesManager {
+// class DepartmentsManager {
 //   constructor() {}
 
 //   public new = () => new Chip();
@@ -18,11 +18,10 @@
 //   ): Promise<Array<IChip> | IResponseStatus> => {
 //     const requestData = {
 //       name: reqData.name,
-//       departmentName: reqData.departmentName,
 //     };
 
 //     const response = await jwtAxios.post(
-//       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}`,
+//       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}`,
 //       requestData
 //     );
 //     if (status) {
@@ -37,14 +36,12 @@
 //         })
 //       );
 //     }
-
 //     return response.data.added;
 //   };
 
-//   public get = async (reqData: IChips, whereDocType?: TDocumentType): Promise<Array<IChip>> => {
-//     const departmentName: string = reqData.departmentName;
+//   public get = async (_reqData?: IChips, whereDocType?: TDocumentType): Promise<Array<IChip>> => {
 //     const response = await jwtAxios.get(
-//       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${departmentName}${
+//       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}${
 //         whereDocType ? `/${whereDocType}` : ""
 //       }`
 //     );
@@ -58,7 +55,7 @@
 //     const id: string = reqData.id;
 //     const name: string = reqData.name;
 //     const response = await jwtAxios.put(
-//       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${id}/${name}`
+//       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}/${id}/${name}`
 //     );
 //     if (status) {
 //       // return new ResponseStatus({
@@ -80,7 +77,7 @@
 //     status: boolean = false
 //   ): Promise<Array<IChip> | IResponseStatus> => {
 //     const response = await jwtAxios.delete(
-//       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentCategory}/${id}`
+//       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}/${id}`
 //     );
 //     if (status) {
 //       // return new ResponseStatus({
@@ -98,4 +95,4 @@
 //   };
 // }
 
-// export { CategoriesManager };
+// export { DepartmentsManager };

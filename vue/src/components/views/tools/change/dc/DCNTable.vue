@@ -7,8 +7,10 @@ import { useRoute } from "vue-router";
 import { DocumentChangeNoticeManager } from "../../../../../models/change/dc/DocumentChangeNoticeManager";
 import DCRReview from "./DCRReview.vue";
 import { DocumentChangeTypes } from "../../../../../interfaces/change/dcr/DocumentChangeTypes";
+import { useCrudStore } from "../../../../../stores/crud/useCrudStore";
 
 const props = defineProps<{
+  instanceId: string;
   tab: string;
 }>();
 
@@ -59,6 +61,9 @@ const searchBy = [
 
 const manager = new DocumentChangeNoticeManager();
 
+const crudStore = useCrudStore();
+crudStore.setManager(props.instanceId, manager);
+
 const loadItems = ref<true | undefined>(undefined);
 const handleLoadItems = () => {
   loadItems.value = true;
@@ -93,6 +98,7 @@ const getColor = (status: DocumentChangeTypes.TStatus): string => {
     flow=""
     :loadItems="loadItems"
     :copy="true"
+    :instanceId="props.instanceId"
   >
     <template v-slot:table-filters>
       <p-c-n-table-filters></p-c-n-table-filters>

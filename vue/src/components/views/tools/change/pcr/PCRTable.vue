@@ -13,10 +13,12 @@ import { useRoute } from "vue-router";
 import { usePCRStore } from "../../../../../stores/change/pcrStore";
 import { nodeConfig } from "../../../../../config/env";
 import { IProcessChangeNotice } from "../../../../../interfaces/change/IProcessChangeNotice";
+import { useCrudStore } from "../../../../../stores/crud/useCrudStore";
 
 // const emit = defineEmits(["responseStatus"]);
 
 const props = defineProps<{
+  instanceId: string;
   tab: string;
 }>();
 // no: string | undefined;
@@ -80,6 +82,9 @@ const handleSaveData = (
 };
 
 const manager = new ProcessChangeRequestManager();
+
+const crudStore = useCrudStore();
+crudStore.setManager(props.instanceId, manager);
 
 // const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 
@@ -187,6 +192,7 @@ const copyHeadersCustoms = (headerKey: string, rowValue: string | object) => {
     :loadItems="loadItems"
     :filters="true"
     :filtersCallback="pcrStore.callback"
+    :instanceId="props.instanceId"
   >
     <template v-slot:table-filters>
       <p-c-r-table-filters></p-c-r-table-filters>

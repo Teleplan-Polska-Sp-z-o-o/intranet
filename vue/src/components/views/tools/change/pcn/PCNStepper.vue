@@ -11,6 +11,9 @@ import { IProcessChangeNoticeFields } from "../../../../../interfaces/change/IPr
 import { UserManager } from "../../../../../models/user/UserManager";
 import { IUserEntity } from "../../../../../interfaces/user/IUserEntity";
 import { IProcessChangeNotice } from "../../../../../interfaces/change/IProcessChangeNotice";
+import { Endpoints } from "../../../../../config/axios/Endpoints";
+import { Chips } from "../../../../../models/document/Chips";
+import { EDocumentType } from "../../../../../interfaces/document/DocumentTypes";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -82,10 +85,10 @@ const handleEditorDataChange = (key: string) => {
 
 const departments = ref<Array<string>>([]);
 
-const departmentsManager = new DepartmentsManager();
+const departmentsManager = new DepartmentsManager(Endpoints.DocumentDepartment);
 
 const fillDepartments = async () => {
-  const got = await departmentsManager.get();
+  const got = await departmentsManager.get(new Chips(), false, Object.values(EDocumentType));
   const selectOptions = got.map((dep) => dep.name);
   departments.value = selectOptions;
 };

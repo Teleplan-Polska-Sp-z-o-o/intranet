@@ -128,7 +128,7 @@ watchEffect(() => {
           activeStep > 1 && !!document.name && !!document.description && !!document.revision
         "
         :value="1"
-        title="Base Info"
+        :title="$t(`tools.matrix.tabs.documents.stepper.vStepperItem['1']`)"
       ></v-stepper-item>
       <v-divider></v-divider>
       <v-stepper-item
@@ -136,14 +136,14 @@ watchEffect(() => {
         :complete="activeStep > 2 && hasFiles"
         :value="2"
         subtitle="One or multiple"
-        title="Input Files"
+        :title="$t(`tools.matrix.tabs.documents.stepper.vStepperItem['2']`)"
       ></v-stepper-item>
       <v-divider></v-divider>
       <v-stepper-item
         color="secondary"
         :complete="activeStep > 3"
         :value="3"
-        title="Verify"
+        :title="$t(`tools.matrix.tabs.documents.stepper.vStepperItem['3']`)"
       ></v-stepper-item>
     </v-stepper-header>
 
@@ -152,30 +152,51 @@ watchEffect(() => {
         <v-card flat>
           <v-select
             v-model="document.type"
-            label="Type"
+            :label="$t(`tools.matrix.tabs.documents.stepper.vStepperWindowItem['1'].type.label`)"
             :items="['Instruction', 'Visual', 'MSD']"
             variant="underlined"
           ></v-select>
           <v-select
             v-model="document.confidentiality"
-            label="Confidentiality"
+            :label="
+              $t(
+                `tools.matrix.tabs.documents.stepper.vStepperWindowItem['1'].confidentiality.label`
+              )
+            "
             :items="['public', 'restricted', 'secret']"
             variant="underlined"
           ></v-select>
-          <v-text-field v-model="document.name" variant="underlined" label="Name"></v-text-field>
+          <v-text-field
+            v-model="document.name"
+            variant="underlined"
+            :label="$t(`tools.matrix.tabs.documents.stepper.vStepperWindowItem['1'].name.label`)"
+          ></v-text-field>
           <v-text-field
             v-model="document.description"
             variant="underlined"
-            label="Description"
+            :label="
+              $t(`tools.matrix.tabs.documents.stepper.vStepperWindowItem['1'].description.label`)
+            "
           ></v-text-field>
-          <v-text-field
+
+          <v-number-input
             v-model="document.revision"
-            variant="underlined"
-            label="Revision"
-          ></v-text-field>
+            :reverse="false"
+            controlVariant="default"
+            :label="
+              $t(`tools.matrix.tabs.documents.stepper.vStepperWindowItem['1'].revision.label`)
+            "
+            :hideInput="false"
+            inset
+            :min="1"
+            :prefix="document.revision < 10 ? '0' : ''"
+          ></v-number-input>
+
           <v-autocomplete
             variant="underlined"
-            label="Competences"
+            :label="
+              $t(`tools.matrix.tabs.documents.stepper.vStepperWindowItem['1'].competences.label`)
+            "
             :items="competences"
             item-title="name"
             item-value="id"
@@ -213,8 +234,9 @@ watchEffect(() => {
           variant="text"
           class="rounded-xl"
           :disabled="!prevable"
-          >Previous</v-btn
         >
+          {{ $t(`tools.matrix.tabs.documents.stepper.actions.prev`) }}
+        </v-btn>
         <v-spacer></v-spacer>
         <v-btn
           @click="nextStep"
@@ -222,8 +244,9 @@ watchEffect(() => {
           variant="text"
           class="rounded-xl"
           :disabled="!nextable"
-          >Next</v-btn
         >
+          {{ $t(`tools.matrix.tabs.documents.stepper.actions.next`) }}
+        </v-btn>
       </v-card-actions>
     </template>
   </v-stepper>

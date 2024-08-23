@@ -12,8 +12,10 @@ import { IUser } from "../../../../../interfaces/user/UserTypes";
 import { SimpleUser } from "../../../../../models/user/SimpleUser";
 import DCRReview from "./DCRReview.vue";
 import { useDCRStore } from "../../../../../stores/change/dcrStore";
+import { useCrudStore } from "../../../../../stores/crud/useCrudStore";
 
 const props = defineProps<{
+  instanceId: string;
   tab: string;
 }>();
 
@@ -104,6 +106,9 @@ const handleSaveData = (data: DocumentChangeTypes.Processing.ISaveData) => {
 
 const manager = new DocumentChangeManager();
 
+const crudStore = useCrudStore();
+crudStore.setManager(props.instanceId, manager);
+
 const loadItems = ref<true | undefined>(undefined);
 const handleLoadItems = () => {
   loadItems.value = true;
@@ -150,6 +155,7 @@ const handleTableChange = () => {
     flow=""
     :loadItems="loadItems"
     :copy="true"
+    :instanceId="props.instanceId"
   >
     <template v-slot:table-filters>
       <p-c-n-table-filters></p-c-n-table-filters>

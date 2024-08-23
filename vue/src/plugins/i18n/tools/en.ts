@@ -20,8 +20,9 @@ const enT = {
       },
     },
     chips: {
-      filterBy: "Filter by folders",
-      empty: "This folder is empty",
+      filterByType: "Filter by document type",
+      filterByFolder: "Filter by folders",
+      empty: "No folders found",
       departments: "Departments",
       workstations: "Workstations",
       programs: "Programs",
@@ -31,70 +32,67 @@ const enT = {
     },
     documents: {
       name: "Documents",
-      tabs: {
-        my_documents: {
-          name: "MY DOCUMENTS",
-          table: {
-            toolbar: "",
-            select_lang: "",
+      table: {
+        header: {
+          name: "Name",
+          description: "Description",
+          view_document: {
+            name: "View Document",
+            select: "Select Language",
+            tooltip: "Open in New Tab",
+          },
+          quick: {
+            name: "Quick Access",
+            tooltip_add: "Add to Quick Access",
+            tooltip_remove: "Remove from Quick Access",
           },
         },
-        my_favorites: {
-          name: "MY FAVORITES",
+      },
+      tabs: {
+        all: {
+          name: "DOCUMENTS",
           table: {
-            toolbar: "",
-            select_lang: "",
+            toolbar: "Documents",
           },
         },
         instructions: {
           name: "INSTRUCTIONS",
           table: {
             toolbar: "Instructions",
-            select_lang: "Select Language",
-            header: {
-              name: "Name",
-              description: "Description",
-              view_document: "View Document",
-            },
           },
         },
         visuals: {
           name: "VISUAL AIDS",
           table: {
             toolbar: "Visual Aids",
-            select_lang: "Select Language",
-            header: {
-              name: "Name",
-              description: "Description",
-              view_document: "View Document",
-            },
           },
         },
         msd: {
           name: "Management Systems",
           table: {
             toolbar: "Management Systems",
-            select_lang: "Select Language",
-            header: {
-              name: "Name",
-              description: "Description",
-              view_document: "View Document",
-            },
           },
         },
+        //
+        quick: {
+          name: "Quick Access",
+          table: {
+            toolbar: "Documents",
+          },
+        },
+        recently: {
+          name: "Recently Browsed",
+          table: {
+            toolbar: "Documents",
+          },
+        },
+        //
         assistant: {
           name: "ASSISTANT",
           title: "AI Document Assistant",
           send: "Send",
           placeholder: "Ask me a question.",
           new: "New Conversation",
-        },
-        recently_browsed: {
-          name: "RECENTLY BROWSED",
-          table: {
-            toolbar: "",
-            select_lang: "",
-          },
         },
       },
     },
@@ -132,14 +130,59 @@ const enT = {
               actions: "Actions",
             },
           },
+          stepper: {
+            vStepperItem: {
+              "1": "Base Info",
+              "2": "Input Files",
+              "3": "Verify",
+            },
+            vStepperWindowItem: {
+              "1": {
+                type: {
+                  label: "Type",
+                },
+
+                confidentiality: {
+                  label: "Confidentiality",
+                },
+                name: {
+                  label: "Name",
+                },
+                description: {
+                  label: "Description",
+                },
+                revision: {
+                  label: "Revision",
+                },
+                competences: {
+                  label: "Competences",
+                },
+              },
+            },
+            actions: {
+              prev: "Previous",
+              next: "Next",
+            },
+          },
         },
         competences: {
           name: "COMPETENCES",
           table: {
             toolbar: "Competences",
             header: {
+              code: "Code",
+              position: "Position",
               name: "Name",
+              folderStructure: "Folder Structure",
               actions: "Actions",
+            },
+          },
+          form: {
+            code: "Code",
+            position: "Position",
+            name: {
+              label: "Name",
+              hint: "This value represents the combination of the Code and Position",
             },
           },
         },

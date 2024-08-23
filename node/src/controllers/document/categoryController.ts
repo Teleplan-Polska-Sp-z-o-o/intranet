@@ -3,6 +3,7 @@ import { dataSource } from "../../config/dataSource";
 import { Category } from "../../orm/entity/document/CategoryEntity";
 import { HttpResponseMessage } from "../../enums/response";
 import { Department } from "../../orm/entity/document/DepartmentEntity";
+import { Document } from "../../orm/entity/document/DocumentEntity";
 
 const addCategory = async (req: Request, res: Response) => {
   try {
@@ -99,61 +100,119 @@ const removeCategory = async (req: Request<{ id: number }>, res: Response) => {
   }
 };
 
-const getCategories = async (req: Request, res: Response) => {
+// const getCategories = async (req: Request, res: Response) => {
+//   try {
+//     const { departmentName, whereDocType } = req.params;
+
+//     await dataSource.transaction(async (transactionalEntityManager) => {
+//       const department = await transactionalEntityManager
+//         .getRepository(Department)
+//         .findOne({ where: { name: departmentName }, relations: ["categories"] });
+//       if (!department) {
+//         return res.status(200).json({
+//           got: [],
+//           message: "Department not specified",
+//           statusMessage: HttpResponseMessage.GET_ERROR,
+//         });
+//       }
+
+//       const categoriesQuery = transactionalEntityManager
+//         .getRepository(Category)
+//         .createQueryBuilder("category");
+
+//       const parsedWhereDocType: string[] | false = JSON.parse(whereDocType);
+//       if (Array.isArray(parsedWhereDocType) && !parsedWhereDocType.length) {
+//         return res.status(200).json({
+//           got: [],
+//           message: "Categories retrieved successfully",
+//           statusMessage: HttpResponseMessage.GET_SUCCESS,
+//         });
+//       } else if (Array.isArray(parsedWhereDocType) && parsedWhereDocType.length) {
+//         categoriesQuery
+//           .leftJoinAndSelect("category.subcategories", "subcategory")
+//           .leftJoinAndSelect("subcategory.documents", "document")
+//           .where("document.type IN (:...documentTypes)", {
+//             documentTypes: parsedWhereDocType,
+//           });
+//       }
+
+//       categoriesQuery.andWhere("category.departmentId = :departmentId", {
+//         departmentId: department.id,
+//       });
+
+//       const categories: Array<Category> = await categoriesQuery.getMany();
+
+//       return res.status(200).json({
+//         got: categories,
+//         message: "Categories retrieved successfully",
+//         statusMessage: HttpResponseMessage.GET_SUCCESS,
+//       });
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving categories: ", error);
+//     return res.status(500).json({
+//       message: "Unknown error occurred. Failed to retrieve categories.",
+//       statusMessage: HttpResponseMessage.UNKNOWN,
+//     });
+//   }
+// };
+
+const getCategories = async (
+  req: Request<{ departmentName: string; whereDocType: string }>,
+  res: Response
+) => {
   try {
-    // const { departmentName } = req.params;
-
-    // const department = await dataSource
-    //   .getRepository(Department)
-    //   .findOne({ where: { name: departmentName }, relations: ["categories"] });
-    // if (!department) {
-    //   return res.status(404).json({
-    //     message: "Categories not found",
-    //     statusMessage: HttpResponseMessage.DELETE_ERROR,
-    //   });
-    // }
-
-    // const categories = department.categories;
-
     const { departmentName, whereDocType } = req.params;
 
-    let categories: Array<Category>;
+    const parsedWhereDocType: string[] | false = JSON.parse(whereDocType);
+
+    if (Array.isArray(parsedWhereDocType) && !parsedWhereDocType.length) {
+      return res.status(200).json({
+        got: [],
+        message: "No categories found matching the criteria.",
+        statusMessage: HttpResponseMessage.GET_SUCCESS,
+      });
+    }
+
     await dataSource.transaction(async (transactionalEntityManager) => {
-      const department = await transactionalEntityManager
-        .getRepository(Department)
-        .findOne({ where: { name: departmentName }, relations: ["categories"] });
-      if (!department) {
-        return res.status(404).json({
-          message: "Categories not found",
-          statusMessage: HttpResponseMessage.DELETE_ERROR,
-        });
+      // Step 1: Retrieve relevant documents and extract category names based on departmentName
+      let categoryNameArray: string[] = [];
+
+      if (Array.isArray(parsedWhereDocType) && parsedWhereDocType.length) {
+        const documentQuery = transactionalEntityManager
+          .getRepository(Document)
+          .createQueryBuilder("document")
+          .select(`"document"."folderStructure"[2]`, "categoryName")
+          .where("document.type IN (:...documentTypes)", { documentTypes: parsedWhereDocType })
+          .andWhere(`"document"."folderStructure"[1] = :departmentName`, { departmentName });
+
+        const categoryNames = await documentQuery.getRawMany();
+        categoryNameArray = categoryNames.map((row: { categoryName: string }) => row.categoryName);
       }
 
+      // Step 2: Query the categories based on extracted names and department
       const categoriesQuery = transactionalEntityManager
         .getRepository(Category)
         .createQueryBuilder("category");
 
-      if (whereDocType) {
+      if (departmentName)
         categoriesQuery
-          .leftJoinAndSelect("category.subcategories", "subcategory")
-          .leftJoinAndSelect("subcategory.documents", "document");
+          .innerJoin("category.department", "department")
+          .where("department.name = :departmentName", { departmentName });
+
+      if (categoryNameArray.length) {
+        categoriesQuery.andWhere("category.name IN (:...categoryNames)", {
+          categoryNames: categoryNameArray,
+        });
       }
 
-      categoriesQuery.where("category.departmentId = :departmentId", {
-        departmentId: department.id,
+      const categories = await categoriesQuery.getMany();
+
+      return res.status(200).json({
+        got: categories,
+        message: "Categories retrieved successfully",
+        statusMessage: HttpResponseMessage.GET_SUCCESS,
       });
-
-      if (whereDocType) {
-        categoriesQuery.andWhere("document.type = :documentType", { documentType: whereDocType });
-      }
-
-      categories = await categoriesQuery.getMany();
-    });
-
-    return res.status(200).json({
-      got: categories,
-      message: "Categories retrieved successfully",
-      statusMessage: HttpResponseMessage.GET_SUCCESS,
     });
   } catch (error) {
     console.error("Error retrieving categories: ", error);

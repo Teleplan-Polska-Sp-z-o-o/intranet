@@ -15,6 +15,7 @@ import NewUsersChart from "../../components/common/chartjs/users/NewUsersChart.v
 import LoggedInCard from "../../components/common/chartjs/users/LoggedInCard.vue";
 import TotalLoginsChart from "../../components/common/chartjs/users/TotalLoginsChart.vue";
 import ReturningUsersChart from "../../components/common/chartjs/users/ReturningUsersChart.vue";
+import { v4 as uuidv4 } from "uuid";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -103,6 +104,10 @@ if (userInfo) {
       ) as number;
     });
 }
+
+const infoConnectorId = uuidv4();
+const permissionConnectorId = uuidv4();
+const newsConnectorId = uuidv4();
 </script>
 
 <template>
@@ -146,7 +151,11 @@ if (userInfo) {
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
                 <v-window-item :value="1">
-                  <info-table class="bg-surface-2 pa-4 ma-1 mb-5" tab="user-info"></info-table>
+                  <info-table
+                    class="bg-surface-2 pa-4 ma-1 mb-5"
+                    :instanceId="infoConnectorId"
+                    tab="user-info"
+                  ></info-table>
 
                   <logged-in-card class="bg-surface-2 pa-4 ma-1 mb-5"></logged-in-card>
                   <login-unique-user-distribution-chart
@@ -160,12 +169,17 @@ if (userInfo) {
                 <v-window-item :value="2">
                   <permissions-table-info class="mb-5 ma-1"></permissions-table-info>
                   <permissions-table
+                    :instanceId="permissionConnectorId"
                     class="bg-surface-2 pa-4 ma-1"
                     tab="user-permissions"
                   ></permissions-table>
                 </v-window-item>
                 <v-window-item :value="3">
-                  <news-table class="bg-surface-2 pa-4 ma-1" tab="news"></news-table>
+                  <news-table
+                    class="bg-surface-2 pa-4 ma-1"
+                    :instanceId="newsConnectorId"
+                    tab="news"
+                  ></news-table>
                 </v-window-item>
               </v-window>
             </v-col>

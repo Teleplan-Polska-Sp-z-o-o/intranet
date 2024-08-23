@@ -2,20 +2,26 @@ import { Request, Response } from "express";
 import { dataSource } from "../../config/dataSource";
 import { HttpResponseMessage } from "../../enums/response";
 import { Competence } from "../../orm/entity/document/CompetenceEntity";
+import { SimpleUser } from "../../models/user/SimpleUser";
+import { DocumentTypes } from "../../interfaces/document/DocumentTypes";
 
 const addCompetence = async (req: Request, res: Response) => {
   try {
     const body = req.body;
-    const name: string = JSON.parse(body.name);
-    const issuer: string = JSON.parse(body.issuer);
+    const base: Partial<DocumentTypes.ICompetence> = JSON.parse(body.base);
+    const issuer: string = new SimpleUser().build(req.user).username;
 
-    const competence: Competence = new Competence().build(name, issuer);
-    const savedCompetence = await dataSource.getRepository(Competence).save(competence);
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const competence: Competence = await new Competence()
+        .build(base.code, base.position, base.name, issuer)
+        .setFolderRelations(transactionalEntityManager, base.folderStructure);
+      const savedCompetence = await dataSource.getRepository(Competence).save(competence);
 
-    return res.status(201).json({
-      added: savedCompetence,
-      message: "Competence added successfully",
-      statusMessage: HttpResponseMessage.POST_SUCCESS,
+      return res.status(201).json({
+        added: [savedCompetence],
+        message: "Competence added successfully",
+        statusMessage: HttpResponseMessage.POST_SUCCESS,
+      });
     });
   } catch (error) {
     if (error.code === "23505") {
@@ -37,15 +43,13 @@ const addCompetence = async (req: Request, res: Response) => {
 const editCompetence = async (req: Request, res: Response) => {
   try {
     const body = req.body;
-    const id: number = Number(JSON.parse(body.id));
-    const name: string = JSON.parse(body.name);
-    const issuer: string = JSON.parse(body.issuer);
+    const base: Partial<DocumentTypes.ICompetence> = JSON.parse(body.base);
+    const issuer: string = new SimpleUser().build(req.user).username;
 
-    let savedCompetence: Competence;
     await dataSource.transaction(async (transactionalEntityManager) => {
       const competence: Competence = await transactionalEntityManager
         .getRepository(Competence)
-        .findOne({ where: { id } });
+        .findOne({ where: { id: base.id } });
 
       if (!competence) {
         return res.status(404).json({
@@ -53,15 +57,15 @@ const editCompetence = async (req: Request, res: Response) => {
           statusMessage: HttpResponseMessage.PUT_ERROR,
         });
       }
-      savedCompetence = await transactionalEntityManager
+      const savedCompetence: Competence = await transactionalEntityManager
         .getRepository(Competence)
-        .save(competence.put(name, issuer));
-    });
+        .save(competence.put(base.code, base.position, base.name, issuer));
 
-    return res.status(200).json({
-      edited: savedCompetence,
-      message: "Competence updated successfully",
-      statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      return res.status(200).json({
+        edited: [savedCompetence],
+        message: "Competence updated successfully",
+        statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      });
     });
   } catch (error) {
     if (error.code === "23505") {
@@ -84,25 +88,27 @@ const removeCompetence = async (req: Request<{ id: number }>, res: Response) => 
   try {
     const { id } = req.params;
 
-    const competence: Competence = await dataSource
-      .getRepository(Competence)
-      .findOne({ where: { id } });
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const competence: Competence = await transactionalEntityManager
+        .getRepository(Competence)
+        .findOne({ where: { id } });
 
-    if (!competence) {
-      return res.status(404).json({
-        message: "Competence not found",
-        statusMessage: HttpResponseMessage.PUT_ERROR,
+      if (!competence) {
+        return res.status(404).json({
+          message: "Competence not found",
+          statusMessage: HttpResponseMessage.PUT_ERROR,
+        });
+      }
+
+      const deletedCompetence: Competence = await transactionalEntityManager
+        .getRepository(Competence)
+        .remove(competence);
+
+      return res.status(200).json({
+        deleted: [deletedCompetence],
+        message: "Competence removed successfully",
+        statusMessage: HttpResponseMessage.DELETE_SUCCESS,
       });
-    }
-
-    const deletedCompetence: Competence = await dataSource
-      .getRepository(Competence)
-      .remove(competence);
-
-    return res.status(200).json({
-      deleted: deletedCompetence,
-      message: "Competence removed successfully",
-      statusMessage: HttpResponseMessage.DELETE_SUCCESS,
     });
   } catch (error) {
     console.error("Error removing competence: ", error);
@@ -113,9 +119,25 @@ const removeCompetence = async (req: Request<{ id: number }>, res: Response) => 
   }
 };
 
-const getCompetences = async (_req: Request, res: Response) => {
+const getCompetences = async (req: Request, res: Response) => {
   try {
-    const competences = await dataSource.getRepository(Competence).find();
+    const { folderStructure } = req.params;
+    const chips: string[] = JSON.parse(folderStructure).filter(
+      (chip: string) => !!chip && chip !== null
+    );
+
+    const qb = dataSource.getRepository(Competence).createQueryBuilder("competence");
+
+    if (chips.length > 0) {
+      qb.where(
+        `
+      "competence"."folderStructure"[1:${chips.length}] = ARRAY[:...chips]::text[]
+    `,
+        { chips }
+      );
+    }
+
+    const competences = await qb.getMany();
 
     return res.status(200).json({
       got: competences,
@@ -130,48 +152,5 @@ const getCompetences = async (_req: Request, res: Response) => {
     });
   }
 };
-
-// const addCompetenceToDocument = async (req: Request, res: Response) => {
-//   try {
-//     const { documentId, competenceId } = req.params;
-
-//     await dataSource.transaction(async (transactionalEntityManager) => {
-//       const document = await transactionalEntityManager.getRepository(Document).findOne({
-//         where: { id: documentId },
-//         relations: ["competences"],
-//       });
-//       if (!document) {
-//         return res.status(404).json({
-//           message: "Document not found",
-//           statusMessage: HttpResponseMessage.GET_ERROR,
-//         });
-//       }
-
-//       const competence = await transactionalEntityManager.getRepository(Competence).findOne({
-//         where: { id: competenceId },
-//       });
-//       if (!competence) {
-//         return res.status(404).json({
-//           message: "Competence not found",
-//           statusMessage: HttpResponseMessage.GET_ERROR,
-//         });
-//       }
-
-//       document.competences.push(competence);
-//       await transactionalEntityManager.getRepository(Document).save(document);
-//     });
-
-//     return res.status(200).json({
-//       message: "Competence added to document successfully.",
-//       statusMessage: HttpResponseMessage.GET_SUCCESS,
-//     });
-//   } catch (error) {
-//     console.error("Error adding competence to document: ", error);
-//     return res.status(500).json({
-//       message: "Unknown error occurred. Failed to add competence to document.",
-//       statusMessage: HttpResponseMessage.UNKNOWN,
-//     });
-//   }
-// };
 
 export { addCompetence, editCompetence, removeCompetence, getCompetences };

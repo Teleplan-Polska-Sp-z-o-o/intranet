@@ -1,9 +1,18 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+  ManyToMany,
+} from "typeorm";
 import { UserPermission } from "./UserPermissionEntity";
 import { UserSettings } from "./UserSettingsEntity";
 import { UserNotification } from "./UserNotificationEntity";
 import { UserInfo } from "./UserInfoEntity";
 import { UserLoginDetails } from "./UserLoginDetailsEntity";
+import { Document } from "../document/DocumentEntity";
 
 @Entity()
 export class User {
@@ -31,6 +40,9 @@ export class User {
 
   @OneToMany(() => UserLoginDetails, (loginDetails) => loginDetails.user)
   loginDetails: Array<UserLoginDetails>;
+
+  @ManyToMany(() => Document, (document) => document.quickAccess)
+  quickAccessDocuments: Document[];
 
   constructor(
     username: string,

@@ -20,8 +20,9 @@ const plT = {
       },
     },
     chips: {
-      filterBy: "Filtruj według folderów",
-      empty: "Ten folder jest pusty",
+      filterByType: "Filtruj według typu dokumentu",
+      filterByFolder: "Filtruj według folderów",
+      empty: "Nie znaleziono folderów",
       departments: "Działy",
       workstations: "Stanowiska pracy",
       programs: "Programy",
@@ -31,70 +32,67 @@ const plT = {
     },
     documents: {
       name: "Dokumenty",
-      tabs: {
-        my_documents: {
-          name: "MOJE DOKUMENTY",
-          table: {
-            toolbar: "",
-            select_lang: "",
+      table: {
+        header: {
+          name: "Nazwa",
+          description: "Opis",
+          view_document: {
+            name: "Zobacz Dokument",
+            select: "Wybierz Język",
+            tooltip: "Otwórz w nowej karcie",
+          },
+          quick: {
+            name: "Szybki Dostęp",
+            tooltip_add: "Dodaj do Szybkiego Dostępu",
+            tooltip_remove: "Usuń z Szybkiego Dostępu",
           },
         },
-        my_favorites: {
-          name: "MOJE ULUBIONE",
+      },
+      tabs: {
+        all: {
+          name: "DOKUMENTY",
           table: {
-            toolbar: "",
-            select_lang: "",
+            toolbar: "Dokumenty",
           },
         },
         instructions: {
           name: "INSTRUKCJE",
           table: {
             toolbar: "Instrukcje",
-            select_lang: "Wybierz język",
-            header: {
-              name: "Nazwa",
-              description: "Opis",
-              view_document: "Zobacz dokument",
-            },
           },
         },
         visuals: {
           name: "POMOCE WIZUALNE",
           table: {
             toolbar: "Pomoce wizualne",
-            select_lang: "Wybierz język",
-            header: {
-              name: "Nazwa",
-              description: "Opis",
-              view_document: "Zobacz dokument",
-            },
           },
         },
         msd: {
           name: "Systemy Zarządzania",
           table: {
             toolbar: "Systemy Zarządzania",
-            select_lang: "Wybierz Język",
-            header: {
-              name: "Nazwa",
-              description: "Opis",
-              view_document: "Zobacz Dokument",
-            },
           },
         },
+        //
+        quick: {
+          name: "Szybki dostęp",
+          table: {
+            toolbar: "Dokumenty",
+          },
+        },
+        recently: {
+          name: "Ostatnio przeglądane",
+          table: {
+            toolbar: "Dokumenty",
+          },
+        },
+        //
         assistant: {
           name: "ASYSTENT",
           title: "AI Asystent Dokumentów ",
           send: "Wyślij",
           placeholder: "Zadaj mi pytanie.",
           new: "Nowa Rozmowa",
-        },
-        recently_browsed: {
-          name: "OSTATNIO PRZEGLĄDANE",
-          table: {
-            toolbar: "",
-            select_lang: "",
-          },
         },
       },
     },
@@ -132,14 +130,58 @@ const plT = {
               actions: "Akcje",
             },
           },
+          stepper: {
+            vStepperItem: {
+              "1": "Podstawowe Informacje",
+              "2": "Pliki Wejściowe",
+              "3": "Weryfikacja",
+            },
+            vStepperWindowItem: {
+              "1": {
+                type: {
+                  label: "Typ",
+                },
+                confidentiality: {
+                  label: "Poufność",
+                },
+                name: {
+                  label: "Nazwa",
+                },
+                description: {
+                  label: "Opis",
+                },
+                revision: {
+                  label: "Wersja",
+                },
+                competences: {
+                  label: "Kompetencje",
+                },
+              },
+            },
+            actions: {
+              prev: "Poprzedni",
+              next: "Następny",
+            },
+          },
         },
         competences: {
           name: "KOMPETENCJE",
           table: {
             toolbar: "Kompetencje",
             header: {
+              code: "Kod",
+              position: "Pozycja",
               name: "Nazwa",
+              folderStructure: "Struktura Folderów",
               actions: "Akcje",
+            },
+          },
+          form: {
+            code: "Kod",
+            position: "Pozycja",
+            name: {
+              label: "Nazwa",
+              hint: "Ta wartość reprezentuje połączenie Kodu i Pozycji.",
             },
           },
         },

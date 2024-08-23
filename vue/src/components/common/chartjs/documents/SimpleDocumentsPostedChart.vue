@@ -19,6 +19,7 @@ import {
 import { useI18n } from "vue-i18n";
 import { ChartHelper } from "../../../../models/common/chartjs/ChartHelper";
 import { ChartData } from "../../../../models/common/chartjs/ChartData";
+import { EDocumentType } from "../../../../interfaces/document/DocumentTypes";
 
 const { t } = useI18n();
 
@@ -33,7 +34,7 @@ Chart.register(
   Legend
 );
 
-const documentManager: DocumentManager = new DocumentManager();
+const documentManager: DocumentManager = new DocumentManager(Object.values(EDocumentType));
 const documentEntities = ref<Array<IDocumentEntity>>([]);
 
 const chartHelper = new ChartHelper();

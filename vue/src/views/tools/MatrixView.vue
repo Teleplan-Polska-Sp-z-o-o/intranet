@@ -15,6 +15,7 @@ import SimpleDocumentsPostedChart from "../../components/common/chartjs/document
 import { ToolTab } from "../../interfaces/common/ToolTabTypes";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
+import { v4 as uuidv4 } from "uuid";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -95,9 +96,6 @@ watch(
 const chips = ref<IChips>(new Chips());
 const table = ref<ILevel | undefined>(undefined);
 
-const handleChips = (newValue: IChips): void => {
-  chips.value = newValue;
-};
 const handleTable = (newValue: ILevel): void => {
   table.value = newValue;
   setTimeout(() => {
@@ -123,6 +121,10 @@ if (userInfo) {
       ) as number;
     });
 }
+
+const departmentsConnectorId = uuidv4();
+const documentsConnectorId = uuidv4();
+const competencesConnectorId = uuidv4();
 </script>
 
 <template>
@@ -167,33 +169,31 @@ if (userInfo) {
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
                 <v-window-item :value="1">
                   <chip-filters
-                    @chips="handleChips"
                     :table="table"
                     :max-level="1"
+                    :quickAccess="false"
+                    :whereDocType="false"
+                    :instanceId="departmentsConnectorId"
                     class="bg-surface-2 mb-5 ma-1"
                   ></chip-filters>
                   <department-table
-                    @table="handleTable"
-                    :chips="chips"
+                    :quickAccess="false"
                     :tab="tabs.at(0)!.name"
+                    :instanceId="departmentsConnectorId"
                     class="bg-surface-2 pa-4 ma-1"
                   ></department-table>
                 </v-window-item>
                 <v-window-item :value="2">
                   <chip-filters
-                    @chips="handleChips"
-                    :table="table"
                     :max-level="2"
-                    departments-subtitle="category"
-                    programs-subtitle="subcategory"
-                    workstations-subtitle="subSubcategory"
-                    :both-subtitles="true"
+                    :quickAccess="false"
+                    :whereDocType="false"
+                    :instanceId="documentsConnectorId"
                     class="bg-surface-2 mb-5 ma-1"
                   ></chip-filters>
                   <document-table
-                    @table="handleTable"
-                    :chips="chips"
                     :tab="tabs.at(1)!.name"
+                    :instanceId="documentsConnectorId"
                     class="bg-surface-2 pa-4 ma-1 mb-5"
                   ></document-table>
                   <simple-documents-posted-chart
@@ -201,10 +201,19 @@ if (userInfo) {
                   ></simple-documents-posted-chart>
                 </v-window-item>
                 <v-window-item :value="3">
+                  <chip-filters
+                    :table="table"
+                    :max-level="1"
+                    :quickAccess="false"
+                    :whereDocType="false"
+                    :instanceId="competencesConnectorId"
+                    class="bg-surface-2 mb-5 ma-1"
+                  ></chip-filters>
                   <competence-table
                     @table="handleTable"
                     :chips="chips"
                     :tab="tabs.at(2)!.name"
+                    :instanceId="competencesConnectorId"
                     class="bg-surface-2 pa-4 ma-1"
                   ></competence-table>
                 </v-window-item>

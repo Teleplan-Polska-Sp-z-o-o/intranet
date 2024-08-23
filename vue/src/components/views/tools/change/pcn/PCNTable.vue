@@ -12,10 +12,12 @@ import { IUser } from "../../../../../interfaces/user/UserTypes";
 import { useRoute } from "vue-router";
 import { usePCNStore } from "../../../../../stores/change/pcnStore";
 import { nodeConfig } from "../../../../../config/env";
+import { useCrudStore } from "../../../../../stores/crud/useCrudStore";
 
 // const emit = defineEmits(["responseStatus"]);
 
 const props = defineProps<{
+  instanceId: string;
   tab: string;
 }>();
 // no: string | undefined;
@@ -100,6 +102,9 @@ const handleSaveData = (
 };
 
 const manager = new ProcessChangeNoticeManager();
+
+const crudStore = useCrudStore();
+crudStore.setManager(props.instanceId, manager);
 
 // const handleResponseStatus = (status: IResponseStatus) => {
 //   try {
@@ -209,6 +214,7 @@ const copyHeadersCustoms = (headerKey: string, rowValue: string | boolean | obje
     :loadItems="loadItems"
     :filters="true"
     :filtersCallback="pcnStore.callback"
+    :instanceId="props.instanceId"
   >
     <template v-slot:table-filters>
       <p-c-n-table-filters></p-c-n-table-filters>

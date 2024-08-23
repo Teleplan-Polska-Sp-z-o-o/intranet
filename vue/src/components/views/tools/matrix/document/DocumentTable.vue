@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { IChips, IFileItem } from "../../../../../interfaces/document/DocumentTypes";
+import { IFileItem } from "../../../../../interfaces/document/DocumentTypes";
 // import { useI18n } from "vue-i18n";
 import { DocumentManager } from "../../../../../models/document/DocumentManager";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
@@ -9,6 +9,8 @@ import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import Stepper from "./Stepper.vue";
 import { useI18n } from "vue-i18n";
 import { watchEffect } from "vue";
+import { useCrudFolderChipsStore } from "../../../../../stores/crud/useCrudFolderChipsStore";
+import { useCrudStore } from "../../../../../stores/crud/useCrudStore";
 // import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
 
 // dictionary
@@ -18,8 +20,8 @@ import { watchEffect } from "vue";
 // const tableItem = computed<string>(() => t("tools.documents.name"));
 
 const props = defineProps<{
-  chips: IChips;
   tab: string;
+  instanceId: string;
 }>();
 
 // const chips = ref<IChips>(props.chips);
@@ -43,7 +45,7 @@ const headers: any = [
   { title: t(`${tPath}.header.confidentiality`), key: "confidentiality" },
   { title: t(`${tPath}.header.description`), key: "description", sortable: false },
   { title: t(`${tPath}.header.language`), key: "custom", minWidth: 150, sortable: false },
-  { title: t(`${tPath}.header.revision`), key: "revision" },
+  { title: t(`${tPath}.header.revision`), key: "custom3" },
   { title: t(`${tPath}.header.folderStructure`), key: "custom2", minWidth: 200, sortable: false },
   { title: t(`${tPath}.header.actions`), key: "actions", sortable: false },
 ];
@@ -61,11 +63,14 @@ const handleSaveData = (data: any) => {
   base.confidentiality = data.confidentiality;
   base.competences = data.competences;
 
-  base.folderStructure = Object.values(props.chips);
+  base.folderStructure = Object.values(useCrudFolderChipsStore().getChips(props.instanceId).value);
   handleReqData(base, data.files);
 };
 
-const manager = new DocumentManager();
+const manager: DocumentManager = new DocumentManager(props.instanceId);
+
+const crudStore = useCrudStore();
+crudStore.setManager(props.instanceId, manager);
 
 const reqData = ref<any>(null);
 
@@ -111,16 +116,16 @@ const languages = (item: IDocumentEntity) => {
     :searchBy="['name', 'type', 'description']"
     :toolbarTitle="toolbarTitle"
     :searchTitle="searchTitle"
-    :manager="manager"
     @save-data="handleSaveData"
     :req-data="reqData"
     :disableAdd="undefined"
-    :chips="props.chips"
     :tableAdd="true"
     :tableDelete="true"
     :tableEdit="true"
     :tableDialogComponent="Stepper"
     :tableDialogComponentProps="{}"
+    :instanceId="props.instanceId"
+    :tab="props.tab"
   >
     <template v-slot:table-key-slot="{ item }: { item: IDocumentEntity }">
       <v-list-item
@@ -133,6 +138,11 @@ const languages = (item: IDocumentEntity) => {
           {{ `${index + 1}) ${lang.title}` }}</v-list-item-title
         >
       </v-list-item>
+    </template>
+    <template v-slot:table-key-slot-3="{ item }: { item: IDocumentEntity }">
+      <span class="text-body-2">
+        {{ item.revision < 10 ? `0${item.revision}` : `${item.revision}` }}</span
+      >
     </template>
     <template v-slot:table-key-slot-2="{ item }: { item: IDocumentEntity }">
       <v-list-item

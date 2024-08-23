@@ -19,7 +19,13 @@ interface IUser {
   domain: string;
 }
 
-type TPermissionDocumentsSubgroup = "instructions" | "visuals" | "msd" | "assistant";
+type TPermissionDocumentsSubgroup =
+  | "all"
+  // | "instructions"
+  // | "visuals"
+  // | "msd"
+  | "quick"
+  | "assistant";
 type TPermissionChangeSubgroup = "pcr" | "pcn" | "dcr" | "dcn";
 type TPermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type TPermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
@@ -69,7 +75,7 @@ interface IPermissionGroups {
 class StaticGroups {
   public static getAdminGroups(): IPermissionGroups {
     return {
-      documents: ["instructions", "visuals", "msd", "assistant"],
+      documents: ["all", "quick", "assistant"],
       change: ["pcr", "pcn", "dcr", "dcn"],
       matrix: ["departments", "documents", "competences"],
       admin: ["user-info", "user-permissions", "news"],
@@ -77,7 +83,7 @@ class StaticGroups {
   }
   public static getBaseUserGroups(): Partial<IPermissionGroups> {
     return {
-      documents: ["instructions", "visuals", "msd", "assistant"],
+      documents: ["all", "quick", "assistant"],
     };
   }
 }
@@ -98,7 +104,7 @@ export namespace UserTypes {
       enterCount: number;
     }
 
-    export type StatisticsEntity = CommonTypes.OrmTypes.IOrmBase & IFields;
+    export type StatisticsEntity = CommonTypes.Api.OrmTypes.IOrmBase & IFields;
     export type ToolFilteredStatistics = CommonTypes.Tools.IFilter & StatisticsEntity;
   }
 }

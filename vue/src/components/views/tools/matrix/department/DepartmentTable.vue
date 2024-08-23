@@ -1,56 +1,61 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from "vue";
-import { IChips, ILevel } from "../../../../../interfaces/document/DocumentTypes";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
-import { SubcategoriesManager } from "../../../../../models/document/SubcategoriesManager";
-import { CategoriesManager } from "../../../../../models/document/CategoriesManager";
-// import CrudChipTable from "../../../../../components/tools/CrudChipTable.vue";
 import CrudTable from "../../../../../components/tools/CrudTable.vue";
 import DialogInput from "../../../../tools/DialogInput.vue";
 import { useI18n } from "vue-i18n";
-// import { IResponseStatus } from "../../../../../interfaces/common/IResponseStatus";
-
-const emit = defineEmits(["table"]);
+import { Endpoints } from "../../../../../config/axios/Endpoints";
+import { useCrudFolderChipsStore } from "../../../../../stores/crud/useCrudFolderChipsStore";
+import { Chips } from "../../../../../models/document/Chips";
+import { useCrudStore } from "../../../../../stores/crud/useCrudStore";
 
 const props = defineProps<{
-  chips: IChips;
   tab: string;
+  quickAccess: boolean;
+  instanceId: string;
 }>();
 
-const level = ref<ILevel>(ILevel.Dep);
-const manager = ref<DepartmentsManager | CategoriesManager | SubcategoriesManager>(
-  new DepartmentsManager()
+const depManager: DepartmentsManager = new DepartmentsManager(
+  Endpoints.DocumentDepartment,
+  props.quickAccess,
+  false
+);
+const catManager: DepartmentsManager = new DepartmentsManager(
+  Endpoints.DocumentCategory,
+  props.quickAccess,
+  false
+);
+const subManager: DepartmentsManager = new DepartmentsManager(
+  Endpoints.DocumentSubcategory,
+  props.quickAccess,
+  false
 );
 
-const emitTableChange = () => {
-  emit("table", level.value);
-};
+const crudStore = useCrudStore();
+crudStore.setManager(props.instanceId, depManager);
 
-const chips = ref<IChips>(props.chips);
-
+const categoryName = ref<string | undefined>(undefined);
+const departmentName = ref<string | undefined>(undefined);
 const tableItem = ref<string>("departments");
-
+const chipsStore = useCrudFolderChipsStore();
 watch(
-  () => [props.chips?.departmentName, props.chips?.categoryName, props.chips?.subcategoryName],
-  ([dep, cat, _sub]) => {
-    if (cat) {
-      level.value = ILevel.Sub;
-      manager.value = new SubcategoriesManager();
-      tableItem.value = "subcategories"; // prev "workstations"
-    } else if (dep) {
-      level.value = ILevel.Cat;
-      manager.value = new CategoriesManager();
-      tableItem.value = "categories"; // prev "programs"
+  () => chipsStore.getChips(props.instanceId).value,
+  (chips: Chips) => {
+    if (chips.categoryName) {
+      crudStore.setManager(props.instanceId, subManager);
+      tableItem.value = "subcategories";
+    } else if (chips.departmentName) {
+      crudStore.setManager(props.instanceId, catManager);
+      tableItem.value = "categories";
     } else {
-      level.value = ILevel.Dep;
-      manager.value = new DepartmentsManager();
-      tableItem.value = "departments"; // prev "departments"
+      crudStore.setManager(props.instanceId, depManager);
+      tableItem.value = "departments";
     }
 
-    chips.value.departmentName = dep === undefined ? "" : dep;
-    chips.value.categoryName = cat === undefined ? "" : cat;
-    chips.value.subcategoryName = "";
-  }
+    categoryName.value = chips.categoryName;
+    departmentName.value = chips.departmentName;
+  },
+  { deep: true }
 );
 
 const { t } = useI18n();
@@ -75,8 +80,8 @@ const handleSaveData = (data: any) => {
   const rd: any = {
     id: data.item.id,
     name: data.model,
-    categoryName: chips.value.categoryName,
-    departmentName: chips.value.departmentName,
+    categoryName,
+    departmentName,
   };
 
   reqData.value = rd;
@@ -92,17 +97,16 @@ const handleSaveData = (data: any) => {
     :searchBy="['name']"
     :toolbarTitle="toolbarTitle"
     :searchTitle="searchTitle"
-    :manager="manager"
     @save-data="handleSaveData"
     :req-data="reqData"
-    :chips="chips"
     :emitTableChange="true"
-    @emit-table-change="emitTableChange"
     :tableAdd="true"
     :tableDelete="true"
     :tableEdit="true"
     :tableDialogComponent="DialogInput"
     :tableDialogComponentProps="{ label: 'Name', property: 'name' }"
+    :instanceId="props.instanceId"
+    :tab="props.tab"
   >
   </crud-table>
 </template>

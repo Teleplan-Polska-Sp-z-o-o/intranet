@@ -40,7 +40,7 @@ watchEffect(async () => {
   }
 });
 
-const staticticsSorted = computed(() =>
+const statisticsSorted = computed(() =>
   [...filteredStatistics.value].sort((a, b) => b.enterCount - a.enterCount)
 );
 
@@ -54,12 +54,17 @@ const push = async (href: string, toolName: TPermissionGroup): Promise<void> => 
 </script>
 
 <template>
-  <v-col :cols="cols" v-for="statictics in staticticsSorted" :key="statictics.id">
+  <v-col
+    v-if="!smallScreen"
+    :cols="cols"
+    v-for="statistics in statisticsSorted"
+    :key="statistics.id"
+  >
     <v-card
       class="rounded-xl mx-4 w-100 bg-surface-1 d-flex flex-column"
-      :image="`../tools/${statictics.meta.group}.png`"
+      :image="`../tools/${statistics.meta.group}.png`"
       height="200px"
-      @click="push(statictics.href, statictics.meta.group)"
+      @click="push(statistics.href, statistics.meta.group)"
       link
     >
       <v-spacer></v-spacer>
@@ -67,12 +72,37 @@ const push = async (href: string, toolName: TPermissionGroup): Promise<void> => 
         <v-btn
           append-icon="mdi-chevron-right"
           color="tertiary"
-          :text="statictics.toolName"
+          :text="statistics.toolName"
           variant="outlined"
           class="rounded-xl bg-background"
           block
         ></v-btn>
       </template>
     </v-card>
+  </v-col>
+  <v-col :cols="12" v-else>
+    <v-slide-group show-arrows>
+      <v-slide-group-item v-for="statistics in statisticsSorted" :key="statistics.id">
+        <v-card
+          class="rounded-xl mx-4 w-100 bg-surface-1 d-flex flex-column"
+          :image="`../tools/${statistics.meta.group}.png`"
+          height="200px"
+          @click="push(statistics.href, statistics.meta.group)"
+          link
+        >
+          <v-spacer></v-spacer>
+          <template v-slot:actions>
+            <v-btn
+              append-icon="mdi-chevron-right"
+              color="tertiary"
+              :text="statistics.toolName"
+              variant="outlined"
+              class="rounded-xl bg-background text-caption"
+              block
+            ></v-btn>
+          </template>
+        </v-card>
+      </v-slide-group-item>
+    </v-slide-group>
   </v-col>
 </template>

@@ -9,10 +9,12 @@ import { RoleAction } from "../../../../../models/change/dc/RoleAction";
 import { SimpleUser } from "../../../../../models/user/SimpleUser";
 import { useUserStore } from "../../../../../stores/userStore";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
-import { IChip } from "../../../../../interfaces/document/DocumentTypes";
+import { EDocumentType, IChip } from "../../../../../interfaces/document/DocumentTypes";
 import { IUserEntity } from "../../../../../interfaces/user/IUserEntity";
 import { UserManager } from "../../../../../models/user/UserManager";
 import { useDCRStore } from "../../../../../stores/change/dcrStore";
+import { Endpoints } from "../../../../../config/axios/Endpoints";
+import { Chips } from "../../../../../models/document/Chips";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const { t } = useI18n();
@@ -231,8 +233,14 @@ watch(
       tableUsernames.includes(new SimpleUser().build(user).getNormalizedUsername())
     );
 
-    const departmentsManager: DepartmentsManager = new DepartmentsManager();
-    const departmentEntities: IChip[] = await departmentsManager.get();
+    const departmentsManager: DepartmentsManager = new DepartmentsManager(
+      Endpoints.DocumentDepartment
+    );
+    const departmentEntities: IChip[] = await departmentsManager.get(
+      new Chips(),
+      false,
+      Object.values(EDocumentType)
+    );
     const departmentNames: string[] = departmentEntities.map((en) => en.name);
 
     const filteredDepartments: string[] = departmentNames.filter((department) =>

@@ -78,7 +78,7 @@ namespace DocumentChangeTypes {
     timeline: string;
   }
 
-  export type TDocumentChange = CommonTypes.OrmTypes.IOrmBase &
+  export type TDocumentChange = CommonTypes.Api.OrmTypes.IOrmBase &
     IDocumentChangeSelfProcessing &
     IDocumentChangeFields &
     IDocumentChangeReview &

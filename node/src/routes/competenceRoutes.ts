@@ -15,6 +15,6 @@ router.post("/", decodeFormData, addCompetence);
 router.put("/", decodeFormData, editCompetence);
 
 router.delete("/:id", removeCompetence);
-router.get("/", getCompetences);
+router.get("/:folderStructure", getCompetences);
 
 export { router as competenceRoutes };

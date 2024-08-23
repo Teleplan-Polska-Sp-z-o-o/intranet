@@ -10,10 +10,15 @@ import UsersForm from "./UsersForm.vue";
 import { DepartmentsManager } from "../../../../../models/document/DepartmentsManager";
 import { IUserInfo } from "../../../../../interfaces/admin/users/IUserInfo";
 import { SimpleUser } from "../../../../../models/user/SimpleUser";
+import { Endpoints } from "../../../../../config/axios/Endpoints";
+import { Chips } from "../../../../../models/document/Chips";
+import { EDocumentType } from "../../../../../interfaces/document/DocumentTypes";
+import { useCrudStore } from "../../../../../stores/crud/useCrudStore";
 
 const emit = defineEmits(["table"]);
 
 const props = defineProps<{
+  instanceId: string;
   tab: string;
 }>();
 
@@ -38,7 +43,13 @@ const reqData = ref<any>(null);
 
 const componentProps = async (): Promise<Array<UserInput>> => {
   const array = [];
-  const departments = (await new DepartmentsManager().get()).map((dep) => dep.name);
+  const departments = (
+    await new DepartmentsManager(Endpoints.DocumentDepartment).get(
+      new Chips(),
+      false,
+      Object.values(EDocumentType)
+    )
+  ).map((dep) => dep.name);
   const inputs: Array<IUserInput> = [
     {
       id: 0,
@@ -92,6 +103,9 @@ const handleSaveData = (data: { user: SimpleUser; item: any; inputs: Array<UserI
 
 const manager = new UserManager();
 
+const crudStore = useCrudStore();
+crudStore.setManager(props.instanceId, manager);
+
 const decisionMaker = (item: any) => {
   const d: boolean = !!item.info?.decisionMaker;
   if (d) return "Yes";
@@ -115,6 +129,7 @@ const decisionMaker = (item: any) => {
     :tableDelete="true"
     :tableDialogComponent="UsersForm"
     :tableDialogComponentProps="{ inputs: componentProps() }"
+    :instanceId="props.instanceId"
   >
     <template v-slot:table-key-slot-2="{ item }">
       <span class="text-body-2">{{ decisionMaker(item) }}</span>

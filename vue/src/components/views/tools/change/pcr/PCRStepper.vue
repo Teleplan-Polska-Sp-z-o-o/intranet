@@ -13,6 +13,9 @@ import { UserManager } from "../../../../../models/user/UserManager";
 import CkEditor from "../../../../common/CkEditor.vue";
 import { useEditorStore } from "../../../../../stores/editorStore";
 import { useI18n } from "vue-i18n";
+import { Endpoints } from "../../../../../config/axios/Endpoints";
+import { Chips } from "../../../../../models/document/Chips";
+import { EDocumentType } from "../../../../../interfaces/document/DocumentTypes";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -85,11 +88,11 @@ const request = ref<IProcessChangeRequestBase>({
 const departments = ref<Array<string>>([]);
 // const programs = ref<Array<string>>([]);
 
-const departmentsManager = new DepartmentsManager();
+const departmentsManager = new DepartmentsManager(Endpoints.DocumentDepartment);
 // const programsManager = new CategoriesManager();
 
 const fillDepartments = async () => {
-  const got = await departmentsManager.get();
+  const got = await departmentsManager.get(new Chips(), false, Object.values(EDocumentType));
   const selectOptions = got.map((dep) => dep.name);
   departments.value = selectOptions;
 };

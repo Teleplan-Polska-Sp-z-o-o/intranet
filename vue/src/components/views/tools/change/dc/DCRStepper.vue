@@ -5,7 +5,7 @@ import { useEditorStore } from "../../../../../stores/editorStore";
 import CkEditor from "../../../../common/CkEditor.vue";
 import { UserManager } from "../../../../../models/user/UserManager";
 import { IUserEntity } from "../../../../../interfaces/user/IUserEntity";
-import { ICompetence, IFileItem } from "../../../../../interfaces/document/DocumentTypes";
+import { DocumentTypes, IFileItem } from "../../../../../interfaces/document/DocumentTypes";
 import { CompetenceManager } from "../../../../../models/document/CompetenceManager";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
 import { DocumentManager } from "../../../../../models/document/DocumentManager";
@@ -129,7 +129,7 @@ const docxNumberComplete: ComputedRef<boolean> = computed(() => {
 // );
 const documents = ref<Array<{ name: string; ref: string }>>([]);
 (async () => {
-  const documentManager: DocumentManager = new DocumentManager("all", true);
+  const documentManager: DocumentManager = new DocumentManager(undefined, true);
   const options: Array<IDocumentEntity> = await documentManager.get(new Chips());
   documents.value = options
     .filter((doc) =>
@@ -176,7 +176,7 @@ const highestRevisionByDocumentNumber = ref<number>(0);
 watch(
   () => documentChangeFields.value.docxNumber,
   async (newDocxNumber) => {
-    const manager: DocumentManager = new DocumentManager("all", true);
+    const manager: DocumentManager = new DocumentManager(undefined, true);
     const documents: IDocumentEntity[] = newDocxNumber
       ? await manager.getByNumber(newDocxNumber)
       : [];
@@ -340,10 +340,10 @@ const eligibleCheckersAndRegisterers: ComputedRef<string[]> = computed(() =>
 })();
 
 // competences
-const competences = ref<Array<ICompetence>>([]);
+const competences = ref<Array<DocumentTypes.ICompetenceEntity>>([]);
 (async () => {
   const competenceManager: CompetenceManager = new CompetenceManager();
-  const options: Array<ICompetence> = await competenceManager.get();
+  const options: Array<DocumentTypes.ICompetenceEntity> = await competenceManager.get(new Chips());
   competences.value = options;
 })();
 const parsedCompetences = () => {
@@ -562,6 +562,7 @@ watch(activeStep, (newActiveStep) => {
             :disabled="disableDocxRevision"
             id="c2287a11_aa3d_465a"
             :class="{ warn: revisionMessages.length > 0 }"
+            :prefix="documentChangeFields.docxRevision < 10 ? '0' : ''"
           ></v-number-input>
           <!-- :rules="[docxRevisionRule]" -->
 

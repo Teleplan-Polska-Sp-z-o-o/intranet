@@ -20,8 +20,9 @@ const uaT = {
       },
     },
     chips: {
-      filterBy: "Фільтрувати за папками",
-      empty: "Ця папка порожня",
+      filterByType: "Фільтрувати за типом документа",
+      filterByFolder: "Фільтрувати за папками",
+      empty: "Папки не знайдено",
       departments: "Відділи",
       workstations: "Робочі місця",
       programs: "Програми",
@@ -31,70 +32,67 @@ const uaT = {
     },
     documents: {
       name: "Документи",
-      tabs: {
-        my_documents: {
-          name: "МОЇ ДОКУМЕНТИ",
-          table: {
-            toolbar: "",
-            select_lang: "",
+      table: {
+        header: {
+          name: "Назва",
+          description: "Опис",
+          view_document: {
+            name: "Переглянути Документ",
+            select: "Вибрати Мову",
+            tooltip: "Відкрити в новій вкладці",
+          },
+          quick: {
+            name: "Швидкий Доступ",
+            tooltip_add: "Додати до Швидкого Доступу",
+            tooltip_remove: "Видалити з Швидкого Доступу",
           },
         },
-        my_favorites: {
-          name: "МОЇ УЛЮБЛЕНІ",
+      },
+      tabs: {
+        all: {
+          name: "ДОКУМЕНТИ",
           table: {
-            toolbar: "",
-            select_lang: "",
+            toolbar: "Документи",
           },
         },
         instructions: {
           name: "ІНСТРУКЦІЇ",
           table: {
             toolbar: "Інструкції",
-            select_lang: "Вибрати мову",
-            header: {
-              name: "Назва",
-              description: "Опис",
-              view_document: "Переглянути документ",
-            },
           },
         },
         visuals: {
           name: "ВІЗУАЛЬНІ ДОПОМОГИ",
           table: {
             toolbar: "Візуальні матеріали",
-            select_lang: "Вибрати мову",
-            header: {
-              name: "Назва",
-              description: "Опис",
-              view_document: "Переглянути документ",
-            },
           },
         },
         msd: {
           name: "Системи Управління",
           table: {
             toolbar: "Системи Управління",
-            select_lang: "Виберіть Мову",
-            header: {
-              name: "Назва",
-              description: "Опис",
-              view_document: "Переглянути Документ",
-            },
           },
         },
+        //
+        quick: {
+          name: "Швидкий доступ",
+          table: {
+            toolbar: "Документи",
+          },
+        },
+        recently: {
+          name: "Нещодавно переглянуті",
+          table: {
+            toolbar: "Документи",
+          },
+        },
+        //
         assistant: {
           name: "ПОМІЧНИК",
           title: "AI Асистент Документів",
           send: "Надіслати",
           placeholder: "Задайте мені питання.",
           new: "Нова Pозмова",
-        },
-        recently_browsed: {
-          name: "ОСТАННІ ПЕРЕГЛЯДИ",
-          table: {
-            toolbar: "",
-            select_lang: "",
-          },
         },
       },
     },
@@ -132,14 +130,58 @@ const uaT = {
               actions: "Дії",
             },
           },
+          stepper: {
+            vStepperItem: {
+              "1": "Основна інформація",
+              "2": "Вхідні файли",
+              "3": "Перевірка",
+            },
+            vStepperWindowItem: {
+              "1": {
+                type: {
+                  label: "Тип",
+                },
+                confidentiality: {
+                  label: "Конфіденційність",
+                },
+                name: {
+                  label: "Назва",
+                },
+                description: {
+                  label: "Опис",
+                },
+                revision: {
+                  label: "Ревізія",
+                },
+                competences: {
+                  label: "Компетенції",
+                },
+              },
+            },
+            actions: {
+              prev: "Попередній",
+              next: "Наступний",
+            },
+          },
         },
         competences: {
           name: "КОМПЕТЕНЦІЇ",
           table: {
             toolbar: "Компетенції",
             header: {
+              code: "Код",
+              position: "Посада",
               name: "Назва",
+              folderStructure: "Структура папок",
               actions: "Дії",
+            },
+          },
+          form: {
+            code: "Код",
+            position: "Посада",
+            name: {
+              label: "Назва",
+              hint: "Це значення представляє поєднання Коду та Посади.",
             },
           },
         },

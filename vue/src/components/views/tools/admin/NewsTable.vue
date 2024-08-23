@@ -4,11 +4,13 @@ import CrudTable from "../../../../components/tools/CrudTable.vue";
 import { NewsManager } from "../../../../models/editor/NewsManager";
 import NewsStepper from "./NewsStepper.vue";
 import { useI18n } from "vue-i18n";
+import { useCrudStore } from "../../../../stores/crud/useCrudStore";
 // import { IResponseStatus } from "../../../../interfaces/common/IResponseStatus";
 
 // const emit = defineEmits(["responseStatus"]);
 
 const props = defineProps<{
+  instanceId: string;
   tab: string;
 }>();
 
@@ -49,6 +51,9 @@ const handleSaveData = (data: any) => {
 
 const manager = new NewsManager();
 
+const crudStore = useCrudStore();
+crudStore.setManager(props.instanceId, manager);
+
 // const handleResponseStatus = (status: IResponseStatus) => emit("responseStatus", status);
 </script>
 
@@ -67,6 +72,7 @@ const manager = new NewsManager();
     :tableEdit="true"
     :tableDialogComponent="NewsStepper"
     :tableDialogComponentProps="{}"
+    :instanceId="props.instanceId"
   >
   </crud-table>
 </template>

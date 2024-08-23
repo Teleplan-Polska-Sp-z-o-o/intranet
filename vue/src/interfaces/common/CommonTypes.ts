@@ -20,11 +20,16 @@ namespace CommonTypes {
     export type Language = (typeof LANGUAGES)[keyof typeof LANGUAGES];
   }
 
-  export namespace OrmTypes {
-    export interface IOrmBase {
-      ormCreateDate: Date;
-      ormUpdateDate: Date | null;
-      ormVersion: number;
+  export namespace Api {
+    export interface GetManager {
+      get(specificGetValue?: any): any;
+    }
+    export namespace OrmTypes {
+      export interface IOrmBase {
+        ormCreateDate: Date;
+        ormUpdateDate: Date | null;
+        ormVersion: number;
+      }
     }
   }
 

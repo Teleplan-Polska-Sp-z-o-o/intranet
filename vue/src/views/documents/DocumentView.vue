@@ -7,6 +7,8 @@ import "vue-pdf-embed/dist/style/textLayer.css";
 import { useI18n } from "vue-i18n";
 import { DocumentViewer } from "../../models/document/DocumentViewer/DocumentViewer";
 
+const smallScreen = ref<boolean>(window.innerWidth < 960);
+
 const loading: Ref<boolean> = ref<boolean>(true);
 const loaded: Ref<boolean> = ref<boolean>(false);
 
@@ -63,7 +65,7 @@ const handleLoaded = ({ numPages }: { numPages: number }): void => {
 const handleRendered = (): void => {};
 
 // page size
-const sliderScale = ref<number>(0.7);
+const sliderScale = ref<number>(smallScreen ? 1 : 0.7);
 const formatNumber = (num: number) => {
   return (num * 10).toFixed(0).padStart(2, "0");
 };
@@ -122,6 +124,7 @@ onUnmounted(() => {
         :disabled="!isPrev"
         icon="mdi-arrow-left-thick"
         class="ml-4 arrow arrow-left"
+        :class="{ 'arrow-top-mobile': smallScreen }"
         color="primary"
       >
       </v-btn>
@@ -130,12 +133,12 @@ onUnmounted(() => {
         :disabled="!isNext"
         icon="mdi-arrow-right-thick"
         class="mr-4 arrow arrow-right"
+        :class="{ 'arrow-top-mobile': smallScreen }"
         color="primary"
       >
       </v-btn>
-      <!-- :max-width="200" -->
       <v-slider
-        v-if="loaded && amIAuthorized"
+        v-if="loaded && amIAuthorized && !smallScreen"
         v-model="sliderScale"
         :max="1"
         :min="0.4"
@@ -148,11 +151,11 @@ onUnmounted(() => {
         @click:prepend="decreaseScale"
         color="secondary"
         direction="vertical"
-        class="slider ml-7"
+        class="slider-ae905726-0509 ml-7 h-25"
       ></v-slider>
 
       <v-col
-        class="pdfDocumentView"
+        class="pdfDocumentView-45183477-16ad"
         :class="`canvas-scale-${pdfClassExtension}`"
         v-if="amIAuthorized"
       >
@@ -177,6 +180,10 @@ onUnmounted(() => {
   transform: translateY(-50%);
   z-index: 999;
 
+  &-top-mobile {
+    top: 85% !important;
+  }
+
   &-left {
     left: 0;
   }
@@ -185,17 +192,23 @@ onUnmounted(() => {
     right: 0;
   }
 }
-.slider {
+</style>
+
+<style lang="scss">
+.slider-ae905726-0509 {
   position: fixed;
   top: 40%;
   left: 0;
   transform: translateY(-50%);
   z-index: 999;
-}
-</style>
 
-<style lang="scss">
-.pdfDocumentView {
+  .v-input__control {
+    min-height: 0px !important;
+    height: 20vh !important;
+  }
+}
+
+.pdfDocumentView-45183477-16ad {
   position: relative;
 
   &.canvas-scale-04 {

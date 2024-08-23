@@ -15,7 +15,7 @@ const intranet = computed(() => t("common.default_layout.bar"));
 <template>
   <v-app-bar class="layout-app-bar bg-primary-container text-on-primary-container" elevation="0">
     <v-app-bar-nav-icon @click="toggleDrawer" />
-    <v-app-bar-title class="text-h4">{{ intranet }}</v-app-bar-title>
+    <v-app-bar-title class="text-h5">{{ intranet }}</v-app-bar-title>
     <template v-slot:append>
       <app-bar-notifications></app-bar-notifications>
     </template>

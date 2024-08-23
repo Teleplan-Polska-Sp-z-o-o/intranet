@@ -1,33 +1,89 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch, watchEffect } from "vue";
+import { computed, ComputedRef, nextTick, onMounted, ref, watch, watchEffect } from "vue";
 import TableDialog from "./TableDialog.vue";
 import TableFlow from "./TableFlow.vue";
 // import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 // import { ResponseStatus } from "../../models/common/ResponseStatus";
 import CopyToClipboard from "./CopyToClipboard.vue";
 import TableFilters from "./TableFilters.vue";
+import { useCrudStore } from "../../stores/crud/useCrudStore";
+import { useCrudFolderChipsStore } from "../../stores/crud/useCrudFolderChipsStore";
+import { Chips } from "../../models/document/Chips";
+import { useRoute } from "vue-router";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const props = defineProps<{
+  /**
+   * Table headers.
+   *
+   * Format required by Vuetify data tables
+   */
   headers: any;
   sortBy: Array<{ key: string; order?: boolean | "asc" | "desc" }> | undefined;
 
-  searchBy: Array<string>; // header keys
+  /**
+   * Search by headers keys
+   */
+  searchBy: Array<string>;
+
+  /**
+   * Key for useI18n.
+   *
+   * Sets toolbar title
+   */
   toolbarTitle: string;
+
+  /**
+   * Key for useI18n.
+   *
+   * Replaces default search placeholder
+   */
   searchTitle?: string;
 
-  manager: any;
+  /**
+   * Manager class
+   *
+   * Defines functions for required crud operations.
+   *
+   * Required function is 'get'.
+   * Optional: 'post', 'put', 'delete':
+   * - get method optionally takes chips from ChipFilters.vue
+   * - post and put methods accept FormData
+   * - delete method takes id from chosen item
+   */
+  manager?: any;
+
   reqData?: any;
 
-  chips?: any;
   emitTableChange?: true;
   disableAdd?: boolean;
 
+  /**
+   * Enable post action button
+   *
+   * !Requires Manager with post method
+   */
   tableAdd?: true;
+  /**
+   * Enable delete action button
+   *
+   * !Requires Manager with delete method
+   */
   tableDelete?: true;
-  deleteTMsg?: string;
+
+  /**
+   * Enable edit action button
+   *
+   * !Requires Manager with edit method
+   */
   tableEdit?: true;
+  /**
+   * Key for useI18n.
+   *
+   * Replaces default delete message
+   */
+  deleteTMsg?: string;
 
   tableDialogComponent?: any;
   tableDialogComponentProps?: any;
@@ -38,33 +94,142 @@ const props = defineProps<{
 
   flow?: string; // pdf name
 
+  /**
+   * Deprecated solution to update table
+   *
+   * **Instead** make use of load() at useCrudStore
+   */
   loadItems?: true;
 
   filters?: boolean;
   filtersCallback?: Function;
+
+  // helpers
+  log?: boolean;
+  /**
+   * import { v4 as uuidv4 } from "uuid";
+   * Result of uuidv4()
+   *
+   * Connect filters with crud table
+   *
+   * This enables watchers on useCrudStore().getLoad() and useCrudFolderChipsStore().getChips()
+   */
+  instanceId?: string;
+  /**
+   * Specifying enables watch for route entry
+   *
+   * Automatically retrieves new records
+   */
+  tab?: string;
 }>();
 
 const emit = defineEmits(["save-data", "emit-table-change"]);
 
 const headers = ref<any>(props.headers);
 
+/**
+ * Stores retrieved records
+ */
 const items = ref<Array<any>>([]);
-const manager = ref<any>(props.manager);
-const chips = ref<any>(props.chips);
 
-const load = async (log?: boolean) => {
+const crudStore = useCrudStore();
+/**
+ * Manager class for crud operations
+ *
+ * Manager defines get function
+ * Optionally: post, put, delete
+ */
+const manager = ref<any>(
+  props.instanceId ? crudStore.getManager(props.instanceId)?.value ?? props.manager : props.manager
+);
+
+const folderChipsStore = useCrudFolderChipsStore();
+
+const loadingState = ref<string | false>(false);
+/**
+ * General load function
+ *
+ * Loading of items happen when:
+ * - prop loadItems is set to true
+ * - load() at useCrudStore is called.
+ * - chips at useCrudFolderChipsStore change.
+ *
+ * More at useCrudStore
+ */
+const load = async (chips?: ComputedRef<Chips>) => {
   try {
-    items.value = await manager.value.get(chips.value);
-    if (log) console.log(items.value);
+    loadingState.value = "primary";
+    const mg = crudStore.getManager(props.instanceId) ?? props.manager;
+    manager.value = mg.value;
+    items.value = await mg?.value.get(
+      chips?.value ?? folderChipsStore.getChips(props.instanceId).value
+    );
+    if (props.log) console.log(items.value);
   } catch (error) {
     console.error(`Crud Table at load, ${error}`);
+  } finally {
+    loadingState.value = false;
   }
 };
 
-// onMounted(() => load(true));
-if (items.value.length === 0) {
-  load();
-}
+/**
+ * Loading items based on prop loadItems
+ */
+watch(
+  () => props.loadItems,
+  async (loadItems: true | undefined) => {
+    if (loadItems === true) {
+      await load();
+    }
+  }
+);
+
+watch(
+  () => folderChipsStore.getChips(props.instanceId),
+  (newChips, oldChips) => {
+    if (typeof props.instanceId === "string") {
+      if (newChips !== oldChips) {
+        load(newChips);
+      }
+    }
+  },
+  { deep: true }
+);
+
+/**
+ * Loading items based on useCrudStore load
+ */
+watch(
+  () => crudStore.getLoad(props.instanceId).value,
+  async (loadItems: boolean) => {
+    if (loadItems === true) {
+      await load();
+    }
+  }
+);
+
+const route = useRoute();
+/**
+ * Watch tab to load
+ */
+watch(
+  () => route.params.tab,
+  async (tab: string | string[]) => {
+    if (props.tab && tab.includes(props.tab)) {
+      await load();
+    }
+  },
+  { immediate: true }
+);
+
+// /**
+//  * Initial load
+//  */
+onMounted(async () => {
+  if (!props.tab && items.value.length === 0) {
+    await load();
+  }
+});
 
 const filtersCallback = ref<{ callback: Function } | null>(null);
 
@@ -117,14 +282,6 @@ const ComponentProps = computed(() => {
 });
 const editedIndex = ref<number>(-1);
 
-const loadItems = computed(() => !!props.loadItems);
-
-watch(loadItems, (newLoad) => {
-  if (newLoad === true) {
-    load();
-  }
-});
-
 const reqData = ref<any>(props.reqData);
 
 const disableAdd = ref<boolean>(props.disableAdd === undefined ? false : props.disableAdd);
@@ -160,11 +317,10 @@ watchEffect(() => {
 // });
 
 watch(
-  [() => props.manager, () => props.chips],
-  async ([newManager, newChips]) => {
+  () => props.manager,
+  async (newManager) => {
     manager.value = newManager;
-    chips.value = newChips;
-    load();
+    await load();
   },
   { deep: true }
 );
@@ -221,7 +377,7 @@ const deleteItemConfirm = async () => {
     // responseStatus.value =
     await manager.value.delete(editedItem.value.id, true);
     if (props.emitTableChange) emit("emit-table-change");
-    load();
+    await load();
   } catch (error: any) {
     console.error(`Crud Table at deleteItemConfirm, ${error}`);
     // responseStatus.value =
@@ -252,7 +408,7 @@ const save = async () => {
     //   message: error.response.data.statusMessage,
     // });
   } finally {
-    load();
+    await load();
     if (props.emitTableChange) emit("emit-table-change");
     close();
   }
@@ -269,6 +425,8 @@ const handleFilters = (filters: { callback: Function }) => {
 <template>
   <v-card class="rounded-xl elevation-2">
     <v-data-table
+      :mobile-breakpoint="960"
+      :loading="loadingState"
       :headers="headers"
       :items="filtered"
       :sort-by="props.sortBy"

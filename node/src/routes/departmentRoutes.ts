@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 // Define routes
 router.post("", addDepartment);
-router.get("/:whereDocType?", getDepartments);
+router.get("/:quickAccess/:whereDocType", getDepartments);
 router.put("/:id/:name", editDepartment);
 router.delete("/:id", removeDepartment);
 

@@ -11,7 +11,7 @@ const router = express.Router();
 // Define routes
 
 router.post("", addSubcategory);
-router.get("/:departmentName/:categoryName/:whereDocType?", getSubcategories);
+router.get("/:departmentName/:categoryName/:quickAccess/:whereDocType", getSubcategories);
 router.put("/:id/:name", editSubcategory);
 router.delete("/:id", removeSubcategory);
 

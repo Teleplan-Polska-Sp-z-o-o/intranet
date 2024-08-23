@@ -33,7 +33,7 @@ const api = async (skip: number, take: number): Promise<Array<INewsCard>> => {
 const load = async ({ done }: { done: any }): Promise<void> => {
   // items per load
   const take = 3;
-  // items to ommit from db (pagination)
+  // items to omit from db (pagination)
   const skip = newsPage.value * take;
 
   const newItems = await api(skip, take);

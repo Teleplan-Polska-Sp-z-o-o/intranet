@@ -17,6 +17,9 @@ import * as path from "path";
 import { DOCUMENTS_FOLDER, UPLOADS_PATH } from "../../../config/routeConstants";
 import { File } from "multer";
 import { Subcategory } from "./SubcategoryEntity";
+import { User } from "../user/UserEntity";
+import { Category } from "./CategoryEntity";
+import { Department } from "./DepartmentEntity";
 
 @Entity()
 export class Document {
@@ -40,6 +43,12 @@ export class Document {
 
   @ManyToOne(() => Subcategory, (subcategory) => subcategory.documents)
   subcategory: Subcategory;
+
+  @ManyToOne(() => Category, (category) => category.documents)
+  category: Category;
+
+  @ManyToOne(() => Department, (department) => department.documents)
+  department: Department;
 
   @Column("text", { array: true })
   folderStructure: string[];
@@ -73,6 +82,20 @@ export class Document {
   @Column()
   putByDate: string | null;
 
+  @ManyToMany(() => User, (user) => user.quickAccessDocuments, { nullable: true })
+  @JoinTable({
+    name: "document_user",
+    joinColumn: {
+      name: "documentId",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "userId",
+      referencedColumnName: "id",
+    },
+  })
+  quickAccess: User[];
+
   isUUIDv4(value: string): boolean {
     const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     const testResult = uuidv4Regex.test(value);
@@ -90,9 +113,11 @@ export class Document {
     name: string,
     description: string,
     revision: number,
-    // subcategory: Subcategory,
-    folderStructure: string[],
+    // folderStructure: string[],
     confidentiality: TConfidentiality = "public"
+    // subcategory: Subcategory,
+    // category: Category,
+    // department: Department
   ): this {
     // this.ref = this.isUUIDv4(ref) ? ref : uuidv4();
     this.ref = uuidv4();
@@ -100,15 +125,40 @@ export class Document {
     this.name = name;
     this.description = description;
     this.revision = revision;
-    // this.subcategory = subcategory;
-    this.folderStructure = folderStructure;
+    // this.folderStructure = folderStructure;
     this.confidentiality = confidentiality;
+
+    // this.subcategory = subcategory;
+    // this.category = category;
+    // this.department = department;
 
     this.postBy = "";
     this.postByDate = "";
 
     this.putBy = null;
     this.putByDate = null;
+
+    return this;
+  }
+
+  async setFolderRelations(em: EntityManager, folderStructure?: string[]): Promise<this> {
+    if (folderStructure) this.folderStructure = folderStructure;
+    const [departmentName, categoryName, subcategoryName] = this.folderStructure;
+
+    if (departmentName) {
+      const department = await em.findOne(Department, { where: { name: departmentName } });
+      this.department = department || null;
+    }
+
+    if (categoryName) {
+      const category = await em.findOne(Category, { where: { name: categoryName } });
+      this.category = category || null;
+    }
+
+    if (subcategoryName) {
+      const subcategory = await em.findOne(Subcategory, { where: { name: subcategoryName } });
+      this.subcategory = subcategory || null;
+    }
 
     return this;
   }

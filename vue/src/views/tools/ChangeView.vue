@@ -11,6 +11,7 @@ import { ToolTab } from "../../interfaces/common/ToolTabTypes";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
 import KPITable from "../../components/views/tools/change/dc/KPITable.vue";
+import { v4 as uuidv4 } from "uuid";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -114,6 +115,11 @@ if (userInfo) {
       ) as number;
     });
 }
+
+const pcrConnectorId = uuidv4();
+const pcnConnectorId = uuidv4();
+const dcrConnectorId = uuidv4();
+const dcnConnectorId = uuidv4();
 </script>
 
 <template>
@@ -152,17 +158,33 @@ if (userInfo) {
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
                 <v-window-item :value="1">
-                  <p-c-r-table class="bg-surface-2 pa-4 ma-1" :tab="currentTab"></p-c-r-table>
+                  <p-c-r-table
+                    class="bg-surface-2 pa-4 ma-1"
+                    :instanceId="pcrConnectorId"
+                    :tab="currentTab"
+                  ></p-c-r-table>
                 </v-window-item>
                 <v-window-item :value="2">
-                  <p-c-n-table class="bg-surface-2 pa-4 ma-1" :tab="currentTab"></p-c-n-table>
+                  <p-c-n-table
+                    class="bg-surface-2 pa-4 ma-1"
+                    :instanceId="pcnConnectorId"
+                    :tab="currentTab"
+                  ></p-c-n-table>
                 </v-window-item>
                 <v-window-item :value="3">
-                  <d-c-r-table class="bg-surface-2 pa-4 ma-1 mb-5" :tab="currentTab"></d-c-r-table>
+                  <d-c-r-table
+                    class="bg-surface-2 pa-4 ma-1 mb-5"
+                    :instanceId="dcrConnectorId"
+                    :tab="currentTab"
+                  ></d-c-r-table>
                   <k-p-i-table class="bg-surface-2 pa-4 ma-1"></k-p-i-table>
                 </v-window-item>
                 <v-window-item :value="4">
-                  <d-c-n-table class="bg-surface-2 pa-4 ma-1" :tab="currentTab"></d-c-n-table>
+                  <d-c-n-table
+                    class="bg-surface-2 pa-4 ma-1"
+                    :instanceId="dcnConnectorId"
+                    :tab="currentTab"
+                  ></d-c-n-table>
                 </v-window-item>
               </v-window>
             </v-col>

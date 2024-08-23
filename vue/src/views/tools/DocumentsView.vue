@@ -1,59 +1,67 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import ChipFilters from "../../components/tools/ChipFilters.vue";
-import AllInstructionsTable from "../../components/views/tools/documents/all/AllInstructionsTable.vue";
-import AllVisualsTable from "../../components/views/tools/documents/all/AllVisualsTable.vue";
-import AllMSDTable from "../../components/views/tools/documents/all/AllMSDTable.vue";
 import CustomAiAssistant from "../../components/views/tools/documents/assistant/CustomAssistant.vue";
-import { IChips, ILevel } from "../../interfaces/document/DocumentTypes";
-import { Chips } from "../../models/document/Chips";
 import { useRoute, useRouter } from "vue-router";
 import { ToolTab } from "../../interfaces/common/ToolTabTypes";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
+import DocumentTable from "../../components/views/tools/documents/DocumentTable.vue";
+import { v4 as uuidv4 } from "uuid";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const tabs: ToolTab[] = [
   // {
-  //   id: 1,
-  //   name: "my_documents",
-  //   icon: "mdi-folder-account",
-  // },
-  // {
-  //   id: 2,
-  //   name: "my_favorites",
-  //   icon: "mdi-star",
+  //
   // },
   {
-    id: 3,
-    name: "instructions",
+    id: 2,
+    name: "all",
     icon: "mdi-file-document",
     meta: {
       group: "documents",
-      subgroup: "instructions",
+      subgroup: "all",
+    },
+  },
+  // {
+  //   id: 3,
+  //   name: "instructions",
+  //   icon: "mdi-file-document",
+  //   meta: {
+  //     group: "documents",
+  //     subgroup: "instructions",
+  //   },
+  // },
+  // {
+  //   id: 4,
+  //   name: "visuals",
+  //   icon: "mdi-file-image",
+  //   meta: {
+  //     group: "documents",
+  //     subgroup: "visuals",
+  //   },
+  // },
+  // {
+  //   id: 5,
+  //   name: "msd",
+  //   icon: "mdi-file-table",
+  //   meta: {
+  //     group: "documents",
+  //     subgroup: "msd",
+  //   },
+  // },
+  {
+    id: 3,
+    name: "quick",
+    icon: "mdi-file-star",
+    meta: {
+      group: "documents",
+      subgroup: "quick",
     },
   },
   {
     id: 4,
-    name: "visuals",
-    icon: "mdi-file-image",
-    meta: {
-      group: "documents",
-      subgroup: "visuals",
-    },
-  },
-  {
-    id: 5,
-    name: "msd",
-    icon: "mdi-file-table",
-    meta: {
-      group: "documents",
-      subgroup: "msd",
-    },
-  },
-  {
-    id: 6,
     name: "assistant",
     icon: "mdi-assistant",
     meta: {
@@ -61,11 +69,6 @@ const tabs: ToolTab[] = [
       subgroup: "assistant",
     },
   },
-  // {
-  //   id: 7,
-  //   name: "recently_browsed",
-  //   icon: "mdi-history",
-  // },
 ];
 
 const router = useRouter();
@@ -82,20 +85,26 @@ const getTab = (
   if (!tabName) throw new Error("tabName at getTab at DocumentsView evaluates to undefined");
 
   switch (tabName) {
-    case "instructions":
-      return getNumericValue ? 3 : "instructions";
+    case "all":
+      return getNumericValue ? 2 : "all";
 
-    case "visuals":
-      return getNumericValue ? 4 : "visuals";
+    // case "instructions":
+    //   return getNumericValue ? 3 : "instructions";
 
-    case "msd":
-      return getNumericValue ? 5 : "msd";
+    // case "visuals":
+    //   return getNumericValue ? 4 : "visuals";
+
+    // case "msd":
+    //   return getNumericValue ? 5 : "msd";
+
+    case "quick":
+      return getNumericValue ? 3 : "quick";
 
     case "assistant":
-      return getNumericValue ? 6 : "assistant";
+      return getNumericValue ? 4 : "assistant";
 
     default:
-      return getNumericValue ? 3 : "instructions";
+      return getNumericValue ? 2 : "all";
   }
 };
 
@@ -110,18 +119,14 @@ watch(
   }
 );
 
-const chips = ref<IChips>(new Chips());
-const table = ref<ILevel | undefined>(undefined);
-
-const handleChips = (newValue: IChips): void => {
-  chips.value = newValue;
-};
-const handleTable = (newValue: ILevel): void => {
-  table.value = newValue;
-  setTimeout(() => {
-    table.value = undefined;
-  }, 0);
-};
+// const chips = ref<IChips>(new Chips());
+// const handleChips = (newValue: IChips): void => {
+//   chips.value = newValue;
+// };
+// const type = ref<TDocumentType[]>(Object.values(EDocumentType));
+// const handleType = (newValue: TDocumentType[]): void => {
+//   type.value = newValue;
+// };
 
 // filter tabs
 const userInfo = useUserStore().info();
@@ -138,6 +143,9 @@ if (userInfo) {
       ) as number;
     });
 }
+
+const documentsConnectorId = uuidv4();
+const quickAccessConnectorId = uuidv4();
 </script>
 
 <template>
@@ -175,85 +183,45 @@ if (userInfo) {
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
-                <v-window-item :value="1">
-                  <!-- <my-docs-table
-                    @table="handleTable"
-                    :chips="chips"
-                    class="bg-surface-2 pa-4 ma-1"
-                  ></my-docs-table> -->
-                </v-window-item>
+                <v-window-item :value="1"> </v-window-item>
+                <!-- all documents -->
                 <v-window-item :value="2">
-                  <!-- <fav-docs-table
-                    @table="handleTable"
-                    :chips="chips"
+                  <chip-filters
+                    :max-level="2"
+                    :quickAccess="false"
+                    :whereDocType="true"
+                    :instanceId="documentsConnectorId"
+                    class="bg-surface-2 mb-5 ma-1"
+                  ></chip-filters>
+                  <document-table
+                    tab="all"
+                    :instanceId="documentsConnectorId"
                     class="bg-surface-2 pa-4 ma-1"
-                  ></fav-docs-table> -->
+                  ></document-table>
                 </v-window-item>
+                <!-- quick access documents -->
                 <v-window-item :value="3">
                   <chip-filters
-                    @chips="handleChips"
-                    :table="table"
                     :max-level="2"
-                    whereDocType="Instruction"
+                    :quickAccess="true"
+                    :whereDocType="true"
+                    :instanceId="quickAccessConnectorId"
                     class="bg-surface-2 mb-5 ma-1"
                   ></chip-filters>
-                  <all-instructions-table
-                    @table="handleTable"
-                    :chips="chips"
-                    :tab="'instructions'"
+                  <document-table
+                    tab="quick"
+                    :quickAccess="true"
                     class="bg-surface-2 pa-4 ma-1"
-                  ></all-instructions-table>
+                    :instanceId="quickAccessConnectorId"
+                  ></document-table>
                 </v-window-item>
+                <!-- ai assistant -->
                 <v-window-item :value="4">
-                  <chip-filters
-                    @chips="handleChips"
-                    :table="table"
-                    :max-level="2"
-                    whereDocType="Visual"
-                    class="bg-surface-2 mb-5 ma-1"
-                  ></chip-filters>
-                  <all-visuals-table
-                    @table="handleTable"
-                    :chips="chips"
-                    :tab="'visuals'"
-                    class="bg-surface-2 pa-4 ma-1"
-                  ></all-visuals-table>
-                </v-window-item>
-                <v-window-item :value="5">
-                  <chip-filters
-                    @chips="handleChips"
-                    :table="table"
-                    :max-level="2"
-                    departmentsSubtitle="category"
-                    programsSubtitle="subcategory"
-                    workstationsSubtitle="subSubcategory"
-                    whereDocType="MSD"
-                    class="bg-surface-2 mb-5 ma-1"
-                  ></chip-filters>
-                  <all-m-s-d-table
-                    @table="handleTable"
-                    :chips="chips"
-                    :tab="'msd'"
-                    class="bg-surface-2 pa-4 ma-1"
-                  ></all-m-s-d-table>
-                </v-window-item>
-                <v-window-item :value="6">
-                  <!-- <iframe-ai-assistant
-                    :tab="currentTabName"
-                    class="bg-surface-2 pa-4 ma-1"
-                  ></iframe-ai-assistant> -->
                   <custom-ai-assistant
                     tab="assistant"
                     assistantKey="documents"
                     class="bg-surface-2 pa-4 ma-1"
                   ></custom-ai-assistant>
-                </v-window-item>
-                <v-window-item :value="6">
-                  <!-- <rec-docs-table
-                    @table="handleTable"
-                    :chips="chips"
-                    class="bg-surface-2 pa-4 ma-1"
-                  ></rec-docs-table> -->
                 </v-window-item>
               </v-window>
             </v-col>

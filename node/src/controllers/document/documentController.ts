@@ -11,6 +11,7 @@ import { Competence } from "../../orm/entity/document/CompetenceEntity";
 import { Utils } from "../common/Utils";
 import { DOCUMENTS_FOLDER, UPLOADS_PATH } from "../../config/routeConstants";
 import { SimpleUser } from "../../models/user/SimpleUser";
+import { User } from "../../orm/entity/user/UserEntity";
 
 const addDocument = async (req: Request, res: Response) => {
   try {
@@ -22,15 +23,17 @@ const addDocument = async (req: Request, res: Response) => {
     const uploadedFiles = req.files;
 
     await dataSource.transaction(async (transactionalEntityManager) => {
-      let document = new Document().build(
-        // base.ref,
-        base.type,
-        base.name,
-        base.description,
-        base.revision,
-        base.folderStructure,
-        base.confidentiality
-      );
+      let document = await new Document()
+        .build(
+          // base.ref,
+          base.type,
+          base.name,
+          base.description,
+          base.revision,
+
+          base.confidentiality
+        )
+        .setFolderRelations(transactionalEntityManager, base.folderStructure);
 
       document = new Utils().addRecordPostInfo(issuer, document);
 
@@ -254,6 +257,59 @@ const editDocument = async (req: Request, res: Response) => {
   }
 };
 
+const toggleQuickAccess = async (req: Request<{ id: number }>, res: Response) => {
+  try {
+    const { id } = req.params;
+    const issuer: string = new SimpleUser().build(req.user).username;
+
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      // Find the user and document by their respective ids
+      const user = await transactionalEntityManager.getRepository(User).findOne({
+        where: { username: issuer },
+        relations: ["quickAccessDocuments"],
+      });
+
+      const document = await transactionalEntityManager
+        .getRepository(Document)
+        .findOne({ where: { id } });
+
+      if (!user || !document) {
+        return res.status(404).json({
+          message: "User or Document not found",
+          statusMessage: HttpResponseMessage.PUT_ERROR,
+        });
+      }
+
+      // Check if the document is already in the user's quick access list
+      const isInQuickAccess = user.quickAccessDocuments.some((doc) => doc.id === document.id);
+
+      if (isInQuickAccess) {
+        user.quickAccessDocuments = user.quickAccessDocuments.filter(
+          (doc) => doc.id !== document.id
+        );
+      } else {
+        user.quickAccessDocuments.push(document);
+      }
+
+      // Save the updated user entity
+      await transactionalEntityManager.getRepository(User).save(user);
+
+      return res.status(200).json({
+        message: isInQuickAccess
+          ? "Document removed from Quick Access"
+          : "Document added to Quick Access",
+        statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      });
+    });
+  } catch (error) {
+    console.error("Error toggling quick access: ", error);
+    return res.status(500).json({
+      message: "Failed to toggle quick access.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
 const removeDocument = async (req: Request<{ id: number }>, res: Response) => {
   try {
     const { id } = req.params;
@@ -363,39 +419,57 @@ const getDocuments = async (
     type: string;
     reduce: "true" | "false";
     confidentiality: TConfidentiality;
+    quickAccess: "true" | "false";
   }>,
   res: Response
 ) => {
   try {
-    const { folderStructure, type, reduce, confidentiality } = req.params;
+    const issuer: string = new SimpleUser().build(req.user).username;
 
+    const { folderStructure, type, reduce, confidentiality, quickAccess } = req.params;
     const qb = dataSource.getRepository(Document).createQueryBuilder("document");
 
-    qb.leftJoinAndSelect("document.languages", "language").leftJoinAndSelect(
-      "document.competences",
-      "competence"
+    qb.leftJoinAndSelect("document.languages", "language")
+      .leftJoinAndSelect("document.competences", "competence")
+      .leftJoinAndSelect("document.quickAccess", "user");
+
+    const chips: string[] = JSON.parse(folderStructure).filter(
+      (chip: string) => !!chip && chip !== null
     );
-
-    const confidentialityArray = Document.confidentialRestriction(confidentiality);
-    if (confidentialityArray.length > 0) {
-      qb.where("document.confidentiality NOT IN (:...confidentiality)", {
-        confidentiality: confidentialityArray,
-      });
-    }
-
-    const chips: string[] = JSON.parse(folderStructure).filter((chip: string) => !!chip);
     if (chips.length > 0) {
-      qb.andWhere(
+      qb.where(
         `
       "document"."folderStructure"[1:${chips.length}] = ARRAY[:...chips]::text[]
     `,
         { chips }
       );
+    } else {
+      qb.where("1 = 1");
     }
 
-    // Add type condition if it's not "all"
-    if (type !== "all") {
-      qb.andWhere("document.type = :type", { type });
+    const confidentialityArray = Document.confidentialRestriction(confidentiality);
+    if (confidentialityArray.length > 0) {
+      qb.andWhere("document.confidentiality NOT IN (:...confidentiality)", {
+        confidentiality: confidentialityArray,
+      });
+    }
+
+    // Check if filtering by quick access is required
+    if (quickAccess === "true") {
+      qb.andWhere("user.username = :issuer", { issuer });
+    }
+
+    const typeArray = JSON.parse(type);
+    if (typeArray.length) {
+      qb.andWhere("document.type IN (:...type)", {
+        type: typeArray,
+      });
+    } else {
+      return res.status(200).json({
+        documents: [],
+        message: "Documents retrieved successfully",
+        statusMessage: HttpResponseMessage.GET_SUCCESS,
+      });
     }
 
     let docs = await qb.getMany();
@@ -424,6 +498,7 @@ const getDocuments = async (
       return {
         ...document,
         languages: document.languages.map((language) => language.name),
+        isQuickAccess: document.quickAccess.some((user) => user.username === issuer),
       };
     });
 
@@ -515,6 +590,7 @@ const getDocumentsByNumber = async (req: Request<{ number: string }>, res: Respo
 export {
   addDocument,
   editDocument,
+  toggleQuickAccess,
   removeDocument,
   getDocuments,
   getDocumentByUuidAndLangs,

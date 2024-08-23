@@ -26,4 +26,18 @@ jwtAxios.interceptors.request.use(
   }
 );
 
+jwtAxios.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    const router = useRouter();
+    if (error.response && error.response.status === 401) {
+      router.push({ path: `/` });
+      console.error(`Unauthorized access - redirecting to login page`);
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default jwtAxios;

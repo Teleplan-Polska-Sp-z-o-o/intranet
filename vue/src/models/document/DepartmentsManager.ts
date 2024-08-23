@@ -6,18 +6,34 @@ import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
 import { ResponseStatus } from "../common/ResponseStatus";
 import { useAlertStore } from "../../stores/alertStore";
 import jwtAxios from "../../config/axios/jwtAxios";
+import { useCrudTypeChipsStore } from "../../stores/crud/useCrudTypeChipsStore";
 
 class DepartmentsManager {
-  constructor() {}
+  endpoint: Endpoints;
+  quickAccess: boolean | undefined;
+  whereDocType: TDocumentType[] | false | undefined;
+
+  constructor(
+    endpoint:
+      | Endpoints.DocumentDepartment
+      | Endpoints.DocumentCategory
+      | Endpoints.DocumentSubcategory,
+    quickAccess: boolean | undefined = undefined,
+    whereDocType: TDocumentType[] | false | undefined = undefined
+  ) {
+    this.endpoint = endpoint;
+    this.quickAccess = quickAccess;
+    this.whereDocType = whereDocType;
+  }
 
   public new = () => new Chip();
 
   public post = async (
-    reqData: any,
+    chipName: any,
     status: boolean = false
   ): Promise<Array<IChip> | IResponseStatus> => {
     const requestData = {
-      name: reqData.name,
+      name: chipName.name,
     };
 
     const response = await jwtAxios.post(
@@ -25,10 +41,6 @@ class DepartmentsManager {
       requestData
     );
     if (status) {
-      // return new ResponseStatus({
-      //   code: response.status,
-      //   message: response.data.statusMessage,
-      // });
       useAlertStore().process(
         new ResponseStatus({
           code: response.status,
@@ -39,29 +51,37 @@ class DepartmentsManager {
     return response.data.added;
   };
 
-  public get = async (_reqData?: IChips, whereDocType?: TDocumentType): Promise<Array<IChip>> => {
+  public get = async (
+    chips: IChips,
+    quickAccess: boolean = false,
+    whereDocType?: TDocumentType[] | false
+  ): Promise<Array<IChip>> => {
+    const params: string[] = [];
+    if (this.endpoint !== Endpoints.DocumentDepartment)
+      params.push(chips.departmentName ?? "undefined");
+    if (this.endpoint === Endpoints.DocumentSubcategory)
+      params.push(chips.categoryName ?? "undefined");
+    params.push(
+      this.quickAccess !== undefined ? this.quickAccess.toString() : quickAccess.toString()
+    );
+    params.push(JSON.stringify(this.whereDocType ?? whereDocType ?? useCrudTypeChipsStore().TYPES));
+
     const response = await jwtAxios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}${
-        whereDocType ? `/${whereDocType}` : ""
-      }`
+      `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/${params.join("/")}`
     );
     return response.data.got;
   };
 
   public put = async (
-    reqData: any,
+    chip: IChip,
     status: boolean = false
   ): Promise<Array<IChip> | IResponseStatus> => {
-    const id: string = reqData.id;
-    const name: string = reqData.name;
+    const id: number = chip.id;
+    const name: string = chip.name;
     const response = await jwtAxios.put(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}/${id}/${name}`
+      `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/${id}/${name}`
     );
     if (status) {
-      // return new ResponseStatus({
-      //   code: response.status,
-      //   message: response.data.statusMessage,
-      // });
       useAlertStore().process(
         new ResponseStatus({
           code: response.status,
@@ -77,13 +97,9 @@ class DepartmentsManager {
     status: boolean = false
   ): Promise<Array<IChip> | IResponseStatus> => {
     const response = await jwtAxios.delete(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}/${id}`
+      `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/${id}`
     );
     if (status) {
-      // return new ResponseStatus({
-      //   code: response.status,
-      //   message: response.data.statusMessage,
-      // });
       useAlertStore().process(
         new ResponseStatus({
           code: response.status,

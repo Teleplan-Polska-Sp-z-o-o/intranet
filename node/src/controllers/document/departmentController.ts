@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { dataSource } from "../../config/dataSource";
 import { Department } from "../../orm/entity/document/DepartmentEntity";
 import { HttpResponseMessage } from "../../enums/response";
+import { Document } from "../../orm/entity/document/DocumentEntity";
 
 const addDepartment = async (req: Request, res: Response) => {
   try {
@@ -101,30 +102,99 @@ const removeDepartment = async (req: Request<{ id: number }>, res: Response) => 
   }
 };
 
-const getDepartments = async (req: Request, res: Response) => {
+// const getDepartments = async (req: Request<{ whereDocType: string }>, res: Response) => {
+//   try {
+//     const { whereDocType } = req.params;
+
+//     const departmentsQuery = dataSource.getRepository(Department).createQueryBuilder("department");
+
+//     const parsedWhereDocType: string[] | false = JSON.parse(whereDocType);
+
+//     if (Array.isArray(parsedWhereDocType) && !parsedWhereDocType.length) {
+//       return res.status(200).json({
+//         got: [],
+//         message: "Departments retrieved successfully",
+//         statusMessage: HttpResponseMessage.GET_SUCCESS,
+//       });
+//     } else if (Array.isArray(parsedWhereDocType) && parsedWhereDocType.length) {
+//       // departmentsQuery
+//       //   .leftJoinAndSelect("department.categories", "category")
+//       //   .leftJoinAndSelect("category.subcategories", "subcategory")
+//       //   .leftJoinAndSelect("subcategory.documents", "document");
+//       // .where("document.type IN (:...documentTypes)", { documentTypes: parsedWhereDocType });
+//       departmentsQuery
+//         .leftJoinAndSelect("department.categories", "category")
+//         .leftJoinAndSelect("category.subcategories", "subcategory")
+//         .leftJoinAndSelect("subcategory.documents", "document")
+//         .where("document.type IN (:...documentTypes)", { documentTypes: parsedWhereDocType })
+//         .andWhere("document.id IS NOT NULL");
+//     } // else case: if parsedWhereDocType is false, we just return all departments
+
+//     console.log("parsedWhereDocType", parsedWhereDocType);
+//     const departments = await departmentsQuery.getMany();
+//     console.log("departments", departments);
+//     return res.status(200).json({
+//       got: departments,
+//       message: "Departments retrieved successfully",
+//       statusMessage: HttpResponseMessage.GET_SUCCESS,
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving departments: ", error);
+//     return res.status(500).json({
+//       message: "Unknown error occurred. Failed to retrieve departments.",
+//       statusMessage: HttpResponseMessage.UNKNOWN,
+//     });
+//   }
+// };
+
+const getDepartments = async (req: Request<{ whereDocType: string }>, res: Response) => {
   try {
     const { whereDocType } = req.params;
 
-    const departmentsQuery = dataSource
-      .getRepository(Department)
-      .createQueryBuilder("department")
-      .leftJoinAndSelect("department.categories", "category")
-      .leftJoinAndSelect("category.subcategories", "subcategory");
+    const parsedWhereDocType: string[] | false = JSON.parse(whereDocType);
 
-    if (whereDocType) {
-      departmentsQuery
-        .leftJoinAndSelect("subcategory.documents", "document")
-        .where("document.type = :documentType", { documentType: whereDocType });
-    } else {
-      departmentsQuery.leftJoinAndSelect("subcategory.documents", "document");
+    if (Array.isArray(parsedWhereDocType) && !parsedWhereDocType.length) {
+      return res.status(200).json({
+        got: [],
+        message: "No departments found matching the criteria.",
+        statusMessage: HttpResponseMessage.GET_SUCCESS,
+      });
     }
 
-    const departments = await departmentsQuery.getMany();
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      // Step 1: Retrieve relevant documents and extract department names
+      let departmentNameArray: string[] = [];
 
-    return res.status(200).json({
-      got: departments,
-      message: "Departments retrieved successfully",
-      statusMessage: HttpResponseMessage.GET_SUCCESS,
+      if (Array.isArray(parsedWhereDocType) && parsedWhereDocType.length) {
+        const documentQuery = transactionalEntityManager
+          .getRepository(Document)
+          .createQueryBuilder("document")
+          .select(`"document"."folderStructure"[1]`, "departmentName")
+          .where("document.type IN (:...documentTypes)", { documentTypes: parsedWhereDocType });
+
+        const departmentNames = await documentQuery.getRawMany();
+        departmentNameArray = departmentNames.map(
+          (row: { departmentName: string }) => row.departmentName
+        );
+      }
+
+      // Step 2: Query the departments based on extracted names
+      const departmentsQuery = transactionalEntityManager
+        .getRepository(Department)
+        .createQueryBuilder("department");
+
+      if (departmentNameArray.length)
+        departmentsQuery.where("department.name IN (:...departmentNames)", {
+          departmentNames: departmentNameArray,
+        });
+
+      const departments = await departmentsQuery.getMany();
+
+      return res.status(200).json({
+        got: departments,
+        message: "Departments retrieved successfully",
+        statusMessage: HttpResponseMessage.GET_SUCCESS,
+      });
     });
   } catch (error) {
     console.error("Error retrieving departments: ", error);
