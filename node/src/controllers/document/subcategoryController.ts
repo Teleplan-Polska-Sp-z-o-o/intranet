@@ -99,71 +99,6 @@ const removeSubcategory = async (req: Request<{ id: number }>, res: Response) =>
   }
 };
 
-// const getSubcategories = async (req: Request, res: Response) => {
-//   try {
-//     const { departmentName, categoryName, whereDocType } = req.params;
-
-//     await dataSource.transaction(async (transactionalEntityManager) => {
-//       const department = await transactionalEntityManager
-//         .getRepository(Department)
-//         .findOne({ where: { name: departmentName }, relations: ["categories"] });
-//       if (!department) {
-//         return res.status(200).json({
-//           got: [],
-//           message: "Department not specified",
-//           statusMessage: HttpResponseMessage.GET_ERROR,
-//         });
-//       }
-
-//       const category = department.categories.find((category) => category.name === categoryName);
-//       if (!category) {
-//         return res.status(200).json({
-//           got: [],
-//           message: "Category not specified",
-//           statusMessage: HttpResponseMessage.GET_ERROR,
-//         });
-//       }
-
-//       const subcategoriesQuery = transactionalEntityManager
-//         .getRepository(Subcategory)
-//         .createQueryBuilder("subcategory");
-
-//       const parsedWhereDocType: string[] | false = JSON.parse(whereDocType);
-//       if (Array.isArray(parsedWhereDocType) && !parsedWhereDocType.length) {
-//         return res.status(200).json({
-//           got: [],
-//           message: "Subcategories retrieved successfully",
-//           statusMessage: HttpResponseMessage.GET_SUCCESS,
-//         });
-//       } else if (Array.isArray(parsedWhereDocType) && parsedWhereDocType.length) {
-//         subcategoriesQuery
-//           .leftJoinAndSelect("subcategory.documents", "document")
-//           .where("document.type IN (:...documentTypes)", {
-//             documentTypes: parsedWhereDocType,
-//           });
-//       }
-
-//       subcategoriesQuery.andWhere("subcategory.categoryId = :categoryId", {
-//         categoryId: category.id,
-//       });
-
-//       const subcategories: Array<Subcategory> = await subcategoriesQuery.getMany();
-
-//       return res.status(200).json({
-//         got: subcategories,
-//         message: "Subcategories retrieved successfully",
-//         statusMessage: HttpResponseMessage.GET_SUCCESS,
-//       });
-//     });
-//   } catch (error) {
-//     console.error("Error retrieving subcategories: ", error);
-//     return res.status(500).json({
-//       message: "Unknown error occurred. Failed to retrieve subcategories.",
-//       statusMessage: HttpResponseMessage.UNKNOWN,
-//     });
-//   }
-// };
-
 const getSubcategories = async (
   req: Request<{ departmentName: string; categoryName: string; whereDocType: string }>,
   res: Response
@@ -205,17 +140,44 @@ const getSubcategories = async (
         .getRepository(Subcategory)
         .createQueryBuilder("subcategory");
 
-      if (departmentName && categoryName)
+      // if (departmentName && categoryName)
+      //   subcategoriesQuery
+      //     .innerJoin("subcategory.category", "category")
+      //     .innerJoin("category.department", "department")
+      //     .where("department.name = :departmentName", { departmentName })
+      //     .andWhere("category.name = :categoryName", { categoryName });
+
+      // if (subcategoryNameList.length) {
+      //   subcategoriesQuery.where("subcategory.name IN (:...subcategoryNames)", {
+      //     subcategoryNames: subcategoryNameList,
+      //   });
+      // }
+
+      // Building the WHERE clause dynamically
+      const conditions: string[] = [];
+      const parameters: any = {};
+
+      if (departmentName) {
+        conditions.push("department.name = :departmentName");
+        parameters.departmentName = departmentName;
+      }
+
+      if (categoryName) {
+        conditions.push("category.name = :categoryName");
+        parameters.categoryName = categoryName;
+      }
+
+      if (subcategoryNameList.length) {
+        conditions.push("subcategory.name IN (:...subcategoryNames)");
+        parameters.subcategoryNames = subcategoryNameList;
+      }
+
+      // Apply conditions to the query
+      if (conditions.length) {
         subcategoriesQuery
           .innerJoin("subcategory.category", "category")
           .innerJoin("category.department", "department")
-          .where("department.name = :departmentName", { departmentName })
-          .andWhere("category.name = :categoryName", { categoryName });
-
-      if (subcategoryNameList.length) {
-        subcategoriesQuery.where("subcategory.name IN (:...subcategoryNames)", {
-          subcategoryNames: subcategoryNameList,
-        });
+          .where(conditions.join(" AND "), parameters);
       }
 
       const subcategories = await subcategoriesQuery.getMany();

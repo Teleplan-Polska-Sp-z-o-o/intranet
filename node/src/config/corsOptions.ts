@@ -13,7 +13,7 @@ const corsOptions: CorsOptions = {
     }
   },
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Accept", "Content-Type", "Authorization"],
+  allowedHeaders: ["Accept", "Content-Type", "Authorization", "ckeditor", "ref"],
 };
 
 export { corsOptions };
