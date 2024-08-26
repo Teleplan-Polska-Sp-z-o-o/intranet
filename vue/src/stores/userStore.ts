@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { IUserEntity } from "../interfaces/user/IUserEntity";
 import { UserEntity } from "../models/user/UserEntity";
 import { UserTokenManager } from "../models/user/UserTokenManager";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<IUserEntity>(new UserEntity());
@@ -37,21 +37,21 @@ export const useUserStore = defineStore("user", () => {
   const info = (): IUserEntity | false => {
     try {
       const json: string | null = localStorage.getItem("user");
-      // if (!json) return false;
-      if (!json) {
-        throw new Error(
-          `(Empty object) User object evaluates to empty object. Redirecting to login page.`
-        );
-      }
+      if (!json) return false;
+      // if (!json) {
+      //   throw new Error(
+      //     `(Empty object) User object evaluates to empty object. Redirecting to login page.`
+      //   );
+      // }
 
       const user: IUserEntity = JSON.parse(json);
       return user;
     } catch (error: unknown) {
       console.error("Error retrieving user info:", error);
-      if (error instanceof Error && error.message.startsWith("(Empty object)")) {
-        useRouter().push({ path: `/` });
-        throw new Error(error.message);
-      }
+      // if (error instanceof Error && error.message.startsWith("(Empty object)")) {
+      //   useRouter().push({ path: `/` });
+      //   throw new Error(error.message);
+      // }
       return false;
     }
   };

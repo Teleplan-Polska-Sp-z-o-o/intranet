@@ -65,7 +65,7 @@ const handleLoaded = ({ numPages }: { numPages: number }): void => {
 const handleRendered = (): void => {};
 
 // page size
-const sliderScale = ref<number>(smallScreen ? 1 : 0.7);
+const sliderScale = ref<number>(smallScreen.value ? 1 : 0.7);
 const formatNumber = (num: number) => {
   return (num * 10).toFixed(0).padStart(2, "0");
 };

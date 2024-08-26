@@ -4,12 +4,15 @@ import { Editor } from "./ckeditor";
 import { useEditorStore } from "../../stores/editorStore";
 import { nodeConfig } from "../../config/env";
 import { Endpoints } from "../../config/axios/Endpoints";
+import { useUserStore } from "../../stores/userStore";
+import { useRouter } from "vue-router";
 
 const emit = defineEmits(["ref", "editorDataChange"]);
 
 const editor = Editor;
 
 const editorStore = useEditorStore();
+const userStore = useUserStore();
 
 const props = defineProps<{
   endpoint?: Endpoints;
@@ -23,6 +26,13 @@ const keyBodyWithBase = editorStore.getDefault(props.editorKey, true);
 
 const eRef = editorStore.getRef();
 
+const token = userStore.getToken();
+if (!token) {
+  const router = useRouter();
+  router.push({ path: `/` });
+  console.error(`Cannot create jwtAxios instance, token evaluates to false at userStore.`);
+}
+
 let editorConfig: any;
 if (props.endpoint) {
   editorConfig = {
@@ -30,6 +40,7 @@ if (props.endpoint) {
     simpleUpload: {
       uploadUrl: `${nodeConfig.origin}:${nodeConfig.port}${props.endpoint}`,
       headers: {
+        Authorization: `Bearer ${token}`,
         ckeditor: "true",
         ref: eRef,
       },

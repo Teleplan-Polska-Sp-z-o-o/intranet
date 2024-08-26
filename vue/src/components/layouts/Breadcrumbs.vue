@@ -8,6 +8,8 @@ import { MetaBreadcrumbs } from "../../interfaces/common/MetaBreadcrumbs";
 const { t, locale } = useI18n();
 const router = useRouter();
 
+const smallScreen = ref<boolean>(window.innerWidth < 960);
+
 const exceptionOrBaseHref = (route: RouteLocationNormalizedLoaded, routeRecordPath: string) => {
   if (routeRecordPath.includes("/tool/documents")) {
     return `/tool/documents/browse/${route.params.tab}`;
@@ -69,7 +71,12 @@ watch(
       <v-col cols="12">
         <v-breadcrumbs :items="breadcrumbs">
           <template v-slot:item="{ item }">
-            <v-breadcrumbs-item :to="item.href" :disabled="item.disabled" exact>
+            <v-breadcrumbs-item
+              :to="item.href"
+              :disabled="item.disabled"
+              exact
+              :class="{ 'text-h6': !smallScreen }"
+            >
               {{ item.title }}
             </v-breadcrumbs-item>
           </template>
