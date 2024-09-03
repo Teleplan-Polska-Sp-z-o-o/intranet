@@ -76,6 +76,17 @@ const tools: Tool[] = [
       baseHref: "/tool/admin/browse/",
     },
   },
+  // {
+  //   id: 7,
+  //   name: "safety",
+  //   href: "",
+  //   icon: "hard-hat",
+  //   image: "../tools/safety.png",
+  //   meta: {
+  //     group: "safety",
+  //     baseHref: "/tool/safety/browse/",
+  //   },
+  // },
 ];
 
 const userInfo = userStore.info();

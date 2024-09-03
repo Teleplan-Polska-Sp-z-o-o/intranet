@@ -599,6 +599,17 @@ const uaT = {
         },
       },
     },
+    safety: {
+      name: "Охорона Праці",
+      tabs: {
+        "manage-acknowledgment": {
+          name: "Управління Ознайомленням",
+        },
+        "document-acknowledged": {
+          name: "Ознайомлена Документація",
+        },
+      },
+    },
   },
 };
 

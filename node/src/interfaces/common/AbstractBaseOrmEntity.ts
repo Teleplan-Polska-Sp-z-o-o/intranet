@@ -1,4 +1,6 @@
-import { CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { Column, CreateDateColumn, UpdateDateColumn, VersionColumn } from "typeorm";
+import { SimpleUser } from "../../models/user/SimpleUser";
+import { IUser } from "../user/UserTypes";
 
 interface ICreate {
   /**
@@ -102,4 +104,97 @@ abstract class AbstractBaseOrmEntity implements ICreate, IUpdate, IVersion, IEla
   }
 }
 
-export { AbstractBaseOrmEntity };
+interface IOrmUserAction {
+  user: IUser;
+  date: Date;
+}
+
+class OrmUserAction implements IOrmUserAction {
+  user: SimpleUser;
+  date: Date;
+
+  constructor(user: SimpleUser) {
+    this.user = user;
+    this.date = new Date();
+  }
+}
+
+interface ICreatedBy {
+  /**
+   * The user and date when the record was created.
+   */
+  createdBy: IOrmUserAction;
+
+  /**
+   * Returns the creation details (user and date).
+   */
+  getCreatedBy(): IOrmUserAction;
+
+  /**
+   * Sets the user and date for the creation action.
+   * @param action - The user and date object.
+   */
+  setCreatedBy(user: SimpleUser): this;
+}
+
+interface IUpdatedBy {
+  /**
+   * The users and dates when the record was updated.
+   */
+  updatedBy: IOrmUserAction[];
+
+  /**
+   * Returns the list of update details (user and date).
+   */
+  getUpdatedBy(): IOrmUserAction[];
+
+  /**
+   * Adds a new update action to the list.
+   * @param action - The user and date object.
+   */
+  addUpdatedBy(user: SimpleUser): this;
+}
+
+abstract class AbstractBaseOrmEntityWithUser
+  extends AbstractBaseOrmEntity
+  implements ICreatedBy, IUpdatedBy
+{
+  @Column({
+    type: "json",
+    nullable: false,
+    comment: "The user and date when the entity was created",
+  })
+  createdBy: IOrmUserAction;
+
+  @Column({
+    type: "json",
+    nullable: true,
+    comment: "The users and dates when the entity was last updated",
+  })
+  updatedBy: IOrmUserAction[];
+
+  constructor() {
+    super();
+    this.updatedBy = []; // Initialize updatedBy as an empty array
+  }
+
+  getCreatedBy(): IOrmUserAction {
+    return this.createdBy;
+  }
+
+  setCreatedBy(user: SimpleUser): this {
+    this.createdBy = new OrmUserAction(user);
+    return this;
+  }
+
+  getUpdatedBy(): IOrmUserAction[] {
+    return this.updatedBy;
+  }
+
+  addUpdatedBy(user: SimpleUser): this {
+    this.updatedBy.push(new OrmUserAction(user));
+    return this;
+  }
+}
+
+export { AbstractBaseOrmEntity, AbstractBaseOrmEntityWithUser, OrmUserAction };

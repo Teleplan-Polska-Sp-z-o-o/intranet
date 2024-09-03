@@ -605,6 +605,17 @@ const enT = {
         },
       },
     },
+    safety: {
+      name: "Safety",
+      tabs: {
+        "Manage Acknowledgment": {
+          name: "DEPARTMENTS",
+        },
+        "Document Acknowledged": {
+          name: "DEPARTMENTS",
+        },
+      },
+    },
   },
 };
 

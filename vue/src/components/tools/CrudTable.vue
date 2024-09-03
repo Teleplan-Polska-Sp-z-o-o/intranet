@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ComputedRef, nextTick, onMounted, ref, watch, watchEffect } from "vue";
+import { computed, ComputedRef, nextTick, onMounted, ref, unref, watch, watchEffect } from "vue";
 import TableDialog from "./TableDialog.vue";
 import TableFlow from "./TableFlow.vue";
 // import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
@@ -140,7 +140,7 @@ const crudStore = useCrudStore();
  * Optionally: post, put, delete
  */
 const manager = ref<any>(
-  props.instanceId ? crudStore.getManager(props.instanceId)?.value ?? props.manager : props.manager
+  props.instanceId ? unref(crudStore.getManager(props.instanceId)) ?? props.manager : props.manager
 );
 
 const folderChipsStore = useCrudFolderChipsStore();
@@ -159,9 +159,9 @@ const loadingState = ref<string | false>(false);
 const load = async (chips?: ComputedRef<Chips>) => {
   try {
     loadingState.value = "primary";
-    const mg = crudStore.getManager(props.instanceId) ?? props.manager;
-    manager.value = mg.value;
-    items.value = await mg?.value.get(
+    const mg = unref(crudStore.getManager(props.instanceId)) ?? props.manager;
+    manager.value = mg;
+    items.value = await manager.value.get(
       chips?.value ?? folderChipsStore.getChips(props.instanceId).value
     );
     if (props.log) console.log(items.value);
@@ -310,16 +310,15 @@ watchEffect(() => {
   disableAdd.value = props.disableAdd;
 });
 
-// watchEffect(async () => {
-//   manager.value = props.manager;
-//   chips.value = props.chips;
-//   items.value = await manager.value.get(chips.value);
-// });
+watchEffect(async () => {
+  manager.value = unref(crudStore.getManager(props.instanceId));
+});
 
 watch(
   () => props.manager,
   async (newManager) => {
     manager.value = newManager;
+
     await load();
   },
   { deep: true }
@@ -402,7 +401,7 @@ const save = async () => {
     // responseStatus.value =
     else await manager.value.post(data, true);
   } catch (error: any) {
-    console.error(`Crud Table at save, ${error}`);
+    console.error(`Crud Table at save, ${error}, manager: ${manager.value}`);
     // responseStatus.value = new ResponseStatus({
     //   code: error.response.status,
     //   message: error.response.data.statusMessage,

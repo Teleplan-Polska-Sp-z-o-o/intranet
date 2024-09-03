@@ -40,6 +40,7 @@ const uaC = {
           change: {
             browse: "Зміна",
           },
+          safety: "Безпека",
         },
       },
       pages: {
@@ -77,6 +78,10 @@ const uaC = {
           boss: {
             title: "Адміністратор",
             text: "Управління платформою.",
+          },
+          safety: {
+            title: "Охорона Праці",
+            text: "Управління охороною праці.",
           },
         },
         settings: {

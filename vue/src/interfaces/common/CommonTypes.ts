@@ -1,4 +1,4 @@
-import { TPermissionGroup } from "../user/UserTypes";
+import { IUser, TPermissionGroup } from "../user/UserTypes";
 
 namespace CommonTypes {
   export namespace FileTypes {
@@ -29,6 +29,11 @@ namespace CommonTypes {
         ormCreateDate: Date;
         ormUpdateDate: Date | null;
         ormVersion: number;
+      }
+
+      export interface IOrmUserAction {
+        user: IUser;
+        date: Date;
       }
     }
   }

@@ -34,6 +34,11 @@ enum Endpoints {
 
   // server config
   ServerConfig = "/api/server",
+
+  // acknowledge
+  Acknowledge = "/api/acknowledge",
+  ToAcknowledge = "/api/acknowledge/to",
+  UserAcknowledgement = "/api/acknowledge/user",
 }
 
 export { Endpoints };

@@ -40,6 +40,7 @@ const plC = {
           change: {
             browse: "Zmiana",
           },
+          safety: "Bezpieczeństwo",
         },
       },
       pages: {
@@ -77,6 +78,10 @@ const plC = {
           boss: {
             title: "Administrator",
             text: "Zarządzanie platformą.",
+          },
+          safety: {
+            title: "BHP",
+            text: "Zarządzanie bezpieczeństwem i higieną pracy.",
           },
         },
         settings: {

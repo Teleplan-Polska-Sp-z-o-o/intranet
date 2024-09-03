@@ -145,6 +145,7 @@ watch(
     categories.value = null;
     subcategories.value = null;
     //
+
     departments.value = await depManager.get(chips.value, props.quickAccess, selected);
   },
   { immediate: true }

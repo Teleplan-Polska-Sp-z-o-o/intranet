@@ -40,6 +40,7 @@ const enC = {
           change: {
             browse: "Change",
           },
+          safety: "Safety",
         },
       },
       pages: {
@@ -77,6 +78,10 @@ const enC = {
           boss: {
             title: "Admin",
             text: "Platform's management.",
+          },
+          safety: {
+            title: "Health and Safety",
+            text: "Management of health and safety.",
           },
         },
         settings: {

@@ -600,6 +600,17 @@ const plT = {
         },
       },
     },
+    safety: {
+      name: "BHP",
+      tabs: {
+        "manage-acknowledgment": {
+          name: "Zarządzaj Zaznajomieniem",
+        },
+        "document-acknowledged": {
+          name: "Zaznajomione Dokumenty",
+        },
+      },
+    },
   },
 };
 

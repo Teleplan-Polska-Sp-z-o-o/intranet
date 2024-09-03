@@ -19,28 +19,25 @@ interface IUser {
   domain: string;
 }
 
-type TPermissionDocumentsSubgroup =
-  | "all"
-  // | "instructions"
-  // | "visuals"
-  // | "msd"
-  | "quick"
-  | "assistant";
+type TPermissionDocumentsSubgroup = "all" | "quick" | "assistant";
 type TPermissionChangeSubgroup = "pcr" | "pcn" | "dcr" | "dcn";
 type TPermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type TPermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
+// type TPermissionSafetySubgroup = "manage-acknowledgment" | "document-acknowledged";
 
 type TPermissionSubgroup =
   | TPermissionDocumentsSubgroup
   | TPermissionChangeSubgroup
   | TPermissionMatrixSubgroup
   | TPermissionAdminSubgroup;
+// | TPermissionSafetySubgroup;
 
 type TPermissionSubgroupArray =
   | Array<TPermissionDocumentsSubgroup>
   | Array<TPermissionChangeSubgroup>
   | Array<TPermissionMatrixSubgroup>
   | Array<TPermissionAdminSubgroup>;
+// | Array<TPermissionSafetySubgroup>;
 
 interface UserSubgroup {
   id: number;
@@ -48,6 +45,7 @@ interface UserSubgroup {
 }
 
 type TPermissionGroup = "documents" | "change" | "matrix" | "admin";
+// | "safety";
 
 interface UserGroup {
   id: number;
@@ -57,19 +55,13 @@ interface UserGroup {
 
 type TConfidentiality = "public" | "restricted" | "secret";
 
-// enum PermissionGroup {
-//   DOCUMENTS = "documents",
-//   CHANGE = "change",
-//   MATRIX = "matrix",
-//   ADMIN = "admin",
-// }
-
 interface IPermissionGroups {
   [key: string]: TPermissionSubgroupArray;
   documents: Array<TPermissionDocumentsSubgroup>;
   change: Array<TPermissionChangeSubgroup>;
   matrix: Array<TPermissionMatrixSubgroup>;
   admin: Array<TPermissionAdminSubgroup>;
+  // safety: Array<TPermissionSafetySubgroup>;
 }
 
 class StaticGroups {
@@ -79,6 +71,7 @@ class StaticGroups {
       change: ["pcr", "pcn", "dcr", "dcn"],
       matrix: ["departments", "documents", "competences"],
       admin: ["user-info", "user-permissions", "news"],
+      // safety: ["manage-acknowledgment", "document-acknowledged"],
     };
   }
   public static getBaseUserGroups(): Partial<IPermissionGroups> {

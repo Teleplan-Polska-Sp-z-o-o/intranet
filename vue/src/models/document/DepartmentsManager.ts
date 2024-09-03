@@ -29,16 +29,12 @@ class DepartmentsManager {
   public new = () => new Chip();
 
   public post = async (
-    chipName: any,
+    data: any,
     status: boolean = false
   ): Promise<Array<IChip> | IResponseStatus> => {
-    const requestData = {
-      name: chipName.name,
-    };
-
     const response = await jwtAxios.post(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DocumentDepartment}`,
-      requestData
+      `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}`,
+      data
     );
     if (status) {
       useAlertStore().process(
@@ -64,7 +60,7 @@ class DepartmentsManager {
     params.push(
       this.quickAccess !== undefined ? this.quickAccess.toString() : quickAccess.toString()
     );
-    params.push(JSON.stringify(this.whereDocType ?? whereDocType ?? useCrudTypeChipsStore().TYPES));
+    params.push(JSON.stringify(whereDocType ?? this.whereDocType ?? useCrudTypeChipsStore().TYPES));
 
     const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/${params.join("/")}`

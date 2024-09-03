@@ -80,8 +80,8 @@ const handleSaveData = (data: any) => {
   const rd: any = {
     id: data.item.id,
     name: data.model,
-    categoryName,
-    departmentName,
+    categoryName: categoryName.value,
+    departmentName: departmentName.value,
   };
 
   reqData.value = rd;

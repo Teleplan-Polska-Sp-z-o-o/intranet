@@ -13,6 +13,7 @@ import { serverRoutes } from "../routes/serverRoutes";
 import { competenceRoutes } from "../routes/competenceRoutes";
 import { documentChangeRoutes } from "../routes/documentChangeRoutes";
 import { UPLOADS_PATH } from "./routeConstants";
+import { acknowledgeRoutes } from "../routes/acknowledgeRoutes";
 
 const mountRoutes = (app: Express): Express => {
   app.use("/uploads", express.static(UPLOADS_PATH));
@@ -25,6 +26,11 @@ const mountRoutes = (app: Express): Express => {
   app.use("/api/document/category", categoryRoutes);
   app.use("/api/document/subcategory", subcategoryRoutes);
   app.use("/api/document", documentRoutes);
+  //
+
+  // acknowledge
+  app.use("/api/acknowledge", acknowledgeRoutes);
+
   //
 
   app.use("/api/editor", editorRoutes);

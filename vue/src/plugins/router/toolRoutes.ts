@@ -168,6 +168,33 @@ export const toolRoutes = {
       ],
     },
     {
+      path: "safety",
+      name: "safety",
+      component: MatrixView,
+      meta: {
+        toolName: "safety",
+        breadcrumbs: {
+          include: true,
+          parent: "tool",
+          name: "safety",
+          path: "",
+        },
+      },
+      children: [
+        {
+          path: "browse/:tab",
+          name: "browseSafety",
+          component: DocumentsView,
+          meta: {
+            toolName: "safety",
+            breadcrumbs: {
+              include: false,
+            },
+          },
+        },
+      ],
+    },
+    {
       path: "*",
       redirect: { name: "documents" },
     },
