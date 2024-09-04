@@ -60,7 +60,15 @@ class DepartmentsManager {
     params.push(
       this.quickAccess !== undefined ? this.quickAccess.toString() : quickAccess.toString()
     );
-    params.push(JSON.stringify(whereDocType ?? this.whereDocType ?? useCrudTypeChipsStore().TYPES));
+    params.push(
+      JSON.stringify(
+        Array.isArray(this.whereDocType)
+          ? this.whereDocType
+          : this.whereDocType === false
+          ? false
+          : whereDocType ?? useCrudTypeChipsStore().TYPES
+      )
+    );
 
     const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${this.endpoint}/${params.join("/")}`

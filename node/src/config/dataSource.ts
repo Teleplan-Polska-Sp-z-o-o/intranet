@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 
 dotenv.config({ path: "./../.env" });
 
+// main postgres
 const options: DataSourceOptions = {
   type: "postgres",
   host: process.env.HOST,
