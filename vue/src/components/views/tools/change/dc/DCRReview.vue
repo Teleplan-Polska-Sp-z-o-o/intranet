@@ -14,7 +14,7 @@ import DCRReviewControls from "./DCRReviewControls.vue";
 import { IFileItem } from "../../../../../interfaces/document/DocumentTypes";
 import { FileItem } from "../../../../../models/document/FileItem";
 import { DocumentChangeNoticeManager } from "../../../../../models/change/dc/DocumentChangeNoticeManager";
-import { FileHelper } from "../../../../../models/common/Files/FileHelper";
+import { FileHelper } from "../../../../../models/common/files/FileHelper";
 import { useI18n } from "vue-i18n";
 import { useEditorStore } from "../../../../../stores/editorStore";
 import { CommonTypes } from "../../../../../interfaces/common/CommonTypes";

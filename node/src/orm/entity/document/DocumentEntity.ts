@@ -20,7 +20,7 @@ import { Subcategory } from "./SubcategoryEntity";
 import { User } from "../user/UserEntity";
 import { Category } from "./CategoryEntity";
 import { Department } from "./DepartmentEntity";
-import { ToAcknowledge } from "./acknowledgement/ToAcknowledgeEntity";
+// import { ToAcknowledge } from "./acknowledgement/ToAcknowledgeEntity";
 
 @Entity()
 export class Document {
@@ -97,8 +97,8 @@ export class Document {
   })
   quickAccess: User[];
 
-  @ManyToMany(() => ToAcknowledge, (toAcknowledge) => toAcknowledge.documents)
-  toAcknowledges: ToAcknowledge[];
+  // @ManyToMany(() => ToAcknowledge, (toAcknowledge) => toAcknowledge.documents)
+  // toAcknowledges: ToAcknowledge[];
 
   isUUIDv4(value: string): boolean {
     const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

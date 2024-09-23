@@ -44,5 +44,5 @@ export const useCrudStore = defineStore("crud", () => {
     return computed(() => managerMap.value.get(id));
   };
 
-  return { getLoad, loadItems, setManager, getManager };
+  return { getLoad, loadItems, managerMap, setManager, getManager };
 });

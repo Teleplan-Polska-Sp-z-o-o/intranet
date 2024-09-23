@@ -39,6 +39,14 @@ enum Endpoints {
   Acknowledge = "/api/acknowledge",
   ToAcknowledge = "/api/acknowledge/to",
   UserAcknowledgement = "/api/acknowledge/user",
+
+  // xlsx
+  XLSX = "/api/xlsx",
+  // app.use("/api/xlsx", xlsxRoutes); //"/read/:fileName/:fileDir/:_worksheetNameOrIndex?/:_rowCount?/:_columnCount?",
+
+  // analytic
+  AnalyticFile = "/api/analytic-file",
+  Analytic = "/api/analytic",
 }
 
 export { Endpoints };

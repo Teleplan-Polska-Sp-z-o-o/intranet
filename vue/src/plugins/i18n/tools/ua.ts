@@ -610,6 +610,14 @@ const uaT = {
         },
       },
     },
+    analytic: {
+      name: "Аналітика",
+      tabs: {
+        sky: {
+          name: "SKY",
+        },
+      },
+    },
   },
 };
 

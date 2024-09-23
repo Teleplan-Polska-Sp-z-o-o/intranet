@@ -12,14 +12,30 @@ interface Tool {
   };
 }
 
+interface ISubSubTab {
+  id: number;
+  title: string;
+  name: string;
+  icon: string | undefined;
+}
+
+interface ISubTab {
+  id: number;
+  title: string;
+  name: string;
+  icon: string | undefined;
+  children?: ISubSubTab[];
+}
+
 interface ToolTab {
   id: number;
   name: string;
-  icon: string;
+  icon: string | undefined;
   meta: {
     group: string;
     subgroup: string;
   };
+  children?: ISubTab[];
 }
 
 export type { Tool, ToolTab };

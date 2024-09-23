@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm";
-import { AbstractBaseOrmEntity } from "../../../../interfaces/common/AbstractBaseOrmEntity";
+import { AbstractBaseOrmEntity } from "../../../../interfaces/common/AbstractOrm";
 import { QuizTypes } from "../../../../interfaces/QuizTypes";
 import { File } from "multer";
 import * as fs from "fs";

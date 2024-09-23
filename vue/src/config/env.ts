@@ -5,7 +5,7 @@ interface ServerConfig {
   port: number;
 }
 
-const TEST_ORIGIN = "http://172.20.176.1";
+const TEST_ORIGIN = "http://192.168.0.1";
 const ORIGIN = "https://bydintranet.reconext.com";
 
 const nodeConfig: ServerConfig = {
@@ -15,7 +15,7 @@ const nodeConfig: ServerConfig = {
 
 if (![TEST_ORIGIN, ORIGIN].includes(nodeConfig.origin)) {
   throw new Error(
-    `Invalid nodeConfig origin at env.ts. [TEST_ORIGIN, ORIGIN] doesn't include result of window.location.origin`
+    `Invalid nodeConfig origin at env.ts. [TEST_ORIGIN, ORIGIN] doesn't include result of window.location.origin (${nodeConfig.origin})`
   );
 }
 

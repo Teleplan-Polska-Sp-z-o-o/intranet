@@ -34,14 +34,16 @@ enum PermissionGroup {
   CHANGE = "change",
   MATRIX = "matrix",
   ADMIN = "admin",
-  SAFETY = "safety",
+  ANALYTIC = "analytic",
+  // SAFETY = "safety",
 }
 
 type PermissionDocumentsSubgroup = "all" | "quick" | "assistant";
 type PermissionChangeSubgroup = "pcr" | "pcn" | "dcr" | "dcn";
 type PermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type PermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
-type PermissionSafetySubgroup = "manage-acknowledgment" | "document-acknowledged";
+type PermissionAnalyticSubgroup = "sky";
+// type PermissionSafetySubgroup = "manage-acknowledgment" | "document-acknowledged";
 
 interface PermissionGroups {
   [key: string]: Array<string>;
@@ -49,7 +51,8 @@ interface PermissionGroups {
   [PermissionGroup.CHANGE]: Array<PermissionChangeSubgroup>;
   [PermissionGroup.MATRIX]: Array<PermissionMatrixSubgroup>;
   [PermissionGroup.ADMIN]: Array<PermissionAdminSubgroup>;
-  [PermissionGroup.SAFETY]: Array<PermissionSafetySubgroup>;
+  [PermissionGroup.ANALYTIC]: Array<PermissionAnalyticSubgroup>;
+  // [PermissionGroup.SAFETY]: Array<PermissionSafetySubgroup>;
 }
 
 class StaticGroups {
@@ -59,7 +62,8 @@ class StaticGroups {
       [PermissionGroup.CHANGE]: ["pcr", "pcn", "dcr"],
       [PermissionGroup.MATRIX]: ["departments", "documents", "competences"],
       [PermissionGroup.ADMIN]: ["user-info", "user-permissions", "news"],
-      [PermissionGroup.SAFETY]: ["manage-acknowledgment", "document-acknowledged"],
+      [PermissionGroup.ANALYTIC]: ["sky"],
+      // [PermissionGroup.SAFETY]: ["manage-acknowledgment", "document-acknowledged"],
     };
   }
   public static getBaseUserGroups(): Partial<PermissionGroups> {

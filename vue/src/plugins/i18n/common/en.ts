@@ -41,6 +41,7 @@ const enC = {
             browse: "Change",
           },
           safety: "Safety",
+          analytic: "Analytic",
         },
       },
       pages: {
@@ -82,6 +83,10 @@ const enC = {
           safety: {
             title: "Health and Safety",
             text: "Management of health and safety.",
+          },
+          analytic: {
+            title: "Analytic",
+            text: "Delivers data analysis to support decision-making.",
           },
         },
         settings: {

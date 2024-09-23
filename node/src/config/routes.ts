@@ -14,6 +14,9 @@ import { competenceRoutes } from "../routes/competenceRoutes";
 import { documentChangeRoutes } from "../routes/documentChangeRoutes";
 import { UPLOADS_PATH } from "./routeConstants";
 import { acknowledgeRoutes } from "../routes/acknowledgeRoutes";
+import { xlsxRoutes } from "../routes/xlsxRoutes";
+import { analyticFileRoutes } from "../routes/analyticFileRoutes";
+import { analyticRoutes } from "../routes/analyticRoutes";
 
 const mountRoutes = (app: Express): Express => {
   app.use("/uploads", express.static(UPLOADS_PATH));
@@ -40,6 +43,11 @@ const mountRoutes = (app: Express): Express => {
   app.use("/api/competence", competenceRoutes);
 
   app.use("/api/dc", documentChangeRoutes);
+
+  app.use("/api/xlsx", xlsxRoutes);
+
+  app.use("/api/analytic-file", analyticFileRoutes);
+  app.use("/api/analytic", analyticRoutes);
 
   return app;
 };

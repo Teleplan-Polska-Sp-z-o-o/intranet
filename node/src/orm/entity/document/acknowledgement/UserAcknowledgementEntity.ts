@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinTable } from "typeorm";
-import { AbstractBaseOrmEntityWithUser } from "../../../../interfaces/common/AbstractBaseOrmEntity";
+import { AbstractBaseOrmEntityWithUser } from "../../../../interfaces/common/AbstractOrm";
 import { ToAcknowledge } from "./ToAcknowledgeEntity";
 import { User } from "../../user/UserEntity";
 

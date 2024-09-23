@@ -4,6 +4,7 @@ import DocumentsView from "../../views/tools/DocumentsView.vue";
 import MatrixView from "../../views/tools/MatrixView.vue";
 import DocumentView from "../../views/documents/DocumentView.vue";
 import AdminView from "../../views/tools/AdminView.vue";
+import AnalyticView from "../../views/tools/AnalyticView.vue";
 
 import ChangeView from "../../views/tools/ChangeView.vue";
 
@@ -167,26 +168,53 @@ export const toolRoutes = {
         // },
       ],
     },
+    // {
+    //   path: "safety",
+    //   name: "safety",
+    //   component: MatrixView,
+    //   meta: {
+    //     toolName: "safety",
+    //     breadcrumbs: {
+    //       include: true,
+    //       parent: "tool",
+    //       name: "safety",
+    //       path: "",
+    //     },
+    //   },
+    //   children: [
+    //     {
+    //       path: "browse/:tab",
+    //       name: "browseSafety",
+    //       component: DocumentsView,
+    //       meta: {
+    //         toolName: "safety",
+    //         breadcrumbs: {
+    //           include: false,
+    //         },
+    //       },
+    //     },
+    //   ],
+    // },
     {
-      path: "safety",
-      name: "safety",
-      component: MatrixView,
+      path: "analytic",
+      name: "analytic",
+      component: AnalyticView,
       meta: {
-        toolName: "safety",
+        toolName: "analytic",
         breadcrumbs: {
           include: true,
           parent: "tool",
-          name: "safety",
+          name: "analytic",
           path: "",
         },
       },
       children: [
         {
-          path: "browse/:tab",
-          name: "browseSafety",
-          component: DocumentsView,
+          path: "browse/:program/:cat?/:sub?",
+          name: "browseAnalytic",
+          component: AnalyticView,
           meta: {
-            toolName: "safety",
+            toolName: "analytic",
             breadcrumbs: {
               include: false,
             },

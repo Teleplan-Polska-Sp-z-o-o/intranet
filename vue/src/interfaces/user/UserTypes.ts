@@ -23,20 +23,23 @@ type TPermissionDocumentsSubgroup = "all" | "quick" | "assistant";
 type TPermissionChangeSubgroup = "pcr" | "pcn" | "dcr" | "dcn";
 type TPermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type TPermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
+type TPermissionAnalyticSubgroup = "sky";
 // type TPermissionSafetySubgroup = "manage-acknowledgment" | "document-acknowledged";
 
 type TPermissionSubgroup =
   | TPermissionDocumentsSubgroup
   | TPermissionChangeSubgroup
   | TPermissionMatrixSubgroup
-  | TPermissionAdminSubgroup;
+  | TPermissionAdminSubgroup
+  | TPermissionAnalyticSubgroup;
 // | TPermissionSafetySubgroup;
 
 type TPermissionSubgroupArray =
   | Array<TPermissionDocumentsSubgroup>
   | Array<TPermissionChangeSubgroup>
   | Array<TPermissionMatrixSubgroup>
-  | Array<TPermissionAdminSubgroup>;
+  | Array<TPermissionAdminSubgroup>
+  | Array<TPermissionAnalyticSubgroup>;
 // | Array<TPermissionSafetySubgroup>;
 
 interface UserSubgroup {
@@ -44,7 +47,7 @@ interface UserSubgroup {
   name: TPermissionSubgroup;
 }
 
-type TPermissionGroup = "documents" | "change" | "matrix" | "admin";
+type TPermissionGroup = "documents" | "change" | "matrix" | "admin" | "analytic";
 // | "safety";
 
 interface UserGroup {
@@ -61,6 +64,7 @@ interface IPermissionGroups {
   change: Array<TPermissionChangeSubgroup>;
   matrix: Array<TPermissionMatrixSubgroup>;
   admin: Array<TPermissionAdminSubgroup>;
+  analytic: Array<TPermissionAnalyticSubgroup>;
   // safety: Array<TPermissionSafetySubgroup>;
 }
 
@@ -71,6 +75,7 @@ class StaticGroups {
       change: ["pcr", "pcn", "dcr", "dcn"],
       matrix: ["departments", "documents", "competences"],
       admin: ["user-info", "user-permissions", "news"],
+      analytic: ["sky"],
       // safety: ["manage-acknowledgment", "document-acknowledged"],
     };
   }

@@ -5,7 +5,7 @@ import jwtAxios from "../../../config/axios/jwtAxios";
 
 class FileHelper {
   filename: string;
-  folder: "dc" | "doc";
+  folder: "dc" | "doc" | "analytic";
   accept: CommonTypes.FileTypes.AcceptedType[];
 
   blob: Blob | null;
@@ -13,7 +13,7 @@ class FileHelper {
 
   constructor(
     filename: string,
-    folder: "dc" | "doc",
+    folder: "dc" | "doc" | "analytic",
     accept: CommonTypes.FileTypes.AcceptedType[]
   ) {
     this.filename = filename;

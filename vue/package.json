@@ -54,9 +54,10 @@
     "vue": "^3.3.11",
     "vue-chart-3": "^3.1.8",
     "vue-i18n": "^9.10.1",
-    "vue-pdf-embed": "^2.0.2",
+    "vue-pdf-embed": "^2.0.3",
     "vue-router": "^4.2.5",
-    "vuetify": "^3.6.13"
+    "vuetify": "^3.6.13",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^20.12.5",

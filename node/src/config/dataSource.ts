@@ -15,6 +15,6 @@ const options: DataSourceOptions = {
   migrations: [`${__dirname}/../orm/migrations/*Migration.ts`],
 };
 
-const dataSource = new DataSource(options);
+const dataSource: DataSource = new DataSource(options);
 
 export { dataSource };

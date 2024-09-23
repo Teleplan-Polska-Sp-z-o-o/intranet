@@ -87,6 +87,17 @@ const tools: Tool[] = [
   //     baseHref: "/tool/safety/browse/",
   //   },
   // },
+  {
+    id: 8,
+    name: "analytic",
+    href: "",
+    icon: "poll",
+    image: "../tools/analytic.png",
+    meta: {
+      group: "analytic",
+      baseHref: "/tool/analytic/browse/",
+    },
+  },
 ];
 
 const userInfo = userStore.info();

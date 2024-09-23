@@ -5,6 +5,7 @@ namespace CommonTypes {
     export enum DocEndpoint {
       doc = "/documents",
       dc = "/dc_documents",
+      analytic = "/analytic_documents",
     }
 
     export type AcceptedType = ".pdf" | ".ppt" | ".pptx" | ".xls" | ".xlsx" | ".doc" | ".docx";
@@ -24,6 +25,10 @@ namespace CommonTypes {
     export interface GetManager {
       get(specificGetValue?: any): any;
     }
+    export interface CreateFormDataManager {
+      createFormData(specificFormDataValue?: any): any;
+    }
+
     export namespace OrmTypes {
       export interface IOrmBase {
         ormCreateDate: Date;
@@ -34,6 +39,20 @@ namespace CommonTypes {
       export interface IOrmUserAction {
         user: IUser;
         date: Date;
+      }
+
+      export interface ICreatedBy {
+        /**
+         * The user and date when the record was created.
+         */
+        createdBy: IOrmUserAction;
+      }
+
+      export interface IUpdatedBy {
+        /**
+         * The users and dates when the record was updated.
+         */
+        updatedBy: IOrmUserAction[];
       }
     }
   }

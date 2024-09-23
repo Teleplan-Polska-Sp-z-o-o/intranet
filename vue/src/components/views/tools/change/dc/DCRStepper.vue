@@ -16,7 +16,7 @@ import { DocumentManager } from "../../../../../models/document/DocumentManager"
 import FilesForm from "../../common/FilesForm.vue";
 import { FileItem } from "../../../../../models/document/FileItem";
 import DCRVerifyTable from "./DCRVerifyTable.vue";
-import { FileHelper } from "../../../../../models/common/Files/FileHelper";
+import { FileHelper } from "../../../../../models/common/files/FileHelper";
 import { Chips } from "../../../../../models/document/Chips";
 import { CommonTypes } from "../../../../../interfaces/common/CommonTypes";
 import { useI18n } from "vue-i18n";

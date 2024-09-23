@@ -41,6 +41,7 @@ const plC = {
             browse: "Zmiana",
           },
           safety: "Bezpieczeństwo",
+          analytic: "Analityka",
         },
       },
       pages: {
@@ -82,6 +83,10 @@ const plC = {
           safety: {
             title: "BHP",
             text: "Zarządzanie bezpieczeństwem i higieną pracy.",
+          },
+          analytic: {
+            title: "Analityka",
+            text: "Dostarcza analizę danych, aby wspierać podejmowanie decyzji.",
           },
         },
         settings: {

@@ -616,6 +616,14 @@ const enT = {
         },
       },
     },
+    analytic: {
+      name: "Analytic",
+      tabs: {
+        sky: {
+          name: "SKY",
+        },
+      },
+    },
   },
 };
 

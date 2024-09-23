@@ -7,7 +7,7 @@ import {
   OneToOne,
   JoinColumn,
 } from "typeorm";
-import { AbstractBaseOrmEntityWithUser } from "../../../../interfaces/common/AbstractBaseOrmEntity";
+import { AbstractBaseOrmEntityWithUser } from "../../../../interfaces/common/AbstractOrm";
 import { Document } from "../DocumentEntity";
 import { Quiz } from "./QuizEntity";
 import { AcknowledgementTypes } from "../../../../interfaces/acknowledgement/AcknowledgementTypes";

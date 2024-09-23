@@ -1,7 +1,7 @@
 import { Entity, Column, EntityManager, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { File } from "multer";
-import { AbstractBaseOrmEntity } from "../../../../interfaces/common/AbstractBaseOrmEntity";
+import { AbstractBaseOrmEntity } from "../../../../interfaces/common/AbstractOrm";
 import { DC_DOCUMENTS_FOLDER, UPLOADS_PATH } from "../../../../config/routeConstants";
 import * as fs from "fs";
 import path from "path";

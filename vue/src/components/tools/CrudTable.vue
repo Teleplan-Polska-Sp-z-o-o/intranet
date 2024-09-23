@@ -121,6 +121,8 @@ const props = defineProps<{
    * Automatically retrieves new records
    */
   tab?: string;
+
+  customGetFormData?: FormData;
 }>();
 
 const emit = defineEmits(["save-data", "emit-table-change"]);
@@ -162,7 +164,8 @@ const load = async (chips?: ComputedRef<Chips>) => {
     const mg = unref(crudStore.getManager(props.instanceId)) ?? props.manager;
     manager.value = mg;
     items.value = await manager.value.get(
-      chips?.value ?? folderChipsStore.getChips(props.instanceId).value
+      (unref(chips) || unref(props.customGetFormData)) ??
+        folderChipsStore.getChips(props.instanceId).value
     );
     if (props.log) console.log(items.value);
   } catch (error) {

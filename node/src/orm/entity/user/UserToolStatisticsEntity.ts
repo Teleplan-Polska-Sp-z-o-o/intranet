@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { AbstractBaseOrmEntity } from "../../../interfaces/common/AbstractBaseOrmEntity";
+import { AbstractBaseOrmEntity } from "../../../interfaces/common/AbstractOrm";
 import { UserTypes } from "../../../interfaces/user/UserTypes";
 import { User } from "./UserEntity";
 

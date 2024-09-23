@@ -611,6 +611,14 @@ const plT = {
         },
       },
     },
+    analytic: {
+      name: "Analityka",
+      tabs: {
+        sky: {
+          name: "SKY",
+        },
+      },
+    },
   },
 };
 

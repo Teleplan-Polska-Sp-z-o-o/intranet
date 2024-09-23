@@ -15,16 +15,23 @@
     "categoryname",
     "chartjs",
     "Confidentialities",
+    "datedtz",
     "departmentname",
+    "grupa",
     "jspdf",
+    "linia",
     "nextable",
+    "pakowanie",
     "pinia",
     "prevable",
     "Registerers",
     "subcategoryname",
+    "testset",
     "typeorm",
     "unref",
     "Upserts",
-    "uuidv"
+    "uuidv",
+    "workcenter",
+    "zmiana"
   ]
 }
