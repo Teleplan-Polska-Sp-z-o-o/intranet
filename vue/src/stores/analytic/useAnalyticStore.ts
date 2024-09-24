@@ -16,20 +16,20 @@ export const useAnalyticStore = defineStore("analytic", () => {
   // Object to store the dialog state for each fileId
   const dialog = ref<Record<string, boolean>>({});
   // Open the dialog for a specific fileId and actionId
-  const openDialog = (uuid: string | Ref<string, string>) => {
+  const openDialog = (uuid: string | Ref<string>) => {
     dialog.value[unref(uuid)] = true;
   };
   // Close the dialog for a specific fileId by setting actionId to null
-  const closeDialog = (uuid: string | Ref<string, string>) => {
+  const closeDialog = (uuid: string | Ref<string>) => {
     dialog.value[unref(uuid)] = false;
   };
   // Check if the dialog is open for a specific fileId and actionId
-  const isDialogOpen = (uuid: string | Ref<string, string>) => {
+  const isDialogOpen = (uuid: string | Ref<string>) => {
     return dialog.value[unref(uuid)] === true;
   };
 
   const loadingActions = ref<Record<string, number[]>>({});
-  const startLoadingAction = (uuid: string | Ref<string, string>, actionId: number) => {
+  const startLoadingAction = (uuid: string | Ref<string>, actionId: number) => {
     const resolvedUuid = unref(uuid);
 
     // Initialize the array for the uuid if it doesn't exist
@@ -42,7 +42,7 @@ export const useAnalyticStore = defineStore("analytic", () => {
       loadingActions.value[resolvedUuid].push(actionId);
     }
   };
-  const stopLoadingAction = (uuid: string | Ref<string, string>, actionId: number) => {
+  const stopLoadingAction = (uuid: string | Ref<string>, actionId: number) => {
     const resolvedUuid = unref(uuid);
 
     // Ensure the uuid array exists before filtering
@@ -52,7 +52,7 @@ export const useAnalyticStore = defineStore("analytic", () => {
       );
     }
   };
-  const isActionLoading = (uuid: string | Ref<string, string>, actionId: number) => {
+  const isActionLoading = (uuid: string | Ref<string>, actionId: number) => {
     const resolvedUuid = unref(uuid);
 
     // Return false if the uuid is not present
