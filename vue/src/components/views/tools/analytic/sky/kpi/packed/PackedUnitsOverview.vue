@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRefs, unref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { AnalyticFileManager } from "../../../../../../models/analytic/AnalyticFileManager";
-import { AnalyticFileHelper } from "../../files/drive/AnalyticFileHelper";
-import { AnalyticTypes } from "../../files/Types";
-import { KPITypes } from "./Types";
-import { AnalyticRaw } from "../transactions/Types";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawTableStore";
+import { AnalyticFileManager } from "../../../../../../../models/analytic/AnalyticFileManager";
+import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
+import { AnalyticTypes } from "../../../files/Types";
+import { PackedTypes } from "./Types";
+import { AnalyticRaw } from "../../transactions/Types";
+import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
 
 // import { useI18n } from "vue-i18n";
 
@@ -22,15 +22,17 @@ const { rawIdentification } = toRefs(props);
 
 // required items
 // models
-const modelsObj = ref<KPITypes.IModelsObj>([]);
-const uniqueModelGroups = ref<string[]>([]);
-const modelLetter = ref<[string, string][]>([]);
+const modelsObj = ref<PackedTypes.IModelsObj>([]);
+const uniqueModelLetters = ref<string[]>([]);
+// const uniqueModelGroups = ref<string[]>([]);
+// const uniqueModelGroupLetter = ref<[string, string][]>([]);
+// const modelLetter = ref<[string, string][]>([]);
 // plan
 const planObj = ref<any>(null);
 
 // packed
 const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
-const items = ref<KPITypes.IPackedRowWithModels[]>([]);
+const items = ref<PackedTypes.IPackedRowWithModels[]>([]);
 const loading = ref<false | "primary-container">("primary-container");
 
 /**
@@ -40,7 +42,7 @@ watch(
   () => unref(analyticRawTransactionsStore.getItemsData(unref(rawIdentification))),
   async (newRawTransactions: AnalyticRaw.TTransactions) => {
     rawTransactions.value = newRawTransactions;
-    items.value = new KPITypes.PackedBuilder(
+    items.value = new PackedTypes.PackedBuilder(
       unref(rawTransactions),
       unref(modelsObj),
       unref(planObj)
@@ -90,14 +92,15 @@ watch(
 
 // headers
 const modelHeaders = computed(() => {
-  return unref(uniqueModelGroups).map((uniqueModelGroup) => {
+  return unref(uniqueModelLetters).map((letter) => {
     return {
-      title: `Group ${uniqueModelGroup}`,
+      title: `Group ${letter}`,
+      value: letter,
       align: "center",
       children: [
-        { title: "Packed (Units)", align: "center", value: `${uniqueModelGroup}.packedUnits` },
-        { title: "Target (Units)", align: "center", value: `${uniqueModelGroup}.targetUnits` },
-        { title: "Target (%)", align: "center", value: `${uniqueModelGroup}.targetPercent` },
+        { title: "Packed (Units)", align: "center", value: `${letter}.packedUnits` },
+        { title: "Target (Units)", align: "center", value: `${letter}.targetUnits` },
+        { title: "Target (%)", align: "center", value: `${letter}.targetPercent` },
       ],
     };
   });
@@ -146,17 +149,14 @@ const load = async () => {
         ?.jsObjectJson!
     );
     modelsObj.value = modelsParsed[Object.keys(modelsParsed)[0]];
-    uniqueModelGroups.value = [
+    // console.log(modelsObj.value);
+    uniqueModelLetters.value = [
       ...new Set(
         unref(modelsObj)
-          .map((item) => item.GROUP_NAME)
+          .map((item) => item.GROUP_LETTER)
           .filter((name) => name !== null)
       ),
     ];
-    modelLetter.value = unref(modelsObj).map((model: any) => [
-      model.IFS_PART_NO,
-      model.GROUP_LETTER,
-    ]);
 
     const plansParsed = JSON.parse(
       consideredRequiredFiles.find((file) => file.considered && file.fileType === "planning")
@@ -173,12 +173,21 @@ onMounted(async () => {
 });
 
 // format
-const formatColorOfTargetPercent = (item: KPITypes.IPackedRowWithModels, model?: string) => {
+const formatHeaderTooltip = (column: any) => {
+  return unref(modelsObj).find((model) => model.GROUP_LETTER === column.value)?.GROUP_NAME;
+};
+
+const formatShiftGroup = (shift: 1 | 2 | 3 | 4) => {
+  if (shift === 4) return "Summary";
+  else return shift;
+};
+
+const formatColorOfTargetPercent = (item: PackedTypes.IPackedRowWithModels, model?: string) => {
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
 
-  const modelIndicators = model ? (item[model] as KPITypes.IPackedModelIndicator) : item;
+  const modelIndicators = model ? (item[model] as PackedTypes.IPackedModelIndicator) : item;
   // Check if it's today's data only
   if (unref(isItTodaysDataOnly) && model && item[model]) {
     const startHour = item.hour;
@@ -228,16 +237,34 @@ const formatColorOfTargetPercent = (item: KPITypes.IPackedRowWithModels, model?:
     }
   } else return undefined;
 };
-const formatSlotHour = (hour: number, type: "start" | "end") =>
-  `${String((hour + (type === "end" ? 1 : 0)) % 24).padStart(2, "0")}:00`;
+
+const formatSlotHour = (hour: number, shift: 1 | 2 | 3 | 4, type: "start" | "end") => {
+  // If the hour is 25, handle it as a summary case
+  if (hour === 25) {
+    // Define the starting and ending hours for each shift
+    const shiftStartEnd = {
+      1: { start: 6, end: 14 }, // Shift 1: 6 AM to 2 PM
+      2: { start: 14, end: 22 }, // Shift 2: 2 PM to 10 PM
+      3: { start: 22, end: 6 }, // Shift 3: 10 PM to 6 AM
+      4: { start: 6, end: 6 }, // Shift 4: 6 AM to 6 AM (whole day summary)
+    };
+
+    // Return the start or end hour based on the type
+    return type === "start"
+      ? `${String(shiftStartEnd[shift].start).padStart(2, "0")}:00`
+      : `${String(shiftStartEnd[shift].end).padStart(2, "0")}:00`;
+  }
+
+  return `${String((hour + (type === "end" ? 1 : 0)) % 24).padStart(2, "0")}:00`;
+};
 </script>
 
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
-    <!-- <v-card-title class="d-flex align-center">
-      KPI
+    <v-card-title class="d-flex align-center">
+      Packed Units Overview
       <v-spacer></v-spacer>
-    </v-card-title> -->
+    </v-card-title>
 
     <v-data-table
       :items="items"
@@ -262,29 +289,51 @@ const formatSlotHour = (hour: number, type: "start" | "end") =>
               variant="text"
               @click="toggleGroup(item)"
             ></v-btn>
-            {{ item.value }}
+            {{ formatShiftGroup(item.value) }}
           </td>
         </tr>
       </template>
+
       <template
-        v-for="model in uniqueModelGroups"
-        :key="model"
-        v-slot:[`item.${model}.targetPercent`]="{ item }: { item: KPITypes.IPackedRowWithModels }"
+        v-for="letter in uniqueModelLetters"
+        :key="letter"
+        v-slot:[`header.${letter}`]="{ column }"
       >
-        <v-chip v-if="item[model]" :color="formatColorOfTargetPercent(item, model)">
-          {{ (item[model] as KPITypes.IPackedModelIndicator)?.targetPercent }}
+        <v-tooltip location="top">
+          <template v-slot:activator="{ props: tooltip }">
+            <div v-bind="tooltip">
+              <span>{{ column.title }}</span>
+              <v-icon icon="mdi-information-slab-symbol" class="mb-1"></v-icon>
+            </div>
+          </template>
+          <span>{{ formatHeaderTooltip(column) }}</span>
+        </v-tooltip>
+      </template>
+
+      <template
+        v-for="letter in uniqueModelLetters"
+        :key="letter"
+        v-slot:[`item.${letter}.targetPercent`]="{
+          item,
+        }: {
+          item: PackedTypes.IPackedRowWithModels,
+        }"
+      >
+        <v-chip v-if="item[letter]" :color="formatColorOfTargetPercent(item, letter)">
+          {{ (item[letter] as PackedTypes.IPackedModelIndicator)?.targetPercent }}
         </v-chip>
       </template>
-      <template v-slot:item.targetPercent="{ item }: { item: KPITypes.IPackedRowWithModels }">
+
+      <template v-slot:item.targetPercent="{ item }: { item: PackedTypes.IPackedRowWithModels }">
         <v-chip :color="formatColorOfTargetPercent(item)">
           {{ item.targetPercent }}
         </v-chip>
       </template>
       <template v-slot:item.hourStart="{ item }: { item: any }">
-        {{ formatSlotHour(item.hour, "start") }}
+        {{ formatSlotHour(item.hour, item.shift, "start") }}
       </template>
       <template v-slot:item.hourEnd="{ item }: { item: any }">
-        {{ formatSlotHour(item.hour, "end") }}
+        {{ formatSlotHour(item.hour, item.shift, "end") }}
       </template>
     </v-data-table>
   </v-card>

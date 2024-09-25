@@ -156,6 +156,8 @@ watch(
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
     <v-card-title class="d-flex align-center">
+      <span>Transactions</span>
+
       <v-spacer></v-spacer>
 
       <v-text-field
@@ -181,6 +183,7 @@ watch(
       :loading="loading"
       :headers="headers"
       :sort-by="sortBy"
+      multi-sort
       :items-per-page-options="[
         { value: 10, title: '10' },
         { value: 25, title: '25' },

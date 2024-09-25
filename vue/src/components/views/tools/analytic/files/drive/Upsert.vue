@@ -44,7 +44,7 @@ const xlsxHelper = new XLSXHelper();
 
 // Desired column format for validation
 const requiredColumns: Record<string, string[]> = {
-  models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO"],
+  models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_COSM", "TT_PACK"],
   planning: [
     "LINE", // "linia",
     "DATE", // "data",

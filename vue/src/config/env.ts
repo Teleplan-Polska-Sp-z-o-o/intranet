@@ -5,7 +5,7 @@ interface ServerConfig {
   port: number;
 }
 
-const TEST_ORIGIN = "http://192.168.0.1";
+const TEST_ORIGIN = "http://192.168.0.45";
 const ORIGIN = "https://bydintranet.reconext.com";
 
 const nodeConfig: ServerConfig = {

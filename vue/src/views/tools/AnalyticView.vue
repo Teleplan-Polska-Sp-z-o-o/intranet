@@ -8,7 +8,8 @@ import FileDrive from "../../components/views/tools/analytic/files/drive/FileDri
 import Documentation from "../../components/views/tools/analytic/Documentation.vue";
 import TransactionsRawDataTable from "../../components/views/tools/analytic/sky/transactions/TransactionsRawDataTable.vue";
 import { AnalyticRawManager } from "../../models/analytic/AnalyticRawManager";
-import TransactionsModelsPlan from "../../components/views/tools/analytic/sky/kpi/TransactionsModelsPlan.vue";
+import PackedUnitsOverview from "../../components/views/tools/analytic/sky/kpi/packed/PackedUnitsOverview.vue";
+import EfficiencyOverview from "../../components/views/tools/analytic/sky/kpi/efficiency/EfficiencyOverview.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
@@ -38,8 +39,8 @@ const tabs: ToolTab[] = [
           },
           {
             id: 1,
-            title: "Data",
-            name: "data",
+            title: "Overview",
+            name: "overview",
             icon: "mdi-chart-box-multiple-outline",
           },
         ],
@@ -142,13 +143,15 @@ onMounted(async () => {
                     identification="sky-packing-drive"
                   ></file-drive>
                 </v-window-item>
-                <v-window-item value="sky-packing-data">
+                <v-window-item value="sky-packing-overview">
                   <transactions-raw-data-table
                     :manager="new AnalyticRawManager('sky')"
-                    identification="sky-packing-data"
+                    identification="sky-packing-overview"
                   ></transactions-raw-data-table>
-                  <transactions-models-plan rawIdentification="sky-packing-data" class="mt-6">
-                  </transactions-models-plan>
+                  <packed-units-overview rawIdentification="sky-packing-overview" class="mt-6">
+                  </packed-units-overview>
+                  <efficiency-overview rawIdentification="sky-packing-overview" class="mt-6">
+                  </efficiency-overview>
                 </v-window-item>
               </v-window>
             </v-col>

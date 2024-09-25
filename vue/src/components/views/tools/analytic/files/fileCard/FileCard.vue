@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ComputedRef, onMounted, ref, toRefs, unref } from "vue";
+import { computed, ComputedRef, onMounted, ref, toRefs, unref, watch } from "vue";
 import { CommonTypes } from "../../../../../../interfaces/common/CommonTypes";
 import FileCardSimpleViewTable from "./FileCardTable.vue";
 import FileCardMenu from "./FileCardMenu.vue";
@@ -51,48 +51,25 @@ const excelBlob = ref<Blob | null>(null);
 // Reactive variable for storing the Excel View
 const excelPreview = ref<XLSXTypes.Sheet>([]);
 const excelView = ref<XLSXTypes.Sheets>({});
-// let worker: Worker = new Worker(new URL("./xlsxViewWorker.ts", import.meta.url), {
-//   type: "module",
-// });
 
-// // Function to generate the Excel preview using a Web Worker
-// const xlsxView = async (
-//   stream: boolean,
-//   worksheetNameOrIndex?: string | number,
-//   rowCount?: number,
-//   columnCount?: number
-// ): Promise<any> => {
-//   const userStore = useUserStore();
-//   const url = `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.XLSX}`;
-//   const token = userStore.getToken() || undefined;
+const handleExcelObjectJson = (excelObjectJson: string) => {
+  // Parse the excelObjectJson to an object
+  const sheetsObject = JSON.parse(excelObjectJson) as XLSXTypes.Sheets;
+  // Get the first sheet name
+  const firstSheetName = Object.keys(sheetsObject)[0];
+  // Assign the first sheet to excelPreview.value and all sheets to excelView.value
+  excelPreview.value = sheetsObject[firstSheetName].slice(0, 3);
+  excelView.value = sheetsObject;
+};
 
-//   const formData = {
-//     stream,
-//     fileName: fileEntity.value.fileName,
-//     fileDir: fileEntity.value.fileDir,
-//     worksheetNameOrIndex,
-//     rowCount,
-//     columnCount,
-//   };
+watch(
+  () => unref(fileEntity).excelObjectJson,
+  (newE, oldE) => {
+    if (oldE && newE !== oldE) handleExcelObjectJson(newE);
+  },
+  { deep: true }
+);
 
-//   return new Promise((resolve, reject) => {
-//     // Listen for the message from the worker
-//     worker.onmessage = (event) => {
-//       resolve(event.data); // Resolve the promise with worker's response
-//     };
-//     // Handle any potential worker errors
-//     worker.onerror = (error) => {
-//       reject(error); // Reject the promise on error
-//     };
-//     // Post the formData and other details to the worker
-//     worker.postMessage({
-//       url,
-//       stream,
-//       token,
-//       formData,
-//     });
-//   });
-// };
 // ON MOUNT ACTIONS
 onMounted(async () => {
   try {
@@ -100,13 +77,8 @@ onMounted(async () => {
     await fileHelper.retrieveFromServer();
     excelBlob.value = fileHelper.blob;
     excelFile.value = fileHelper.file;
-    // Parse the excelObjectJson to an object
-    const sheetsObject = JSON.parse(fileEntity.value.excelObjectJson) as XLSXTypes.Sheets;
-    // Get the first sheet name
-    const firstSheetName = Object.keys(sheetsObject)[0];
-    // Assign the first sheet to excelPreview.value and all sheets to excelView.value
-    excelPreview.value = sheetsObject[firstSheetName].slice(0, 3);
-    excelView.value = sheetsObject;
+
+    handleExcelObjectJson(fileEntity.value.excelObjectJson);
   } catch (error: any) {
     console.log(error.message);
   }
