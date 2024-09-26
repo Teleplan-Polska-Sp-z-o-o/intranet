@@ -52,10 +52,13 @@ export namespace EfficiencyTypes {
         const modelData = this.modelsCache.get(part_no);
 
         // If we can't find model data for the part number, skip the transaction
-        if (!modelData) return;
+        if (!modelData) {
+          // console.warn(`Model data not found for part_no: ${part_no}`);
+          return;
+        }
 
         // Cache the processing time required for this part_no
-        const processingTimePerUnit = modelData.TT_PACK; // Get processing time from TT_PACK in minutes
+        const processingTimePerUnit = Number(modelData.TT_PACK); // Get processing time from TT_PACK in minutes
 
         // Identify the quarter in which the transaction occurred
         const transactionQuarter = this.getTransactionQuarter(datedtz);
@@ -101,6 +104,11 @@ export namespace EfficiencyTypes {
 
     // Function to calculate efficiency
     private calculateEfficiency(processingTime: number, workedQuarters: number): number {
+      // Ensure processingTime and workedQuarters are numbers
+      if (isNaN(processingTime) || isNaN(workedQuarters)) {
+        return 0;
+      }
+
       const totalWorkingTime = workedQuarters * 15; // 1 quarter = 15 minutes
       return totalWorkingTime > 0 ? (processingTime / totalWorkingTime) * 100 : 0;
     }
