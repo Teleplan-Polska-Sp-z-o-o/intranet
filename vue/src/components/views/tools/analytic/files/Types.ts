@@ -5,21 +5,10 @@ export namespace XLSXTypes {
   export type Sheets = Record<string, Sheet>;
 }
 
-export namespace AnalyticTypes {
+export namespace AnalyticFileTypes {
   export type AnalyticProg = "sky";
-  export type AnalyticCat = "packing";
+  export type AnalyticCat = "packing" | "cosmetic" | "ooba";
   export type AnalyticSub = "drive";
-
-  export const fileTypeObject: Record<
-    AnalyticProg,
-    Record<AnalyticCat, Record<AnalyticSub, string[]>>
-  > = {
-    sky: {
-      packing: {
-        drive: ["models", "planning", "miscellaneous"],
-      },
-    },
-  };
 
   export interface IAnalyticFileFrontendFields {
     id: number;

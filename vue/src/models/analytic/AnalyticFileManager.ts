@@ -1,4 +1,4 @@
-import { AnalyticTypes } from "../../components/views/tools/analytic/files/Types";
+import { AnalyticFileTypes } from "../../components/views/tools/analytic/files/Types";
 import { Endpoints } from "../../config/axios/Endpoints";
 import jwtAxios from "../../config/axios/jwtAxios";
 import { nodeConfig } from "../../config/env";
@@ -10,8 +10,8 @@ class AnalyticFileManager {
   constructor() {}
 
   public new = (
-    form?: AnalyticTypes.IAnalyticFileFrontendFields
-  ): AnalyticTypes.IAnalyticFileFrontendFields => {
+    form?: AnalyticFileTypes.IAnalyticFileFrontendFields
+  ): AnalyticFileTypes.IAnalyticFileFrontendFields => {
     if (form) {
       return new AnalyticFileFrontendFields().build(form);
     } else {
@@ -19,7 +19,7 @@ class AnalyticFileManager {
     }
   };
 
-  public createFormData = (preFormData: AnalyticTypes.PreFormData) => {
+  public createFormData = (preFormData: AnalyticFileTypes.PreFormData) => {
     const formData = new FormData();
     formData.append("id", JSON.stringify(preFormData.fields.id));
     formData.append("progName", JSON.stringify(preFormData.fields.progName));
@@ -33,7 +33,7 @@ class AnalyticFileManager {
   public post = async (
     formData: FormData,
     status: boolean = false
-  ): Promise<AnalyticTypes.IAnalyticFileEntity[]> => {
+  ): Promise<AnalyticFileTypes.IAnalyticFileEntity[]> => {
     const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.AnalyticFile}`,
       formData
@@ -52,7 +52,7 @@ class AnalyticFileManager {
   public put = async (
     formData: FormData,
     status: boolean = false
-  ): Promise<AnalyticTypes.IAnalyticFileEntity[]> => {
+  ): Promise<AnalyticFileTypes.IAnalyticFileEntity[]> => {
     const response = await jwtAxios.put(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.AnalyticFile}`,
       formData
@@ -86,7 +86,7 @@ class AnalyticFileManager {
   public delete = async (
     id: number,
     status: boolean = false
-  ): Promise<AnalyticTypes.IAnalyticFileEntity[]> => {
+  ): Promise<AnalyticFileTypes.IAnalyticFileEntity[]> => {
     const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.AnalyticFile}/${id}`
     );
@@ -101,7 +101,9 @@ class AnalyticFileManager {
     return response.data.deleted;
   };
 
-  public get = async (status: boolean = false): Promise<AnalyticTypes.IAnalyticFileEntity[]> => {
+  public get = async (
+    status: boolean = false
+  ): Promise<AnalyticFileTypes.IAnalyticFileEntity[]> => {
     const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.AnalyticFile}`
     );
@@ -118,7 +120,7 @@ class AnalyticFileManager {
   public getById = async (
     id: number,
     status: boolean = false
-  ): Promise<AnalyticTypes.IAnalyticFileEntity[]> => {
+  ): Promise<AnalyticFileTypes.IAnalyticFileEntity[]> => {
     const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.AnalyticFile}/by/${id}`
     );
@@ -137,7 +139,7 @@ class AnalyticFileManager {
     catName: string,
     subName: string,
     status: boolean = false
-  ): Promise<AnalyticTypes.IAnalyticFileEntity[]> => {
+  ): Promise<AnalyticFileTypes.IAnalyticFileEntity[]> => {
     const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.AnalyticFile}/by/${progName}/${catName}/${subName}`
     );

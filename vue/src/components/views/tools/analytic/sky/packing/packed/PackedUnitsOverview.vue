@@ -3,7 +3,7 @@ import { computed, onMounted, ref, toRefs, unref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { AnalyticFileManager } from "../../../../../../../models/analytic/AnalyticFileManager";
 import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
-import { AnalyticTypes } from "../../../files/Types";
+import { AnalyticFileTypes } from "../../../files/Types";
 import { PackedTypes } from "./Types";
 import { AnalyticRaw } from "../../transactions/Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
@@ -138,9 +138,9 @@ const load = async () => {
   const progName = route.params.program as string;
   const catName = route.params.cat as string;
 
-  const requiredFiles: AnalyticTypes.IAnalyticFileEntity[] =
+  const requiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
     await analyticFileManager.getByProgAndCatAndSub(progName, catName, "drive");
-  const consideredRequiredFiles: AnalyticTypes.IAnalyticFileEntity[] =
+  const consideredRequiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
     AnalyticFileHelper.addConsideredProperty(requiredFiles);
 
   try {

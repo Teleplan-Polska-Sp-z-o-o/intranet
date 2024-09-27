@@ -7,8 +7,11 @@ import { ResponseStatus } from "../common/ResponseStatus";
 
 class AnalyticRawManager {
   program: AnalyticRaw.TPrograms;
-  constructor(program: AnalyticRaw.TPrograms) {
+  group: AnalyticRaw.TGroups;
+
+  constructor(program: AnalyticRaw.TPrograms, group: AnalyticRaw.TGroups) {
     this.program = program;
+    this.group = group;
   }
 
   public createFormData = (preFormData: AnalyticRaw.IPreFormData) => {
@@ -32,7 +35,7 @@ class AnalyticRawManager {
     status: boolean = false
   ): Promise<AnalyticRaw.TTransactions> => {
     const response = await jwtAxios.post(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Analytic}/raw`,
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Analytic}/raw/${this.group}`,
       formData
     );
     if (status) {

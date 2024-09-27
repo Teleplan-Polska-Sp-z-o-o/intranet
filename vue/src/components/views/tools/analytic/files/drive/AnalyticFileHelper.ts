@@ -1,4 +1,4 @@
-import { AnalyticTypes } from "../Types";
+import { AnalyticFileTypes } from "../Types";
 
 export class AnalyticFileHelper {
   /**
@@ -6,7 +6,7 @@ export class AnalyticFileHelper {
    * @param file - File entity object
    * @returns - Date of the last action (either creation or update)
    */
-  private static getLastActionDate(file: AnalyticTypes.IAnalyticFileEntity): Date {
+  private static getLastActionDate(file: AnalyticFileTypes.IAnalyticFileEntity): Date {
     const lastUpdatedBy =
       file.updatedBy.length > 0 ? file.updatedBy[file.updatedBy.length - 1] : null;
     return lastUpdatedBy ? new Date(lastUpdatedBy.date) : new Date(file.createdBy.date);
@@ -18,10 +18,10 @@ export class AnalyticFileHelper {
    * @returns - Modified array with `considered` property
    */
   public static addConsideredProperty(
-    files: AnalyticTypes.IAnalyticFileEntity[]
-  ): AnalyticTypes.IAnalyticFileEntity[] {
+    files: AnalyticFileTypes.IAnalyticFileEntity[]
+  ): AnalyticFileTypes.IAnalyticFileEntity[] {
     // Track the latest file by `fileType`
-    const latestFilesByType: Record<string, AnalyticTypes.IAnalyticFileEntity | null> = {};
+    const latestFilesByType: Record<string, AnalyticFileTypes.IAnalyticFileEntity | null> = {};
 
     // Find the latest file per `fileType`
     files.forEach((file) => {

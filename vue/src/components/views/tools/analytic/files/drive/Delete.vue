@@ -2,7 +2,7 @@
 import { computed, ref, toRefs } from "vue";
 import { useAnalyticStore } from "../../../../../../stores/analytic/useAnalyticStore";
 import { AnalyticFileManager } from "../../../../../../models/analytic/AnalyticFileManager";
-import { AnalyticTypes } from "../Types";
+import { AnalyticFileTypes } from "../Types";
 
 const store = useAnalyticStore();
 const manager: AnalyticFileManager = new AnalyticFileManager();
@@ -13,7 +13,7 @@ const compProps = defineProps<{
   /**
    * entity
    */
-  entity?: AnalyticTypes.IAnalyticFileEntity;
+  entity?: AnalyticFileTypes.IAnalyticFileEntity;
 }>();
 const { driveUuid, fileUuid, entity } = toRefs(compProps);
 

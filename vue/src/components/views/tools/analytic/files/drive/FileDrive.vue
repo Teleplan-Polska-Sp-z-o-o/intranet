@@ -3,7 +3,7 @@ import FileCard from "../fileCard/FileCard.vue";
 import Activator from "../dialog/Activator.vue";
 import Upsert from "./Upsert.vue";
 import { ref, toRefs, unref, watch } from "vue";
-import { AnalyticTypes } from "../Types";
+import { AnalyticFileTypes } from "../Types";
 import { AnalyticFileManager } from "../../../../../../models/analytic/AnalyticFileManager";
 import { useRoute } from "vue-router";
 import { useAnalyticStore } from "../../../../../../stores/analytic/useAnalyticStore";
@@ -23,7 +23,7 @@ const compProps = defineProps<{
 const { subtitle, identification } = toRefs(compProps);
 
 const manager: AnalyticFileManager = new AnalyticFileManager();
-const fileEntities = ref<AnalyticTypes.IAnalyticFileEntity[]>([]);
+const fileEntities = ref<AnalyticFileTypes.IAnalyticFileEntity[]>([]);
 const route = useRoute();
 
 const load = async () => {

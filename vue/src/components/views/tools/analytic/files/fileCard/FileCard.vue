@@ -9,7 +9,7 @@ import FileCardMenu from "./FileCardMenu.vue";
 import Activator from "../dialog/Activator.vue";
 import ViewForXlsx from "./ViewForXlsx.vue";
 import Upsert from "../drive/Upsert.vue";
-import { AnalyticTypes, XLSXTypes } from "../Types";
+import { AnalyticFileTypes, XLSXTypes } from "../Types";
 import { useAnalyticStore } from "../../../../../../stores/analytic/useAnalyticStore";
 import { v4 as uuidv4 } from "uuid";
 import { TimeHelper } from "../../../../../../models/common/TimeHelper";
@@ -24,7 +24,7 @@ const compProps = defineProps<{
   /**
    * File entities
    */
-  fileEntity: AnalyticTypes.IAnalyticFileEntity;
+  fileEntity: AnalyticFileTypes.IAnalyticFileEntity;
 
   driveUuid: string;
 }>();

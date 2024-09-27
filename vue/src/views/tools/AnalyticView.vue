@@ -8,8 +8,10 @@ import FileDrive from "../../components/views/tools/analytic/files/drive/FileDri
 import Documentation from "../../components/views/tools/analytic/Documentation.vue";
 import TransactionsRawDataTable from "../../components/views/tools/analytic/sky/transactions/TransactionsRawDataTable.vue";
 import { AnalyticRawManager } from "../../models/analytic/AnalyticRawManager";
-import PackedUnitsOverview from "../../components/views/tools/analytic/sky/kpi/packed/PackedUnitsOverview.vue";
-import EfficiencyOverview from "../../components/views/tools/analytic/sky/kpi/efficiency/EfficiencyOverview.vue";
+import PackedUnitsOverview from "../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
+import PackingEfficiencyOverview from "../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
+import CosmeticEfficiencyOverview from "../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
+import OobaEfficiencyOverview from "../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
@@ -17,7 +19,7 @@ const route = useRoute();
 
 const tabs: ToolTab[] = [
   {
-    id: 0,
+    id: 1,
     name: "sky",
     icon: undefined,
     meta: {
@@ -26,19 +28,59 @@ const tabs: ToolTab[] = [
     },
     children: [
       {
-        id: 0,
+        id: 11,
         title: "Packing",
         name: "packing",
         icon: undefined,
         children: [
           {
-            id: 0,
+            id: 110,
             title: "Drive",
             name: "drive",
             icon: "mdi-database",
           },
           {
-            id: 1,
+            id: 111,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 12,
+        title: "Cosmetic",
+        name: "cosmetic",
+        icon: undefined,
+        children: [
+          {
+            id: 120,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-database",
+          },
+          {
+            id: 121,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 13,
+        title: "OOBA",
+        name: "ooba",
+        icon: undefined,
+        children: [
+          {
+            id: 130,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-database",
+          },
+          {
+            id: 131,
             title: "Overview",
             name: "overview",
             icon: "mdi-chart-box-multiple-outline",
@@ -49,19 +91,71 @@ const tabs: ToolTab[] = [
   },
 ];
 
+// const filteredToolTabs = ref<ToolTab[]>([]);
+// const toggled = ref<string[]>([]);
+// const windowItem = ref<string>("documentation");
+
+// const filterUndefined = (arr: (string | undefined)[]): string[] =>
+//   arr.filter((v): v is string => v !== undefined);
+
+// const location = (program: string, cat?: string, sub?: string): void => {
+//   const newPath = filterUndefined([program, cat, sub]).join("/");
+//   router.push({
+//     path: `/tool/analytic/browse/${newPath}`,
+//   });
+//   windowItem.value = sub ? filterUndefined([program, cat, sub]).join("-") : "documentation";
+// };
+
+// onMounted(async () => {
+//   const userInfo = useUserStore().info();
+//   if (!userInfo) return;
+//   filteredToolTabs.value = await usePermissionStore().filterToolTabs<ToolTab>(userInfo, tabs);
+
+//   const { program, cat, sub } = route.params as {
+//     program: string;
+//     cat: string | undefined;
+//     sub: string | undefined;
+//   };
+
+//   toggled.value = filterUndefined([program, cat, sub]);
+
+//   windowItem.value = sub ? filterUndefined([program, cat, sub]).join("-") : "documentation";
+// });
+
 const filteredToolTabs = ref<ToolTab[]>([]);
-const toggled = ref<string[]>([]);
+const toggled = ref<number[]>([]);
 const windowItem = ref<string>("documentation");
 
-const filterUndefined = (arr: (string | undefined)[]): string[] =>
-  arr.filter((v): v is string => v !== undefined);
+// Helper function to find the corresponding IDs for program, category, and subcategory
+const findTabIds = (program: string, cat?: string, sub?: string): number[] => {
+  const programTab = tabs.find((tab) => tab.name === program);
+  if (!programTab) return [];
+
+  const ids = [programTab.id]; // Start with the program ID
+
+  if (cat && programTab.children) {
+    const categoryTab = programTab.children.find((child) => child.name === cat);
+    if (categoryTab) {
+      ids.push(categoryTab.id);
+
+      if (sub && categoryTab.children) {
+        const subTab = categoryTab.children.find((child) => child.name === sub);
+        if (subTab) {
+          ids.push(subTab.id);
+        }
+      }
+    }
+  }
+
+  return ids;
+};
 
 const location = (program: string, cat?: string, sub?: string): void => {
-  const newPath = filterUndefined([program, cat, sub]).join("/");
+  const newPath = [program, cat, sub].filter(Boolean).join("/");
   router.push({
     path: `/tool/analytic/browse/${newPath}`,
   });
-  windowItem.value = sub ? filterUndefined([program, cat, sub]).join("-") : "documentation";
+  windowItem.value = [program, cat, sub].filter(Boolean).join("-");
 };
 
 onMounted(async () => {
@@ -75,9 +169,10 @@ onMounted(async () => {
     sub: string | undefined;
   };
 
-  toggled.value = filterUndefined([program, cat, sub]);
+  // Use the findTabIds function to dynamically get the tab ids based on the current route
+  toggled.value = findTabIds(program, cat, sub);
 
-  windowItem.value = sub ? filterUndefined([program, cat, sub]).join("-") : "documentation";
+  windowItem.value = sub ? `${program}-${cat}-${sub}` : "documentation";
 });
 </script>
 
@@ -97,7 +192,7 @@ onMounted(async () => {
                   <v-list-group
                     v-for="program in filteredToolTabs"
                     :key="program.id"
-                    :value="program.name"
+                    :value="program.id"
                   >
                     <template v-slot:activator="{ props }">
                       <v-list-item v-bind="props" @click="location(program.name)">
@@ -107,7 +202,7 @@ onMounted(async () => {
                       </v-list-item>
                     </template>
 
-                    <v-list-group v-for="cat in program.children" :key="cat.id" :value="cat.name">
+                    <v-list-group v-for="cat in program.children" :key="cat.id" :value="cat.id">
                       <template v-slot:activator="{ props }">
                         <v-list-item
                           v-bind="props"
@@ -121,7 +216,7 @@ onMounted(async () => {
                         :key="sub.id"
                         :prepend-icon="sub.icon"
                         :title="sub.title"
-                        :value="sub.name"
+                        :value="sub.id"
                         :active="route.params.sub === sub.name"
                         @click="location(program.name, cat.name, sub.name)"
                       ></v-list-item>
@@ -137,6 +232,7 @@ onMounted(async () => {
                 <v-window-item value="documentation">
                   <documentation></documentation>
                 </v-window-item>
+                <!-- Packing -->
                 <v-window-item value="sky-packing-drive">
                   <file-drive
                     subtitle="SKY Packing"
@@ -145,13 +241,46 @@ onMounted(async () => {
                 </v-window-item>
                 <v-window-item value="sky-packing-overview">
                   <transactions-raw-data-table
-                    :manager="new AnalyticRawManager('sky')"
+                    :manager="new AnalyticRawManager('sky', 'packing')"
                     identification="sky-packing-overview"
                   ></transactions-raw-data-table>
                   <packed-units-overview rawIdentification="sky-packing-overview" class="mt-6">
                   </packed-units-overview>
-                  <efficiency-overview rawIdentification="sky-packing-overview" class="mt-6">
-                  </efficiency-overview>
+                  <packing-efficiency-overview
+                    rawIdentification="sky-packing-overview"
+                    class="mt-6"
+                  >
+                  </packing-efficiency-overview>
+                </v-window-item>
+                <!-- Cosmetic -->
+                <v-window-item value="sky-cosmetic-drive">
+                  <file-drive
+                    subtitle="SKY Cosmetic"
+                    identification="sky-cosmetic-drive"
+                  ></file-drive>
+                </v-window-item>
+                <v-window-item value="sky-cosmetic-overview">
+                  <transactions-raw-data-table
+                    :manager="new AnalyticRawManager('sky', 'cosmetic')"
+                    identification="sky-cosmetic-overview"
+                  ></transactions-raw-data-table>
+                  <cosmetic-efficiency-overview
+                    rawIdentification="sky-cosmetic-overview"
+                    class="mt-6"
+                  >
+                  </cosmetic-efficiency-overview>
+                </v-window-item>
+                <!-- OOBA -->
+                <v-window-item value="sky-ooba-drive">
+                  <file-drive subtitle="SKY OOBA" identification="sky-ooba-drive"></file-drive>
+                </v-window-item>
+                <v-window-item value="sky-ooba-overview">
+                  <transactions-raw-data-table
+                    :manager="new AnalyticRawManager('sky', 'ooba')"
+                    identification="sky-ooba-overview"
+                  ></transactions-raw-data-table>
+                  <ooba-efficiency-overview rawIdentification="sky-ooba-overview" class="mt-6">
+                  </ooba-efficiency-overview>
                 </v-window-item>
               </v-window>
             </v-col>

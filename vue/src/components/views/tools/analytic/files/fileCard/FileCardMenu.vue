@@ -2,7 +2,7 @@
 import { ref, toRefs, unref, watch } from "vue";
 import { FileCardTypes } from "../../../../../../interfaces/analytic/fileCardTypes";
 import { useAnalyticStore } from "../../../../../../stores/analytic/useAnalyticStore";
-import { AnalyticTypes } from "../Types";
+import { AnalyticFileTypes } from "../Types";
 import { TimeHelper } from "../../../../../../models/common/TimeHelper";
 
 const emit = defineEmits(["menu-click"]);
@@ -13,7 +13,7 @@ const props = defineProps<{
    */
   uuid: string;
 
-  fileEntity: AnalyticTypes.IAnalyticFileEntity;
+  fileEntity: AnalyticFileTypes.IAnalyticFileEntity;
 }>();
 
 // Destructure stopLoading to keep it reactive

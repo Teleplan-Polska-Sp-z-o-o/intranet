@@ -1,10 +1,10 @@
-import { AnalyticTypes } from "../../components/views/tools/analytic/files/Types";
+import { AnalyticFileTypes } from "../../components/views/tools/analytic/files/Types";
 
-export class AnalyticFileFrontendFields implements AnalyticTypes.IAnalyticFileFrontendFields {
+export class AnalyticFileFrontendFields implements AnalyticFileTypes.IAnalyticFileFrontendFields {
   id: number;
-  progName: AnalyticTypes.AnalyticProg;
-  catName: AnalyticTypes.AnalyticCat;
-  subName: AnalyticTypes.AnalyticSub;
+  progName: AnalyticFileTypes.AnalyticProg;
+  catName: AnalyticFileTypes.AnalyticCat;
+  subName: AnalyticFileTypes.AnalyticSub;
   fileType: string;
   normalizedFileName: string;
 
@@ -17,7 +17,7 @@ export class AnalyticFileFrontendFields implements AnalyticTypes.IAnalyticFileFr
     this.normalizedFileName = "";
   }
 
-  build(form: AnalyticTypes.IAnalyticFileFrontendFields): this {
+  build(form: AnalyticFileTypes.IAnalyticFileFrontendFields): this {
     this.id = form.id;
     this.progName = form.progName;
     this.catName = form.catName;

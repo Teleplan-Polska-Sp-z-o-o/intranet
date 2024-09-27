@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, toRefs, onMounted, watch } from "vue";
+import { ref, computed, toRefs, onMounted, watch, unref } from "vue";
 import { XLSXHelper } from "../../../../../../models/common/files/excel/XLSXHelper";
 import { useAnalyticStore } from "../../../../../../stores/analytic/useAnalyticStore";
 import { AnalyticFileManager } from "../../../../../../models/analytic/AnalyticFileManager";
-import { AnalyticTypes } from "../Types";
+import { AnalyticFileTypes } from "../Types";
 import { useRoute } from "vue-router";
+import { useAnalyticFileStore } from "../../../../../../stores/analytic/useAnalyticFileStore";
 
 const store = useAnalyticStore();
+const fileStore = useAnalyticFileStore();
 const manager: AnalyticFileManager = new AnalyticFileManager();
 const compProps = defineProps<{
   driveUuid: string;
@@ -15,7 +17,7 @@ const compProps = defineProps<{
   /**
    * entity
    */
-  entity?: AnalyticTypes.IAnalyticFileEntity;
+  entity?: AnalyticFileTypes.IAnalyticFileEntity;
 
   /**
    * retrieved file
@@ -23,35 +25,44 @@ const compProps = defineProps<{
   file?: File | null;
 }>();
 const { driveUuid, fileUuid, entity, file } = toRefs(compProps);
-const formData = ref<AnalyticTypes.IAnalyticFileFrontendFields>(entity.value ?? manager.new());
+const formData = ref<AnalyticFileTypes.IAnalyticFileFrontendFields>(entity.value ?? manager.new());
 
 // Route params setup
 const route = useRoute();
-formData.value.progName = route.params.program as AnalyticTypes.AnalyticProg;
-formData.value.catName = route.params.cat as AnalyticTypes.AnalyticCat;
-formData.value.subName = route.params.sub as AnalyticTypes.AnalyticSub;
+formData.value.progName = route.params.program as AnalyticFileTypes.AnalyticProg;
+formData.value.catName = route.params.cat as AnalyticFileTypes.AnalyticCat;
+formData.value.subName = route.params.sub as AnalyticFileTypes.AnalyticSub;
 
 // File Type options
-const fileTypeOptions = computed(() => {
-  return AnalyticTypes.fileTypeObject[formData.value.progName][formData.value.catName][
-    formData.value.subName
-  ];
-});
+// const fileTypeOptions = computed(() => {
+//   return AnalyticFileTypes.fileTypeObject[formData.value.progName][formData.value.catName][
+//     formData.value.subName
+//   ];
+// });
+
+const fileTypeOptions = fileStore.getFileTypes(
+  unref(formData).progName,
+  unref(formData).catName
+) as string[];
 
 // File input and XLSX processing setup
 const fileData = ref<File | undefined>(file.value ?? undefined);
 const xlsxHelper = new XLSXHelper();
 
 // Desired column format for validation
-const requiredColumns: Record<string, string[]> = {
-  models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_COSM", "TT_PACK"],
-  planning: [
-    "LINE", // "linia",
-    "DATE", // "data",
-    "SHIFT", // "zmiana",
-    "PACKING", // "pakowanie",
-  ],
-};
+// const requiredColumns: Record<string, string[]> = {
+//   models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_COSM", "TT_PACK"],
+//   planning: [
+//     "LINE", // "linia",
+//     "DATE", // "data",
+//     "SHIFT", // "zmiana",
+//     "PACKING", // "pakowanie",
+//   ],
+// };
+const requiredColumns: Record<string, string[]> = fileStore.getRequiredFiles(
+  unref(formData).progName,
+  unref(formData).catName
+) as Record<string, string[]>;
 
 interface Validation {
   progress: boolean;
@@ -159,7 +170,7 @@ const handlePostData = async () => {
     try {
       processingPostData.value = true;
 
-      const preFormData: AnalyticTypes.PreFormData = {
+      const preFormData: AnalyticFileTypes.PreFormData = {
         fields: manager.new(formData.value),
         file: fileData.value!,
       };
