@@ -20,9 +20,17 @@ const contractsInput = ref<string[]>(contractOptions);
 const dateRangeInput = ref<Date[]>([new Date()]);
 const dateRangeComputed = computed(() => {
   const input = unref(dateRangeInput);
+  const startOfDay: Date | undefined =
+    input.at(0) !== undefined ? new Date(input.at(0)!.setHours(6, 0, 0, 0)) : undefined;
+  let endOfDay: Date | undefined = undefined;
+  const lastInputDate = input.at(input.length - 1);
+  if (lastInputDate) {
+    endOfDay = new Date(lastInputDate.setHours(6, 0, 0, 0));
+  }
+
   return {
-    startOfDay: input.at(0),
-    endOfDay: input.at(input.length - 1),
+    startOfDay,
+    endOfDay,
   };
 });
 
@@ -78,7 +86,6 @@ onMounted(() => submit());
               type="submit"
               prepend-icon="mdi-filter-check-outline"
               color="primary-container"
-              density="comfortable"
               flat
             >
               Apply Filters

@@ -7,6 +7,7 @@ import { AnalyticTypes } from "../../../files/Types";
 import { AnalyticRaw } from "../../transactions/Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
 import { EfficiencyTypes } from "./Types";
+import EmployeeEfficiencyChart from "./EmployeeEfficiencyChart.vue";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -25,7 +26,9 @@ const modelsObj = ref<EfficiencyTypes.IModelsObj>([]);
 const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
 
 // table items
+
 const items = ref<EfficiencyTypes.IProcessedEmployees>([]);
+const expanded = ref<string[]>([]);
 const loading = ref<false | "primary-container">("primary-container");
 
 /**
@@ -41,7 +44,7 @@ watch(
 
     if (items.value) loading.value = false;
     //
-    // console.log(items.value);
+    console.log(items.value);
   },
   { deep: true }
 );
@@ -148,6 +151,7 @@ const formatColorForEfficiency = (efficiency: number): string => {
 
     <v-data-table
       :items="items"
+      item-value="id"
       :loading="loading"
       :headers="headers"
       :group-by="[
@@ -157,6 +161,8 @@ const formatColorForEfficiency = (efficiency: number): string => {
         },
       ]"
       multi-sort
+      v-model:expanded="expanded"
+      show-expand
       class="bg-surface-2"
     >
       <template v-slot:group-header="{ item, toggleGroup, isGroupOpen }">
@@ -176,6 +182,13 @@ const formatColorForEfficiency = (efficiency: number): string => {
         <v-chip :color="formatColorForEfficiency(item.efficiency)">
           {{ item.efficiency }}
         </v-chip>
+      </template>
+      <template v-slot:expanded-row="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
+        <tr>
+          <td :colspan="headers.length">
+            <employee-efficiency-chart :chart="item.chart"></employee-efficiency-chart>
+          </td>
+        </tr>
       </template>
     </v-data-table>
   </v-card>

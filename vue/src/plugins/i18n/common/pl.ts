@@ -170,6 +170,7 @@ const plC = {
         "Żądanie dotyczy użytkownika, który nie ma dostępu do odpowiedniego narzędzia.",
       reference_format_error: "Wartość referencji ma nieprawidłowy format.",
       reference_already_contains_error: "Jakiś dokument już zawiera tę referencje.",
+      filters_applied: "Filtry zostały zastosowane.",
     },
     component: {
       file_form: {

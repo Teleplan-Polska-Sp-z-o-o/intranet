@@ -172,6 +172,8 @@ const enC = {
       tool_access_error: "The request concerns a user who has no access to the relevant tool.",
       reference_format_error: "Reference value is of invalid format.",
       reference_already_contains_error: "Some document already contains this reference.",
+
+      filters_applied: "The filters have been applied.",
     },
     component: {
       file_form: {

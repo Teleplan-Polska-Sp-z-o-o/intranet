@@ -6,6 +6,7 @@ import { TimeHelper } from "../../../../../../models/common/TimeHelper";
 import { TransactionsHelper } from "./TransactionsHelper";
 import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
 import { useRoute } from "vue-router";
+import { useAlertStore } from "../../../../../../stores/alertStore";
 // import { useAnalyticStore } from "../../../../../../stores/analytic/useAnalyticStore";
 // import { useI18n } from "vue-i18n";
 
@@ -81,20 +82,22 @@ const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
   }
 });
 
+const loadVersion = ref(0); // Version counter to track the latest load
+const loadingVersion = ref(0); // Tracks the version of the current load
 const load = async () => {
-  try {
-    // console.log("start load");
-    // const startTime = performance.now();
+  const currentVersion = unref(loadVersion);
 
+  try {
     const m = unref(manager.value);
     const preFormData = store.getPreFormData(unref(identification));
     if (!preFormData) throw new Error(`preFormData evaluates to ${preFormData}`);
     const formData = m.createFormData(unref(preFormData));
-    items.value = await m.get(formData);
+    const result = await m.get(formData);
 
-    // const endTime = performance.now(); // Track end time in milliseconds
-    // const timeTaken = endTime - startTime; // Calculate time difference
-    // console.log(`Load completed in ${timeTaken.toFixed(2)} milliseconds`);
+    if (unref(loadingVersion) === currentVersion) {
+      items.value = result;
+      loading.value = false;
+    }
   } catch (error) {
     console.error(`Transactions Raw Table at load, ${error}`);
   }
@@ -109,9 +112,16 @@ watch(
   async (preForm: AnalyticRaw.IPreFormData | undefined) => {
     if (!unref(loading)) {
       loading.value = "primary-container";
-      await load();
-      loading.value = false;
     }
+
+    if (unref(loadVersion)) {
+      useAlertStore().process("filters_applied");
+    }
+
+    loadVersion.value++;
+    loadingVersion.value = unref(loadVersion);
+
+    await load();
 
     if (preForm) {
       const today = new Date();

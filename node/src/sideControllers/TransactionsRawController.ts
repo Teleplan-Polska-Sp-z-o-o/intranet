@@ -11,10 +11,15 @@ const getRawTransactions = async (req: Request, res: Response): Promise<Response
 
     const startOfDay = new Date(JSON.parse(body.startOfDay));
     const endOfDay = new Date(JSON.parse(body.endOfDay));
+    console.log("startOfDay1", startOfDay);
+    console.log("endOfDay1", endOfDay);
 
-    startOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2 timezone
-    endOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2 timezone
+    startOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
+    endOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
     endOfDay.setDate(endOfDay.getDate() + 1);
+
+    console.log("startOfDay2", startOfDay);
+    console.log("endOfDay2", endOfDay);
 
     // Convert these timestamps to ISO date strings for the query
     const startOfDayISO = startOfDay.toISOString();

@@ -30,27 +30,43 @@ export namespace PackedTypes {
 
   export class PackedModel implements IPackedModelIndicator {
     packedUnits: number = 1;
-    targetUnits: number | "-" = "-";
-    targetPercent: number | "-" = 0;
+    targetUnits: number | "-";
+    targetPercent: number | "-";
+    // technical fields
+    daysForShift: number;
+    transaction: AnalyticRaw.TTransactionsPackingRow;
 
-    constructor(transaction: AnalyticRaw.TTransactionsPackingRow) {
-      this.targetUnits = this.calculateTargetUnits(transaction);
+    constructor(transaction: AnalyticRaw.TTransactionsPackingRow, daysForShift: number) {
+      this.transaction = transaction;
+      this.daysForShift = daysForShift;
+      this.targetUnits = this.calculateTargetUnits(transaction, daysForShift);
       this.targetPercent = 0;
     }
 
-    calculateTargetUnits(transaction: AnalyticRaw.TTransactionsPackingRow): number | "-" {
+    calculateTargetUnits(
+      transaction: AnalyticRaw.TTransactionsPackingRow,
+      daysForShift: number
+    ): number | "-" {
       if (
         typeof transaction.target_for_group_letter === "number" &&
         transaction.target_for_group_letter > 0
       ) {
-        return transaction.target_for_group_letter / 8;
+        return (transaction.target_for_group_letter / 8) * daysForShift;
       }
       // console.warn(`No valid target for group letter found in transaction:`, transaction);
       return "-";
     }
 
-    addPackedUnit() {
+    checkTargetUnits(daysForShift: number) {
+      if (daysForShift > this.daysForShift) {
+        this.daysForShift = daysForShift;
+        this.targetUnits = this.calculateTargetUnits(this.transaction, this.daysForShift);
+      }
+    }
+
+    addPackedUnit(): this {
       this.packedUnits++;
+      return this;
     }
 
     calculateTargetPercentage() {
@@ -85,23 +101,33 @@ export namespace PackedTypes {
     constructor(
       transactions: AnalyticRaw.TTransactionsPackingRows,
       shift: 1 | 2 | 3,
-      hour: number
+      hour: number,
+      numberOfDays: number
     ) {
       this.shift = shift;
       this.hour = hour;
-      this.processTransactions(transactions);
+      this.processTransactions(transactions, numberOfDays);
       this.packedUnits = this.calculatePackedUnits();
       this.targetUnits = this.calculateTargetUnits();
       this.targetPercent = this.calculateTargetPercent();
     }
 
-    private processTransactions(transactions: AnalyticRaw.TTransactionsPackingRows) {
+    private processTransactions(
+      transactions: AnalyticRaw.TTransactionsPackingRows,
+      numberOfDays: number
+    ) {
+      const now = new Date();
+      const today = now.toISOString().split("T")[0];
+
       transactions.forEach((transaction) => {
         const modelName = transaction.part_no_group_letter;
+        const transactionDateStr = new Date(transaction.datedtz).toISOString().split("T")[0];
+        const daysForShift = transactionDateStr === today ? numberOfDays : numberOfDays - 1;
+
         if (this.models[modelName]) {
-          this.models[modelName].addPackedUnit();
+          this.models[modelName].addPackedUnit().checkTargetUnits(daysForShift);
         } else {
-          this.models[modelName] = new PackedModel(transaction);
+          this.models[modelName] = new PackedModel(transaction, daysForShift);
         }
       });
 
@@ -285,10 +311,17 @@ export namespace PackedTypes {
       shift: number
     ): number | "-" {
       const key = `${groupLetter}-${shift}-${date}`;
-      return this.plansCache.get(key) || "-";
+      const baseTarget = this.plansCache.get(key) || "-";
+
+      if (baseTarget !== "-" && typeof baseTarget === "number") {
+        return baseTarget; // Multiply the base target by the number of days
+      }
+      return "-";
     }
 
     private buildPackedRows(transactions: AnalyticRaw.TTransactions) {
+      const numberOfDays = this.calculateNumberOfDays(transactions); // Calculate the number of unique days
+
       transactions.forEach((transaction) => {
         const modelCache = this.modelsCache.get(transaction.part_no);
         if (!modelCache) return;
@@ -311,10 +344,10 @@ export namespace PackedTypes {
         });
       });
 
-      this.generatePackedRows();
+      this.generatePackedRows(numberOfDays);
     }
 
-    private generatePackedRows() {
+    private generatePackedRows(numberOfDays: number) {
       Object.keys(this.shiftsOfTransactions).forEach((shift) => {
         const transactionsByHour = this.groupByHour(
           this.shiftsOfTransactions[shift as unknown as keyof IShiftsOfTransactions]
@@ -322,7 +355,12 @@ export namespace PackedTypes {
         Object.keys(transactionsByHour).forEach((hourStr) => {
           const hour = parseInt(hourStr, 10);
           const transactions = transactionsByHour[hour];
-          const packedRow = new PackedRow(transactions, parseInt(shift, 10) as 1 | 2 | 3, hour);
+          const packedRow = new PackedRow(
+            transactions,
+            parseInt(shift, 10) as 1 | 2 | 3,
+            hour,
+            numberOfDays
+          );
           this.packedRows.push(packedRow);
         });
       });
@@ -348,6 +386,15 @@ export namespace PackedTypes {
         acc[hour].push(transaction);
         return acc;
       }, {} as Record<number, AnalyticRaw.TTransactionsPackingRows>);
+    }
+
+    private calculateNumberOfDays(transactions: AnalyticRaw.TTransactions): number {
+      const uniqueDays = new Set<string>(); // Use a set to store unique dates
+      transactions.forEach((transaction) => {
+        const dateStr = new Date(transaction.datedtz).toISOString().split("T")[0]; // Extract the date part
+        uniqueDays.add(dateStr); // Add the date to the set
+      });
+      return uniqueDays.size; // The size of the set gives the number of unique days
     }
   }
 }

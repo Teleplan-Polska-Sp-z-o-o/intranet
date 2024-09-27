@@ -14,11 +14,13 @@ export namespace EfficiencyTypes {
 
   // Processed result per employee
   export interface IProcessedEmployee {
+    id: string;
     shift: 1 | 2 | 3;
     emp_name: string;
     worked_quarters: number;
     processing_time: number; // in minutes
     efficiency: number;
+    chart: Record<string, number>; // Date as string (YYYY-MM-DD), efficiency as number
   }
 
   export type IProcessedEmployees = IProcessedEmployee[];
@@ -26,6 +28,7 @@ export namespace EfficiencyTypes {
   export class EfficiencyBuilder {
     private modelsCache: Map<string, EfficiencyTypes.IModelObj> = new Map(); // Cache for model data
     private processedEmployees: EfficiencyTypes.IProcessedEmployees = []; // Processed data
+    private employeeCharts: Record<string, Record<string, number>> = {}; // To track efficiency per employee and date
 
     constructor(rawTransactions: AnalyticRaw.TTransactions, modelsObj: EfficiencyTypes.IModelsObj) {
       this.buildModelsCache(modelsObj);
@@ -45,23 +48,21 @@ export namespace EfficiencyTypes {
     // Process the raw transactions
     private processTransactions(transactions: AnalyticRaw.TTransactions) {
       const employeeDataMap: Record<string, EfficiencyTypes.IProcessedEmployee> = {};
-      const employeeWorkedQuarters: Record<string, Set<string>> = {}; // To store unique quarters worked for each employee
+      const employeeWorkedQuarters: Record<string, Record<string, Set<string>>> = {}; // Track unique quarters worked for each employee per date
 
       transactions.forEach((transaction) => {
         const { emp_name, part_no, datedtz } = transaction;
         const modelData = this.modelsCache.get(part_no);
 
         // If we can't find model data for the part number, skip the transaction
-        if (!modelData) {
-          // console.warn(`Model data not found for part_no: ${part_no}`);
-          return;
-        }
+        if (!modelData) return;
 
         // Cache the processing time required for this part_no
         const processingTimePerUnit = Number(modelData.TT_PACK); // Get processing time from TT_PACK in minutes
 
         // Identify the quarter in which the transaction occurred
         const transactionQuarter = this.getTransactionQuarter(datedtz);
+        const transactionDate = new Date(datedtz).toISOString().split("T")[0]; // Extract the date
 
         // Determine the shift based on the time of the transaction
         const shift = this.getShift(new Date(datedtz));
@@ -69,36 +70,70 @@ export namespace EfficiencyTypes {
         // Initialize employee data if not already present
         if (!employeeDataMap[emp_name]) {
           employeeDataMap[emp_name] = {
+            id: `${emp_name}-${shift}`,
             shift: shift,
             emp_name: emp_name,
             worked_quarters: 0,
             processing_time: 0,
             efficiency: 0,
+            chart: {},
           };
-          employeeWorkedQuarters[emp_name] = new Set(); // Set to track unique quarters
+          employeeWorkedQuarters[emp_name] = {}; // Track worked quarters per date
+          this.employeeCharts[emp_name] = {}; // Track daily processing time for each employee
         }
 
-        // Add the current transaction's quarter to the set of worked quarters for this employee
-        employeeWorkedQuarters[emp_name].add(transactionQuarter);
+        // Initialize worked quarters for this employee on the transaction date
+        if (!employeeWorkedQuarters[emp_name][transactionDate]) {
+          employeeWorkedQuarters[emp_name][transactionDate] = new Set(); // Set to track unique quarters worked on this date
+        }
+
+        // Initialize chart entry for this employee for the transaction date
+        if (!this.employeeCharts[emp_name][transactionDate]) {
+          this.employeeCharts[emp_name][transactionDate] = 0; // Initialize processing time for the day
+        }
+
+        // Add the current transaction's quarter to the set of worked quarters for this employee on the transaction date
+        employeeWorkedQuarters[emp_name][transactionDate].add(transactionQuarter);
 
         // Update processing time for the employee
         employeeDataMap[emp_name].processing_time += processingTimePerUnit;
+
+        // Increment the daily processing time in the chart
+        this.employeeCharts[emp_name][transactionDate] += processingTimePerUnit;
       });
 
       // Calculate the worked quarters and efficiency for each employee
       Object.entries(employeeDataMap).forEach(([emp_name, employee]) => {
-        const uniqueQuartersWorked = employeeWorkedQuarters[emp_name].size;
-        employee.worked_quarters = uniqueQuartersWorked;
+        // Calculate total worked quarters across all days
+        employee.worked_quarters = Object.values(employeeWorkedQuarters[emp_name]).reduce(
+          (total, quartersSet) => total + quartersSet.size,
+          0
+        );
 
         // Round processing time to two decimal places
         employee.processing_time = this.roundToTwoDecimals(employee.processing_time);
 
-        // Calculate and round efficiency to two decimal places
+        // Calculate overall efficiency
         employee.efficiency = this.roundToTwoDecimals(
           this.calculateEfficiency(employee.processing_time, employee.worked_quarters)
         );
 
-        this.processedEmployees.push(employee);
+        // Update daily efficiency chart by calculating the efficiency per day
+        Object.keys(this.employeeCharts[emp_name]).forEach((date) => {
+          const dailyProcessingTime = this.employeeCharts[emp_name][date];
+          const dailyWorkedQuarters = employeeWorkedQuarters[emp_name][date]?.size || 0; // Get worked quarters for this date, ensure fallback to 0 if undefined
+          const dailyEfficiency = this.calculateEfficiency(
+            dailyProcessingTime,
+            dailyWorkedQuarters // Use daily worked quarters for the calculation
+          );
+          this.employeeCharts[emp_name][date] = this.roundToTwoDecimals(dailyEfficiency); // Store the rounded daily efficiency
+        });
+
+        // Add to processed employees
+        this.processedEmployees.push({
+          ...employee,
+          chart: this.employeeCharts[emp_name], // Add chart property to the employee object
+        });
       });
     }
 
@@ -118,10 +153,11 @@ export namespace EfficiencyTypes {
       return Math.round(num * 100) / 100; // Rounds to 2 decimal places
     }
 
-    // Function to identify the quarter of a transaction (e.g., "06:00-06:15", "06:15-06:30")
+    // Function to identify the quarter of a transaction, including the date (e.g., "2024-09-26 06:00-06:15")
     private getTransactionQuarter(datedtz: Date): string {
-      const hour = new Date(datedtz).getHours();
-      const minutes = new Date(datedtz).getMinutes();
+      const date = new Date(datedtz);
+      const hour = date.getHours();
+      const minutes = date.getMinutes();
 
       // Determine the quarter within the hour (e.g., 00-15, 15-30, 30-45, 45-00)
       let quarterStart;
@@ -135,11 +171,14 @@ export namespace EfficiencyTypes {
         quarterStart = "45";
       }
 
-      // Return a string representing the quarter (e.g., "06:00-06:15")
-      return `${String(hour).padStart(2, "0")}:${quarterStart}-${String(hour).padStart(
+      // Return a string representing the full quarter for this transaction,
+      // including the date and quarter window (e.g., "2024-09-26 06:00-06:15")
+      return `${date.toISOString().split("T")[0]} ${String(hour).padStart(
         2,
         "0"
-      )}:${String((parseInt(quarterStart, 10) + 15) % 60).padStart(2, "0")}`;
+      )}:${quarterStart}-${String(hour).padStart(2, "0")}:${String(
+        (parseInt(quarterStart, 10) + 15) % 60
+      ).padStart(2, "0")}`;
     }
 
     private getShift(datedtz: Date): 1 | 2 | 3 {
