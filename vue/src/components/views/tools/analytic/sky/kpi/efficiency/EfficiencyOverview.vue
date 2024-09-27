@@ -44,7 +44,7 @@ watch(
 
     if (items.value) loading.value = false;
     //
-    console.log(items.value);
+    // console.log(items.value);
   },
   { deep: true }
 );
