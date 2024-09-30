@@ -34,13 +34,13 @@ const tabs: ToolTab[] = [
         icon: undefined,
         children: [
           {
-            id: 110,
+            id: 111,
             title: "Drive",
             name: "drive",
             icon: "mdi-database",
           },
           {
-            id: 111,
+            id: 112,
             title: "Overview",
             name: "overview",
             icon: "mdi-chart-box-multiple-outline",
@@ -54,13 +54,13 @@ const tabs: ToolTab[] = [
         icon: undefined,
         children: [
           {
-            id: 120,
+            id: 121,
             title: "Drive",
             name: "drive",
             icon: "mdi-database",
           },
           {
-            id: 121,
+            id: 122,
             title: "Overview",
             name: "overview",
             icon: "mdi-chart-box-multiple-outline",
@@ -74,13 +74,13 @@ const tabs: ToolTab[] = [
         icon: undefined,
         children: [
           {
-            id: 130,
+            id: 131,
             title: "Drive",
             name: "drive",
             icon: "mdi-database",
           },
           {
-            id: 131,
+            id: 132,
             title: "Overview",
             name: "overview",
             icon: "mdi-chart-box-multiple-outline",
@@ -155,7 +155,17 @@ const location = (program: string, cat?: string, sub?: string): void => {
   router.push({
     path: `/tool/analytic/browse/${newPath}`,
   });
-  windowItem.value = [program, cat, sub].filter(Boolean).join("-");
+
+  windowItem.value = cat && sub ? [program, cat, sub].filter(Boolean).join("-") : "documentation";
+};
+
+const isActive = (subId: number): boolean => {
+  const routeProgram = route.params.program as string;
+  const routeCat = route.params.cat as string | undefined;
+  const routeSub = route.params.sub as string | undefined;
+
+  const ids: number[] = findTabIds(routeProgram, routeCat, routeSub);
+  return ids.length === 3 && ids.at(2) === subId;
 };
 
 onMounted(async () => {
@@ -172,7 +182,7 @@ onMounted(async () => {
   // Use the findTabIds function to dynamically get the tab ids based on the current route
   toggled.value = findTabIds(program, cat, sub);
 
-  windowItem.value = sub ? `${program}-${cat}-${sub}` : "documentation";
+  windowItem.value = cat && sub ? `${program}-${cat}-${sub}` : "documentation";
 });
 </script>
 
@@ -217,7 +227,7 @@ onMounted(async () => {
                         :prepend-icon="sub.icon"
                         :title="sub.title"
                         :value="sub.id"
-                        :active="route.params.sub === sub.name"
+                        :active="isActive(sub.id)"
                         @click="location(program.name, cat.name, sub.name)"
                       ></v-list-item>
                     </v-list-group>

@@ -47,9 +47,8 @@
       </v-list> -->
 
       <!-- Packing Category Features Section -->
-      <v-list dense class="bg-surface-2" lines="two">
+      <!-- <v-list dense class="bg-surface-2" lines="two">
         <v-list-item-group>
-          <!-- File Drive Section -->
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title>
@@ -58,7 +57,6 @@
             </v-list-item-content>
           </v-list-item>
 
-          <!-- Models in File Drive -->
           <v-list-item>
             <template v-slot:prepend>
               <v-icon icon="mdi-cube"></v-icon>
@@ -72,7 +70,6 @@
             </v-list-item-content>
           </v-list-item>
 
-          <!-- Planning in File Drive -->
           <v-list-item>
             <template v-slot:prepend>
               <v-icon icon="mdi-calendar-multiselect"></v-icon>
@@ -86,7 +83,6 @@
             </v-list-item-content>
           </v-list-item>
 
-          <!-- Miscellaneous in File Drive -->
           <v-list-item>
             <template v-slot:prepend>
               <v-icon icon="mdi-folder"></v-icon>
@@ -98,10 +94,10 @@
                 fit into other specific categories.
               </v-list-item-subtitle>
             </v-list-item-content>
-          </v-list-item>
+          </v-list-item> -->
 
-          <!-- KPI Section -->
-          <!-- <v-list-item>
+      <!-- KPI Section -->
+      <!-- <v-list-item>
             <v-list-item-content>
               <v-list-item-title>
                 <strong>Features of the 'Data' Module in Packing:</strong>
@@ -109,8 +105,8 @@
             </v-list-item-content>
           </v-list-item>-->
 
-          <!-- KPI Tables & Graphs in KPI Module -->
-          <!-- <v-list-item>
+      <!-- KPI Tables & Graphs in KPI Module -->
+      <!-- <v-list-item>
             <template v-slot:prepend>
               <v-icon icon="mdi-chart-line"></v-icon>
             </template>
@@ -122,8 +118,8 @@
               </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>  -->
-        </v-list-item-group>
-      </v-list>
+      <!-- </v-list-item-group> -->
+      <!-- </v-list> -->
     </v-card-text>
   </v-card>
 </template>

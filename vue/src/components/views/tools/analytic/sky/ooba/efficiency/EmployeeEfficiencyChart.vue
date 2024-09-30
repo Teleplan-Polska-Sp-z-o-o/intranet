@@ -29,8 +29,12 @@ const chartHelper = new ChartHelper();
 
 // Format the chart data for use in the BarChart component
 const formattedChartData = computed(() => {
-  const labels = Object.keys(props.chart); // Extract the dates as labels
-  const data = Object.values(props.chart); // Extract efficiency values as data
+  // const labels = Object.keys(props.chart); // Extract the dates as labels
+  // const data = Object.values(props.chart); // Extract efficiency values as data
+  // Extract the dates as labels and sort them in ascending order
+  const labels = Object.keys(props.chart).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+  // Extract the data corresponding to the sorted labels
+  const data = labels.map((label) => props.chart[label]);
 
   return {
     labels: labels, // Dates
