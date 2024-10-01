@@ -28,98 +28,110 @@
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-      </v-list>
 
-      <!-- Example Description Section -->
-      <!-- <v-list dense class="bg-surface-2" lines="two">
+        <!-- Modules Section -->
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>
-              <strong>Example:</strong>
-            </v-list-item-title>
+            <v-list-item-title><strong>Modules:</strong></v-list-item-title>
             <v-list-item-subtitle>
-              The <strong>Packing</strong> group, part of the <strong>SKY</strong> program, provides
-              modules for managing data storage, operational planning, and performance tracking
-              through key performance indicators.
+              Modules are specific tools or features within a group. Each module serves a particular
+              purpose, helping users perform focused tasks related to the group or program they
+              belong to. While groups organize related functionality, modules are where the actual
+              actions or processes take place.
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-      </v-list> -->
+      </v-list>
 
-      <!-- Packing Category Features Section -->
-      <!-- <v-list dense class="bg-surface-2" lines="two">
+      <!-- Modules Explained Section -->
+      <v-list dense class="bg-surface-2" lines="three">
         <v-list-item-group>
           <v-list-item>
+            <template v-slot:prepend>
+              <v-icon icon="mdi-folder-file-outline"></v-icon>
+            </template>
             <v-list-item-content>
-              <v-list-item-title>
-                <strong>Features of the 'Drive' Modules</strong>
-              </v-list-item-title>
+              <v-list-item-title>Drive Module: </v-list-item-title>
+              <v-list-item-subtitle>
+                The Drive Module functions as an file management system, similar to Google Drive,
+                with the ability to upload, update, delete, and download files. Users can also view
+                files in a dialog window, examine detailed file information, and review the creation
+                and update history. Additionally, it provides the option to restore previous
+                versions of files.
+              </v-list-item-subtitle>
+
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title
+                    >When uploading or updating a file, users are required to select a file type.
+                    There are three main types:
+                  </v-list-item-title>
+                  <p class="ms-2">
+                    <b>Models:</b> Files that store data related to the model's IFS part number,
+                    group name, and group letter, along with the times required for processing each
+                    model.
+                  </p>
+                  <p class="ms-2">
+                    <b>Planning:</b> Files containing rows with dates, line information, group
+                    letter, and the quantity of planned models (of that letter) scheduled for
+                    processing.
+                  </p>
+                  <p class="ms-2">
+                    <b>Miscellaneous:</b> Files that do not fit the 'Models' or 'Planning'
+                    categories, serving as helper files for various purposes.
+                  </p>
+                </v-list-item-content>
+              </v-list-item>
+
+              <v-alert type="info" variant="tonal" border="start">
+                <strong>Important:</strong> The current Drive module only supports Excel files for
+                upload and management. Please ensure that all files you upload are in Excel format
+                (.xls, .xlsx) to avoid errors.
+              </v-alert>
             </v-list-item-content>
           </v-list-item>
 
           <v-list-item>
             <template v-slot:prepend>
-              <v-icon icon="mdi-cube"></v-icon>
+              <v-icon icon="mdi-chart-box-multiple-outline"></v-icon>
             </template>
             <v-list-item-content>
-              <v-list-item-title>Models</v-list-item-title>
+              <v-list-item-title>Overview Module: </v-list-item-title>
               <v-list-item-subtitle>
-                Manage files related to operational models, including tables for model letters,
-                groups, and other model-specific data.
+                The Overview Module is designed to retrieve raw transaction data and display it in a
+                table format, allowing users to interact with and filter the data efficiently. It
+                provides options to search through the data or apply filters to refine the results.
               </v-list-item-subtitle>
+
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>The filtering options include: </v-list-item-title>
+                  <p class="ms-2">
+                    <b>Contracts:</b> Users can optionally specify which contracts to include. By
+                    default, all contracts are selected.
+                  </p>
+                  <p class="ms-2">
+                    <b>Date Range:</b> Users can filter the data based on a selected date range. By
+                    default, today's data is displayed.
+                  </p>
+                </v-list-item-content>
+              </v-list-item>
+
+              <p class="pb-4">
+                Below the data table, general analytic tables specific to the selected program and
+                group are displayed, offering deeper insights and analytics related to the filtered
+                transactions.
+              </p>
+
+              <v-alert type="info" variant="tonal" border="start">
+                <strong>Important:</strong> Data is automatically refreshed behind the scenes once
+                every minute. The first load may take longer depending on the complexity of the data
+                being retrieved.
+              </v-alert>
             </v-list-item-content>
           </v-list-item>
-
-          <v-list-item>
-            <template v-slot:prepend>
-              <v-icon icon="mdi-calendar-multiselect"></v-icon>
-            </template>
-            <v-list-item-content>
-              <v-list-item-title>Planning</v-list-item-title>
-              <v-list-item-subtitle>
-                Store and manage files containing planning data, including scheduling and resources
-                allocation for packing operations.
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-
-          <v-list-item>
-            <template v-slot:prepend>
-              <v-icon icon="mdi-folder"></v-icon>
-            </template>
-            <v-list-item-content>
-              <v-list-item-title>Miscellaneous</v-list-item-title>
-              <v-list-item-subtitle>
-                Upload and manage additional files, such as supporting documents or files that don’t
-                fit into other specific categories.
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item> -->
-
-      <!-- KPI Section -->
-      <!-- <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>
-                <strong>Features of the 'Data' Module in Packing:</strong>
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>-->
-
-      <!-- KPI Tables & Graphs in KPI Module -->
-      <!-- <v-list-item>
-            <template v-slot:prepend>
-              <v-icon icon="mdi-chart-line"></v-icon>
-            </template>
-            <v-list-item-content>
-              <v-list-item-title>KPI Tables</v-list-item-title>
-              <v-list-item-subtitle>
-                This section provides access to Key Performance Indicators (KPIs) and visual
-                representations of packing performance metrics.
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>  -->
-      <!-- </v-list-item-group> -->
-      <!-- </v-list> -->
+        </v-list-item-group>
+      </v-list>
     </v-card-text>
   </v-card>
 </template>

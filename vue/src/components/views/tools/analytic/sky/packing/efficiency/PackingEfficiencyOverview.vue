@@ -7,7 +7,8 @@ import { AnalyticFileTypes } from "../../../files/Types";
 import { AnalyticRaw } from "../../transactions/Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
 import { EfficiencyTypes } from "./Types";
-import EmployeeEfficiencyChart from "./EmployeeEfficiencyChart.vue";
+import EmployeeDailyEfficiencyChart from "./EmployeeDailyEfficiencyChart.vue";
+import EmployeeHourlyEfficiencyChart from "./EmployeeHourlyEfficiencyChart.vue";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -186,7 +187,16 @@ const formatColorForEfficiency = (efficiency: number): string => {
       <template v-slot:expanded-row="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
         <tr>
           <td :colspan="headers.length">
-            <employee-efficiency-chart :chart="item.chart"></employee-efficiency-chart>
+            <template v-if="Object.keys(item.dailyChart).length > 1">
+              <employee-daily-efficiency-chart
+                :chart="item.dailyChart"
+              ></employee-daily-efficiency-chart>
+            </template>
+            <template v-else>
+              <employee-hourly-efficiency-chart
+                :chart="item.hourlyChart"
+              ></employee-hourly-efficiency-chart>
+            </template>
           </td>
         </tr>
       </template>

@@ -28,6 +28,7 @@ export namespace AnalyticRaw {
     shift: 1 | 2 | 3;
     part_no_group_name: string;
     part_no_group_letter: string;
+    uniqueTargetKey: string;
     target_for_group_letter: number | "-";
   };
   export type TTransactionsPackingRows = TTransactionsPackingRow[];

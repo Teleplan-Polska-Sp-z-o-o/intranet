@@ -32,36 +32,24 @@ export namespace PackedTypes {
     packedUnits: number = 1;
     targetUnits: number | "-";
     targetPercent: number | "-";
-    // technical fields
-    daysForShift: number;
-    transaction: AnalyticRaw.TTransactionsPackingRow;
 
-    constructor(transaction: AnalyticRaw.TTransactionsPackingRow, daysForShift: number) {
-      this.transaction = transaction;
-      this.daysForShift = daysForShift;
-      this.targetUnits = this.calculateTargetUnits(transaction, daysForShift);
+    constructor(transaction: AnalyticRaw.TTransactionsPackingRow, multiplier: number) {
+      this.targetUnits = this.calculateTargetUnits(transaction, multiplier);
       this.targetPercent = 0;
     }
 
     calculateTargetUnits(
       transaction: AnalyticRaw.TTransactionsPackingRow,
-      daysForShift: number
+      multiplier: number
     ): number | "-" {
       if (
         typeof transaction.target_for_group_letter === "number" &&
-        transaction.target_for_group_letter > 0
+        transaction.target_for_group_letter > 0 &&
+        multiplier
       ) {
-        return (transaction.target_for_group_letter / 8) * daysForShift;
+        return (transaction.target_for_group_letter / 8) * multiplier;
       }
-      // console.warn(`No valid target for group letter found in transaction:`, transaction);
       return "-";
-    }
-
-    checkTargetUnits(daysForShift: number) {
-      if (daysForShift > this.daysForShift) {
-        this.daysForShift = daysForShift;
-        this.targetUnits = this.calculateTargetUnits(this.transaction, this.daysForShift);
-      }
     }
 
     addPackedUnit(): this {
@@ -102,11 +90,12 @@ export namespace PackedTypes {
       transactions: AnalyticRaw.TTransactionsPackingRows,
       shift: 1 | 2 | 3,
       hour: number,
-      numberOfDays: number
+      plansCacheMap: Map<string, number | "-">,
+      transactionDatesSet: Set<string>
     ) {
       this.shift = shift;
       this.hour = hour;
-      this.processTransactions(transactions, numberOfDays);
+      this.processTransactions(transactions, plansCacheMap, transactionDatesSet);
       this.packedUnits = this.calculatePackedUnits();
       this.targetUnits = this.calculateTargetUnits();
       this.targetPercent = this.calculateTargetPercent();
@@ -114,20 +103,47 @@ export namespace PackedTypes {
 
     private processTransactions(
       transactions: AnalyticRaw.TTransactionsPackingRows,
-      numberOfDays: number
+      plansCacheMap: Map<string, number | "-">,
+      transactionDatesSet: Set<string>
     ) {
-      const now = new Date();
-      const today = now.toISOString().split("T")[0];
+      const multiplierMap = new Map<string, number>();
+      plansCacheMap.forEach((packing, key) => {
+        const groupLetter = key.split("-").at(0);
+        if (
+          groupLetter &&
+          key.startsWith(`${groupLetter}-${this.shift}-`) &&
+          typeof packing === "number" &&
+          packing > 0
+        ) {
+          if (!multiplierMap.has(groupLetter)) {
+            multiplierMap.set(groupLetter, 1);
+          } else {
+            multiplierMap.set(groupLetter, multiplierMap.get(groupLetter)! + 1);
+          }
+        }
+      });
+
+      const now: Date = new Date();
+      const hour: number = now.getHours();
+      const todaysDateStr: string = new Date().toISOString().split("T")[0];
+      const isTodayInRange: boolean = transactionDatesSet.has(todaysDateStr);
 
       transactions.forEach((transaction) => {
-        const modelName = transaction.part_no_group_letter;
-        const transactionDateStr = new Date(transaction.datedtz).toISOString().split("T")[0];
-        const daysForShift = transactionDateStr === today ? numberOfDays : numberOfDays - 1;
+        const groupLetter = transaction.part_no_group_letter;
 
-        if (this.models[modelName]) {
-          this.models[modelName].addPackedUnit().checkTargetUnits(daysForShift);
+        const rawMultiplier = multiplierMap.get(groupLetter);
+        if (!rawMultiplier) return;
+
+        const multiplier = isTodayInRange
+          ? hour < this.hour // Check if we're still in the earlier part of the day
+            ? Math.max(rawMultiplier - 1, 1) // Subtract 1, but don't let it drop below 1
+            : rawMultiplier // If the current hour has passed, use the raw multiplier
+          : rawMultiplier; // If it's not today, use the base multiplier
+
+        if (this.models[groupLetter]) {
+          this.models[groupLetter].addPackedUnit();
         } else {
-          this.models[modelName] = new PackedModel(transaction, daysForShift);
+          this.models[groupLetter] = new PackedModel(transaction, multiplier);
         }
       });
 
@@ -198,10 +214,14 @@ export namespace PackedTypes {
       modelsObj: IModelsObj,
       plansObj: IPlansObj
     ) {
+      const transactionDatesSet = new Set(
+        transactions.map((transaction) => new Date(transaction.datedtz).toISOString().split("T")[0])
+      );
+
       this.shiftsOfTransactions = new ShiftsOfTransactions();
       this.buildModelsCache(modelsObj);
-      this.buildPlansCache(plansObj);
-      this.buildPackedRows(transactions);
+      this.buildPlansCache(plansObj, transactionDatesSet);
+      this.buildPackedRows(transactions, transactionDatesSet);
       this.addSummaryRows();
     }
 
@@ -217,19 +237,13 @@ export namespace PackedTypes {
       });
     }
 
-    private buildPlansCache(plansObj: IPlansObj) {
+    private buildPlansCache(plansObj: IPlansObj, transactionDatesSet: Set<string>) {
       plansObj.forEach((plan) => {
-        let planDate: string;
-        // Ensure that DATE is a valid Date object before using toISOString
-        if (plan.DATE instanceof Date) {
-          planDate = plan.DATE.toISOString().split("T")[0]; // Convert Date to ISO format
-        } else {
-          // Attempt to parse it into a Date object if it's not already
-          planDate = new Date(plan.DATE).toISOString().split("T")[0];
+        const planDate: string = new Date(plan.DATE).toISOString().split("T")[0];
+        if (transactionDatesSet.has(planDate)) {
+          const key = `${plan.LINE}-${plan.SHIFT}-${planDate}`;
+          this.plansCache.set(key, plan.PACKING || "-");
         }
-
-        const key = `${plan.LINE}-${plan.SHIFT}-${planDate}`;
-        this.plansCache.set(key, plan.PACKING || "-");
       });
     }
 
@@ -305,13 +319,8 @@ export namespace PackedTypes {
       this.tablePackedRows.push(summaryRow);
     }
 
-    private getTargetForGroupLetter(
-      groupLetter: string,
-      date: string,
-      shift: number
-    ): number | "-" {
-      const key = `${groupLetter}-${shift}-${date}`;
-      const baseTarget = this.plansCache.get(key) || "-";
+    private getTargetForGroupLetter(uniqueTargetKey: string): number | "-" {
+      const baseTarget = this.plansCache.get(uniqueTargetKey) || "-";
 
       if (baseTarget !== "-" && typeof baseTarget === "number") {
         return baseTarget; // Multiply the base target by the number of days
@@ -319,9 +328,10 @@ export namespace PackedTypes {
       return "-";
     }
 
-    private buildPackedRows(transactions: AnalyticRaw.TTransactions) {
-      const numberOfDays = this.calculateNumberOfDays(transactions); // Calculate the number of unique days
-
+    private buildPackedRows(
+      transactions: AnalyticRaw.TTransactions,
+      transactionDatesSet: Set<string>
+    ) {
       transactions.forEach((transaction) => {
         const modelCache = this.modelsCache.get(transaction.part_no);
         if (!modelCache) return;
@@ -331,7 +341,9 @@ export namespace PackedTypes {
         const hour = new Date(transaction.datedtz).getHours();
         const shift = this.getShift(hour);
 
-        const target_for_group_letter = this.getTargetForGroupLetter(groupLetter, dateStr, shift);
+        const uniqueTargetKey = `${groupLetter}-${shift}-${dateStr}`;
+
+        const target_for_group_letter = this.getTargetForGroupLetter(uniqueTargetKey);
         if (target_for_group_letter === "-") return;
 
         this.shiftsOfTransactions[shift].push({
@@ -339,15 +351,16 @@ export namespace PackedTypes {
           shift,
           part_no_group_name: groupName,
           part_no_group_letter: groupLetter,
+          uniqueTargetKey,
           target_for_group_letter,
           ...transaction,
         });
       });
 
-      this.generatePackedRows(numberOfDays);
+      this.generatePackedRows(transactionDatesSet);
     }
 
-    private generatePackedRows(numberOfDays: number) {
+    private generatePackedRows(transactionDatesSet: Set<string>) {
       Object.keys(this.shiftsOfTransactions).forEach((shift) => {
         const transactionsByHour = this.groupByHour(
           this.shiftsOfTransactions[shift as unknown as keyof IShiftsOfTransactions]
@@ -359,7 +372,8 @@ export namespace PackedTypes {
             transactions,
             parseInt(shift, 10) as 1 | 2 | 3,
             hour,
-            numberOfDays
+            this.plansCache,
+            transactionDatesSet
           );
           this.packedRows.push(packedRow);
         });
@@ -388,13 +402,13 @@ export namespace PackedTypes {
       }, {} as Record<number, AnalyticRaw.TTransactionsPackingRows>);
     }
 
-    private calculateNumberOfDays(transactions: AnalyticRaw.TTransactions): number {
-      const uniqueDays = new Set<string>(); // Use a set to store unique dates
-      transactions.forEach((transaction) => {
-        const dateStr = new Date(transaction.datedtz).toISOString().split("T")[0]; // Extract the date part
-        uniqueDays.add(dateStr); // Add the date to the set
-      });
-      return uniqueDays.size; // The size of the set gives the number of unique days
-    }
+    // private calculateNumberOfDays(transactions: AnalyticRaw.TTransactions): number {
+    //   const uniqueDays = new Set<string>(); // Use a set to store unique dates
+    //   transactions.forEach((transaction) => {
+    //     const dateStr = new Date(transaction.datedtz).toISOString().split("T")[0]; // Extract the date part
+    //     uniqueDays.add(dateStr); // Add the date to the set
+    //   });
+    //   return uniqueDays.size; // The size of the set gives the number of unique days
+    // }
   }
 }

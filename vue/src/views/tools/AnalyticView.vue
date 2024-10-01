@@ -37,7 +37,7 @@ const tabs: ToolTab[] = [
             id: 111,
             title: "Drive",
             name: "drive",
-            icon: "mdi-database",
+            icon: "mdi-folder-file-outline",
           },
           {
             id: 112,
@@ -57,7 +57,7 @@ const tabs: ToolTab[] = [
             id: 121,
             title: "Drive",
             name: "drive",
-            icon: "mdi-database",
+            icon: "mdi-folder-file-outline",
           },
           {
             id: 122,
@@ -77,7 +77,7 @@ const tabs: ToolTab[] = [
             id: 131,
             title: "Drive",
             name: "drive",
-            icon: "mdi-database",
+            icon: "mdi-folder-file-outline",
           },
           {
             id: 132,

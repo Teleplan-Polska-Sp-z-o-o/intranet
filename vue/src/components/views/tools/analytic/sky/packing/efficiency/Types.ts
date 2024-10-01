@@ -6,8 +6,7 @@ export namespace EfficiencyTypes {
     GROUP_NAME: string;
     GROUP_LETTER: string;
     IFS_PART_NO: string;
-    TT_COSM: number; // Time required for COSM process, in minutes
-    TT_PACK: number; // Time required to pack a unit, in minutes
+    TT_PACK: number; // Time required to pack a unit, in minutes\
   }
 
   export type IModelsObj = IModelObj[];
@@ -20,7 +19,8 @@ export namespace EfficiencyTypes {
     worked_quarters: number;
     processing_time: number; // in minutes
     efficiency: number;
-    chart: Record<string, number>; // Date as string (YYYY-MM-DD), efficiency as number
+    dailyChart: Record<string, number>; // Date as string (YYYY-MM-DD), daily efficiency as number
+    hourlyChart: Record<string, Record<string, number>>; // Date as string (YYYY-MM-DD), hour as string (HH), efficiency as number
   }
 
   export type IProcessedEmployees = IProcessedEmployee[];
@@ -60,9 +60,8 @@ export namespace EfficiencyTypes {
         // Cache the processing time required for this part_no
         const processingTimePerUnit = Number(modelData.TT_PACK); // Get processing time from TT_PACK in minutes
 
-        // Identify the quarter in which the transaction occurred
-        const transactionQuarter = this.getTransactionQuarter(datedtz);
         const transactionDate = new Date(datedtz).toISOString().split("T")[0]; // Extract the date
+        const transactionHour = new Date(datedtz).getHours().toString().padStart(2, "0"); // Extract the hour (00-23)
 
         // Determine the shift based on the time of the transaction
         const shift = this.getShift(new Date(datedtz));
@@ -76,7 +75,8 @@ export namespace EfficiencyTypes {
             worked_quarters: 0,
             processing_time: 0,
             efficiency: 0,
-            chart: {},
+            dailyChart: {},
+            hourlyChart: {},
           };
           employeeWorkedQuarters[emp_name] = {}; // Track worked quarters per date
           this.employeeCharts[emp_name] = {}; // Track daily processing time for each employee
@@ -87,22 +87,32 @@ export namespace EfficiencyTypes {
           employeeWorkedQuarters[emp_name][transactionDate] = new Set(); // Set to track unique quarters worked on this date
         }
 
-        // Initialize chart entry for this employee for the transaction date
+        // Initialize daily chart entry for this employee for the transaction date
         if (!this.employeeCharts[emp_name][transactionDate]) {
-          this.employeeCharts[emp_name][transactionDate] = 0; // Initialize processing time for the day
+          this.employeeCharts[emp_name][transactionDate] = 0; // Initialize daily processing time for the day
+        }
+
+        // Initialize hourly chart entry for this employee for the transaction hour
+        if (!employeeDataMap[emp_name].hourlyChart[transactionDate]) {
+          employeeDataMap[emp_name].hourlyChart[transactionDate] = {}; // Initialize hourly data per date
+        }
+        if (!employeeDataMap[emp_name].hourlyChart[transactionDate][transactionHour]) {
+          employeeDataMap[emp_name].hourlyChart[transactionDate][transactionHour] = 0; // Initialize hourly processing time for the hour
         }
 
         // Add the current transaction's quarter to the set of worked quarters for this employee on the transaction date
-        employeeWorkedQuarters[emp_name][transactionDate].add(transactionQuarter);
+        employeeWorkedQuarters[emp_name][transactionDate].add(this.getTransactionQuarter(datedtz));
 
         // Update processing time for the employee
         employeeDataMap[emp_name].processing_time += processingTimePerUnit;
 
-        // Increment the daily processing time in the chart
+        // Increment the daily and hourly processing time
         this.employeeCharts[emp_name][transactionDate] += processingTimePerUnit;
+        employeeDataMap[emp_name].hourlyChart[transactionDate][transactionHour] +=
+          processingTimePerUnit;
       });
 
-      // Calculate the worked quarters and efficiency for each employee
+      // Calculate worked quarters and efficiency for each employee
       Object.entries(employeeDataMap).forEach(([emp_name, employee]) => {
         // Calculate total worked quarters across all days
         employee.worked_quarters = Object.values(employeeWorkedQuarters[emp_name]).reduce(
@@ -118,22 +128,32 @@ export namespace EfficiencyTypes {
           this.calculateEfficiency(employee.processing_time, employee.worked_quarters)
         );
 
-        // Update daily efficiency chart by calculating the efficiency per day
+        // Update daily efficiency chart
         Object.keys(this.employeeCharts[emp_name]).forEach((date) => {
           const dailyProcessingTime = this.employeeCharts[emp_name][date];
-          const dailyWorkedQuarters = employeeWorkedQuarters[emp_name][date]?.size || 0; // Get worked quarters for this date, ensure fallback to 0 if undefined
+          const dailyWorkedQuarters = employeeWorkedQuarters[emp_name][date]?.size || 0; // Get worked quarters for this date
           const dailyEfficiency = this.calculateEfficiency(
             dailyProcessingTime,
-            dailyWorkedQuarters // Use daily worked quarters for the calculation
+            dailyWorkedQuarters
           );
-          this.employeeCharts[emp_name][date] = this.roundToTwoDecimals(dailyEfficiency); // Store the rounded daily efficiency
+          employee.dailyChart[date] = this.roundToTwoDecimals(dailyEfficiency);
+        });
+
+        // Calculate hourly efficiency for each hour
+        Object.keys(employee.hourlyChart).forEach((date) => {
+          Object.keys(employee.hourlyChart[date]).forEach((hour) => {
+            const hourlyProcessingTime = employee.hourlyChart[date][hour];
+            const hourlyWorkedQuarters = Math.ceil(hourlyProcessingTime / 15); // 1 quarter = 15 minutes
+            const hourlyEfficiency = this.calculateEfficiency(
+              hourlyProcessingTime,
+              hourlyWorkedQuarters
+            );
+            employee.hourlyChart[date][hour] = this.roundToTwoDecimals(hourlyEfficiency);
+          });
         });
 
         // Add to processed employees
-        this.processedEmployees.push({
-          ...employee,
-          chart: this.employeeCharts[emp_name], // Add chart property to the employee object
-        });
+        this.processedEmployees.push(employee);
       });
     }
 
