@@ -85,8 +85,8 @@ export namespace PackedService {
           const endOfDay = startOfDay.clone().add(1, "day");
           this.body = {
             contracts: JSON.stringify(transactionContracts[program]),
-            startOfDay: startOfDay.toISOString(), // Convert to ISO string for JSON
-            endOfDay: endOfDay.toISOString(), // Convert to ISO string for JSON
+            startOfDay: JSON.stringify(startOfDay),
+            endOfDay: JSON.stringify(endOfDay),
           };
         }
       }
