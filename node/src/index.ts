@@ -48,6 +48,23 @@ dataSource
           );
         }
 
+        // TEST
+        // try {
+        //   const packedClass = new PackedService.Handler("sky", "packing");
+        //   packedClass.getRawTransactions_1().then((c) => {
+        //     c.getAnalyticFiles_2().then((c) => {
+        //       c.getJsObjects_3()
+        //         .getTablePackedRows_4()
+        //         .createExcelReport_5()
+        //         .then((c) => {
+        //           c.sendMails_6();
+        //         });
+        //     });
+        //   });
+        // } catch (error) {
+        //   console.error(error);
+        // }
+
         // Graceful shutdown on SIGTERM (e.g., Docker container stop)
         process.on("SIGTERM", async () => {
           console.log("Received SIGTERM, shutting down gracefully...");

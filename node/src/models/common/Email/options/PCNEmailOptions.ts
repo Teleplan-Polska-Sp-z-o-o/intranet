@@ -5,7 +5,7 @@ import { IEmailOptions } from "../../../../interfaces/Email/IEmailOptions";
 import { ENotificationVariant } from "../../../../interfaces/user/notification/ENotificationVariant";
 import { ProcessChangeNotice } from "../../../../orm/entity/change/ProcessChangeNoticeEntity";
 import { User } from "../../../../orm/entity/user/UserEntity";
-import { template } from "../template";
+import { template } from "../templates/template";
 
 class PCNEmailOptions implements IEmailOptions {
   variant: ENotificationVariant;

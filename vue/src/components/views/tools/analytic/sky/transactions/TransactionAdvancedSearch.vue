@@ -20,9 +20,24 @@ const contractsInput = ref<string[]>(contractOptions);
 const dateRangeInput = ref<Date[]>([new Date()]);
 const dateRangeComputed = computed(() => {
   const input = unref(dateRangeInput);
-  const startOfDay: Date | undefined =
-    input.at(0) !== undefined ? new Date(input.at(0)!.setHours(6, 0, 0, 0)) : undefined;
-  let endOfDay: Date | undefined = undefined;
+
+  const now = new Date();
+  const currentHour = now.getHours();
+
+  // Determine baseDate: if currentHour is between 00:00 and 06:00, use the previous day
+  const baseDate =
+    currentHour >= 0 && currentHour < 6 ? new Date(now.getTime() - 24 * 60 * 60 * 1000) : now; // Subtract 1 day in milliseconds
+
+  // Set currentDate to 06:00 on the baseDate (either today or previous day depending on shift)
+  const currentDate = new Date(baseDate.setHours(6, 0, 0, 0));
+
+  // Set startOfDay to 06:00 of the first input date or baseDate
+  const startOfDay: Date = input.at(0) ? new Date(input.at(0)!.setHours(6, 0, 0, 0)) : currentDate; // Clone input date and set to 06:00 // Default to currentDate
+
+  // Set endOfDay to 06:00 of the last input date or baseDate (default case)
+  let endOfDay: Date = currentDate;
+
+  // Set endOfDay to 06:00 of the last input date or baseDate (default case)
   const lastInputDate = input.at(input.length - 1);
   if (lastInputDate) {
     endOfDay = new Date(lastInputDate.setHours(6, 0, 0, 0));

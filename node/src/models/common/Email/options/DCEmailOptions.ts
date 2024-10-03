@@ -8,7 +8,7 @@ import {
 } from "../../../../interfaces/user/notification/ENotificationVariant";
 import { DocumentChange } from "../../../../orm/entity/change/documents/DocumentChangeEntity";
 import { User } from "../../../../orm/entity/user/UserEntity";
-import { template } from "../template";
+import { template } from "../templates/template";
 
 class DCREmailOptions implements IEmailOptions {
   variant: ENotificationVariant;

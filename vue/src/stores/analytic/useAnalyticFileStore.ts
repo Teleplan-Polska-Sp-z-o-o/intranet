@@ -8,7 +8,7 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
   > = {
     sky: {
       packing: {
-        drive: ["models", "planning", "miscellaneous"],
+        drive: ["models", "planning", "reports", "miscellaneous"],
       },
       cosmetic: {
         drive: ["models", "miscellaneous"],
@@ -44,6 +44,7 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
     "sky-packing-drive": {
       models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_PACK"],
       planning: ["LINE", "DATE", "SHIFT", "PACKING"],
+      reports: ["NAME", "SURNAME", "USERNAME", "MAIL"],
     },
     "sky-cosmetic-drive": {
       models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_COSM"],

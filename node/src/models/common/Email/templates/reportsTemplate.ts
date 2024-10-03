@@ -1,7 +1,7 @@
-import { IEmailContent } from "../../../interfaces/Email/IEmailContent";
+import { IEmailReportContent } from "../../../../interfaces/Email/IEmailReportContent";
 
-export const template = (
-  configuration: IEmailContent
+export const reportsTemplate = (
+  configuration: IEmailReportContent
 ): string => `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html
   dir="ltr"
@@ -579,20 +579,6 @@ export const template = (
                                       padding-right: 25px;
                                     "
                                   >
-                                    <h4
-                                      style="
-                                        margin: 0;
-                                        line-height: 24px;
-                                        mso-line-height-rule: exactly;
-                                        font-family: arial, 'helvetica neue', helvetica, sans-serif;
-                                        font-size: 16px;
-                                        font-style: normal;
-                                        font-weight: normal;
-                                        color: #333333;
-                                      "
-                                    >
-                                      ${configuration.textTitle}
-                                    </h4>
                                   </td>
                                 </tr>
                                 <tr>
@@ -775,81 +761,6 @@ export const template = (
                           </tr>
                         </table>
                         <!--[if mso]></td><td style="width:20px"></td><td style="width:270px" valign="top"><![endif]-->
-                        <table
-                          class="es-right"
-                          cellspacing="0"
-                          cellpadding="0"
-                          align="right"
-                          style="
-                            mso-table-lspace: 0pt;
-                            mso-table-rspace: 0pt;
-                            border-collapse: collapse;
-                            border-spacing: 0px;
-                            float: right;
-                          "
-                        >
-                          <tr>
-                            <td align="left" style="padding: 0; margin: 0; width: 270px">
-                              <table
-                                width="100%"
-                                cellspacing="0"
-                                cellpadding="0"
-                                style="
-                                  mso-table-lspace: 0pt;
-                                  mso-table-rspace: 0pt;
-                                  border-collapse: collapse;
-                                  border-spacing: 0px;
-                                "
-                              >
-                                <tr>
-                                  <td align="center" style="padding: 0; margin: 0">
-                                    <span
-                                      class="es-button-border"
-                                      style="
-                                        border-style: solid;
-                                        border-color: #2cb543;
-                                        background: #006e23;
-                                        border-width: 0px 0px 2px 0px;
-                                        display: inline-block;
-                                        border-radius: 30px;
-                                        width: auto;
-                                      "
-                                      ><a
-                                        href="${configuration.button2Href}"
-                                        class="es-button"
-                                        target="_blank"
-                                        style="
-                                          mso-style-priority: 100 !important;
-                                          text-decoration: none;
-                                          -webkit-text-size-adjust: none;
-                                          -ms-text-size-adjust: none;
-                                          mso-line-height-rule: exactly;
-                                          color: #ffffff;
-                                          font-size: 18px;
-                                          padding: 10px 20px 10px 20px;
-                                          display: inline-block;
-                                          background: #006e23;
-                                          border-radius: 30px;
-                                          font-family: arial, 'helvetica neue', helvetica,
-                                            sans-serif;
-                                          font-weight: normal;
-                                          font-style: normal;
-                                          line-height: 22px;
-                                          width: auto;
-                                          text-align: center;
-                                          mso-padding-alt: 0;
-                                          mso-border-alt: 10px solid #006e23;
-                                        "
-                                      >
-                                        ${configuration.button2Text}
-                                      </a></span
-                                    >
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </table>
                         <!--[if mso]></td></tr></table><![endif]-->
                       </td>
                     </tr>

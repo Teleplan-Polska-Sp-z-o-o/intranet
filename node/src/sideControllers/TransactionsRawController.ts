@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpResponseMessage } from "../enums/response";
-import { RawTransactions } from "../orm/sideEntity/RawTransactionsEntity";
+import { RawTransaction } from "../orm/sideEntity/RawTransactionsEntity";
 import { SideDataSources } from "../config/SideDataSources";
 
 const getRawPackingTransactions = async (req: Request, res: Response): Promise<Response> => {
@@ -20,7 +20,7 @@ const getRawPackingTransactions = async (req: Request, res: Response): Promise<R
     const startOfDayISO = startOfDay.toISOString();
     const endOfDayISO = endOfDay.toISOString();
 
-    const rawTransactionsRepo = SideDataSources.postgres.getRepository(RawTransactions);
+    const rawTransactionsRepo = SideDataSources.postgres.getRepository(RawTransaction);
 
     const rawTransactions = await rawTransactionsRepo
       .createQueryBuilder("h")
@@ -55,7 +55,7 @@ const getRawPackingTransactions = async (req: Request, res: Response): Promise<R
           acc[transaction.order_no] = transaction;
         }
         return acc;
-      }, {} as Record<string, RawTransactions>)
+      }, {} as Record<string, RawTransaction>)
     );
 
     return res.status(200).json({
@@ -90,7 +90,7 @@ const getRawCosmeticTransactions = async (req: Request, res: Response): Promise<
     const startOfDayISO = startOfDay.toISOString();
     const endOfDayISO = endOfDay.toISOString();
 
-    const rawTransactionsRepo = SideDataSources.postgres.getRepository(RawTransactions);
+    const rawTransactionsRepo = SideDataSources.postgres.getRepository(RawTransaction);
 
     const rawTransactions = await rawTransactionsRepo
       .createQueryBuilder("h")
@@ -147,7 +147,7 @@ const getRawOobaTransactions = async (req: Request, res: Response): Promise<Resp
     const startOfDayISO = startOfDay.toISOString();
     const endOfDayISO = endOfDay.toISOString();
 
-    const rawTransactionsRepo = SideDataSources.postgres.getRepository(RawTransactions);
+    const rawTransactionsRepo = SideDataSources.postgres.getRepository(RawTransaction);
 
     const rawTransactions = await rawTransactionsRepo
       .createQueryBuilder("h")

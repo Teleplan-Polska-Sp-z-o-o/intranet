@@ -158,6 +158,7 @@ const getAnalyticFiles = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error retrieving AnalyticFiles: ", error);
     return res.status(500).json({
+      got: [],
       message: "Unknown error occurred. Failed to retrieve AnalyticFiles.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -192,6 +193,7 @@ const getAnalyticFileById = async (req: Request<{ id: number }>, res: Response) 
   } catch (error) {
     console.error("Error retrieving AnalyticFile: ", error);
     return res.status(500).json({
+      got: [],
       message: "Unknown error occurred. Failed to retrieve file.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
@@ -224,6 +226,7 @@ const getByProgAndCatAndSub = async (
   } catch (error) {
     console.error("Error retrieving AnalyticFiles: ", error);
     return res.status(500).json({
+      got: [],
       message: "Unknown error occurred. Failed to retrieve files.",
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

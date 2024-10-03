@@ -3,7 +3,7 @@ import { serverConfig } from "../../../../config/server";
 import { IEmailContent } from "../../../../interfaces/Email/IEmailContent";
 import { IEmailOptions } from "../../../../interfaces/Email/IEmailOptions";
 import { ProcessChangeRequest } from "../../../../orm/entity/change/ProcessChangeRequestEntity";
-import { template } from "../template";
+import { template } from "../templates/template";
 
 class PCREmailOptions implements IEmailOptions {
   to: string;

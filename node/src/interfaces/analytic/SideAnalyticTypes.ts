@@ -1,5 +1,5 @@
 export namespace SideAnalyticTypes {
-  export interface RawTransactions {
+  export interface RawTransaction {
     transaction_id: number;
     contract: string;
     order_no: string;
@@ -9,4 +9,6 @@ export namespace SideAnalyticTypes {
     next_work_center_no: string;
     datedtz: Date;
   }
+
+  export type RawTransactions = RawTransaction[];
 }

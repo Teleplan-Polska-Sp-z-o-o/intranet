@@ -7,6 +7,7 @@ import { AnalyticFileTypes } from "../../../files/Types";
 import { PackedTypes } from "./Types";
 import { AnalyticRaw } from "../../transactions/Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
+import { PackedModels } from "./Models";
 
 // import { useI18n } from "vue-i18n";
 
@@ -22,7 +23,7 @@ const { rawIdentification } = toRefs(props);
 
 // required items
 // models
-const modelsObj = ref<PackedTypes.IModelsObj>([]);
+const modelsObj = ref<PackedTypes.IModelObjs>([]);
 const uniqueModelLetters = ref<string[]>([]);
 // const uniqueModelGroups = ref<string[]>([]);
 // const uniqueModelGroupLetter = ref<[string, string][]>([]);
@@ -42,7 +43,7 @@ watch(
   () => unref(analyticRawTransactionsStore.getItemsData(unref(rawIdentification))),
   async (newRawTransactions: AnalyticRaw.TTransactions) => {
     rawTransactions.value = newRawTransactions;
-    items.value = new PackedTypes.PackedBuilder(
+    items.value = new PackedModels.PackedBuilder(
       unref(rawTransactions),
       unref(modelsObj),
       unref(planObj)

@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { SideAnalyticTypes } from "../../interfaces/analytic/SideAnalyticTypes";
 
 @Entity("operation_history")
-export class RawTransactions implements SideAnalyticTypes.RawTransactions {
+export class RawTransaction implements SideAnalyticTypes.RawTransaction {
   @PrimaryGeneratedColumn()
   transaction_id: number;
 

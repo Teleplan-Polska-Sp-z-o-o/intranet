@@ -100,6 +100,9 @@ const load = async () => {
     }
   } catch (error) {
     console.error(`Transactions Raw Table at load, ${error}`);
+    if (unref(stopInterval)) {
+      unref(stopInterval)!();
+    }
   }
 };
 
