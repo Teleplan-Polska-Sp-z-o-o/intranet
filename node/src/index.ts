@@ -15,6 +15,7 @@ import * as fs from "fs";
 import https from "https";
 import { UserSessionManager } from "./models/user/session/UserSessionManager";
 import { SideDataSources } from "./config/SideDataSources";
+import { PackedService } from "./services/analytic/PackedService";
 
 dataSource
   .initialize()
@@ -49,21 +50,21 @@ dataSource
         }
 
         // TEST
-        // try {
-        //   const packedClass = new PackedService.Handler("sky", "packing");
-        //   packedClass.getRawTransactions_1().then((c) => {
-        //     c.getAnalyticFiles_2().then((c) => {
-        //       c.getJsObjects_3()
-        //         .getTablePackedRows_4()
-        //         .createExcelReport_5()
-        //         .then((c) => {
-        //           c.sendMails_6();
-        //         });
-        //     });
-        //   });
-        // } catch (error) {
-        //   console.error(error);
-        // }
+        try {
+          const packedClass = new PackedService.Handler("sky", "packing");
+          packedClass.getRawTransactions_1().then((c) => {
+            c.getAnalyticFiles_2().then((c) => {
+              c.getJsObjects_3()
+                .getTablePackedRows_4()
+                .createExcelReport_5()
+                .then((c) => {
+                  c.sendMails_6();
+                });
+            });
+          });
+        } catch (error) {
+          console.error(error);
+        }
 
         // Graceful shutdown on SIGTERM (e.g., Docker container stop)
         process.on("SIGTERM", async () => {
