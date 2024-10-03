@@ -81,7 +81,7 @@ const options = ref({
       },
     },
     y: {
-      beginAtZero: true,
+      beginAtZero: false,
     },
   },
   plugins: {
