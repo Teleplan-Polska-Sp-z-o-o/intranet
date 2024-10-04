@@ -1,6 +1,6 @@
 class ChartHelper {
   private predefinedColors: string[];
-  private chartjsColors: {
+  chartjsColors: {
     color: string;
     tColor: string;
   }[] = [];
@@ -40,6 +40,23 @@ class ChartHelper {
         tColor: color.replace(")", ", 0.2)"),
       };
     });
+  }
+
+  // Function to get a unique color that is not in the excludeColors list
+  getUniqueChartjsColor(excludeColors: string[]): { color: string; tColor: string } {
+    // Filter out the colors that are in the excludeColors list
+    const availableColors = this.chartjsColors.filter(
+      (color) => !excludeColors.includes(color.color)
+    );
+
+    // If all colors are excluded, return a random color from the full list
+    if (availableColors.length === 0) {
+      return this.getRandomChartjsColor();
+    }
+
+    // Otherwise, randomly select one of the available colors
+    const randomIndex = Math.floor(Math.random() * availableColors.length);
+    return availableColors[randomIndex];
   }
 
   public getRandomChartjsColor = () => {

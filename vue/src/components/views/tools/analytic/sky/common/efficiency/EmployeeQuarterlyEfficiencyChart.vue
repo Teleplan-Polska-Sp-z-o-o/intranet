@@ -10,9 +10,13 @@ import {
   CategoryScale,
   Title,
   Tooltip,
+  Legend,
 } from "chart.js";
 import { ChartHelper } from "../../../../../../../models/common/chartjs/ChartHelper";
 import { ChartData } from "../../../../../../../models/common/chartjs/ChartData";
+import moment from "moment";
+import "moment-timezone";
+import { EfficiencyTypes } from "./Types";
 
 // Register chart.js components for Line chart
 Chart.register(
@@ -22,13 +26,14 @@ Chart.register(
   LineController,
   CategoryScale,
   Title,
-  Tooltip
+  Tooltip,
+  Legend
 );
 
-// Define props to take in the 'chart' property
+// Define props to take in the 'chart' property with quarterly efficiency data
 const props = defineProps({
   chart: {
-    type: Object as () => Record<string, Record<string, number>>, // Dates as keys, and hourly efficiency as nested object
+    type: Object as () => Record<string, EfficiencyTypes.ITimePeriodMetrics>,
     required: true,
   },
 });
@@ -38,34 +43,41 @@ const chartHelper = new ChartHelper();
 
 // Format the chart data for use in the LineChart component
 const formattedChartData = computed(() => {
-  // Extract the dates (keys) and sort them in ascending order
-  const dates = Object.keys(props.chart).sort(
-    (a, b) => new Date(a).getTime() - new Date(b).getTime()
+  // Extract the quarters (keys) and sort them in ascending order
+  const quarters = Object.keys(props.chart).sort((a, b) =>
+    moment(a, "HH:mm").diff(moment(b, "HH:mm"))
   );
 
-  // Prepare data for each hour within the day
+  // Prepare data for each quarter
   const labels: string[] = [];
-  const data: number[] = [];
+  const efficiencyData: number[] = [];
+  const processedUnitsData: number[] = [];
 
-  dates.forEach((date) => {
-    const hourlyData = props.chart[date];
-    // Sort the hours in ascending order
-    const sortedHours = Object.keys(hourlyData).sort(
-      (a, b) => parseInt(a) - parseInt(b) // Sort the hours numerically (e.g., 09 < 10)
-    );
-
-    // Add the sorted hours to labels and corresponding data to the dataset
-    sortedHours.forEach((hour) => {
-      labels.push(`${date} ${hour}:00`); // Label for each hour (e.g., "2024-09-26 14:00")
-      data.push(hourlyData[hour]); // Efficiency for that hour
-    });
+  quarters.forEach((quarter) => {
+    labels.push(quarter); // Use the quarter as the label (e.g., "06:15-06:30")
+    const quarterData = props.chart[quarter];
+    efficiencyData.push(quarterData.efficiency); // Efficiency for that quarter
+    processedUnitsData.push(quarterData.processed_units); // Processed units for that quarter
   });
 
+  const excludeColors: string[] = [];
+
+  const firstData = new ChartData("Efficiency", efficiencyData, chartHelper, "chartjs");
+  excludeColors.push(firstData.borderColor);
+
+  const secondData = new ChartData(
+    "Processed Units",
+    processedUnitsData,
+    chartHelper,
+    "chartjs",
+    excludeColors
+  );
+
+  const datasets: ChartData[] = [firstData, secondData];
+
   return {
-    labels: labels, // Combined date and hour labels
-    datasets: [
-      new ChartData("Hourly Efficiency", data, chartHelper, "chartjs"), // Line chart data
-    ],
+    labels, // Quarters as labels
+    datasets,
   };
 });
 
@@ -86,8 +98,8 @@ const options = ref({
   },
   plugins: {
     legend: {
-      display: true,
-      position: "bottom",
+      display: true, // Show the legend
+      position: "bottom", // Position the legend at the bottom
     },
   },
 });

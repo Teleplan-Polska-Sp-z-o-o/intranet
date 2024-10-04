@@ -10,7 +10,13 @@ class ChartData {
 
   tension: number = 0.4;
 
-  constructor(label: string, data: Array<number>, chartHelper: ChartHelper, colors?: "chartjs") {
+  constructor(
+    label: string,
+    data: Array<number>,
+    chartHelper: ChartHelper,
+    colors?: "chartjs",
+    excludeColors?: string[]
+  ) {
     this.label = label;
     this.data = data;
 
@@ -20,7 +26,11 @@ class ChartData {
           color: string;
           tColor: string;
         } =
-      colors === "chartjs" ? chartHelper.getRandomChartjsColor() : chartHelper.getUniqueColor();
+      colors === "chartjs"
+        ? excludeColors
+          ? chartHelper.getUniqueChartjsColor(excludeColors)
+          : chartHelper.getRandomChartjsColor()
+        : chartHelper.getUniqueColor();
 
     if (typeof color === "string") {
       this.borderColor = color;

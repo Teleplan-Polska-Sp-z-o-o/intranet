@@ -6,9 +6,10 @@ import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
 import { AnalyticFileTypes } from "../../../files/Types";
 import { AnalyticRaw } from "../../transactions/Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
-import { EfficiencyTypes } from "./Types";
-import EmployeeDailyEfficiencyChart from "./EmployeeDailyEfficiencyChart.vue";
-import EmployeeHourlyEfficiencyChart from "./EmployeeHourlyEfficiencyChart.vue";
+//
+import { EfficiencyTypes } from "../../common/efficiency/Types";
+import EmployeeDailyEfficiencyChart from "../../common/efficiency/EmployeeDailyEfficiencyChart.vue";
+import EmployeeQuarterlyEfficiencyChart from "../../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -40,12 +41,35 @@ watch(
   async (newRawTransactions: AnalyticRaw.TTransactions) => {
     rawTransactions.value = newRawTransactions;
 
-    const builder = new EfficiencyTypes.EfficiencyBuilder(rawTransactions.value, unref(modelsObj));
+    if (!unref(modelsObj) && !unref(modelsObj).at(0)) return;
+
+    // Function to check if the model is a PackModelObj (contains TT_PACK)
+    function hasTTPackProperty(
+      model: EfficiencyTypes.IModelObj
+    ): model is EfficiencyTypes.PackModelObj {
+      return "TT_PACK" in model;
+    }
+
+    // Filter models to only those that have the TT_PACK property and assert the type
+    const packModelsObj = unref(modelsObj).filter(
+      hasTTPackProperty
+    ) as EfficiencyTypes.PackModelObj[];
+
+    // Ensure that we have models with TT_PACK before proceeding
+    if (packModelsObj.length === 0) {
+      throw new Error("No models found with the 'TT_PACK' property");
+    }
+
+    const builder = new EfficiencyTypes.EfficiencyBuilder<EfficiencyTypes.PackModelObj>(
+      rawTransactions.value,
+      packModelsObj,
+      "TT_PACK"
+    );
     items.value = builder.getProcessedData();
 
     if (items.value) loading.value = false;
     //
-    // console.log(items.value);
+    console.log(items.value);
   },
   { deep: true }
 );
@@ -91,8 +115,9 @@ const headers = computed<object[]>(() => {
   return [
     { title: "Shift", align: "center", key: "data-table-group", minWidth: 99.59 },
     { title: "Employee Name", align: "start", key: "emp_name" },
-    { title: "Worked Quarters", align: "start", key: "worked_quarters" },
+    { title: "Worked Time (Hrs)", align: "start", key: "worked_quarters" },
     { title: "Estimated Processing Time (mins)", align: "start", key: "processing_time" },
+    { title: "Processed Units", align: "start", key: "processed_units" },
     { title: "Efficiency (%)", align: "start", key: "efficiency" },
   ];
 });
@@ -179,6 +204,11 @@ const formatColorForEfficiency = (efficiency: number): string => {
           </td>
         </tr>
       </template>
+      <template
+        v-slot:item.worked_quarters="{ item }: { item: EfficiencyTypes.IProcessedEmployee }"
+      >
+        {{ item.worked_quarters / 4 }}
+      </template>
       <template v-slot:item.efficiency="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
         <v-chip :color="formatColorForEfficiency(item.efficiency)">
           {{ item.efficiency }}
@@ -193,9 +223,12 @@ const formatColorForEfficiency = (efficiency: number): string => {
               ></employee-daily-efficiency-chart>
             </template>
             <template v-else>
-              <employee-hourly-efficiency-chart
+              <!-- <employee-hourly-efficiency-chart
                 :chart="item.hourlyChart"
-              ></employee-hourly-efficiency-chart>
+              ></employee-hourly-efficiency-chart> -->
+              <employee-quarterly-efficiency-chart
+                :chart="item.quarterlyChart"
+              ></employee-quarterly-efficiency-chart>
             </template>
           </td>
         </tr>
