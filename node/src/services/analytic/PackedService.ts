@@ -76,7 +76,7 @@ export namespace PackedService {
           // Get the current time in the "Europe/Warsaw" timezone
           const now = moment().tz("Europe/Warsaw");
           // If the current time is between 00:00 and 06:00, subtract one day
-          const baseDate = now.hour() >= 0 && now.hour() < 6 ? now.clone().subtract(1, "day") : now;
+          const baseDate = now.hour() >= 0 && now.hour() < 7 ? now.clone().subtract(1, "day") : now;
           // Set startOfDay to 06:00 of the baseDate (either today or the previous day)
           const startOfDay = baseDate
             .clone()
