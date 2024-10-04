@@ -69,7 +69,7 @@ watch(
 
     if (items.value) loading.value = false;
     //
-    console.log(items.value);
+    // console.log(items.value);
   },
   { deep: true }
 );
@@ -115,8 +115,16 @@ const headers = computed<object[]>(() => {
   return [
     { title: "Shift", align: "center", key: "data-table-group", minWidth: 99.59 },
     { title: "Employee Name", align: "start", key: "emp_name" },
-    { title: "Worked Time (Hrs)", align: "start", key: "worked_quarters" },
-    { title: "Estimated Processing Time (mins)", align: "start", key: "processing_time" },
+    { title: "Worked Time (hrs)", align: "start", key: "worked_quarters" },
+    // {
+    //   title: "Estimated Processing Time",
+    //   align: "start",
+    //   children: [
+    //     { title: "(hrs)", align: "start", key: "processing_time_hrs" }, // Make unique
+    //     { title: "(mins)", align: "start", key: "processing_time_mins" }, // Make unique
+    //   ],
+    // },
+    { title: "Estimated Processing Time (hrs)", align: "start", key: "processing_time" },
     { title: "Processed Units", align: "start", key: "processed_units" },
     { title: "Efficiency (%)", align: "start", key: "efficiency" },
   ];
@@ -209,6 +217,12 @@ const formatColorForEfficiency = (efficiency: number): string => {
       >
         {{ item.worked_quarters / 4 }}
       </template>
+      <template
+        v-slot:item.processing_time="{ item }: { item: EfficiencyTypes.IProcessedEmployee }"
+      >
+        {{ (item.processing_time / 60).toFixed(1) }}
+      </template>
+
       <template v-slot:item.efficiency="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
         <v-chip :color="formatColorForEfficiency(item.efficiency)">
           {{ item.efficiency }}
@@ -216,7 +230,7 @@ const formatColorForEfficiency = (efficiency: number): string => {
       </template>
       <template v-slot:expanded-row="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
         <tr>
-          <td :colspan="headers.length">
+          <td :colspan="headers.length" class="pa-0">
             <template v-if="Object.keys(item.dailyChart).length > 1">
               <employee-daily-efficiency-chart
                 :chart="item.dailyChart"

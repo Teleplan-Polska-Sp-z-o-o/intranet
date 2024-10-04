@@ -6,9 +6,10 @@ import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
 import { AnalyticFileTypes } from "../../../files/Types";
 import { AnalyticRaw } from "../../transactions/Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
-import { EfficiencyTypes } from "./Types";
-import EmployeeDailyEfficiencyChart from "./EmployeeDailyEfficiencyChart.vue";
-import EmployeeHourlyEfficiencyChart from "./EmployeeHourlyEfficiencyChart.vue";
+//
+import { EfficiencyTypes } from "../../common/efficiency/Types";
+import EmployeeDailyEfficiencyChart from "../../common/efficiency/EmployeeDailyEfficiencyChart.vue";
+import EmployeeQuarterlyEfficiencyChart from "../../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -40,7 +41,27 @@ watch(
   async (newRawTransactions: AnalyticRaw.TTransactions) => {
     rawTransactions.value = newRawTransactions;
 
-    const builder = new EfficiencyTypes.EfficiencyBuilder(rawTransactions.value, unref(modelsObj));
+    if (!unref(modelsObj) && !unref(modelsObj).at(0)) return;
+
+    function hasTTCosmProperty(
+      model: EfficiencyTypes.IModelObj
+    ): model is EfficiencyTypes.CosmModelObj {
+      return "TT_COSM" in model;
+    }
+
+    const cosmModelsObj = unref(modelsObj).filter(
+      hasTTCosmProperty
+    ) as EfficiencyTypes.CosmModelObj[];
+
+    if (cosmModelsObj.length === 0) {
+      throw new Error("No models found with the 'TT_COSM' property");
+    }
+
+    const builder = new EfficiencyTypes.EfficiencyBuilder<EfficiencyTypes.CosmModelObj>(
+      rawTransactions.value,
+      cosmModelsObj,
+      "TT_COSM"
+    );
     items.value = builder.getProcessedData();
 
     if (items.value) loading.value = false;
@@ -179,6 +200,16 @@ const formatColorForEfficiency = (efficiency: number): string => {
           </td>
         </tr>
       </template>
+      <template
+        v-slot:item.worked_quarters="{ item }: { item: EfficiencyTypes.IProcessedEmployee }"
+      >
+        {{ item.worked_quarters / 4 }}
+      </template>
+      <template
+        v-slot:item.processing_time="{ item }: { item: EfficiencyTypes.IProcessedEmployee }"
+      >
+        {{ (item.processing_time / 60).toFixed(1) }}
+      </template>
       <template v-slot:item.efficiency="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
         <v-chip :color="formatColorForEfficiency(item.efficiency)">
           {{ item.efficiency }}
@@ -193,9 +224,9 @@ const formatColorForEfficiency = (efficiency: number): string => {
               ></employee-daily-efficiency-chart>
             </template>
             <template v-else>
-              <employee-hourly-efficiency-chart
-                :chart="item.hourlyChart"
-              ></employee-hourly-efficiency-chart>
+              <employee-quarterly-efficiency-chart
+                :chart="item.quarterlyChart"
+              ></employee-quarterly-efficiency-chart>
             </template>
           </td>
         </tr>
