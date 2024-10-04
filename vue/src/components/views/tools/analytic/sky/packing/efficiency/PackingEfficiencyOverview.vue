@@ -116,14 +116,6 @@ const headers = computed<object[]>(() => {
     { title: "Shift", align: "center", key: "data-table-group", minWidth: 99.59 },
     { title: "Employee Name", align: "start", key: "emp_name" },
     { title: "Worked Time (hrs)", align: "start", key: "worked_quarters" },
-    // {
-    //   title: "Estimated Processing Time",
-    //   align: "start",
-    //   children: [
-    //     { title: "(hrs)", align: "start", key: "processing_time_hrs" }, // Make unique
-    //     { title: "(mins)", align: "start", key: "processing_time_mins" }, // Make unique
-    //   ],
-    // },
     { title: "Estimated Processing Time (hrs)", align: "start", key: "processing_time" },
     { title: "Processed Units", align: "start", key: "processed_units" },
     { title: "Efficiency (%)", align: "start", key: "efficiency" },
