@@ -70,21 +70,27 @@ class DownloadHelper<T> {
     // Map over the rows to extract data for each row, using the flattened headers
     this.rows.forEach((row: T) => {
       const rowData = flatHeaders.map((header) => {
-        // Split the header.value into an array of keys
-        const keys = (header.value as string).split(".");
+        if (typeof header.value === "string" && header.value.includes(".")) {
+          // Split the header.value into an array of keys
+          const keys = (header.value as string).split(".");
 
-        // Traverse the row object using the keys array
-        let value = row as any;
-        for (const key of keys) {
-          if (value && typeof value === "object") {
-            value = value[key]; // Access the next level of the object
-          } else {
-            break;
+          // Traverse the row object using the keys array
+          let value = row as any;
+          for (const key of keys) {
+            if (value && typeof value === "object") {
+              value = value[key]; // Access the next level of the object
+            } else {
+              break;
+            }
           }
-        }
 
-        // Return the found value or null if it doesn't exist
-        return value !== undefined ? value : null;
+          // Return the found value or null if it doesn't exist
+          return value !== undefined ? value : null;
+        } else {
+          let value = row as any;
+          // If header.value doesn't contain a dot, access the property directly
+          return value[header.value] !== undefined ? value[header.value] : null;
+        }
       });
 
       // Flatten rowData in case it contains nested arrays from the object values

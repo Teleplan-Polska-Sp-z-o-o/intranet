@@ -93,6 +93,7 @@ onMounted(() => submit());
             hint="Select a start and end date to define the search range, or pick a single date for a specific day."
             persistent-hint
             flat
+            :first-day-of-week="1"
           ></v-date-input>
 
           <v-sheet class="bg-surface-2 d-flex flex-column justify-end">
