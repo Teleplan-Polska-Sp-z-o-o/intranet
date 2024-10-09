@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { WebsocketConnections } from "../models/common/WebsocketConnections";
 import { useUserStore } from "./userStore";
-import { useRouter } from "vue-router";
 // import { ENotificationSource } from "../interfaces/user/notification/ENotificationSource";
 // import { INotificationEntity } from "../interfaces/user/notification/INotificationEntity";
 // import { UserNotification } from "../models/common/notification/UserNotification";
@@ -57,8 +56,10 @@ export const useWebsocketStore = defineStore("websocket", () => {
     }
   };
 
+  let intervalId: number | null = null;
+
   const initializeInterval = () => {
-    setInterval(() => {
+    intervalId = window.setInterval(() => {
       useUserStore()
         .verifyToken()
         .then((isVerified: boolean) => {
@@ -68,7 +69,10 @@ export const useWebsocketStore = defineStore("websocket", () => {
         })
         .catch((error: any) => {
           if (error.response && error.response.status === 401) {
-            useRouter().push("/");
+            if (intervalId !== null) {
+              clearInterval(intervalId); // Stop the interval
+              intervalId = null; // Reset intervalId to avoid issues
+            }
           }
           console.error("Token verification failed with error:", error.message || error);
         });

@@ -10,6 +10,9 @@ import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/u
 import { EfficiencyTypes } from "../../common/efficiency/Types";
 import EmployeeDailyEfficiencyChart from "../../common/efficiency/EmployeeDailyEfficiencyChart.vue";
 import EmployeeQuarterlyEfficiencyChart from "../../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
+import EfficiencyWorker from "../../common/efficiency/EfficiencyWorker?worker";
+import Download from "../../common/download/Download.vue";
+import { DataTableHeader } from "../../common/download/DataTableHeader";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -32,6 +35,7 @@ const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
 const items = ref<EfficiencyTypes.IProcessedEmployees>([]);
 const expanded = ref<string[]>([]);
 const loading = ref<false | "primary-container">("primary-container");
+const worker = new EfficiencyWorker();
 
 /**
  * Loading current transactions
@@ -45,31 +49,51 @@ watch(
 
     function hasTTOobaProperty(
       model: EfficiencyTypes.IModelObj
-    ): model is EfficiencyTypes.OobaModelObj {
+    ): model is EfficiencyTypes.TOobaModelObj {
       return "TT_OOBA" in model;
     }
 
     const oobaModelsObj = unref(modelsObj).filter(
       hasTTOobaProperty
-    ) as EfficiencyTypes.OobaModelObj[];
+    ) as EfficiencyTypes.TOobaModelObj[];
 
     if (oobaModelsObj.length === 0) {
       throw new Error("No models found with the 'TT_OOBA' property");
     }
 
-    const builder = new EfficiencyTypes.EfficiencyBuilder<EfficiencyTypes.OobaModelObj>(
-      rawTransactions.value,
-      oobaModelsObj,
-      "TT_OOBA"
-    );
-    items.value = builder.getProcessedData();
+    // const builder = new EfficiencyModels.EfficiencyBuilder<EfficiencyTypes.TOobaModelObj>(
+    //   rawTransactions.value,
+    //   oobaModelsObj,
+    //   "TT_OOBA"
+    // );
+    // items.value = builder.getProcessedData();
 
-    if (items.value) loading.value = false;
-    //
-    // console.log(items.value);
+    // if (items.value) loading.value = false;
+    // //
+    // // console.log(items.value);
+
+    // Serialize data before sending it to the worker
+    const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
+    const serializedModelsObj = JSON.stringify(unref(modelsObj));
+
+    // Post the data to the worker, including the model type
+    worker.postMessage({
+      rawTransactions: serializedRawTransactions,
+      modelsObj: serializedModelsObj,
+      modelType: "TOobaModelObj", // Send the model type (e.g., "TCosmModelObj")
+    });
   },
   { deep: true }
 );
+
+// Handle messages from the worker
+worker.addEventListener("message", (event) => {
+  const { processedData } = event.data;
+  items.value = processedData;
+
+  if (items.value) loading.value = false;
+  // console.log("EfficiencyBuilder", items.value);
+});
 
 const isItTodaysDataOnly = ref<boolean>(true);
 /**
@@ -163,6 +187,11 @@ const formatColorForEfficiency = (efficiency: number): string => {
     return "red"; // Far from target
   }
 };
+
+const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTableHeader) => {
+  const keyBlackList = ["id", "quarterlyChart", "dailyChart"];
+  return !keyBlackList.includes(col.value);
+});
 </script>
 
 <template>
@@ -170,6 +199,11 @@ const formatColorForEfficiency = (efficiency: number): string => {
     <v-card-title class="d-flex align-center">
       Employee OOBA Efficiency Overview
       <v-spacer></v-spacer>
+      <download
+        :headers="downloadHeaders"
+        :items="items"
+        base-save-as="Employee Efficiency"
+      ></download>
     </v-card-title>
 
     <v-data-table
@@ -201,16 +235,7 @@ const formatColorForEfficiency = (efficiency: number): string => {
           </td>
         </tr>
       </template>
-      <template
-        v-slot:item.worked_quarters="{ item }: { item: EfficiencyTypes.IProcessedEmployee }"
-      >
-        {{ item.worked_quarters / 4 }}
-      </template>
-      <template
-        v-slot:item.processing_time="{ item }: { item: EfficiencyTypes.IProcessedEmployee }"
-      >
-        {{ (item.processing_time / 60).toFixed(1) }}
-      </template>
+
       <template v-slot:item.efficiency="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
         <v-chip :color="formatColorForEfficiency(item.efficiency)">
           {{ item.efficiency }}

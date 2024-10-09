@@ -1,4 +1,5 @@
 # TODO
 
-- zmienic reporty o 6 na podsumowujace cala zmiane
-- zmienic efficiecy buildera
+select ips.\*,
+ip.description
+from info_emprod02.ingenico_parts_stat ips left join ifsapp_emprod02.inventory_part ip ON ip.part_no = ips.part_no and ip.contract = '12194'

@@ -17,8 +17,9 @@ type ILogin = Passport & {
 
 interface IUser {
   id: number;
+  uuid?: string;
   username: string;
-  domain: string;
+  domain?: string;
 }
 
 interface IUserInfo {

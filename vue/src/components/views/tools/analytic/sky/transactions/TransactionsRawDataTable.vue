@@ -7,8 +7,8 @@ import { TransactionsHelper } from "./TransactionsHelper";
 import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
 import { useRoute } from "vue-router";
 import { useAlertStore } from "../../../../../../stores/alertStore";
-// import { useAnalyticStore } from "../../../../../../stores/analytic/useAnalyticStore";
-// import { useI18n } from "vue-i18n";
+import Download from "../common/download/Download.vue";
+import { DataTableHeader } from "../common/download/DataTableHeader";
 
 const props = defineProps<{
   manager: AnalyticRaw.TManager;
@@ -26,13 +26,13 @@ const route = useRoute();
 // const { t } = useI18n();
 const headers: any = [
   // { title: "Transaction ID", align: "start", key: "transaction_id" },
-  { title: "Contract", align: "start", key: "contract" },
-  { title: "Order No", align: "start", key: "order_no" },
-  { title: "Employee Name", align: "start", key: "emp_name" },
-  { title: "Part No", align: "start", key: "part_no" },
-  { title: "From Work Center No", align: "start", key: "work_center_no" },
+  { title: "Contract", align: "start", key: "contract", value: "contract" },
+  { title: "Order No", align: "start", key: "order_no", value: "order_no" },
+  { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
+  { title: "Part No", align: "start", key: "part_no", value: "part_no" },
+  { title: "From Work Center No", align: "start", key: "work_center_no", value: "work_center_no" },
   // { title: "Next Work Center No", align: "start", key: "next_work_center_no" },
-  { title: "Date", align: "start", key: "datedtz" },
+  { title: "Date", align: "start", key: "datedtz", value: "datedtz" },
 ];
 
 // search input
@@ -164,6 +164,11 @@ watch(
     }
   }
 );
+
+const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHeader) => {
+  const keyBlackList = ["transaction_id"];
+  return !keyBlackList.includes(col.value);
+});
 </script>
 
 <template>
@@ -174,6 +179,7 @@ watch(
       <v-spacer></v-spacer>
 
       <v-text-field
+        class="me-4"
         v-model="searchTerm"
         density="compact"
         :label="$t(`tools.common.search`)"
@@ -183,6 +189,12 @@ watch(
         hide-details
         single-line
       ></v-text-field>
+
+      <download
+        :headers="downloadHeaders"
+        :items="filteredItems"
+        base-save-as="SKY Raw Transactions"
+      ></download>
     </v-card-title>
 
     <transaction-advanced-search

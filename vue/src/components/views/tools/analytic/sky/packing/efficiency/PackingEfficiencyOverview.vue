@@ -10,6 +10,9 @@ import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/u
 import { EfficiencyTypes } from "../../common/efficiency/Types";
 import EmployeeDailyEfficiencyChart from "../../common/efficiency/EmployeeDailyEfficiencyChart.vue";
 import EmployeeQuarterlyEfficiencyChart from "../../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
+import EfficiencyWorker from "../../common/efficiency/EfficiencyWorker?worker";
+import Download from "../../common/download/Download.vue";
+import { DataTableHeader } from "../../common/download/DataTableHeader";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -32,6 +35,7 @@ const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
 const items = ref<EfficiencyTypes.IProcessedEmployees>([]);
 const expanded = ref<string[]>([]);
 const loading = ref<false | "primary-container">("primary-container");
+const worker = new EfficiencyWorker();
 
 /**
  * Loading current transactions
@@ -46,33 +50,53 @@ watch(
     // Function to check if the model is a PackModelObj (contains TT_PACK)
     function hasTTPackProperty(
       model: EfficiencyTypes.IModelObj
-    ): model is EfficiencyTypes.PackModelObj {
+    ): model is EfficiencyTypes.TPackModelObj {
       return "TT_PACK" in model;
     }
 
     // Filter models to only those that have the TT_PACK property and assert the type
     const packModelsObj = unref(modelsObj).filter(
       hasTTPackProperty
-    ) as EfficiencyTypes.PackModelObj[];
+    ) as EfficiencyTypes.TPackModelObj[];
 
     // Ensure that we have models with TT_PACK before proceeding
     if (packModelsObj.length === 0) {
       throw new Error("No models found with the 'TT_PACK' property");
     }
 
-    const builder = new EfficiencyTypes.EfficiencyBuilder<EfficiencyTypes.PackModelObj>(
-      rawTransactions.value,
-      packModelsObj,
-      "TT_PACK"
-    );
-    items.value = builder.getProcessedData();
+    // const builder = new EfficiencyModels.EfficiencyBuilder<EfficiencyTypes.TPackModelObj>(
+    //   rawTransactions.value,
+    //   packModelsObj,
+    //   "TT_PACK"
+    // );
+    // items.value = builder.getProcessedData();
 
-    if (items.value) loading.value = false;
-    //
-    // console.log(items.value);
+    // if (items.value) loading.value = false;
+    // //
+    // // console.log(items.value);
+
+    // Serialize data before sending it to the worker
+    const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
+    const serializedModelsObj = JSON.stringify(unref(modelsObj));
+
+    // Post the data to the worker, including the model type
+    worker.postMessage({
+      rawTransactions: serializedRawTransactions,
+      modelsObj: serializedModelsObj,
+      modelType: "TPackModelObj", // Send the model type (e.g., "TCosmModelObj")
+    });
   },
   { deep: true }
 );
+
+// Handle messages from the worker
+worker.addEventListener("message", (event) => {
+  const { processedData } = event.data;
+  items.value = processedData;
+
+  if (items.value) loading.value = false;
+  // console.log("EfficiencyBuilder", items.value);
+});
 
 const isItTodaysDataOnly = ref<boolean>(true);
 /**
@@ -113,12 +137,12 @@ watch(
 // headers
 const headers = computed<object[]>(() => {
   return [
-    { title: "Shift", align: "center", key: "data-table-group", minWidth: 99.59 },
-    { title: "Employee Name", align: "start", key: "emp_name" },
-    { title: "Worked Time (hrs)", align: "start", key: "worked_quarters" },
-    { title: "Estimated Processing Time (hrs)", align: "start", key: "processing_time" },
-    { title: "Processed Units", align: "start", key: "processed_units" },
-    { title: "Efficiency (%)", align: "start", key: "efficiency" },
+    { title: "Shift", align: "center", key: "data-table-group", value: "shift", minWidth: 99.59 },
+    { title: "Employee Name", align: "start", value: "emp_name" },
+    { title: "Worked Time (hrs)", align: "start", value: "worked_quarters" },
+    { title: "Estimated Processing Time (hrs)", align: "start", value: "processing_time" },
+    { title: "Processed Units", align: "start", value: "processed_units" },
+    { title: "Efficiency (%)", align: "start", value: "efficiency" },
   ];
 });
 
@@ -166,6 +190,11 @@ const formatColorForEfficiency = (efficiency: number): string => {
     return "red"; // Far from target
   }
 };
+
+const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTableHeader) => {
+  const keyBlackList = ["id", "quarterlyChart", "dailyChart"];
+  return !keyBlackList.includes(col.value);
+});
 </script>
 
 <template>
@@ -173,6 +202,11 @@ const formatColorForEfficiency = (efficiency: number): string => {
     <v-card-title class="d-flex align-center">
       Employee Packed Efficiency Overview
       <v-spacer></v-spacer>
+      <download
+        :headers="downloadHeaders"
+        :items="items"
+        base-save-as="Employee Efficiency"
+      ></download>
     </v-card-title>
 
     <v-data-table
@@ -203,16 +237,6 @@ const formatColorForEfficiency = (efficiency: number): string => {
             {{ formatShiftGroup(item.value) }}
           </td>
         </tr>
-      </template>
-      <template
-        v-slot:item.worked_quarters="{ item }: { item: EfficiencyTypes.IProcessedEmployee }"
-      >
-        {{ item.worked_quarters / 4 }}
-      </template>
-      <template
-        v-slot:item.processing_time="{ item }: { item: EfficiencyTypes.IProcessedEmployee }"
-      >
-        {{ (item.processing_time / 60).toFixed(1) }}
       </template>
 
       <template v-slot:item.efficiency="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">

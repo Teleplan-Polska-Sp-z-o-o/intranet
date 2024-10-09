@@ -14,4 +14,6 @@ router.post("/raw/packing", decodeFormData, getRawPackingTransactions);
 router.post("/raw/cosmetic", decodeFormData, getRawCosmeticTransactions);
 router.post("/raw/ooba", decodeFormData, getRawOobaTransactions);
 
+router.post("/raw");
+
 export { router as analyticRoutes };

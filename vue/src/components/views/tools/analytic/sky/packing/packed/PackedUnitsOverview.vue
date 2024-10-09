@@ -7,9 +7,8 @@ import { AnalyticFileTypes } from "../../../files/Types";
 import { PackedTypes } from "./Types";
 import { AnalyticRaw } from "../../transactions/Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
-import { PackedModels } from "./Models";
-
-// import { useI18n } from "vue-i18n";
+import Download from "../../common/download/Download.vue";
+import PackedWorker from "./packedWorker.ts?worker";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -33,8 +32,9 @@ const planObj = ref<any>(null);
 
 // packed
 const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
-const items = ref<PackedTypes.IPackedRowWithModels[]>([]);
+const items = ref<PackedTypes.ITablePackedRow[]>([]);
 const loading = ref<false | "primary-container">("primary-container");
+const worker = new PackedWorker();
 
 /**
  * Loading current transactions
@@ -43,17 +43,30 @@ watch(
   () => unref(analyticRawTransactionsStore.getItemsData(unref(rawIdentification))),
   async (newRawTransactions: AnalyticRaw.TTransactions) => {
     rawTransactions.value = newRawTransactions;
-    items.value = new PackedModels.PackedBuilder(
-      unref(rawTransactions),
-      unref(modelsObj),
-      unref(planObj)
-    ).tablePackedRows;
+
+    // Serialize the data before sending to the worker
+    const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
+    const serializedModelsObj = JSON.stringify(unref(modelsObj));
+    const serializedPlanObj = JSON.stringify(unref(planObj));
+    worker.postMessage({
+      rawTransactions: serializedRawTransactions,
+      modelsObj: serializedModelsObj,
+      planObj: serializedPlanObj,
+    });
+
     if (items.value) loading.value = false;
-    //
-    // console.log(items.value);
   },
   { deep: true }
 );
+
+// Handle worker messages
+worker.addEventListener("message", (event) => {
+  const { packedRows } = event.data;
+  items.value = packedRows;
+  if (items.value) loading.value = false;
+  //
+  // console.log("PackedBuilder", items.value);
+});
 
 const isItTodaysDataOnly = ref<boolean>(true);
 /**
@@ -108,8 +121,7 @@ const modelHeaders = computed(() => {
 });
 
 const baseHeaders: any = [
-  // { title: "Shift", value: "shift" },
-  { title: "Shift", align: "center", key: "data-table-group", minWidth: 99.59 },
+  { title: "Shift", align: "center", key: "data-table-group", value: "shift", minWidth: 99.59 },
   {
     title: "Time Range",
     align: "center",
@@ -178,12 +190,12 @@ const formatHeaderTooltip = (column: any) => {
   return unref(modelsObj).find((model) => model.GROUP_LETTER === column.value)?.GROUP_NAME;
 };
 
-const formatShiftGroup = (shift: 1 | 2 | 3 | 4) => {
-  if (shift === 4) return "Summary";
-  else return shift;
-};
+// const formatShiftGroup = (shift: 1 | 2 | 3 | 4) => {
+//   if (shift === 4) return "Summary";
+//   else return shift;
+// };
 
-const formatColorOfTargetPercent = (item: PackedTypes.IPackedRowWithModels, model?: string) => {
+const formatColorOfTargetPercent = (item: PackedTypes.ITablePackedRow, model?: string) => {
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
@@ -191,8 +203,8 @@ const formatColorOfTargetPercent = (item: PackedTypes.IPackedRowWithModels, mode
   const modelIndicators = model ? (item[model] as PackedTypes.IPackedModelIndicator) : item;
   // Check if it's today's data only
   if (unref(isItTodaysDataOnly) && model && item[model]) {
-    const startHour = item.hour;
-    const endHour = item.hour + 1;
+    const startHour = parseInt(item.hourStart.split(":")[0], 10);
+    const endHour = parseInt(item.hourEnd.split(":")[0], 10);
 
     // Check if current time falls between the current hour and the next hour
     if (currentHour >= startHour && currentHour < endHour) {
@@ -239,25 +251,25 @@ const formatColorOfTargetPercent = (item: PackedTypes.IPackedRowWithModels, mode
   } else return undefined;
 };
 
-const formatSlotHour = (hour: number, shift: 1 | 2 | 3 | 4, type: "start" | "end") => {
-  // If the hour is 25, handle it as a summary case
-  if (hour === 25) {
-    // Define the starting and ending hours for each shift
-    const shiftStartEnd = {
-      1: { start: 6, end: 14 }, // Shift 1: 6 AM to 2 PM
-      2: { start: 14, end: 22 }, // Shift 2: 2 PM to 10 PM
-      3: { start: 22, end: 6 }, // Shift 3: 10 PM to 6 AM
-      4: { start: 6, end: 6 }, // Shift 4: 6 AM to 6 AM (whole day summary)
-    };
+// const formatSlotHour = (hour: number, shift: 1 | 2 | 3 | 4, type: "start" | "end") => {
+//   // If the hour is 25, handle it as a summary case
+//   if (hour === 25) {
+//     // Define the starting and ending hours for each shift
+//     const shiftStartEnd = {
+//       1: { start: 6, end: 14 }, // Shift 1: 6 AM to 2 PM
+//       2: { start: 14, end: 22 }, // Shift 2: 2 PM to 10 PM
+//       3: { start: 22, end: 6 }, // Shift 3: 10 PM to 6 AM
+//       4: { start: 6, end: 6 }, // Shift 4: 6 AM to 6 AM (whole day summary)
+//     };
 
-    // Return the start or end hour based on the type
-    return type === "start"
-      ? `${String(shiftStartEnd[shift].start).padStart(2, "0")}:00`
-      : `${String(shiftStartEnd[shift].end).padStart(2, "0")}:00`;
-  }
+//     // Return the start or end hour based on the type
+//     return type === "start"
+//       ? `${String(shiftStartEnd[shift].start).padStart(2, "0")}:00`
+//       : `${String(shiftStartEnd[shift].end).padStart(2, "0")}:00`;
+//   }
 
-  return `${String((hour + (type === "end" ? 1 : 0)) % 24).padStart(2, "0")}:00`;
-};
+//   return `${String((hour + (type === "end" ? 1 : 0)) % 24).padStart(2, "0")}:00`;
+// };
 </script>
 
 <template>
@@ -265,6 +277,7 @@ const formatSlotHour = (hour: number, shift: 1 | 2 | 3 | 4, type: "start" | "end
     <v-card-title class="d-flex align-center">
       Packed Units Overview
       <v-spacer></v-spacer>
+      <download :headers="headers" :items="items" base-save-as="Packed Units"></download>
     </v-card-title>
 
     <v-data-table
@@ -290,7 +303,7 @@ const formatSlotHour = (hour: number, shift: 1 | 2 | 3 | 4, type: "start" | "end
               variant="text"
               @click="toggleGroup(item)"
             ></v-btn>
-            {{ formatShiftGroup(item.value) }}
+            {{ item.value }}
           </td>
         </tr>
       </template>
@@ -314,27 +327,17 @@ const formatSlotHour = (hour: number, shift: 1 | 2 | 3 | 4, type: "start" | "end
       <template
         v-for="letter in uniqueModelLetters"
         :key="letter"
-        v-slot:[`item.${letter}.targetPercent`]="{
-          item,
-        }: {
-          item: PackedTypes.IPackedRowWithModels,
-        }"
+        v-slot:[`item.${letter}.targetPercent`]="{ item }: { item: PackedTypes.ITablePackedRow }"
       >
         <v-chip v-if="item[letter]" :color="formatColorOfTargetPercent(item, letter)">
           {{ (item[letter] as PackedTypes.IPackedModelIndicator)?.targetPercent }}
         </v-chip>
       </template>
 
-      <template v-slot:item.targetPercent="{ item }: { item: PackedTypes.IPackedRowWithModels }">
+      <template v-slot:item.targetPercent="{ item }: { item: PackedTypes.ITablePackedRow }">
         <v-chip :color="formatColorOfTargetPercent(item)">
           {{ item.targetPercent }}
         </v-chip>
-      </template>
-      <template v-slot:item.hourStart="{ item }: { item: any }">
-        {{ formatSlotHour(item.hour, item.shift, "start") }}
-      </template>
-      <template v-slot:item.hourEnd="{ item }: { item: any }">
-        {{ formatSlotHour(item.hour, item.shift, "end") }}
       </template>
     </v-data-table>
   </v-card>

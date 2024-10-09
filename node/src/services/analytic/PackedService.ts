@@ -20,6 +20,10 @@ import { reportsTemplate } from "../../models/common/Email/templates/reportsTemp
 import { EmailOptions } from "../../models/common/Email/options/EmailOptions";
 import { PackedModels } from "../../models/analytic/overview/PackedModels";
 
+// import path from "path";
+// import { ANALYTIC_DOCUMENTS_FOLDER, UPLOADS_PATH } from "../../config/routeConstants";
+// import fs from "fs";
+
 export namespace PackedService {
   type Category = "packing" | "cosmetic" | "ooba";
   type Program = "sky";
@@ -181,7 +185,7 @@ export namespace PackedService {
     private reports: AnalyticFile[];
     private reportsJsObjs: PackedTypes.IReportsObjs;
     // 3. tablePackedRows
-    private tablePackedRows: PackedTypes.IPackedRowWithModels[];
+    private tablePackedRows: PackedTypes.ITablePackedRow[];
     private buffer: ExcelJS.Buffer;
     private sendAs: string;
 
@@ -313,36 +317,20 @@ export namespace PackedService {
     }
 
     async createExcelReport_5(): Promise<this> {
-      function formatSlotHour(hour: number, shift: 1 | 2 | 3 | 4, type: "start" | "end") {
-        if (hour === 25) {
-          const shiftStartEnd = {
-            1: { start: 6, end: 14 },
-            2: { start: 14, end: 22 },
-            3: { start: 22, end: 6 },
-            4: { start: 6, end: 6 },
-          };
-          return type === "start"
-            ? `${String(shiftStartEnd[shift].start).padStart(2, "0")}:00`
-            : `${String(shiftStartEnd[shift].end).padStart(2, "0")}:00`;
-        }
-        return `${String((hour + (type === "end" ? 1 : 0)) % 24).padStart(2, "0")}:00`;
-      }
-
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet("Packed");
 
+      /// COLUMNS
       // Define static headers and dynamic group headers
       let columns = [
         { header: "Shift", key: "shift", width: 10 },
         { header: "Start (Hour)", key: "hourStart", width: 12 },
         { header: "End (Hour)", key: "hourEnd", width: 12 },
       ];
-
       // Get unique group letters from the modelsJsObjs
       const modelGroups = [
         ...new Set(this.modelsJsObjs.map((model) => model.GROUP_LETTER).filter(Boolean)),
       ];
-
       // Add dynamic group columns (Packed, Target, and Target % for each group)
       modelGroups.forEach((group) => {
         columns.push({
@@ -350,67 +338,49 @@ export namespace PackedService {
           key: `${group}packedUnits`,
           width: 23,
         });
-        columns.push({
-          header: `Group ${group} Target (Units)`,
-          key: `${group}targetUnits`,
-          width: 23,
-        });
-        columns.push({
-          header: `Group ${group} Target (%)`,
-          key: `${group}targetPercent`,
-          width: 18,
-        });
       });
-
-      // Add total columns
+      // Add total column
       columns.push({ header: "Total Packed (Units)", key: "packedUnits", width: 21 });
-      columns.push({ header: "Total Target (Units)", key: "targetUnits", width: 21 });
-      columns.push({ header: "Total Target (%)", key: "targetPercent", width: 16 });
-
       // Inject the column definitions into the worksheet
       worksheet.columns = columns;
+      ///
 
+      /// SORT
       // Step 1: Sort tablePackedRows by shift and then by hour
       this.tablePackedRows.sort((a, b) => {
-        if (a.shift === b.shift) {
-          return a.hour - b.hour; // Sort by hour if shifts are the same
+        // Handle the case where shift can be "Summary"
+        const shiftA = a.shift === "Summary" ? 99999 : a.shift; // Treat "Summary" as a special high value
+        const shiftB = b.shift === "Summary" ? 99999 : b.shift;
+
+        if (shiftA === shiftB) {
+          // Convert hourStart from "HH:mm" to total minutes from midnight
+          const timeToMinutes = (time: string) => {
+            const [hours, minutes] = time.split(":").map(Number);
+            return hours * 60 + minutes;
+          };
+
+          const minutesA = timeToMinutes(a.hourEnd) - timeToMinutes(a.hourStart);
+          const minutesB = timeToMinutes(b.hourEnd) - timeToMinutes(b.hourStart);
+
+          return minutesA - minutesB; // Sort by hourStart in ascending order
         }
-        return a.shift - b.shift; // Otherwise, sort by shift
+        return shiftA - shiftB; // Otherwise, sort by shift
       });
+      ///
 
       // Step 2: Fill data for each packed row
       this.tablePackedRows.forEach((row) => {
-        const hourStart = formatSlotHour(row.hour, row.shift, "start");
-        const hourEnd = formatSlotHour(row.hour, row.shift, "end");
-
-        // If hour is 25, set shift as "Summary", otherwise use the actual shift value
-        const shiftValue = row.hour === 25 ? "Summary" : row.shift;
-
-        const rowData: any = {
-          shift: shiftValue,
-          hourStart,
-          hourEnd,
-          packedUnits: row.packedUnits || null,
-          targetUnits: row.targetUnits || null,
-          targetPercent: row.targetPercent || null,
-        };
-
         // Add dynamic group data for each group and flatten the structure
         modelGroups.forEach((group) => {
           const groupData = row[group] as PackedTypes.IPackedRowIndicator; // Access dynamic group data
           if (groupData) {
-            rowData[`${group}packedUnits`] = groupData.packedUnits || null;
-            rowData[`${group}targetUnits`] = groupData.targetUnits || null;
-            rowData[`${group}targetPercent`] = groupData.targetPercent || null;
+            row[`${group}packedUnits`] = groupData.packedUnits || null;
           } else {
-            rowData[`${group}packedUnits`] = null;
-            rowData[`${group}targetUnits`] = null;
-            rowData[`${group}targetPercent`] = null;
+            row[`${group}packedUnits`] = null;
           }
         });
-
         // Step 3: Add the row to the worksheet
-        const addedRow = worksheet.addRow(rowData);
+        const addedRow = worksheet.addRow(row);
 
         // Helper function to determine color based on progress (without real-time check)
         const getDynamicFillColorForTotalTargetPercentage = (targetPercent: number): string => {
@@ -472,31 +442,6 @@ export namespace PackedService {
           return "FFFFFFFF"; // Default white if no conditions match
         };
 
-        // // Step 4: Apply color to the Target (%) columns based on targetPercent
-        // modelGroups.forEach((group) => {
-        //   const groupData = row[group] as PackedTypes.IPackedRowIndicator;
-        //   // Ensure targetPercent is a number before comparing
-        //   if (groupData && typeof groupData.targetPercent === "number") {
-        //     let fillColor: string;
-        //     if (groupData.targetPercent >= 100) {
-        //       fillColor = "FF0000FF"; // Blue
-        //     } else if (groupData.targetPercent >= 80) {
-        //       fillColor = "FF00FF00"; // Green
-        //     } else if (groupData.targetPercent >= 50) {
-        //       fillColor = "FFFFA500"; // Orange
-        //     } else {
-        //       fillColor = "FFFF0000"; // Red
-        //     }
-
-        //     // Apply fill color to the appropriate cell (Target %)
-        //     const targetPercentCell = addedRow.getCell(`${group}targetPercent`);
-        //     targetPercentCell.fill = {
-        //       type: "pattern",
-        //       pattern: "solid",
-        //       fgColor: { argb: fillColor },
-        //     };
-        //   }
-        // });
         // Step 4: Apply color to the Target (%) columns based on targetPercent and real-time progress
         modelGroups.forEach((group) => {
           const groupData = row[group] as PackedTypes.IPackedRowIndicator;
@@ -512,12 +457,12 @@ export namespace PackedService {
               groupData,
               currentHour,
               currentMinute,
-              row.hour
+              Number(row.hourStart.split(":").at(0))
             );
 
-            // Apply fill color to the appropriate cell (Target %)
-            const targetPercentCell = addedRow.getCell(`${group}targetPercent`);
-            targetPercentCell.fill = {
+            // Apply fill color to the appropriate cell (By Target %)
+            const packedUnitsCell = addedRow.getCell(`${group}packedUnits`);
+            packedUnitsCell.fill = {
               type: "pattern",
               pattern: "solid",
               fgColor: { argb: fillColor },
@@ -531,8 +476,8 @@ export namespace PackedService {
           const totalFillColor = getDynamicFillColorForTotalTargetPercentage(totalTargetPercent);
 
           // Apply fill color to the Total Target (%) cell
-          const totalTargetPercentCell = addedRow.getCell("targetPercent");
-          totalTargetPercentCell.fill = {
+          const totalPackedUnitsCell = addedRow.getCell("packedUnits");
+          totalPackedUnitsCell.fill = {
             type: "pattern",
             pattern: "solid",
             fgColor: { argb: totalFillColor },
@@ -558,7 +503,7 @@ export namespace PackedService {
       //   fs.mkdirSync(dir, { recursive: true });
       // }
       // // Write buffer to a file
-      // const filePath = path.join(dir, saveAs(this.program));
+      // const filePath = path.join(dir, sendAs(this.program));
       // await fs.promises.writeFile(filePath, this.buffer as Buffer);
       // console.log(`Excel file has been saved to: ${filePath}`);
 

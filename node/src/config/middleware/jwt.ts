@@ -6,6 +6,15 @@ import { SimpleUser } from "../../models/user/SimpleUser";
 
 const jwtMiddle = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // If `req.user` exists at the start, it means something suspicious is going on
+    if (req.hasOwnProperty("user")) {
+      return res.status(401).json({
+        message:
+          "Unauthorized attempt detected. Authentication mechanism prevents any external tampering with the 'user' property.",
+        statusMessage: HttpResponseMessage.UNAUTHORIZED,
+      });
+    }
+
     const openPaths = ["/api/user/auth", "/uploads/", "/ws"];
 
     const isPathOpen = openPaths.some((path) => req.path.startsWith(path));
@@ -31,8 +40,10 @@ const jwtMiddle = async (req: Request, res: Response, next: NextFunction) => {
     } else {
       req.user = result;
 
-      const userSessionManager = UserSessionManager.getInstance();
-      await userSessionManager.addUser(result.id);
+      if (!result.uuid) {
+        const userSessionManager = UserSessionManager.getInstance();
+        await userSessionManager.addUser(result.id);
+      }
 
       next();
     }

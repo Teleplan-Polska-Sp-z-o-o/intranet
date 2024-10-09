@@ -80,7 +80,7 @@ export namespace PackedModels {
   }
 
   export class PackedRow implements PackedTypes.IPackedRow, PackedTypes.IPackedRowIndicator {
-    shift: 1 | 2 | 3;
+    shift: 1 | 2 | 3 | 4;
     hour: number;
     models: Record<string, PackedModel> = {};
     packedUnits: number;
@@ -88,18 +88,36 @@ export namespace PackedModels {
     targetPercent: number | "-";
 
     constructor(
+      shift?: 1 | 2 | 3 | 4,
+      hour?: number,
+      models?: Record<string, PackedModel>,
+      packedUnits?: number,
+      targetUnits?: number | "-",
+      targetPercent?: number | "-"
+    ) {
+      this.shift = shift ?? 4;
+      this.hour = hour ?? 25;
+      this.models = models ?? {};
+      this.packedUnits = packedUnits ?? 0;
+      this.targetUnits = targetUnits ?? "-";
+      this.targetPercent = targetPercent ?? "-";
+    }
+
+    build(
       transactions: PackedTypes.TTransactionsPackingRows,
       shift: 1 | 2 | 3,
       hour: number,
       plansCacheMap: Map<string, number | "-">,
       transactionDatesSet: Set<string>
-    ) {
+    ): this {
       this.shift = shift;
       this.hour = hour;
       this.processTransactions(transactions, plansCacheMap, transactionDatesSet);
       this.packedUnits = this.calculatePackedUnits();
       this.targetUnits = this.calculateTargetUnits();
       this.targetPercent = this.calculateTargetPercent();
+
+      return this;
     }
 
     private processTransactions(
@@ -228,7 +246,7 @@ export namespace PackedModels {
   export class PackedBuilder {
     shiftsOfTransactions: ShiftsOfTransactions;
     packedRows: PackedRow[] = [];
-    tablePackedRows: PackedTypes.IPackedRowWithModels[] = [];
+    tablePackedRows: PackedTypes.ITablePackedRow[] = [];
     private modelsCache: Map<string, { groupName: string; groupLetter: string }> = new Map();
     private plansCache: Map<string, number | "-"> = new Map(); // Cache plans for quicker access
 
@@ -240,7 +258,7 @@ export namespace PackedModels {
       //   const transactionDatesSet = new Set(
       //     transactions.map((transaction) => new Date(transaction.datedtz).toISOString().split("T")[0])
       //   );
-      const transactionDatesSet = new Set(
+      const transactionDatesSet: Set<string> = new Set(
         transactions.map((transaction) =>
           moment(transaction.datedtz).tz("Europe/Warsaw").format("YYYY-MM-DD")
         )
@@ -251,6 +269,7 @@ export namespace PackedModels {
       this.buildPlansCache(plansObj, transactionDatesSet);
       this.buildPackedRows(transactions, transactionDatesSet);
       this.addSummaryRows();
+      this.formatTablePackedRows();
     }
 
     private buildModelsCache(modelsObj: PackedTypes.IModelObjs) {
@@ -278,39 +297,28 @@ export namespace PackedModels {
 
     private addSummaryRows() {
       // Calculate summaries for each shift (1, 2, 3)
-      [1, 2, 3].forEach((shift) => {
-        this.addShiftSummary(shift as 1 | 2 | 3);
+      [1, 2, 3, 4].forEach((shift) => {
+        this.addShiftSummary(shift as 1 | 2 | 3 | 4);
       });
-
-      // Calculate the overall summary for all shifts combined (shift 0)
-      this.addShiftSummary(4);
     }
 
     private addShiftSummary(shift: 1 | 2 | 3 | 4) {
       const relevantRows =
         shift === 4
-          ? this.packedRows // For shift 4, include all rows
-          : this.packedRows.filter((row) => row.shift === shift);
+          ? this.packedRows.filter((row) => row.hour !== 25) // For shift 4, include all rows
+          : this.packedRows.filter((row) => row.shift === shift && row.hour !== 25);
 
       if (relevantRows.length === 0) {
         return; // Skip if no transactions for this shift
       }
 
       const totalPackedUnits = relevantRows.reduce((total, row) => total + row.packedUnits, 0);
-
-      // Check if all targetUnits are "-" and adjust totalTargetUnits accordingly
-      const hasNumericTarget = relevantRows.some((row) => typeof row.targetUnits === "number");
-
-      const totalTargetUnits = hasNumericTarget
-        ? relevantRows.reduce((total, row) => {
-            if (typeof row.targetUnits === "number") return total + row.targetUnits;
-            return total;
-          }, 0)
-        : "-"; // If no numeric targets are present, set totalTargetUnits to "-"
+      const totalTargetUnits = relevantRows.reduce((total, row) => {
+        if (typeof row.targetUnits === "number") return total + row.targetUnits;
+        return total;
+      }, 0);
       const totalTargetPercent =
-        typeof totalTargetUnits === "number" && totalTargetUnits > 0
-          ? Math.round((totalPackedUnits / totalTargetUnits) * 100)
-          : "-";
+        totalTargetUnits > 0 ? Math.round((totalPackedUnits / totalTargetUnits) * 100) : "-";
 
       // Now calculate model-specific summary
       const modelSummary: Record<string, PackedModel> = {};
@@ -331,12 +339,6 @@ export namespace PackedModels {
               ((modelSummary[modelName].targetUnits as number) || 0) + modelData.targetUnits;
           }
 
-          // Check if all targetUnits are "-" and adjust model's targetUnits accordingly
-          const hasNumericTarget = relevantRows.some(
-            (row) => typeof row.models[modelName]?.targetUnits === "number"
-          );
-          if (!hasNumericTarget) modelSummary[modelName].targetUnits = "-";
-
           // Calculate the target percentage for this model
           const targetUnits = modelSummary[modelName].targetUnits;
           if (typeof targetUnits === "number" && targetUnits > 0) {
@@ -350,17 +352,23 @@ export namespace PackedModels {
       });
 
       // Prepare the summary row with model data
-      const summaryRow: PackedTypes.IPackedRowWithModels = {
-        hour: 25, // Indicate this is a summary row
-        packedUnits: totalPackedUnits,
-        shift: shift,
-        targetUnits:
-          typeof totalTargetUnits === "number" && totalTargetUnits > 0 ? totalTargetUnits : "-",
-        targetPercent: totalTargetPercent,
-        ...modelSummary, // Spread model-specific data into the summary row
-      };
-
-      this.tablePackedRows.push(summaryRow);
+      // const summaryRow: PackedTypes.IPackedRow & PackedTypes.IPackedRowIndicator = {
+      //   hour: 25, // Indicate this is a summary row
+      //   packedUnits: totalPackedUnits,
+      //   shift: shift,
+      //   targetUnits: totalTargetUnits > 0 ? totalTargetUnits : "-",
+      //   targetPercent: totalTargetPercent,
+      //   ...modelSummary, // Spread model-specific data into the summary row
+      // };
+      const summaryPackedRow = new PackedRow(
+        shift,
+        25,
+        modelSummary,
+        totalPackedUnits,
+        totalTargetUnits > 0 ? totalTargetUnits : undefined,
+        totalTargetPercent
+      );
+      this.packedRows.push(summaryPackedRow);
     }
 
     private getTargetForGroupLetter(uniqueTargetKey: string): number | "-" {
@@ -406,6 +414,26 @@ export namespace PackedModels {
       this.generatePackedRows(transactionDatesSet);
     }
 
+    private formatSlotHour = (hour: number, shift: 1 | 2 | 3 | 4, type: "start" | "end") => {
+      // If the hour is 25, handle it as a summary case
+      if (hour === 25) {
+        // Define the starting and ending hours for each shift
+        const shiftStartEnd = {
+          1: { start: 6, end: 14 }, // Shift 1: 6 AM to 2 PM
+          2: { start: 14, end: 22 }, // Shift 2: 2 PM to 10 PM
+          3: { start: 22, end: 6 }, // Shift 3: 10 PM to 6 AM
+          4: { start: 6, end: 6 }, // Shift 4: 6 AM to 6 AM (whole day summary)
+        };
+
+        // Return the start or end hour based on the type
+        return type === "start"
+          ? `${String(shiftStartEnd[shift].start).padStart(2, "0")}:00`
+          : `${String(shiftStartEnd[shift].end).padStart(2, "0")}:00`;
+      }
+
+      return `${String((hour + (type === "end" ? 1 : 0)) % 24).padStart(2, "0")}:00`;
+    };
+
     private generatePackedRows(transactionDatesSet: Set<string>) {
       Object.keys(this.shiftsOfTransactions).forEach((shift) => {
         const transactionsByHour = this.groupByHour(
@@ -415,20 +443,33 @@ export namespace PackedModels {
         Object.keys(transactionsByHour).forEach((hourStr) => {
           const hour = parseInt(hourStr, 10);
           const transactions = transactionsByHour[hour];
-          const packedRow = new PackedRow(
+          const packedRow = new PackedRow().build(
             transactions,
             parseInt(shift, 10) as 1 | 2 | 3,
             hour,
             this.plansCache,
             transactionDatesSet
           );
+
           this.packedRows.push(packedRow);
         });
       });
+    }
 
+    private formatTablePackedRows() {
       this.tablePackedRows = this.packedRows.map((row) => {
-        const { models, ...restOfRow } = row;
-        return { ...restOfRow, ...models } as PackedTypes.IPackedRowWithModels;
+        const { models, hour, shift, ...restOfRow } = row;
+        const shiftNormalized = shift === 4 ? "Summary" : shift;
+        const hourStart = this.formatSlotHour(hour, shift, "start");
+        const hourEnd = this.formatSlotHour(hour, shift, "end");
+
+        return {
+          ...restOfRow,
+          shift: shiftNormalized,
+          hourStart,
+          hourEnd,
+          ...models,
+        } as PackedTypes.ITablePackedRow;
       });
     }
 

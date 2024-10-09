@@ -18,7 +18,7 @@ export const useAnalyticRawTableStore = defineStore("analytic-raw-table", () => 
     return computed(() => {
       const items = itemsMap.value.get(id);
       if (items === undefined) {
-        console.warn(`itemsMap by key: ${id} evaluates to undefined. Returning [].`);
+        console.warn(`itemsMap by key [${id}]: items evaluate to undefined. Returning [].`);
         return [];
       }
       return items;

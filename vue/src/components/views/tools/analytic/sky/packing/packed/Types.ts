@@ -34,7 +34,7 @@ export namespace PackedTypes {
   }
 
   export interface IPackedRow {
-    shift: 1 | 2 | 3;
+    shift: 1 | 2 | 3 | 4;
     hour: number;
     models?: Record<string, IPackedModelIndicator>;
   }
@@ -51,11 +51,12 @@ export namespace PackedTypes {
     3: TTransactionsPackingRows;
   }
 
-  export interface IPackedRowWithModels {
+  export interface ITablePackedRow {
     [key: string]: IPackedRowIndicator | number | string | "-";
-    hour: number;
+    shift: 1 | 2 | 3 | "Summary";
+    hourStart: string;
+    hourEnd: string;
     packedUnits: number;
-    shift: 1 | 2 | 3 | 4;
     targetPercent: number | "-";
     targetUnits: number | "-";
   }
