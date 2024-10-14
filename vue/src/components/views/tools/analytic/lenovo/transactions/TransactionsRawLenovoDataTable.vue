@@ -74,7 +74,7 @@ const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
     } else {
       filtered.value = data;
     }
-    console.log("store", unref(identification), unref(filtered));
+    // console.log("store", unref(identification), unref(filtered));
     store.setItemsData(unref(identification), unref(filtered));
 
     return unref(filtered);
