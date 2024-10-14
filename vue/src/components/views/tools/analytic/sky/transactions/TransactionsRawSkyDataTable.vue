@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, toRefs, unref, watch } from "vue";
 import { AnalyticRaw } from "./Types";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
 import { TimeHelper } from "../../../../../../models/common/TimeHelper";
 import { TransactionsHelper } from "./TransactionsHelper";
 import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
@@ -9,21 +9,22 @@ import { useRoute } from "vue-router";
 import { useAlertStore } from "../../../../../../stores/alertStore";
 import Download from "../common/download/Download.vue";
 import { DataTableHeader } from "../common/download/DataTableHeader";
+import { AnalyticRawManager } from "../../../../../../models/analytic/AnalyticRawManager";
+import axios from "axios";
+import { TimerManager } from "../common/debug/Timers";
 
 const props = defineProps<{
-  manager: AnalyticRaw.TManager;
+  program: AnalyticRaw.TPrograms;
+  group: AnalyticRaw.TGroups;
   identification: string;
 }>();
 
-const { manager, identification } = toRefs(props);
+const { program, group, identification } = toRefs(props);
 
-// store
 const store = useAnalyticRawTableStore();
-// const analyticStore = useAnalyticStore();
 const route = useRoute();
+const abortController = ref<AbortController | null>(null);
 
-// headers
-// const { t } = useI18n();
 const headers: any = [
   // { title: "Transaction ID", align: "start", key: "transaction_id" },
   { title: "Contract", align: "start", key: "contract", value: "contract" },
@@ -35,8 +36,7 @@ const headers: any = [
   { title: "Date", align: "start", key: "datedtz", value: "datedtz" },
 ];
 
-// search input
-const searchTerm = ref<string>("");
+const searchTerm = ref<string>(""); // search input
 const searchBy = [
   "contract",
   "order_no",
@@ -48,10 +48,12 @@ const searchBy = [
 ];
 const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "datedtz", order: "asc" }];
 
-// states
+const loadingVersion = ref<number>(0);
 const loading = ref<false | "primary-container">(false);
+let every = ref<number>(1); // Start with 1-minute intervals
+// Set threshold for task to be considered heavy (e.g., 10 seconds)
+const TASK_THRESHOLD = 10000;
 
-// items
 const items = ref<AnalyticRaw.TTransactions>([]);
 const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
   try {
@@ -82,85 +84,125 @@ const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
   }
 });
 
-const loadVersion = ref(0); // Version counter to track the latest load
-const loadingVersion = ref(0); // Tracks the version of the current load
-const load = async () => {
-  const currentVersion = unref(loadVersion);
+const stopInterval = ref<(() => void) | null>(null);
+const handleInterval = (preForm: AnalyticRaw.IPreFormData | undefined, every: number) => {
+  if (preForm) {
+    const si = unref(stopInterval);
 
-  try {
-    const m = unref(manager.value);
-    const preFormData = store.getPreFormData(unref(identification));
-    if (!preFormData) throw new Error(`preFormData evaluates to ${preFormData}`);
-    const formData = m.createFormData(unref(preFormData));
-    const result = await m.get(formData);
+    const today = new Date();
 
-    if (unref(loadingVersion) === currentVersion) {
-      items.value = result;
-      loading.value = false;
-    }
-  } catch (error) {
-    console.error(`Transactions Raw Table at load, ${error}`);
-    if (unref(stopInterval)) {
-      unref(stopInterval)!();
+    const isSameDay = (date1: Date, date2: Date) => {
+      return (
+        date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate()
+      );
+    };
+
+    if (isSameDay(preForm.endOfDay, today)) {
+      console.log("handleInterval triggerAdaptiveLoad");
+      stopInterval.value = TransactionsHelper.triggerAdaptiveLoad(() => load(false), every);
+    } else {
+      // If an interval is already running, stop it
+      if (si) {
+        si();
+        stopInterval.value = null;
+      }
     }
   }
 };
 
-const stopInterval = ref<(() => void) | null>(null);
-/**
- * Loading items based on pre form data change
- */
-watch(
-  () => unref(store.getPreFormData(unref(identification))),
-  async (preForm: AnalyticRaw.IPreFormData | undefined) => {
-    if (!unref(loading)) {
-      loading.value = "primary-container";
+const load = async (interrupt: boolean = true) => {
+  try {
+    const preFormData = unref(store.getPreFormData(unref(identification)));
+    if (preFormData === undefined) throw new Error(`preFormData evaluates to undefined.`);
+
+    // If there's an ongoing request, abort it
+    if (abortController.value !== null) {
+      if (interrupt === false) return;
+      abortController.value.abort(); // Abort only if `interrupt` is true
     }
 
-    if (unref(loadVersion)) {
+    const tm = TimerManager.getInstance();
+    if (tm.isTimerRunning("raw")) {
+      tm.startTimer("raw");
+    }
+
+    const startTime = performance.now();
+
+    // Create a new AbortController for the new request
+    abortController.value = new AbortController();
+    const arm = new AnalyticRawManager(unref(program), unref(group));
+    const formData = arm.createFormData(preFormData);
+    const res = await arm.get(formData, abortController.value.signal);
+
+    const duration = performance.now() - startTime;
+
+    // If the task is heavy, switch to a longer interval (5 minutes)
+    if (duration > TASK_THRESHOLD) {
+      console.log(`Heavy task detected, switching to 5-minute intervals. Task time: ${duration}ms`);
+      const si = unref(stopInterval);
+      if (unref(every) !== 5 || !si) {
+        every.value = 5;
+        if (si) {
+          si();
+          stopInterval.value = null;
+        }
+        handleInterval(preFormData, unref(every));
+      }
+    } else {
+      console.log(`Light task detected, switching to 1-minute intervals. Task time: ${duration}ms`);
+      const si = unref(stopInterval);
+      if (unref(every) > 1 || !si) {
+        // Switch back to 1-minute intervals
+        every.value = 1;
+        if (si) {
+          si();
+          stopInterval.value = null;
+        }
+        handleInterval(preFormData, unref(every));
+      }
+    }
+
+    items.value = res;
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      console.log("Previous request aborted");
+    } else {
+      console.error(`Transactions Raw Table at load, ${error}`);
+    }
+  } finally {
+    loading.value = false;
+    loadingVersion.value += 1;
+    abortController.value = null;
+  }
+};
+
+// Watch for preFormData changes
+watch(
+  () => store.getPreFormData(unref(identification)),
+  async () => {
+    // const newPreForm = unref(newPre);
+
+    if (loadingVersion.value) {
       useAlertStore().process("filters_applied");
     }
 
-    loadVersion.value++;
-    loadingVersion.value = unref(loadVersion);
-
+    loading.value = "primary-container";
+    // handleInterval(newPreForm, 1);
+    every.value = 1;
     await load();
-
-    if (preForm) {
-      const today = new Date();
-
-      const isSameDay = (date1: Date, date2: Date) => {
-        return (
-          date1.getFullYear() === date2.getFullYear() &&
-          date1.getMonth() === date2.getMonth() &&
-          date1.getDate() === date2.getDate()
-        );
-      };
-
-      if (isSameDay(preForm.endOfDay, today)) {
-        // If no interval is running, trigger a new one
-        if (!unref(stopInterval)) {
-          stopInterval.value = TransactionsHelper.triggerLoadAtEachMinute(load);
-        }
-      } else {
-        // If an interval is already running, stop it
-        if (unref(stopInterval)) {
-          unref(stopInterval)!();
-          stopInterval.value = null;
-        }
-      }
-    }
   },
   { deep: true }
 );
 
+// Watch for route changes
 watch(
   () => route.params.sub,
   async (sub) => {
     if (sub && !unref(loading)) {
       loading.value = "primary-container";
       await load();
-      loading.value = false;
     }
   }
 );
@@ -198,7 +240,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
     </v-card-title>
 
     <transaction-advanced-search
-      :manager="manager"
+      :program="program"
       :identification="identification"
     ></transaction-advanced-search>
 

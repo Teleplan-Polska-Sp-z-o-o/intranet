@@ -5,14 +5,14 @@ import { AnalyticFileManager } from "../../../../../../../models/analytic/Analyt
 import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
 import { AnalyticFileTypes } from "../../../files/Types";
 import { AnalyticRaw } from "../../transactions/Types";
-import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawLenovoTableStore";
 //
 import { EfficiencyTypes } from "../../common/efficiency/Types";
 import EmployeeDailyEfficiencyChart from "../../common/efficiency/EmployeeDailyEfficiencyChart.vue";
 import EmployeeQuarterlyEfficiencyChart from "../../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
 import EfficiencyWorker from "../../common/efficiency/EfficiencyWorker?worker";
-import Download from "../../common/download/Download.vue";
-import { DataTableHeader } from "../../common/download/DataTableHeader";
+import Download from "../../../files/download/Download.vue";
+import { DataTableHeader } from "../../../files/download/DataTableHeader";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -50,18 +50,18 @@ watch(
     // Function to check if the model is a PackModelObj (contains TT_PACK)
     function hasTTPackProperty(
       model: EfficiencyTypes.IModelObj
-    ): model is EfficiencyTypes.TPackModelObj {
-      return "TT_PACK" in model;
+    ): model is EfficiencyTypes.TRepairModelObj {
+      return "TT_REPAIR" in model;
     }
 
     // Filter models to only those that have the TT_PACK property and assert the type
     const packModelsObj = unref(modelsObj).filter(
       hasTTPackProperty
-    ) as EfficiencyTypes.TPackModelObj[];
+    ) as EfficiencyTypes.TRepairModelObj[];
 
     // Ensure that we have models with TT_PACK before proceeding
     if (packModelsObj.length === 0) {
-      throw new Error("No models found with the 'TT_PACK' property");
+      throw new Error("No models found with the 'TT_REPAIR' property");
     }
 
     // Serialize data before sending it to the worker
@@ -72,7 +72,7 @@ watch(
     worker.postMessage({
       rawTransactions: serializedRawTransactions,
       modelsObj: serializedModelsObj,
-      modelType: "TPackModelObj", // Send the model type (e.g., "TCosmModelObj")
+      modelType: "TRepairModelObj",
     });
   },
   { deep: true }

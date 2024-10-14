@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
-import { HttpResponseMessage } from "../enums/response";
-import { RawTransaction } from "../orm/sideEntity/RawTransactionsEntity";
-import { SideDataSources } from "../config/SideDataSources";
+import { HttpResponseMessage } from "../../enums/response";
+import { RawTransaction } from "../../orm/sideEntity/RawTransactionsEntity";
+import { SideDataSources } from "../../config/SideDataSources";
 
 const getRawPackingTransactions = async (req: Request, res: Response): Promise<Response> => {
   try {
     const body = req.body;
+    console.log(body);
 
     const contracts: string[] = JSON.parse(body.contracts);
-
     const startOfDay = new Date(JSON.parse(body.startOfDay));
     const endOfDay = new Date(JSON.parse(body.endOfDay));
 

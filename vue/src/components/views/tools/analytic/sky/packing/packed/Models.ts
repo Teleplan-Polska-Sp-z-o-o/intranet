@@ -152,26 +152,8 @@ export namespace PackedModels {
       const hour = now.hour();
       const todaysDateStr = now.format("YYYY-MM-DD");
       const isTodayInRange: boolean = transactionDatesSet.has(todaysDateStr);
+      // console.log("range", [...transactionDatesSet], todaysDateStr, isTodayInRange);
 
-      // Step 2: Process each group letter based on the plans
-      //   transactions.forEach((transaction) => {
-      //     const groupLetter = transaction.part_no_group_letter;
-
-      //     const rawMultiplier = multiplierMap.get(groupLetter);
-      //     if (!rawMultiplier) return;
-
-      //     const multiplier = isTodayInRange
-      //       ? hour < this.hour // Check if we're still in the earlier part of the day
-      //         ? Math.max(rawMultiplier - 1, 1) // Subtract 1, but don't let it drop below 1
-      //         : rawMultiplier // If the current hour has passed, use the raw multiplier
-      //       : rawMultiplier; // If it's not today, use the base multiplier
-
-      //     if (this.models[groupLetter]) {
-      //       this.models[groupLetter].addPackedUnit();
-      //     } else {
-      //       this.models[groupLetter] = new PackedModel(transaction, multiplier);
-      //     }
-      //   });
       multiplierMap.forEach((multiplier, groupLetter) => {
         const transactionsForGroup = transactions.filter(
           (t) => t.part_no_group_letter === groupLetter
@@ -183,6 +165,7 @@ export namespace PackedModels {
             ? Math.max(multiplier - 1, 1) // Subtract 1, but don't let it drop below 1
             : multiplier // If the current hour has passed, use the raw multiplier
           : multiplier; // If it's not today, use the base multiplier
+        // console.log("multiplier", multiplier);
 
         // Get the target for the group letter directly from the plansCacheMap
         const targetForGroup =
@@ -201,7 +184,7 @@ export namespace PackedModels {
           this.models[groupLetter].addPackedUnit();
         });
       });
-
+      // console.log({ ...this.models });
       // Step 3: Calculate the target percentage for each model
       Object.values(this.models).forEach((model) => model.calculateTargetPercentage());
     }
@@ -258,10 +241,23 @@ export namespace PackedModels {
       //   const transactionDatesSet = new Set(
       //     transactions.map((transaction) => new Date(transaction.datedtz).toISOString().split("T")[0])
       //   );
+      // const transactionDatesSet: Set<string> = new Set(
+      //   transactions.map((transaction) =>
+      //     moment(transaction.datedtz).tz("Europe/Warsaw").format("YYYY-MM-DD")
+      //   )
+      // );
       const transactionDatesSet: Set<string> = new Set(
-        transactions.map((transaction) =>
-          moment(transaction.datedtz).tz("Europe/Warsaw").format("YYYY-MM-DD")
-        )
+        transactions.map((transaction) => {
+          const transactionMoment = moment(transaction.datedtz).tz("Europe/Warsaw");
+          const hour = transactionMoment.hour();
+
+          // If the hour is between 0 and 6 AM, treat it as part of the previous day
+          if (hour < 6) {
+            return transactionMoment.subtract(1, "day").format("YYYY-MM-DD");
+          }
+
+          return transactionMoment.format("YYYY-MM-DD");
+        })
       );
 
       this.shiftsOfTransactions = new ShiftsOfTransactions();

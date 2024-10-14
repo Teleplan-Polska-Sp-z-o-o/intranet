@@ -6,15 +6,15 @@ export namespace XLSXTypes {
 }
 
 export namespace AnalyticFileTypes {
-  export type AnalyticProg = "sky";
-  export type AnalyticCat = "packing" | "cosmetic" | "ooba";
-  export type AnalyticSub = "drive";
+  // export type AnalyticProg = "sky" | "lenovo";
+  // export type AnalyticCat = "packing" | "cosmetic" | "ooba" | "repair";
+  // export type AnalyticSub = "drive";
 
   export interface IAnalyticFileFrontendFields {
     id: number;
-    progName: AnalyticProg;
-    catName: AnalyticCat;
-    subName: AnalyticSub;
+    progName: string;
+    catName: string;
+    subName: string;
     fileType: string; // unique within subTabName
     normalizedFileName: string;
   }

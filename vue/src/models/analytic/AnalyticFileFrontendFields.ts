@@ -2,18 +2,18 @@ import { AnalyticFileTypes } from "../../components/views/tools/analytic/files/T
 
 export class AnalyticFileFrontendFields implements AnalyticFileTypes.IAnalyticFileFrontendFields {
   id: number;
-  progName: AnalyticFileTypes.AnalyticProg;
-  catName: AnalyticFileTypes.AnalyticCat;
-  subName: AnalyticFileTypes.AnalyticSub;
+  progName: string;
+  catName: string;
+  subName: string;
   fileType: string;
   normalizedFileName: string;
 
   constructor() {
     this.id = 0;
-    this.progName = "sky";
-    this.catName = "packing";
-    this.subName = "drive";
-    this.fileType = "models";
+    this.progName = "";
+    this.catName = "";
+    this.subName = "";
+    this.fileType = "";
     this.normalizedFileName = "";
   }
 

@@ -6,9 +6,10 @@ import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
 import { AnalyticFileTypes } from "../../../files/Types";
 import { PackedTypes } from "./Types";
 import { AnalyticRaw } from "../../transactions/Types";
-import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
 import Download from "../../common/download/Download.vue";
 import PackedWorker from "./packedWorker.ts?worker";
+import { TimerManager } from "../../common/debug/Timers";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -28,13 +29,56 @@ const uniqueModelLetters = ref<string[]>([]);
 // const uniqueModelGroupLetter = ref<[string, string][]>([]);
 // const modelLetter = ref<[string, string][]>([]);
 // plan
-const planObj = ref<any>(null);
+const planObj = ref<PackedTypes.IPlanObjs>([]);
 
 // packed
 const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
 const items = ref<PackedTypes.ITablePackedRow[]>([]);
 const loading = ref<false | "primary-container">("primary-container");
-const worker = new PackedWorker();
+
+const createWorkerAndProcess = (
+  rawTransactions: AnalyticRaw.TTransactions,
+  modelsObj: PackedTypes.IModelObjs,
+  plansObj: PackedTypes.IPlanObjs
+) => {
+  const worker = new PackedWorker();
+
+  // Function to convert string to ArrayBuffer
+  function stringToArrayBuffer(str: string): ArrayBuffer {
+    const encoder = new TextEncoder();
+    return encoder.encode(str).buffer; // Returns ArrayBuffer
+  }
+
+  // Serialize the data before sending to the worker
+  const serializedRawTransactions = JSON.stringify(rawTransactions);
+  const rawTransactionsBuffer = stringToArrayBuffer(serializedRawTransactions);
+  const serializedModelsObj = JSON.stringify(modelsObj);
+  const serializedPlansObj = JSON.stringify(plansObj);
+  worker.postMessage(
+    {
+      rawTransactions: rawTransactionsBuffer,
+      modelsObj: serializedModelsObj,
+      planObj: serializedPlansObj,
+    },
+    [rawTransactionsBuffer]
+  );
+
+  // Handle messages from the worker
+  worker.addEventListener("message", (event: MessageEvent<any>) => {
+    const { packedRows } = event.data;
+    items.value = packedRows;
+    if (items.value) loading.value = false;
+
+    // Terminate the worker after it's done processing
+    worker.terminate();
+  });
+
+  // Handle errors (optional)
+  worker.addEventListener("error", (error) => {
+    console.error("Worker error:", error);
+    worker.terminate();
+  });
+};
 
 /**
  * Loading current transactions
@@ -44,29 +88,15 @@ watch(
   async (newRawTransactions: AnalyticRaw.TTransactions) => {
     rawTransactions.value = newRawTransactions;
 
-    // Serialize the data before sending to the worker
-    const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
-    const serializedModelsObj = JSON.stringify(unref(modelsObj));
-    const serializedPlanObj = JSON.stringify(unref(planObj));
-    worker.postMessage({
-      rawTransactions: serializedRawTransactions,
-      modelsObj: serializedModelsObj,
-      planObj: serializedPlanObj,
-    });
+    createWorkerAndProcess(unref(rawTransactions), unref(modelsObj), unref(planObj));
 
-    if (items.value) loading.value = false;
+    const tm = TimerManager.getInstance();
+    if (tm.isTimerRunning("raw")) {
+      tm.stopTimer("raw");
+    }
   },
   { deep: true }
 );
-
-// Handle worker messages
-worker.addEventListener("message", (event) => {
-  const { packedRows } = event.data;
-  items.value = packedRows;
-  if (items.value) loading.value = false;
-  //
-  // console.log("PackedBuilder", items.value);
-});
 
 const isItTodaysDataOnly = ref<boolean>(true);
 /**

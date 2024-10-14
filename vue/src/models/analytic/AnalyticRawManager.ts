@@ -1,3 +1,4 @@
+import axios from "axios";
 import { AnalyticRaw } from "../../components/views/tools/analytic/sky/transactions/Types";
 import { Endpoints } from "../../config/axios/Endpoints";
 import jwtAxios from "../../config/axios/jwtAxios";
@@ -6,19 +7,29 @@ import { useAlertStore } from "../../stores/alertStore";
 import { ResponseStatus } from "../common/ResponseStatus";
 
 class AnalyticRawManager {
-  program: AnalyticRaw.TPrograms;
-  group: AnalyticRaw.TGroups;
+  program: string;
+  group: string;
 
-  constructor(program: AnalyticRaw.TPrograms, group: AnalyticRaw.TGroups) {
+  constructor(program: string, group: string) {
     this.program = program;
     this.group = group;
   }
 
-  public createFormData = (preFormData: AnalyticRaw.IPreFormData) => {
+  // public createFormData = (preFormData: AnalyticRaw.IPreFormData) => {
+  //   const formData = new FormData();
+  //   formData.append("contracts", JSON.stringify(preFormData.contracts));
+  //   formData.append("startOfDay", JSON.stringify(preFormData.startOfDay));
+  //   formData.append("endOfDay", JSON.stringify(preFormData.endOfDay));
+  //   return formData;
+  // };
+
+  public createFormData = (preFormData: Record<string, any>) => {
     const formData = new FormData();
-    formData.append("contracts", JSON.stringify(preFormData.contracts));
-    formData.append("startOfDay", JSON.stringify(preFormData.startOfDay));
-    formData.append("endOfDay", JSON.stringify(preFormData.endOfDay));
+
+    Object.keys(preFormData).forEach((key) => {
+      formData.append(key, JSON.stringify(preFormData[key]));
+    });
+
     return formData;
   };
 
@@ -32,21 +43,34 @@ class AnalyticRawManager {
    */
   public get = async (
     formData: FormData,
+    signal?: AbortSignal,
     status: boolean = false
   ): Promise<AnalyticRaw.TTransactions> => {
-    const response = await jwtAxios.post(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Analytic}/raw/${this.group}`,
-      formData
-    );
-    if (status) {
-      useAlertStore().process(
-        new ResponseStatus({
-          code: response.status,
-          message: response.data.statusMessage,
-        })
+    try {
+      const response = await jwtAxios.post(
+        `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Analytic}/raw/${this.program}/${this.group}`,
+        formData,
+        {
+          signal,
+        }
       );
+      if (status) {
+        useAlertStore().process(
+          new ResponseStatus({
+            code: response.status,
+            message: response.data.statusMessage,
+          })
+        );
+      }
+      return response.data.raw;
+    } catch (error: any) {
+      if (axios.isCancel(error)) {
+        console.warn(`Raw transactions request for ${this.program}-${this.group} was canceled`);
+      } else {
+        throw error; // Handle other errors
+      }
+      return [];
     }
-    return response.data.raw;
   };
 }
 

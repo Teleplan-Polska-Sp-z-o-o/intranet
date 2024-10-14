@@ -29,9 +29,9 @@ const formData = ref<AnalyticFileTypes.IAnalyticFileFrontendFields>(entity.value
 
 // Route params setup
 const route = useRoute();
-formData.value.progName = route.params.program as AnalyticFileTypes.AnalyticProg;
-formData.value.catName = route.params.cat as AnalyticFileTypes.AnalyticCat;
-formData.value.subName = route.params.sub as AnalyticFileTypes.AnalyticSub;
+formData.value.progName = route.params.program as string;
+formData.value.catName = route.params.cat as string;
+formData.value.subName = route.params.sub as string;
 
 // File Type options
 // const fileTypeOptions = computed(() => {

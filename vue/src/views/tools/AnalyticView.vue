@@ -6,12 +6,13 @@ import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
 import FileDrive from "../../components/views/tools/analytic/files/drive/FileDrive.vue";
 import Documentation from "../../components/views/tools/analytic/Documentation.vue";
-import TransactionsRawDataTable from "../../components/views/tools/analytic/sky/transactions/TransactionsRawDataTable.vue";
-import { AnalyticRawManager } from "../../models/analytic/AnalyticRawManager";
+import TransactionsRawSkyDataTable from "../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
+import TransactionsRawLenovoDataTable from "../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
 import PackedUnitsOverview from "../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
 import PackingEfficiencyOverview from "../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
 import CosmeticEfficiencyOverview from "../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
 import OobaEfficiencyOverview from "../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
+import RepairEfficiencyOverview from "../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
@@ -89,38 +90,38 @@ const tabs: ToolTab[] = [
       },
     ],
   },
+  {
+    id: 2,
+    name: "lenovo",
+    icon: undefined,
+    meta: {
+      group: "analytic",
+      subgroup: "lenovo",
+    },
+    children: [
+      {
+        id: 21,
+        title: "Repair",
+        name: "repair",
+        icon: undefined,
+        children: [
+          {
+            id: 211,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 212,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+    ],
+  },
 ];
-
-// const filteredToolTabs = ref<ToolTab[]>([]);
-// const toggled = ref<string[]>([]);
-// const windowItem = ref<string>("documentation");
-
-// const filterUndefined = (arr: (string | undefined)[]): string[] =>
-//   arr.filter((v): v is string => v !== undefined);
-
-// const location = (program: string, cat?: string, sub?: string): void => {
-//   const newPath = filterUndefined([program, cat, sub]).join("/");
-//   router.push({
-//     path: `/tool/analytic/browse/${newPath}`,
-//   });
-//   windowItem.value = sub ? filterUndefined([program, cat, sub]).join("-") : "documentation";
-// };
-
-// onMounted(async () => {
-//   const userInfo = useUserStore().info();
-//   if (!userInfo) return;
-//   filteredToolTabs.value = await usePermissionStore().filterToolTabs<ToolTab>(userInfo, tabs);
-
-//   const { program, cat, sub } = route.params as {
-//     program: string;
-//     cat: string | undefined;
-//     sub: string | undefined;
-//   };
-
-//   toggled.value = filterUndefined([program, cat, sub]);
-
-//   windowItem.value = sub ? filterUndefined([program, cat, sub]).join("-") : "documentation";
-// });
 
 const filteredToolTabs = ref<ToolTab[]>([]);
 const toggled = ref<number[]>([]);
@@ -250,10 +251,11 @@ onMounted(async () => {
                   ></file-drive>
                 </v-window-item>
                 <v-window-item value="sky-packing-overview">
-                  <transactions-raw-data-table
-                    :manager="new AnalyticRawManager('sky', 'packing')"
+                  <transactions-raw-sky-data-table
+                    program="sky"
+                    group="packing"
                     identification="sky-packing-overview"
-                  ></transactions-raw-data-table>
+                  ></transactions-raw-sky-data-table>
                   <packed-units-overview rawIdentification="sky-packing-overview" class="mt-6">
                   </packed-units-overview>
                   <packing-efficiency-overview
@@ -270,10 +272,11 @@ onMounted(async () => {
                   ></file-drive>
                 </v-window-item>
                 <v-window-item value="sky-cosmetic-overview">
-                  <transactions-raw-data-table
-                    :manager="new AnalyticRawManager('sky', 'cosmetic')"
+                  <transactions-raw-sky-data-table
+                    program="sky"
+                    group="cosmetic"
                     identification="sky-cosmetic-overview"
-                  ></transactions-raw-data-table>
+                  ></transactions-raw-sky-data-table>
                   <cosmetic-efficiency-overview
                     rawIdentification="sky-cosmetic-overview"
                     class="mt-6"
@@ -285,12 +288,33 @@ onMounted(async () => {
                   <file-drive subtitle="SKY OOBA" identification="sky-ooba-drive"></file-drive>
                 </v-window-item>
                 <v-window-item value="sky-ooba-overview">
-                  <transactions-raw-data-table
-                    :manager="new AnalyticRawManager('sky', 'ooba')"
+                  <transactions-raw-sky-data-table
+                    program="sky"
+                    group="ooba"
                     identification="sky-ooba-overview"
-                  ></transactions-raw-data-table>
+                  ></transactions-raw-sky-data-table>
                   <ooba-efficiency-overview rawIdentification="sky-ooba-overview" class="mt-6">
                   </ooba-efficiency-overview>
+                </v-window-item>
+
+                <!-- LENOVO -->
+                <!-- REPAIR -->
+                <v-window-item value="lenovo-repair-drive">
+                  <file-drive
+                    subtitle="Lenovo Repair"
+                    identification="lenovo-repair-drive"
+                  ></file-drive>
+                </v-window-item>
+                <v-window-item value="lenovo-repair-overview">
+                  <transactions-raw-lenovo-data-table
+                    program="lenovo"
+                    group="repair"
+                    identification="lenovo-repair-overview"
+                  ></transactions-raw-lenovo-data-table>
+                  <repair-efficiency-overview
+                    rawIdentification="lenovo-repair-overview"
+                    class="mt-6"
+                  ></repair-efficiency-overview>
                 </v-window-item>
               </v-window>
             </v-col>

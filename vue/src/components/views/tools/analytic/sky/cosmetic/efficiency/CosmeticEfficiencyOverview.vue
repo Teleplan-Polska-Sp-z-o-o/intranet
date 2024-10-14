@@ -5,7 +5,7 @@ import { AnalyticFileManager } from "../../../../../../../models/analytic/Analyt
 import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
 import { AnalyticFileTypes } from "../../../files/Types";
 import { AnalyticRaw } from "../../transactions/Types";
-import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
 //
 import { EfficiencyTypes } from "../../common/efficiency/Types";
 import EmployeeDailyEfficiencyChart from "../../common/efficiency/EmployeeDailyEfficiencyChart.vue";

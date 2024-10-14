@@ -30,7 +30,6 @@ const jwtMiddle = async (req: Request, res: Response, next: NextFunction) => {
         statusMessage: HttpResponseMessage.UNAUTHORIZED,
       });
     }
-
     const result = new LDAP().verifyJwt(token.split(" ").at(1), true) as SimpleUser | false; // because of checkAndReturnSimpleUser: true;
     if (!result) {
       return res.status(401).json({

@@ -1,21 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRefs, unref } from "vue";
 import { AnalyticRaw } from "./Types";
-import { TransactionsHelper } from "./TransactionsHelper";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawLenovoTableStore";
 
 // import { useI18n } from "vue-i18n";
 const store = useAnalyticRawTableStore();
 
 const props = defineProps<{
-  program: AnalyticRaw.TPrograms;
   identification: string;
 }>();
 
-const { program, identification } = toRefs(props);
+const { identification } = toRefs(props);
 
-const contractOptions = TransactionsHelper.getContractsByProgram(unref(program));
-const contractsInput = ref<string[]>(contractOptions);
+// const contractOptions = TransactionsHelper.getContractsByProgram(unref(program));
+// const contractsInput = ref<string[]>(contractOptions);
 
 const dateRangeInput = ref<Date[]>([new Date()]);
 const dateRangeComputed = computed(() => {
@@ -51,7 +49,6 @@ const dateRangeComputed = computed(() => {
 
 const preFormData = computed<AnalyticRaw.IPreFormData>(() => {
   return {
-    contracts: unref(contractsInput),
     startOfDay: unref(dateRangeComputed).startOfDay ?? new Date(),
     endOfDay: unref(dateRangeComputed).endOfDay ?? new Date(),
   };
@@ -74,17 +71,6 @@ onMounted(() => submit());
       </v-expansion-panel-title>
       <v-expansion-panel-text>
         <v-form @submit.prevent="submit">
-          <v-autocomplete
-            v-model="contractsInput"
-            :items="contractOptions"
-            label="Contracts"
-            hint="All contracts are selected by default. You can limit the search by selecting specific contracts."
-            variant="solo-filled"
-            multiple
-            chips
-            persistent-hint
-            flat
-          ></v-autocomplete>
           <v-date-input
             v-model="dateRangeInput"
             multiple="range"

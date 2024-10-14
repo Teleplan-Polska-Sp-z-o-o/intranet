@@ -4,16 +4,20 @@ import {
   getRawPackingTransactions,
   getRawCosmeticTransactions,
   getRawOobaTransactions,
-} from "../sideControllers/TransactionsRawController";
+} from "../sideControllers/sky/TransactionsRawController";
+import { getRawRepairTransactions } from "../sideControllers/lenovo/TransactionsRawController";
 
 const router = express.Router();
 const decodeFormData = multer().none();
 
 // Define routes
-router.post("/raw/packing", decodeFormData, getRawPackingTransactions);
-router.post("/raw/cosmetic", decodeFormData, getRawCosmeticTransactions);
-router.post("/raw/ooba", decodeFormData, getRawOobaTransactions);
 
-router.post("/raw");
+//sky
+router.post("/raw/sky/packing", decodeFormData, getRawPackingTransactions);
+router.post("/raw/sky/cosmetic", decodeFormData, getRawCosmeticTransactions);
+router.post("/raw/sky/ooba", decodeFormData, getRawOobaTransactions);
+
+// lenovo
+router.post("/raw/lenovo/repair", decodeFormData, getRawRepairTransactions);
 
 export { router as analyticRoutes };

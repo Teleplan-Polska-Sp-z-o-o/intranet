@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { AnalyticRaw } from "../../components/views/tools/analytic/sky/transactions/Types";
 
-export const useAnalyticRawTableStore = defineStore("analytic-raw-table", () => {
+export const useAnalyticRawTableStore = defineStore("analytic-raw-sky-table", () => {
   // const loadMap = ref<Map<string, boolean>>(new Map());
   // const isRawChanged = (id: string) => {
   //   return computed(() => loadMap.value.get(id));
