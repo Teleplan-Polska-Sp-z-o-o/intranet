@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRefs, unref, watch } from "vue";
+import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
 import { AnalyticRaw } from "./Types";
 import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawLenovoTableStore";
 import { TimeHelper } from "../../../../../../models/common/TimeHelper";
@@ -178,6 +178,14 @@ const load = async (interrupt: boolean = true) => {
   }
 };
 
+// Cleanup on component unmount
+onUnmounted(() => {
+  const si = unref(stopInterval);
+  if (si) {
+    si(); // Stops the interval
+  }
+});
+
 // Watch for preFormData changes
 watch(
   () => store.getPreFormData(unref(identification)),
@@ -235,7 +243,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
       <download
         :headers="downloadHeaders"
         :items="filteredItems"
-        base-save-as="SKY Raw Transactions"
+        base-save-as="Lenovo Raw Transactions"
       ></download>
     </v-card-title>
 

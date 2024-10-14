@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRefs, unref, watch } from "vue";
+import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
 import { AnalyticRaw } from "./Types";
 import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
 import { TimeHelper } from "../../../../../../models/common/TimeHelper";
@@ -177,6 +177,14 @@ const load = async (interrupt: boolean = true) => {
     abortController.value = null;
   }
 };
+
+// Cleanup on component unmount
+onUnmounted(() => {
+  const si = unref(stopInterval);
+  if (si) {
+    si(); // Stops the interval
+  }
+});
 
 // Watch for preFormData changes
 watch(
