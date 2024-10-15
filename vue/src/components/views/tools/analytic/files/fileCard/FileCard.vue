@@ -206,7 +206,7 @@ const handleMenuClick = async (actionId: number, color: string | undefined) => {
       <template v-slot:title>
         {{ fileEntity.normalizedFileName }}
         <v-chip color="primary" label v-if="fileEntity.considered">
-          Considered
+          <span class="d-inline-block text-truncate">Considered</span>
           <v-tooltip location="top">
             <template v-slot:activator="{ props: tooltip }">
               <v-icon icon="mdi-information-outline" class="ml-1" v-bind="tooltip"></v-icon>
