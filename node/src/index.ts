@@ -35,8 +35,8 @@ dataSource
           );
         } else {
           // Read SSL certificate and private key
-          const privateKey = fs.readFileSync("./_.reconext.com.2024.pem", "utf8");
-          const certificate = fs.readFileSync("./_.reconext.com.2024.pem", "utf8");
+          const privateKey = fs.readFileSync("./private.key", "utf8");
+          const certificate = fs.readFileSync("./certificate.crt", "utf8");
           const credentials = { key: privateKey, cert: certificate };
 
           // Create HTTPS server
