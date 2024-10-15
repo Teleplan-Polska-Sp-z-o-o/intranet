@@ -349,14 +349,7 @@ export namespace PackedModels {
         const uniqueTargetKey = `${groupLetter}-${shift}-${dateStr}`;
 
         const target_for_group_letter = this.getTargetForGroupLetter(uniqueTargetKey);
-        let n = 0;
-        if (!n) {
-          console.log("first uniqueTargetKey", uniqueTargetKey);
-          console.log("first target_for_group_letter", target_for_group_letter);
-          n += 1;
-        }
         if (target_for_group_letter === "-") return;
-
         this.shiftsOfTransactions[shift].push({
           hour,
           shift,
