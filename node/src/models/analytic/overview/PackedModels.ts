@@ -3,50 +3,14 @@ import "moment-timezone";
 import { PackedTypes } from "../../../interfaces/analytic/overview/PackedTypes";
 
 export namespace PackedModels {
-  //   export class PackedModel implements PackedTypes.IPackedModelIndicator {
-  //     packedUnits: number = 1;
-  //     targetUnits: number | "-";
-  //     targetPercent: number | "-";
-
-  //     constructor(transaction: PackedTypes.TTransactionsPackingRow, multiplier: number) {
-  //       this.targetUnits = this.calculateTargetUnits(transaction, multiplier);
-  //       this.targetPercent = 0;
-  //     }
-
-  //     calculateTargetUnits(
-  //       transaction: PackedTypes.TTransactionsPackingRow,
-  //       multiplier: number
-  //     ): number | "-" {
-  //       if (
-  //         typeof transaction.target_for_group_letter === "number" &&
-  //         transaction.target_for_group_letter > 0 &&
-  //         multiplier
-  //       ) {
-  //         return (transaction.target_for_group_letter / 8) * multiplier;
-  //       }
-  //       return "-";
-  //     }
-
-  //     addPackedUnit(): this {
-  //       this.packedUnits++;
-  //       return this;
-  //     }
-
-  //     calculateTargetPercentage() {
-  //       if (typeof this.targetUnits === "number" && this.targetUnits > 0) {
-  //         this.targetPercent = Math.round((this.packedUnits / this.targetUnits) * 100);
-  //       } else {
-  //         this.targetPercent = "-";
-  //       }
-  //     }
-  //   }
   export class PackedModel implements PackedTypes.IPackedModelIndicator {
     packedUnits: number = 0;
     targetUnits: number | "-";
     targetPercent: number | "-" = "-";
 
-    constructor(target_for_group_letter: number | "-", multiplier: number) {
-      this.targetUnits = this.calculateTargetUnits(target_for_group_letter, multiplier);
+    constructor(target_for_group_letter: number | "-") {
+      // , multiplier: number
+      this.targetUnits = this.calculateTargetUnits(target_for_group_letter); //, multiplier
     }
 
     build() {
@@ -54,13 +18,14 @@ export namespace PackedModels {
       this.targetPercent = 0;
     }
 
-    calculateTargetUnits(target_for_group_letter: number | "-", multiplier: number): number | "-" {
+    calculateTargetUnits(target_for_group_letter: number | "-"): number | "-" {
+      //, multiplier: number
       if (
         typeof target_for_group_letter === "number" &&
-        target_for_group_letter > 0 &&
-        multiplier
+        target_for_group_letter > 0
+        // && multiplier
       ) {
-        return (target_for_group_letter / 8) * multiplier;
+        return target_for_group_letter / 8; // * multiplier;
       }
       return "-";
     }
@@ -125,55 +90,44 @@ export namespace PackedModels {
       plansCacheMap: Map<string, number | "-">,
       transactionDatesSet: Set<string>
     ) {
-      const multiplierMap = new Map<string, number>();
-
-      // Step 1: Build the multiplier map for each group letter
-      plansCacheMap.forEach((packing, key) => {
-        const groupLetter = key.split("-").at(0);
-        if (
-          groupLetter &&
-          key.startsWith(`${groupLetter}-${this.shift}-`) &&
-          typeof packing === "number" &&
-          packing > 0
-        ) {
-          if (!multiplierMap.has(groupLetter)) {
-            multiplierMap.set(groupLetter, 1);
-          } else {
-            multiplierMap.set(groupLetter, multiplierMap.get(groupLetter)! + 1);
-          }
-        }
-      });
-
-      //   const now: Date = new Date();
-      //   const hour: number = now.getHours();
-      //   const todaysDateStr: string = new Date().toISOString().split("T")[0];
-
       const now = moment.tz("Europe/Warsaw");
-      const hour = now.hour();
+      const currentHour = now.hour();
       const todaysDateStr = now.format("YYYY-MM-DD");
-      const isTodayInRange: boolean = transactionDatesSet.has(todaysDateStr);
-      // console.log("range", [...transactionDatesSet], todaysDateStr, isTodayInRange);
 
-      multiplierMap.forEach((multiplier, groupLetter) => {
+      // Step 1: Iterate over each group letter and accumulate the target across all dates in transactionDatesSet
+      const groupLetters = new Set(transactions.map((t) => t.part_no_group_letter));
+
+      groupLetters.forEach((groupLetter) => {
         const transactionsForGroup = transactions.filter(
           (t) => t.part_no_group_letter === groupLetter
         );
 
-        // Determine the final multiplier based on current time and day
-        const builtMultiplier = isTodayInRange
-          ? hour < this.hour // Check if we're still in the earlier part of the day
-            ? Math.max(multiplier - 1, 1) // Subtract 1, but don't let it drop below 1
-            : multiplier // If the current hour has passed, use the raw multiplier
-          : multiplier; // If it's not today, use the base multiplier
-        // console.log("multiplier", multiplier);
+        // Step 2: Accumulate the target across all dates in transactionDatesSet
+        let accumulatedTarget = 0;
+        transactionDatesSet.forEach((date) => {
+          const targetKey = `${groupLetter}-${this.shift}-${date}`;
+          const targetForDate = plansCacheMap.get(targetKey);
 
-        // Get the target for the group letter directly from the plansCacheMap
-        const targetForGroup =
-          plansCacheMap.get(`${groupLetter}-${this.shift}-${todaysDateStr}`) || "-";
+          if (typeof targetForDate === "number") {
+            if (date === todaysDateStr) {
+              // If the date is today, add the target only if the current hour is greater than or equal to this.shift hour
+              if (currentHour >= this.hour) {
+                accumulatedTarget += targetForDate;
+              }
+            } else {
+              // If the date is not today, accumulate the target as normal
+              accumulatedTarget += targetForDate;
+            }
+          }
+        });
 
+        // If there's no valid target for the group, set it to "-" (as a fallback)
+        const finalTargetForGroup = accumulatedTarget > 0 ? accumulatedTarget : "-";
+
+        // Step 3: Build or update the model for the group letter
         if (!this.models[groupLetter]) {
-          // If the model doesn't exist, create and build it based on the plan
-          this.models[groupLetter] = new PackedModel(targetForGroup, builtMultiplier);
+          // If the model doesn't exist, create and build it based on the accumulated plan
+          this.models[groupLetter] = new PackedModel(finalTargetForGroup);
           if (transactionsForGroup.length > 0) {
             this.models[groupLetter].build(); // Set packed units to 1 for the first transaction
           }
@@ -184,8 +138,8 @@ export namespace PackedModels {
           this.models[groupLetter].addPackedUnit();
         });
       });
-      // console.log({ ...this.models });
-      // Step 3: Calculate the target percentage for each model
+
+      // Step 4: Calculate the target percentage for each model
       Object.values(this.models).forEach((model) => model.calculateTargetPercentage());
     }
 
@@ -231,7 +185,7 @@ export namespace PackedModels {
     packedRows: PackedRow[] = [];
     tablePackedRows: PackedTypes.ITablePackedRow[] = [];
     private modelsCache: Map<string, { groupName: string; groupLetter: string }> = new Map();
-    private plansCache: Map<string, number | "-"> = new Map(); // Cache plans for quicker access
+    private plansCache: Map<string, number> = new Map(); // Cache plans for quicker access
 
     constructor(
       transactions: PackedTypes.TTransactions,
@@ -286,7 +240,8 @@ export namespace PackedModels {
         const planDate: string = moment(plan.DATE).tz("Europe/Warsaw").format("YYYY-MM-DD");
         if (transactionDatesSet.has(planDate)) {
           const key = `${plan.LINE}-${plan.SHIFT}-${planDate}`;
-          this.plansCache.set(key, plan.PACKING || "-");
+          const packing = plan.PACKING && typeof plan.PACKING === "number" ? plan.PACKING : 0;
+          this.plansCache.set(key, packing);
         }
       });
     }
@@ -368,9 +323,9 @@ export namespace PackedModels {
     }
 
     private getTargetForGroupLetter(uniqueTargetKey: string): number | "-" {
-      const baseTarget = this.plansCache.get(uniqueTargetKey) || "-";
+      const baseTarget = this.plansCache.get(uniqueTargetKey) ?? "-";
 
-      if (baseTarget !== "-" && typeof baseTarget === "number") {
+      if (baseTarget && typeof baseTarget === "number") {
         return baseTarget; // Multiply the base target by the number of days
       }
       return "-";
@@ -394,6 +349,12 @@ export namespace PackedModels {
         const uniqueTargetKey = `${groupLetter}-${shift}-${dateStr}`;
 
         const target_for_group_letter = this.getTargetForGroupLetter(uniqueTargetKey);
+        let n = 0;
+        if (!n) {
+          console.log("first uniqueTargetKey", uniqueTargetKey);
+          console.log("first target_for_group_letter", target_for_group_letter);
+          n += 1;
+        }
         if (target_for_group_letter === "-") return;
 
         this.shiftsOfTransactions[shift].push({

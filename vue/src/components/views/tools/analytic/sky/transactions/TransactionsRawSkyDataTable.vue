@@ -100,7 +100,6 @@ const handleInterval = (preForm: AnalyticRaw.IPreFormData | undefined, every: nu
     };
 
     if (isSameDay(preForm.endOfDay, today)) {
-      console.log("handleInterval triggerAdaptiveLoad");
       stopInterval.value = TransactionsHelper.triggerAdaptiveLoad(() => load(false), every);
     } else {
       // If an interval is already running, stop it
@@ -128,19 +127,18 @@ const load = async (interrupt: boolean = true) => {
       tm.startTimer("raw");
     }
 
-    const startTime = performance.now();
-
     // Create a new AbortController for the new request
     abortController.value = new AbortController();
     const arm = new AnalyticRawManager(unref(program), unref(group));
     const formData = arm.createFormData(preFormData);
-    const res = await arm.get(formData, abortController.value.signal);
 
+    const startTime = performance.now();
+    const res = await arm.get(formData, abortController.value.signal);
     const duration = performance.now() - startTime;
 
     // If the task is heavy, switch to a longer interval (5 minutes)
     if (duration > TASK_THRESHOLD) {
-      console.log(`Heavy task detected, switching to 5-minute intervals. Task time: ${duration}ms`);
+      // console.log(`Heavy task detected, switching to 5-minute intervals. Task time: ${duration}ms`);
       const si = unref(stopInterval);
       if (unref(every) !== 5 || !si) {
         every.value = 5;
@@ -151,7 +149,7 @@ const load = async (interrupt: boolean = true) => {
         handleInterval(preFormData, unref(every));
       }
     } else {
-      console.log(`Light task detected, switching to 1-minute intervals. Task time: ${duration}ms`);
+      // console.log(`Light task detected, switching to 1-minute intervals. Task time: ${duration}ms`);
       const si = unref(stopInterval);
       if (unref(every) > 1 || !si) {
         // Switch back to 1-minute intervals
@@ -165,15 +163,14 @@ const load = async (interrupt: boolean = true) => {
     }
 
     items.value = res;
+    loading.value = false;
   } catch (error) {
     if (axios.isCancel(error)) {
-      console.log("Previous request aborted");
+      console.log("Transactions Raw Table at load, previous request aborted");
     } else {
       console.error(`Transactions Raw Table at load, ${error}`);
     }
   } finally {
-    loading.value = false;
-    loadingVersion.value += 1;
     abortController.value = null;
   }
 };
@@ -196,9 +193,8 @@ watch(
       useAlertStore().process("filters_applied");
     }
 
+    loadingVersion.value += 1;
     loading.value = "primary-container";
-    // handleInterval(newPreForm, 1);
-    every.value = 1;
     await load();
   },
   { deep: true }

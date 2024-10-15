@@ -1,4 +1,3 @@
-import axios from "axios";
 import { AnalyticRaw } from "../../components/views/tools/analytic/sky/transactions/Types";
 import { Endpoints } from "../../config/axios/Endpoints";
 import jwtAxios from "../../config/axios/jwtAxios";
@@ -46,31 +45,22 @@ class AnalyticRawManager {
     signal?: AbortSignal,
     status: boolean = false
   ): Promise<AnalyticRaw.TTransactions> => {
-    try {
-      const response = await jwtAxios.post(
-        `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Analytic}/raw/${this.program}/${this.group}`,
-        formData,
-        {
-          signal,
-        }
+    const response = await jwtAxios.post(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Analytic}/raw/${this.program}/${this.group}`,
+      formData,
+      {
+        signal,
+      }
+    );
+    if (status) {
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
       );
-      if (status) {
-        useAlertStore().process(
-          new ResponseStatus({
-            code: response.status,
-            message: response.data.statusMessage,
-          })
-        );
-      }
-      return response.data.raw;
-    } catch (error: any) {
-      if (axios.isCancel(error)) {
-        console.warn(`Raw transactions request for ${this.program}-${this.group} was canceled`);
-      } else {
-        throw error; // Handle other errors
-      }
-      return [];
     }
+    return response.data.raw ?? [];
   };
 }
 
