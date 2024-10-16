@@ -133,11 +133,21 @@ watch(
 const headers = computed<object[]>(() => {
   return [
     { title: "Shift", align: "center", key: "data-table-group", value: "shift", minWidth: 99.59 },
-    { title: "Employee Name", align: "start", value: "emp_name" },
-    { title: "Worked Time (hrs)", align: "start", value: "worked_quarters" },
-    { title: "Estimated Processing Time (hrs)", align: "start", value: "processing_time" },
-    { title: "Processed Units", align: "start", value: "processed_units" },
-    { title: "Efficiency (%)", align: "start", value: "efficiency" },
+    { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
+    {
+      title: "Worked Time (hrs)",
+      align: "start",
+      key: "worked_quarters",
+      value: "worked_quarters",
+    },
+    {
+      title: "Estimated Processing Time (hrs)",
+      align: "start",
+      key: "processing_time",
+      value: "processing_time",
+    },
+    { title: "Processed Units", align: "start", key: "processed_units", value: "processed_units" },
+    { title: "Efficiency (%)", align: "start", key: "efficiency", value: "efficiency" },
   ];
 });
 

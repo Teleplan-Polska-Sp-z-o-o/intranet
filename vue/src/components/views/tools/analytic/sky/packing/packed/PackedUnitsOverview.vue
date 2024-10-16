@@ -156,17 +156,17 @@ const baseHeaders: any = [
     title: "Time Range",
     align: "center",
     children: [
-      { title: "Start (Hour)", value: "hourStart" },
-      { title: "End (Hour)", value: "hourEnd" },
+      { title: "Start (Hour)", key: "hourStart", value: "hourStart" },
+      { title: "End (Hour)", key: "hourEnd", value: "hourEnd" },
     ],
   },
   {
     title: "Total (For Planned Groups)",
     align: "center",
     children: [
-      { title: "Packed (Units)", align: "center", value: "packedUnits" },
-      { title: "Target (Units)", align: "center", value: "targetUnits" },
-      { title: "Target (%)", align: "center", value: "targetPercent" },
+      { title: "Packed (Units)", align: "center", key: "packedUnits", value: "packedUnits" },
+      { title: "Target (Units)", align: "center", key: "targetUnits", value: "targetUnits" },
+      { title: "Target (%)", align: "center", key: "targetPercent", value: "targetPercent" },
     ],
   },
 ];
