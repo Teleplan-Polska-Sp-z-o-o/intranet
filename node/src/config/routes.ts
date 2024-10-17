@@ -12,14 +12,17 @@ import { notificationRoutes } from "../routes/notificationRoutes";
 import { serverRoutes } from "../routes/serverRoutes";
 import { competenceRoutes } from "../routes/competenceRoutes";
 import { documentChangeRoutes } from "../routes/documentChangeRoutes";
-import { UPLOADS_PATH } from "./routeConstants";
+import { MNT_PATH, UPLOADS_PATH } from "./routeConstants";
 import { acknowledgeRoutes } from "../routes/acknowledgeRoutes";
 import { xlsxRoutes } from "../routes/xlsxRoutes";
 import { analyticFileRoutes } from "../routes/analyticFileRoutes";
 import { analyticRoutes } from "../routes/analyticRoutes";
 
 const mountRoutes = (app: Express): Express => {
+  // Serve static files
   app.use("/uploads", express.static(UPLOADS_PATH));
+  app.use("/mnt", express.static(MNT_PATH));
+
   // user
   app.use("/api/user/permission", permissionRoutes);
   app.use("/api/user", userRoutes);

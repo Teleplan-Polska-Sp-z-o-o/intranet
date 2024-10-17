@@ -1,6 +1,7 @@
 /.env
 /notes.txt
 /toAdjust.env
+TODO.md
 
 /vue/dist
 /vue/node_modules
@@ -11,4 +12,5 @@
 /node/uploads
 /node/node_modules
 /node/package-lock.json
-TODO.md
+/node/mnt
+

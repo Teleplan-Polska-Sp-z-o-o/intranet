@@ -11,6 +11,7 @@ services:
     restart: "unless-stopped"
     volumes:
       - ./node/uploads:/usr/src/app/uploads
+      - /mnt:/usr/src/app/mnt
     depends_on:
       - postgres
 

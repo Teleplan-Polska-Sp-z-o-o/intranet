@@ -73,6 +73,40 @@ To facilitate seamless development, it's important to note that Vue and Node app
 
 5. Once the Node service is rebuilt, changes are reflected.
 
+### How to mount a directory
+
+1. Create a New Mount Point: If you want to mount the directory at a different location (e.g., /home/bydintranet/intranet/node/mnt), first create the directory:
+
+   ```bash
+   mkdir -p /home/bydintranet/intranet/node/mnt
+   ```
+
+2. Mount the Directory to the New Location: Use the following command to mount the remote CIFS directory to the new local path:
+
+   ```bash
+   sudo mount -t cifs "//Your File Server IP/Your Path" /home/bydintranet/intranet/node/mnt -o username="BYD-Intranet",password="0mGdeTVK5M",vers=3.0
+   ```
+
+3. Make the Mount Persistent (optional): To ensure that this mount is remounted automatically after a reboot, add the following entry to your /etc/fstab file:
+
+   - Open the /etc/fstab file:
+
+   ```bash
+   sudo nano /etc/fstab
+   ```
+
+   - Add this line:
+
+   ```bash
+   //Your File Server IP/Your Path /home/bydintranet/intranet/node/mnt cifs username=BYD-Intranet,password=0mGdeTVK5M,vers=3.0 0 0
+   ```
+
+4. Verify the Mount: After mounting, check the contents of the directory to ensure everything is correctly mounted:
+
+   ```bash
+   ls /home/bydintranet/intranet/node/mnt
+   ```
+
 ### GitHub
 
 1. Check the status:
