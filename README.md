@@ -84,7 +84,7 @@ To facilitate seamless development, it's important to note that Vue and Node app
 2. Mount the Directory to the New Location: Use the following command to mount the remote CIFS directory to the new local path:
 
    ```bash
-   sudo mount -t cifs "//Your File Server IP/Your Path" /home/bydintranet/intranet/node/mnt -o username="BYD-Intranet",password="0mGdeTVK5M",vers=3.0
+   sudo mount -t cifs "//Your File Server IP/Your Path" /home/bydintranet/intranet/node/mnt -o username="BYD-Intranet",password="XYZ",vers=3.0
    ```
 
 3. Make the Mount Persistent (optional): To ensure that this mount is remounted automatically after a reboot, add the following entry to your /etc/fstab file:
@@ -98,7 +98,7 @@ To facilitate seamless development, it's important to note that Vue and Node app
    - Add this line:
 
    ```bash
-   //Your File Server IP/Your Path /home/bydintranet/intranet/node/mnt cifs username=BYD-Intranet,password=0mGdeTVK5M,vers=3.0 0 0
+   //Your File Server IP/Your Path /home/bydintranet/intranet/node/mnt cifs username=BYD-Intranet,password=XYZ,vers=3.0 0 0
    ```
 
 4. Verify the Mount: After mounting, check the contents of the directory to ensure everything is correctly mounted:
