@@ -1,13 +1,16 @@
 import { Not } from "typeorm";
-import { Scheduler } from "../models/common/Scheduler";
+import { OneTimeScheduler, CronScheduler } from "../models/common/Scheduler";
 import { DocumentChange } from "../orm/entity/change/documents/DocumentChangeEntity";
 import { dataSource } from "./dataSource";
 import { User } from "../orm/entity/user/UserEntity";
 import { EDCNotificationVariant } from "../interfaces/user/notification/ENotificationVariant";
 import { PackedService } from "../services/analytic/PackedService";
+import { FileService } from "../services/analytic/files/FileService";
+import { MNT_PATH } from "./routeConstants";
+import path from "path";
 
 const mountScheduledTasks = () => {
-  const scheduler = new Scheduler();
+  const scheduler = new CronScheduler();
 
   // Schedule the cleanup task to run every day at 8 AM local time
   scheduler.scheduleTask(
@@ -63,4 +66,17 @@ const mountScheduledTasks = () => {
   scheduler.startAllTasks();
 };
 
-export { mountScheduledTasks };
+const mountOneTimeTasks = () => {
+  const oneTimeScheduler = new OneTimeScheduler();
+
+  // Schedule a one-time task to run after 5 seconds
+  oneTimeScheduler.scheduleTask(
+    0,
+    () => {
+      new FileService.FileWatcherService("sky", "packing", "drive", "models", MNT_PATH);
+    },
+    "WatchModelAnalyticFiles"
+  );
+};
+
+export { mountScheduledTasks, mountOneTimeTasks };

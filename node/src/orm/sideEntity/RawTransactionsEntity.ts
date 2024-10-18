@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { SideAnalyticTypes } from "../../interfaces/analytic/SideAnalyticTypes";
 
-@Entity("operation_history")
+@Entity({ name: "operation_history", schema: "public" })
 export class RawTransaction implements SideAnalyticTypes.RawTransaction {
   @PrimaryGeneratedColumn()
   transaction_id: number;

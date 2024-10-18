@@ -41,7 +41,6 @@ class DocumentChangeFields implements IDocumentChangeFields {
 
   areFieldsFilled(): boolean {
     for (const [key, value] of Object.entries(this)) {
-      console.log([key, value]);
       if (key === "trainingDetails" && this.requireAcknowledgmentOrTraining === "acknowledgment")
         continue;
       else if (key === "docxNumber" && this.docxSource === "not_previously_uploaded_new") continue;

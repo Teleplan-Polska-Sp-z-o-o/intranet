@@ -6,14 +6,13 @@ import { SideDataSources } from "../../config/SideDataSources";
 const getRawPackingTransactions = async (req: Request, res: Response): Promise<Response> => {
   try {
     const body = req.body;
-    console.log(body);
 
     const contracts: string[] = JSON.parse(body.contracts);
     const startOfDay = new Date(JSON.parse(body.startOfDay));
     const endOfDay = new Date(JSON.parse(body.endOfDay));
 
-    startOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
-    endOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
+    startOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setHours(6, 0, 0, 0);
     endOfDay.setDate(endOfDay.getDate() + 1);
 
     // Convert these timestamps to ISO date strings for the query
@@ -21,7 +20,6 @@ const getRawPackingTransactions = async (req: Request, res: Response): Promise<R
     const endOfDayISO = endOfDay.toISOString();
 
     const rawTransactionsRepo = SideDataSources.postgres.getRepository(RawTransaction);
-
     const rawTransactions = await rawTransactionsRepo
       .createQueryBuilder("h")
       .select([
@@ -38,7 +36,7 @@ const getRawPackingTransactions = async (req: Request, res: Response): Promise<R
       .andWhere("h.reversed_flag = :reversedFlag", { reversedFlag: "N" })
       .andWhere("h.transaction = :transaction", { transaction: "OP FEED" })
       .andWhere("h.next_work_center_no = :nextWorkCenter", { nextWorkCenter: "A1200" })
-      .andWhere("h.datedtz >= :startOfDay AND h.datedtz < :endOfDay")
+      .andWhere("h.dated >= :startOfDay AND h.dated < :endOfDay")
       .setParameters({
         startOfDay: startOfDayISO,
         endOfDay: endOfDayISO,
@@ -82,8 +80,8 @@ const getRawCosmeticTransactions = async (req: Request, res: Response): Promise<
     const startOfDay = new Date(JSON.parse(body.startOfDay));
     const endOfDay = new Date(JSON.parse(body.endOfDay));
 
-    startOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
-    endOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
+    startOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setHours(6, 0, 0, 0);
     endOfDay.setDate(endOfDay.getDate() + 1);
 
     // Convert these timestamps to ISO date strings for the query
@@ -108,7 +106,7 @@ const getRawCosmeticTransactions = async (req: Request, res: Response): Promise<
       .andWhere("h.reversed_flag = :reversedFlag", { reversedFlag: "N" })
       .andWhere("h.transaction = :transaction", { transaction: "OP FEED" })
       .andWhere("h.work_center_no = :workCenter", { workCenter: "A1070" })
-      .andWhere("h.datedtz >= :startOfDay AND h.datedtz < :endOfDay")
+      .andWhere("h.dated >= :startOfDay AND h.dated < :endOfDay")
       .setParameters({
         startOfDay: startOfDayISO,
         endOfDay: endOfDayISO,
@@ -139,8 +137,8 @@ const getRawOobaTransactions = async (req: Request, res: Response): Promise<Resp
     const startOfDay = new Date(JSON.parse(body.startOfDay));
     const endOfDay = new Date(JSON.parse(body.endOfDay));
 
-    startOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
-    endOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
+    startOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setHours(6, 0, 0, 0);
     endOfDay.setDate(endOfDay.getDate() + 1);
 
     // Convert these timestamps to ISO date strings for the query
@@ -165,7 +163,7 @@ const getRawOobaTransactions = async (req: Request, res: Response): Promise<Resp
       .andWhere("h.reversed_flag = :reversedFlag", { reversedFlag: "N" })
       .andWhere("h.transaction = :transaction", { transaction: "OP FEED" })
       .andWhere("h.work_center_no = :workCenter", { workCenter: "OOBA" })
-      .andWhere("h.datedtz >= :startOfDay AND h.datedtz < :endOfDay")
+      .andWhere("h.dated >= :startOfDay AND h.dated < :endOfDay")
       .setParameters({
         startOfDay: startOfDayISO,
         endOfDay: endOfDayISO,

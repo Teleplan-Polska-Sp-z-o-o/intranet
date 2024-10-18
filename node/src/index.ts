@@ -4,8 +4,9 @@ import { createExpressApp } from "./config/expressApp";
 import { mountRoutes } from "./config/routes";
 const app = mountRoutes(createExpressApp());
 
-import { mountScheduledTasks } from "./config/scheduler";
+import { mountScheduledTasks, mountOneTimeTasks } from "./config/scheduler";
 mountScheduledTasks();
+mountOneTimeTasks();
 
 // DataSource instance initialize
 import { dataSource } from "./config/dataSource";

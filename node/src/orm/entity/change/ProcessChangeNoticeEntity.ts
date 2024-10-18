@@ -562,20 +562,11 @@ class ProcessChangeNotice implements IProcessChangeNotice {
       .every(([key, value]) => {
         switch (key) {
           case "listOfDocumentationToChange":
-            console.log(
-              "return",
-              fields.areDocumentationChangesRequired ? isNotNullOrUndefined(value) : true
-            );
             return fields.areDocumentationChangesRequired ? isNotNullOrUndefined(value) : true;
           case "listOfDocumentationToCreate":
-            console.log(
-              "return",
-              fields.isNewDocumentationRequired ? isNotNullOrUndefined(value) : true
-            );
             return fields.isNewDocumentationRequired ? isNotNullOrUndefined(value) : true;
 
           default:
-            console.log("return", isNotNullOrUndefined(value));
             return isNotNullOrUndefined(value);
         }
       });

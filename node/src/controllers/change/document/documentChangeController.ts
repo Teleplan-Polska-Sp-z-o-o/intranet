@@ -225,7 +225,6 @@ const assessDCR = async (req: Request<{ id: number }>, res: Response) => {
 
 const registration = async (req: Request<{ id: number }>, res: Response) => {
   try {
-    console.log("registration");
     const body = req.body;
     const registration: IReview = JSON.parse(body.registration);
 

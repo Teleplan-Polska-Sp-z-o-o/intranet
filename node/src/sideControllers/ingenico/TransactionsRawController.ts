@@ -12,8 +12,8 @@ const getRawRepairTransactions = async (req: Request, res: Response): Promise<Re
     const startOfDay = new Date(JSON.parse(body.startOfDay));
     const endOfDay = new Date(JSON.parse(body.endOfDay));
 
-    startOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
-    endOfDay.setHours(4, 0, 0, 0); // Set to 6 AM in the database's +2
+    startOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setHours(6, 0, 0, 0);
     endOfDay.setDate(endOfDay.getDate() + 1);
 
     // Convert these timestamps to ISO date strings for the query
@@ -37,7 +37,7 @@ const getRawRepairTransactions = async (req: Request, res: Response): Promise<Re
       .where("h.contract IN (:...contracts)", { contracts })
       .andWhere("h.reversed_flag = :reversedFlag", { reversedFlag: "N" })
       .andWhere("h.transaction = :transaction", { transaction: "OP FEED" })
-      .andWhere("h.datedtz >= :startOfDay AND h.datedtz < :endOfDay")
+      .andWhere("h.dated >= :startOfDay AND h.dated < :endOfDay")
       .setParameters({
         startOfDay: startOfDayISO,
         endOfDay: endOfDayISO,
