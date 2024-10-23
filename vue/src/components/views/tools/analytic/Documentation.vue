@@ -88,6 +88,16 @@
                 upload and management. Please ensure that all files you upload are in Excel format
                 (.xls, .xlsx) to avoid errors.
               </v-alert>
+
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title
+                    >Files that are monitored for any changes made, such as the modification date
+                    which trigger an automatic upload:
+                  </v-list-item-title>
+                  <p class="ms-2"><b>Auto-plan update</b> required for planning of sky packing.</p>
+                </v-list-item-content>
+              </v-list-item>
             </v-list-item-content>
           </v-list-item>
 

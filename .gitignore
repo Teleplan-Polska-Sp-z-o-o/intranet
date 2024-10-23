@@ -1,7 +1,9 @@
+
 /.env
 /notes.txt
 /toAdjust.env
-TODO.md
+/TODO.md
+docker-compose.yaml
 
 /vue/dist
 /vue/node_modules
@@ -13,4 +15,5 @@ TODO.md
 /node/node_modules
 /node/package-lock.json
 /node/mnt_tppl03s005
+
 

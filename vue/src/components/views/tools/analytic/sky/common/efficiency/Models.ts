@@ -81,6 +81,9 @@ export namespace EfficiencyModels {
           transactionDate,
           transactionQuarter,
           processingTimePerUnit,
+          //
+          part_no,
+          //
           employeeDataMap,
           employeeWorkedQuarters,
           datedtz,
@@ -104,6 +107,14 @@ export namespace EfficiencyModels {
           worked_quarters: 0,
           processing_time: 0,
           processed_units: 0,
+          //
+          estimated_target: {
+            units: {},
+            units_per_worked_quarters: 0,
+            units_per_hr: 0,
+            units_per_8hrs: 0,
+          },
+          //
           efficiency: 0,
           dailyChart: {},
           quarterlyChart: {},
@@ -118,6 +129,9 @@ export namespace EfficiencyModels {
       transactionDate: string,
       transactionQuarter: string,
       processingTimePerUnit: number,
+      //
+      part_no: string,
+      //
       employeeDataMap: Record<string, EfficiencyTypes.IProcessedEmployee>,
       employeeWorkedQuarters: Record<string, Set<string>>,
       datedtz: Date,
@@ -131,6 +145,9 @@ export namespace EfficiencyModels {
       employeeDataMap[emp_name].processing_time += processingTimePerUnit;
       // processed_units
       employeeDataMap[emp_name].processed_units += 1;
+
+      // Update estimated targets for the employee
+      this.updateEstimatedTargets(employeeDataMap[emp_name].estimated_target, part_no);
 
       /// QUARTERLY CHART
       const quarterlyChart: Record<string, TimePeriodMetrics> =
@@ -151,7 +168,24 @@ export namespace EfficiencyModels {
         this.calculateEmployeesBase(employeeDataMap, employeeWorkedQuarters);
         this.calculateEmployeesQuarterly(employeeDataMap);
         this.calculateEmployeesDaily(employeeDataMap, employeeWorkedQuarters);
+
+        // Calculate weighted averages for each employee
+        Object.values(employeeDataMap).forEach((employee) => {
+          this.calculateWeightedAverages(employee);
+        });
       }
+    }
+
+    // --- Update estimated target values ---
+    private updateEstimatedTargets(
+      estimated_target: EfficiencyTypes.IProcessedEmployee["estimated_target"],
+      part_no: string
+    ) {
+      if (!estimated_target.units[part_no]) {
+        estimated_target.units[part_no] = 0;
+      }
+      // Increment the count of the specific model (part_no)
+      estimated_target.units[part_no] += 1;
     }
 
     // --- Calculate worked_quarters, efficiency and processing_time for each employee ---
@@ -195,6 +229,43 @@ export namespace EfficiencyModels {
 
       // Return the number of unique worked quarters for the day
       return new Set(dayWorkedQuarters).size;
+    }
+
+    // --- Calculate weighted average target values ---
+    private calculateWeightedAverages(employee: EfficiencyTypes.IProcessedEmployee) {
+      const workedMinutes = employee.worked_quarters * 15;
+      const { units } = employee.estimated_target;
+
+      // Total weight for all models
+      let totalProcessingTime = 0; // Total processing time across all models
+      let totalUnits = 0; // Total number of units processed
+
+      // Iterate over each unique model (part_no)
+      for (const part_no in units) {
+        const modelData = this.modelsCache.get(part_no);
+        if (!modelData) continue;
+
+        const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
+        const unitsCount = units[part_no];
+
+        // Add the processing time for all units of this model
+        totalProcessingTime += processingTimePerUnit * unitsCount;
+        totalUnits += unitsCount; // Add the number of units for this model
+      }
+
+      // Calculate the weighted average processing time per unit
+      const averageProcessingTimePerUnit = totalUnits > 0 ? totalProcessingTime / totalUnits : 0;
+
+      // Calculate how many units can be processed in 1 hour and in 8 hours (considering breaks)
+      const unitsPerWorkedQuarters =
+        averageProcessingTimePerUnit > 0 ? workedMinutes / averageProcessingTimePerUnit : 0;
+      const unitsPerHour = averageProcessingTimePerUnit > 0 ? 60 / averageProcessingTimePerUnit : 0;
+      const unitsPer8Hours = unitsPerHour * 7.5; // For an 8-hour shift with breaks (7.5 hours of work)
+
+      // Assign the calculated values to the employee's estimated target
+      employee.estimated_target.units_per_worked_quarters = Math.round(unitsPerWorkedQuarters);
+      employee.estimated_target.units_per_hr = Math.round(unitsPerHour);
+      employee.estimated_target.units_per_8hrs = Math.round(unitsPer8Hours);
     }
 
     // Calculate daily efficiency for all employees

@@ -84,7 +84,7 @@ worker.addEventListener("message", (event) => {
   items.value = processedData;
 
   if (items.value) loading.value = false;
-  // console.log("EfficiencyBuilder", items.value);
+  console.log("EfficiencyBuilder", items.value);
 });
 
 const isItTodaysDataOnly = ref<boolean>(true);
@@ -140,7 +140,30 @@ const headers = computed<object[]>(() => {
       key: "processing_time",
       value: "processing_time",
     },
-    { title: "Processed Units", align: "start", key: "processed_units", value: "processed_units" },
+    {
+      title: "Units Processed",
+      align: "start",
+      key: "processed_units",
+      value: "processed_units",
+    },
+    {
+      title: "Estimated Units Processed Per Worked Time",
+      align: "start",
+      key: "units_per_worked_quarters",
+      value: "estimated_target.units_per_worked_quarters",
+    },
+    {
+      title: "Target Per Hour",
+      align: "start",
+      key: "estimated_units_per_hr",
+      value: "estimated_target.units_per_hr",
+    },
+    {
+      title: "Target Per Shift (7.5 hrs)",
+      align: "start",
+      key: "estimated_units_per_8hrs",
+      value: "estimated_target.units_per_8hrs",
+    },
     { title: "Efficiency (%)", align: "start", key: "efficiency", value: "efficiency" },
   ];
 });
