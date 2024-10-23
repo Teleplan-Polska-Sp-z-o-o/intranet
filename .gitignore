@@ -3,7 +3,7 @@
 /notes.txt
 /toAdjust.env
 /TODO.md
-docker-compose.yaml
+# docker-compose.yaml
 
 /vue/dist
 /vue/node_modules
