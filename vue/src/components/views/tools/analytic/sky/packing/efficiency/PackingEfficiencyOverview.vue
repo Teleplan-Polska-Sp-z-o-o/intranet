@@ -84,7 +84,7 @@ worker.addEventListener("message", (event) => {
   items.value = processedData;
 
   if (items.value) loading.value = false;
-  console.log("EfficiencyBuilder", items.value);
+  // console.log("EfficiencyBuilder", items.value);
 });
 
 const isItTodaysDataOnly = ref<boolean>(true);
