@@ -6,7 +6,7 @@ import { User } from "../orm/entity/user/UserEntity";
 import { EDCNotificationVariant } from "../interfaces/user/notification/ENotificationVariant";
 import { PackedService } from "../services/analytic/PackedService";
 import { FileService } from "../services/analytic/files/FileService";
-import { MNT_PATH } from "./routeConstants";
+import { TPPL03S005_PATH } from "./routeConstants";
 import path from "path";
 
 const mountScheduledTasks = () => {
@@ -73,7 +73,13 @@ const mountOneTimeTasks = () => {
   oneTimeScheduler.scheduleTask(
     0,
     () => {
-      new FileService.FileWatcherService("sky", "packing", "drive", "models", MNT_PATH);
+      new FileService._(
+        "sky",
+        "packing",
+        "drive",
+        "planning",
+        path.join(TPPL03S005_PATH, "Resources/Operations/SKY/Shift_docs/Plan/Daily Plan+report")
+      );
     },
     "WatchModelAnalyticFiles"
   );

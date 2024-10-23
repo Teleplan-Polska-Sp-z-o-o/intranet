@@ -4,10 +4,6 @@ import { createExpressApp } from "./config/expressApp";
 import { mountRoutes } from "./config/routes";
 const app = mountRoutes(createExpressApp());
 
-import { mountScheduledTasks, mountOneTimeTasks } from "./config/scheduler";
-mountScheduledTasks();
-mountOneTimeTasks();
-
 // DataSource instance initialize
 import { dataSource } from "./config/dataSource";
 import { mountWsRoute } from "./config/ws";
@@ -16,6 +12,7 @@ import * as fs from "fs";
 import https from "https";
 import { UserSessionManager } from "./models/user/session/UserSessionManager";
 import { SideDataSources } from "./config/SideDataSources";
+import { mountScheduledTasks, mountOneTimeTasks } from "./config/scheduler";
 
 dataSource
   .initialize()
@@ -48,6 +45,11 @@ dataSource
             console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
           );
         }
+
+        // mount tasks
+
+        mountScheduledTasks();
+        mountOneTimeTasks();
 
         // Graceful shutdown on SIGTERM (e.g., Docker container stop)
         process.on("SIGTERM", async () => {

@@ -226,7 +226,8 @@ class AnalyticFile extends AbstractBaseOrmEntityWithUser implements AnalyticType
       throw new Error(`AnalyticFileError (5): Directory does not exist: ${dir}`);
     }
 
-    fs.renameSync(multerFile.path, path.join(dir, saveAs));
+    if (multerFile.copy === true) fs.copyFileSync(multerFile.path, path.join(dir, saveAs));
+    else fs.renameSync(multerFile.path, path.join(dir, saveAs));
 
     this.fileDir = dir;
     this.fileName = saveAs;

@@ -87,6 +87,8 @@ To facilitate seamless development, it's important to note that Vue and Node app
    sudo mount -t cifs "//Your File Server IP/Your Path" /home/bydintranet/intranet/node/mnt -o username="BYD-Intranet",password="XYZ",vers=3.0
    ```
 
+   sudo mount -t cifs "//10.41.0.82/Resources/Operations/SKY/Shift_docs/Plan/Daily Plan+report" "/home/bydintranet/intranet/node/mnt_tppl03s005/Resources/Operations/SKY/Shift_docs/Plan/Daily Plan+report" -o username="BYD-Intranet",password="0mGdeTVK5M",vers=3.0
+
 3. Make the Mount Persistent (optional): To ensure that this mount is remounted automatically after a reboot, add the following entry to your /etc/fstab file:
 
    - Open the /etc/fstab file:

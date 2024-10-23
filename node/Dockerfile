@@ -15,4 +15,5 @@ COPY ./.env ./
 COPY ./certs/certificate.crt ./
 COPY ./certs/private.key ./
 
-CMD ["node", "./dist/index.js"]
+CMD ["node", "./dist/index.js"]/
+

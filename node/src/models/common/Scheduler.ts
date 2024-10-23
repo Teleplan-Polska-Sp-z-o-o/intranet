@@ -70,7 +70,7 @@ class OneTimeScheduler {
   public scheduleTask(delayInMs: number, taskFunction: () => void, taskName: string): void {
     const timeoutId = setTimeout(() => {
       taskFunction();
-      console.log(`Executed one-time task "${taskName}"`);
+      console.log(`Started one-time task "${taskName}"`);
       // Remove the task from the list after execution
       this.tasks = this.tasks.filter((t) => t.name !== taskName);
     }, delayInMs);
@@ -83,7 +83,7 @@ class OneTimeScheduler {
   public stopAllTasks(): void {
     this.tasks.forEach(({ name, task }) => {
       clearTimeout(task);
-      console.log(`Cleared one-time task "${name}"`);
+      console.log(`Stopped one-time task "${name}"`);
     });
     this.tasks = [];
   }
@@ -93,7 +93,7 @@ class OneTimeScheduler {
     const task = this.tasks.find(({ name }) => name === taskName);
     if (task) {
       clearTimeout(task.task);
-      console.log(`Cleared one-time task "${taskName}"`);
+      console.log(`Stopped one-time task "${taskName}"`);
       this.tasks = this.tasks.filter((t) => t.name !== taskName);
     } else {
       console.log(`Task "${taskName}" not found`);
