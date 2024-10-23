@@ -161,7 +161,7 @@ const headers = computed<object[]>(() => {
       value: "estimated_target.units_per_worked_quarters",
     },
     {
-      title: "Difference (Processed - Estimated)",
+      title: "Difference Between Processed and Estimated",
       align: "start",
       key: "difference_units_worked_time",
       value: "estimated_target.difference_units_worked_time",

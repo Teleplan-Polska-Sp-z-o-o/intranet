@@ -266,7 +266,7 @@ export namespace EfficiencyModels {
       // Assign the calculated values to the employee's estimated target
       employee.estimated_target.units_per_worked_quarters = Math.round(unitsPerWorkedQuarters);
       employee.estimated_target.difference_units_worked_time =
-        Math.round(unitsPerWorkedQuarters) - employee.processed_units;
+        employee.processed_units - Math.round(unitsPerWorkedQuarters);
       employee.estimated_target.units_per_hr = Math.round(unitsPerHour);
       employee.estimated_target.units_per_8hrs = Math.round(unitsPer8Hours);
     }
