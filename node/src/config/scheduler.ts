@@ -73,7 +73,7 @@ const mountOneTimeTasks = () => {
   oneTimeScheduler.scheduleTask(
     0,
     () => {
-      new FileService._(
+      new FileService.FileWatcherService(
         "sky",
         "packing",
         "drive",
