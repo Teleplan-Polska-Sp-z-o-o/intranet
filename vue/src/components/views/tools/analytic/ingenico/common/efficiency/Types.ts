@@ -7,24 +7,13 @@ export namespace EfficiencyTypes {
     GROUP_LETTER: string;
     IFS_PART_NO: string;
   }
-  interface TTPack {
+  interface TTRepair {
     [key: string]: number;
-    TT_PACK: number; // Time required to pack a unit, in minutes
+    TT_REPAIR: number; // Time required to pack a unit, in minutes
   }
-  interface TTCosm {
-    [key: string]: number;
-    TT_COSM: number; // Time required to pack a unit, in minutes
-  }
-  interface TTOoba {
-    [key: string]: number;
-    TT_OOBA: number; // Time required to pack a unit, in minutes
-  }
+  export type TRepairModelObj = IBaseModelObj & TTRepair;
 
-  export type TPackModelObj = IBaseModelObj & TTPack;
-  export type TCosmModelObj = IBaseModelObj & TTCosm;
-  export type TOobaModelObj = IBaseModelObj & TTOoba;
-
-  export type IModelObj = TPackModelObj | TCosmModelObj | TOobaModelObj;
+  export type IModelObj = TRepairModelObj;
 
   export type IModelsObj = IModelObj[];
 
@@ -46,7 +35,6 @@ export namespace EfficiencyTypes {
     estimated_target: {
       units: Record<string, number>; // {model1: count, model2: count}
       units_per_worked_quarters: number;
-      difference_units_worked_time: number; // Difference between processed and estimated units
       units_per_hr: number; // weighted average of units based on processing time of specific model
       units_per_8hrs: number; // weighted average of units based on 8 hours
     };
