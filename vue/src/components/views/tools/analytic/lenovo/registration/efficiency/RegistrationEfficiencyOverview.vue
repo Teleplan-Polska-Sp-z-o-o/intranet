@@ -48,29 +48,27 @@ watch(
 
     if (!unref(modelsObj) && !unref(modelsObj).at(0)) return;
 
-    function hasTTPackProperty(
+    function hasTTRegistrationProperty(
       model: EfficiencyTypes.IModelObj
-    ): model is EfficiencyTypes.TRepairModelObj {
-      return "TT_REPAIR" in model;
+    ): model is EfficiencyTypes.TRegistrationModelObj {
+      return "TT_REGISTRATION" in model;
     }
 
-    const packModelsObj = unref(modelsObj).filter(
-      hasTTPackProperty
-    ) as EfficiencyTypes.TRepairModelObj[];
+    const registrationModelsObj = unref(modelsObj).filter(
+      hasTTRegistrationProperty
+    ) as EfficiencyTypes.TRegistrationModelObj[];
 
-    if (packModelsObj.length === 0) {
-      throw new Error("No models found with the 'TT_REPAIR' property");
+    if (registrationModelsObj.length === 0) {
+      throw new Error("No models found with the 'TT_REGISTRATION' property");
     }
 
-    // Serialize data before sending it to the worker
     const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
     const serializedModelsObj = JSON.stringify(unref(modelsObj));
 
-    // Post the data to the worker, including the model type
     worker.postMessage({
       rawTransactions: serializedRawTransactions,
       modelsObj: serializedModelsObj,
-      modelType: "TRepairModelObj",
+      modelType: "TRegistrationModelObj",
     });
   },
   { deep: true }
@@ -226,7 +224,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
     <v-card-title class="d-flex align-center">
-      {{ title ?? "Employee Repair Efficiency Overview" }}
+      {{ title ?? "Employee Registration Efficiency Overview" }}
       <v-spacer></v-spacer>
       <download
         :headers="downloadHeaders"

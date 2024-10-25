@@ -100,7 +100,6 @@ const handleInterval = (preForm: AnalyticRaw.IPreFormData | undefined, every: nu
     };
 
     if (isSameDay(preForm.endOfDay, today)) {
-      console.log("handleInterval triggerAdaptiveLoad");
       stopInterval.value = TransactionsHelper.triggerAdaptiveLoad(() => load(false), every);
     } else {
       // If an interval is already running, stop it

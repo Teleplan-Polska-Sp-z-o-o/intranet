@@ -46,31 +46,31 @@ watch(
   async (newRawTransactions: AnalyticRaw.TTransactions) => {
     rawTransactions.value = newRawTransactions;
 
+    console.log("rawTransactions.value", rawTransactions.value);
+
     if (!unref(modelsObj) && !unref(modelsObj).at(0)) return;
 
-    function hasTTPackProperty(
+    function hasTTFinalTestProperty(
       model: EfficiencyTypes.IModelObj
-    ): model is EfficiencyTypes.TRepairModelObj {
-      return "TT_REPAIR" in model;
+    ): model is EfficiencyTypes.TFinalTestModelObj {
+      return "TT_FINAL_TEST" in model;
     }
 
-    const packModelsObj = unref(modelsObj).filter(
-      hasTTPackProperty
-    ) as EfficiencyTypes.TRepairModelObj[];
+    const finalTestModelsObj = unref(modelsObj).filter(
+      hasTTFinalTestProperty
+    ) as EfficiencyTypes.TFinalTestModelObj[];
 
-    if (packModelsObj.length === 0) {
-      throw new Error("No models found with the 'TT_REPAIR' property");
+    if (finalTestModelsObj.length === 0) {
+      throw new Error("No models found with the 'TT_FINAL_TEST' property");
     }
 
-    // Serialize data before sending it to the worker
     const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
     const serializedModelsObj = JSON.stringify(unref(modelsObj));
 
-    // Post the data to the worker, including the model type
     worker.postMessage({
       rawTransactions: serializedRawTransactions,
       modelsObj: serializedModelsObj,
-      modelType: "TRepairModelObj",
+      modelType: "TFinalTestModelObj",
     });
   },
   { deep: true }
@@ -226,7 +226,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
     <v-card-title class="d-flex align-center">
-      {{ title ?? "Employee Repair Efficiency Overview" }}
+      {{ title ?? "Employee Final Test Efficiency Overview" }}
       <v-spacer></v-spacer>
       <download
         :headers="downloadHeaders"

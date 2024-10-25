@@ -20,9 +20,10 @@ const analyticRawTransactionsStore = useAnalyticRawTableStore();
 
 const props = defineProps<{
   rawIdentification: string;
+  title?: string;
 }>();
 
-const { rawIdentification } = toRefs(props);
+const { title, rawIdentification } = toRefs(props);
 
 // required items
 // models
@@ -47,32 +48,27 @@ watch(
 
     if (!unref(modelsObj) && !unref(modelsObj).at(0)) return;
 
-    // Function to check if the model is a PackModelObj (contains TT_PACK)
-    function hasTTPackProperty(
+    function hasTTPackingProperty(
       model: EfficiencyTypes.IModelObj
-    ): model is EfficiencyTypes.TRepairModelObj {
-      return "TT_REPAIR" in model;
+    ): model is EfficiencyTypes.TPackingModelObj {
+      return "TT_PACKING" in model;
     }
 
-    // Filter models to only those that have the TT_PACK property and assert the type
-    const packModelsObj = unref(modelsObj).filter(
-      hasTTPackProperty
-    ) as EfficiencyTypes.TRepairModelObj[];
+    const packingModelsObj = unref(modelsObj).filter(
+      hasTTPackingProperty
+    ) as EfficiencyTypes.TPackingModelObj[];
 
-    // Ensure that we have models with TT_PACK before proceeding
-    if (packModelsObj.length === 0) {
-      throw new Error("No models found with the 'TT_REPAIR' property");
+    if (packingModelsObj.length === 0) {
+      throw new Error("No models found with the 'TT_PACKING' property");
     }
 
-    // Serialize data before sending it to the worker
     const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
     const serializedModelsObj = JSON.stringify(unref(modelsObj));
 
-    // Post the data to the worker, including the model type
     worker.postMessage({
       rawTransactions: serializedRawTransactions,
       modelsObj: serializedModelsObj,
-      modelType: "TRepairModelObj",
+      modelType: "TPackingModelObj",
     });
   },
   { deep: true }
@@ -153,6 +149,12 @@ const headers = computed<object[]>(() => {
       value: "estimated_target.units_per_worked_quarters",
     },
     {
+      title: "Difference Between Processed and Estimated",
+      align: "start",
+      key: "difference_units_worked_time",
+      value: "estimated_target.difference_units_worked_time",
+    },
+    {
       title: "Target Per Hour",
       align: "start",
       key: "estimated_units_per_hr",
@@ -222,7 +224,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
     <v-card-title class="d-flex align-center">
-      Employee Packed Efficiency Overview
+      {{ title ?? "Employee Packed Efficiency Overview" }}
       <v-spacer></v-spacer>
       <download
         :headers="downloadHeaders"

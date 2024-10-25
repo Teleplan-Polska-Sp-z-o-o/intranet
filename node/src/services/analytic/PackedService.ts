@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
   getRawCosmeticTransactions,
   getRawOobaTransactions,
-  getRawPackingTransactions,
+  getRawSkyPackingTransactions,
 } from "../../sideControllers/sky/TransactionsRawController";
 import { HttpResponseMessage } from "../../enums/response";
 import { RawTransaction } from "../../orm/sideEntity/RawTransactionsEntity";
@@ -42,7 +42,7 @@ export namespace PackedService {
   };
   class RawTransactionHandler {
     transactionMethods: Record<Category, RawMethod> = {
-      packing: getRawPackingTransactions,
+      packing: getRawSkyPackingTransactions,
       cosmetic: getRawCosmeticTransactions,
       ooba: getRawOobaTransactions,
     };

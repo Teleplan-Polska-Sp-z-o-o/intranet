@@ -2,7 +2,7 @@ import { CommonTypes } from "../../../../../../interfaces/common/CommonTypes";
 
 export namespace AnalyticRaw {
   export type TPrograms = "lenovo";
-  export type TGroups = "repair";
+  export type TGroups = "repair" | "registration" | "cleaning" | "final" | "packing";
   export type TManager = CommonTypes.Api.GetManager &
     CommonTypes.Api.CreateFormDataManager & { program: TPrograms };
   export interface IPreFormData {

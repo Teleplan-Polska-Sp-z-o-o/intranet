@@ -3,7 +3,7 @@ import { HttpResponseMessage } from "../../enums/response";
 import { RawTransaction } from "../../orm/sideEntity/RawTransactionsEntity";
 import { SideDataSources } from "../../config/SideDataSources";
 
-const getRawPackingTransactions = async (req: Request, res: Response): Promise<Response> => {
+const getRawSkyPackingTransactions = async (req: Request, res: Response): Promise<Response> => {
   try {
     const body = req.body;
 
@@ -185,4 +185,4 @@ const getRawOobaTransactions = async (req: Request, res: Response): Promise<Resp
   }
 };
 
-export { getRawPackingTransactions, getRawCosmeticTransactions, getRawOobaTransactions };
+export { getRawSkyPackingTransactions, getRawCosmeticTransactions, getRawOobaTransactions };

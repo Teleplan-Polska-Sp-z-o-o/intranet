@@ -13,6 +13,9 @@ import PackingEfficiencyOverview from "../../components/views/tools/analytic/sky
 import CosmeticEfficiencyOverview from "../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
 import OobaEfficiencyOverview from "../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
 import RepairEfficiencyOverview from "../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
+import CleaningEfficiencyOverview from "../../components/views/tools/analytic/lenovo/cleaning/efficiency/CleaningEfficiencyOverview.vue";
+import FinalEfficiencyOverview from "../../components/views/tools/analytic/lenovo/final/efficiency/FinalEfficiencyOverview.vue";
+import RegistrationEfficiencyOverview from "../../components/views/tools/analytic/lenovo/registration/efficiency/RegistrationEfficiencyOverview.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
@@ -119,6 +122,86 @@ const tabs: ToolTab[] = [
           },
         ],
       },
+      {
+        id: 22,
+        title: "Registration",
+        name: "registration",
+        icon: undefined,
+        children: [
+          {
+            id: 221,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 222,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 23,
+        title: "Cleaning",
+        name: "cleaning",
+        icon: undefined,
+        children: [
+          {
+            id: 231,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 232,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 24,
+        title: "Final Test",
+        name: "final",
+        icon: undefined,
+        children: [
+          {
+            id: 241,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 242,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 25,
+        title: "Packing",
+        name: "packing",
+        icon: undefined,
+        children: [
+          {
+            id: 251,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 252,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
     ],
   },
 ];
@@ -153,11 +236,10 @@ const findTabIds = (program: string, cat?: string, sub?: string): number[] => {
 
 const location = (program: string, cat?: string, sub?: string): void => {
   const newPath = [program, cat, sub].filter(Boolean).join("/");
+  windowItem.value = cat && sub ? [program, cat, sub].filter(Boolean).join("-") : "documentation";
   router.push({
     path: `/tool/analytic/browse/${newPath}`,
   });
-
-  windowItem.value = cat && sub ? [program, cat, sub].filter(Boolean).join("-") : "documentation";
 };
 
 const isActive = (subId: number): boolean => {
@@ -173,16 +255,13 @@ onMounted(async () => {
   const userInfo = useUserStore().info();
   if (!userInfo) return;
   filteredToolTabs.value = await usePermissionStore().filterToolTabs<ToolTab>(userInfo, tabs);
-
   const { program, cat, sub } = route.params as {
     program: string;
     cat: string | undefined;
     sub: string | undefined;
   };
-
   // Use the findTabIds function to dynamically get the tab ids based on the current route
   toggled.value = findTabIds(program, cat, sub);
-
   windowItem.value = cat && sub ? `${program}-${cat}-${sub}` : "documentation";
 });
 </script>
@@ -243,63 +322,193 @@ onMounted(async () => {
                 <v-window-item value="documentation">
                   <documentation></documentation>
                 </v-window-item>
+                <!-- SKY -->
                 <!-- Packing -->
                 <v-window-item value="sky-packing-drive">
-                  <file-drive
-                    subtitle="SKY Packing"
-                    identification="sky-packing-drive"
-                  ></file-drive>
+                  <template v-if="windowItem === 'sky-packing-drive'">
+                    <file-drive
+                      subtitle="SKY Packing"
+                      identification="sky-packing-drive"
+                    ></file-drive>
+                  </template>
                 </v-window-item>
                 <v-window-item value="sky-packing-overview">
-                  <transactions-raw-sky-data-table
-                    program="sky"
-                    group="packing"
-                    identification="sky-packing-overview"
-                  ></transactions-raw-sky-data-table>
-                  <packed-units-overview rawIdentification="sky-packing-overview" class="mt-6">
-                  </packed-units-overview>
-                  <packing-efficiency-overview
-                    rawIdentification="sky-packing-overview"
-                    class="mt-6"
-                  >
-                  </packing-efficiency-overview>
+                  <template v-if="windowItem === 'sky-packing-overview'">
+                    <transactions-raw-sky-data-table
+                      program="sky"
+                      group="packing"
+                      identification="sky-packing-overview"
+                    ></transactions-raw-sky-data-table>
+                    <packed-units-overview rawIdentification="sky-packing-overview" class="mt-6">
+                    </packed-units-overview>
+                    <packing-efficiency-overview
+                      rawIdentification="sky-packing-overview"
+                      class="mt-6"
+                    >
+                    </packing-efficiency-overview>
+                  </template>
                 </v-window-item>
                 <!-- Cosmetic -->
                 <v-window-item value="sky-cosmetic-drive">
-                  <file-drive
-                    subtitle="SKY Cosmetic"
-                    identification="sky-cosmetic-drive"
-                  ></file-drive>
+                  <template v-if="windowItem === 'sky-cosmetic-drive'">
+                    <file-drive
+                      subtitle="SKY Cosmetic"
+                      identification="sky-cosmetic-drive"
+                    ></file-drive>
+                  </template>
                 </v-window-item>
                 <v-window-item value="sky-cosmetic-overview">
-                  <transactions-raw-sky-data-table
-                    program="sky"
-                    group="cosmetic"
-                    identification="sky-cosmetic-overview"
-                  ></transactions-raw-sky-data-table>
-                  <cosmetic-efficiency-overview
-                    rawIdentification="sky-cosmetic-overview"
-                    class="mt-6"
-                  >
-                  </cosmetic-efficiency-overview>
+                  <template v-if="windowItem === 'sky-cosmetic-overview'">
+                    <transactions-raw-sky-data-table
+                      program="sky"
+                      group="cosmetic"
+                      identification="sky-cosmetic-overview"
+                    ></transactions-raw-sky-data-table>
+                    <cosmetic-efficiency-overview
+                      rawIdentification="sky-cosmetic-overview"
+                      class="mt-6"
+                    >
+                    </cosmetic-efficiency-overview>
+                  </template>
                 </v-window-item>
                 <!-- OOBA -->
-                <v-window-item value="sky-ooba-drive">
-                  <file-drive subtitle="SKY OOBA" identification="sky-ooba-drive"></file-drive>
+                <v-window-item v-if="windowItem === 'sky-ooba-drive'" value="sky-ooba-drive">
+                  <template v-if="windowItem === 'sky-ooba-drive'">
+                    <file-drive subtitle="SKY OOBA" identification="sky-ooba-drive"></file-drive>
+                  </template>
                 </v-window-item>
                 <v-window-item value="sky-ooba-overview">
-                  <transactions-raw-sky-data-table
-                    program="sky"
-                    group="ooba"
-                    identification="sky-ooba-overview"
-                  ></transactions-raw-sky-data-table>
-                  <ooba-efficiency-overview rawIdentification="sky-ooba-overview" class="mt-6">
-                  </ooba-efficiency-overview>
+                  <template v-if="windowItem === 'sky-ooba-overview'">
+                    <transactions-raw-sky-data-table
+                      program="sky"
+                      group="ooba"
+                      identification="sky-ooba-overview"
+                    ></transactions-raw-sky-data-table>
+                    <ooba-efficiency-overview rawIdentification="sky-ooba-overview" class="mt-6">
+                    </ooba-efficiency-overview>
+                  </template>
                 </v-window-item>
 
                 <!-- LENOVO -->
+
                 <!-- REPAIR -->
                 <v-window-item value="lenovo-repair-drive">
+                  <template v-if="windowItem === 'lenovo-repair-drive'">
+                    <file-drive
+                      subtitle="Lenovo Repair"
+                      identification="lenovo-repair-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="lenovo-repair-overview">
+                  <template v-if="windowItem === 'lenovo-repair-overview'">
+                    <transactions-raw-lenovo-data-table
+                      program="lenovo"
+                      group="repair"
+                      identification="lenovo-repair-overview"
+                    ></transactions-raw-lenovo-data-table>
+                    <repair-efficiency-overview
+                      rawIdentification="lenovo-repair-overview"
+                      class="mt-6"
+                    ></repair-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- CLEANING -->
+                <v-window-item value="lenovo-cleaning-drive">
+                  <template v-if="windowItem === 'lenovo-cleaning-drive'">
+                    <file-drive
+                      subtitle="Lenovo Cleaning"
+                      identification="lenovo-cleaning-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="lenovo-cleaning-overview">
+                  <template v-if="windowItem === 'lenovo-cleaning-overview'">
+                    <transactions-raw-lenovo-data-table
+                      program="lenovo"
+                      group="cleaning"
+                      identification="lenovo-cleaning-overview"
+                    ></transactions-raw-lenovo-data-table>
+                    <cleaning-efficiency-overview
+                      rawIdentification="lenovo-cleaning-overview"
+                      class="mt-6"
+                    >
+                    </cleaning-efficiency-overview>
+                  </template>
+                </v-window-item>
+                <!-- REGISTRATION -->
+                <v-window-item value="lenovo-registration-drive">
+                  <template v-if="windowItem === 'lenovo-registration-drive'">
+                    <file-drive
+                      subtitle="Lenovo Registration"
+                      identification="lenovo-registration-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="lenovo-registration-overview">
+                  <template v-if="windowItem === 'lenovo-registration-overview'">
+                    <transactions-raw-lenovo-data-table
+                      program="lenovo"
+                      group="registration"
+                      identification="lenovo-registration-overview"
+                    ></transactions-raw-lenovo-data-table>
+                    <registration-efficiency-overview
+                      rawIdentification="lenovo-registration-overview"
+                      class="mt-6"
+                    >
+                    </registration-efficiency-overview>
+                  </template>
+                </v-window-item>
+                <!-- FINAL TEST -->
+                <v-window-item value="lenovo-final-drive">
+                  <template v-if="windowItem === 'lenovo-final-drive'">
+                    <file-drive
+                      subtitle="Lenovo Final Test"
+                      identification="lenovo-final-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="lenovo-final-overview">
+                  <template v-if="windowItem === 'lenovo-final-overview'">
+                    <transactions-raw-lenovo-data-table
+                      program="lenovo"
+                      group="final"
+                      identification="lenovo-final-overview"
+                    ></transactions-raw-lenovo-data-table>
+                    <final-efficiency-overview
+                      rawIdentification="lenovo-final-overview"
+                      class="mt-6"
+                    >
+                    </final-efficiency-overview>
+                  </template>
+                </v-window-item>
+                <!-- PACKING -->
+                <v-window-item value="lenovo-packing-drive">
+                  <template v-if="windowItem === 'lenovo-packing-drive'">
+                    <file-drive
+                      subtitle="Lenovo Packing"
+                      identification="lenovo-packing-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="lenovo-packing-overview">
+                  <template v-if="windowItem === 'lenovo-packing-overview'">
+                    <transactions-raw-lenovo-data-table
+                      program="lenovo"
+                      group="packing"
+                      identification="lenovo-packing-overview"
+                    ></transactions-raw-lenovo-data-table>
+                    <packing-efficiency-overview
+                      rawIdentification="lenovo-final-overview"
+                      class="mt-6"
+                    >
+                    </packing-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- INGENICO -->
+                <!-- <v-window-item value="lenovo-repair-drive">
                   <file-drive
                     subtitle="Lenovo Repair"
                     identification="lenovo-repair-drive"
@@ -315,7 +524,7 @@ onMounted(async () => {
                     rawIdentification="lenovo-repair-overview"
                     class="mt-6"
                   ></repair-efficiency-overview>
-                </v-window-item>
+                </v-window-item> -->
               </v-window>
             </v-col>
           </v-row>

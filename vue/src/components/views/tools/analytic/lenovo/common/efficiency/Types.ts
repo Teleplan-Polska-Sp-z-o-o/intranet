@@ -9,11 +9,36 @@ export namespace EfficiencyTypes {
   }
   interface TTRepair {
     [key: string]: number;
-    TT_REPAIR: number; // Time required to pack a unit, in minutes
+    TT_REPAIR: number;
   }
   export type TRepairModelObj = IBaseModelObj & TTRepair;
+  interface TTRegistration {
+    [key: string]: number;
+    TT_REGISTRATION: number;
+  }
+  export type TRegistrationModelObj = IBaseModelObj & TTRegistration;
+  interface TTCleaning {
+    [key: string]: number;
+    TT_CLEANING: number;
+  }
+  export type TCleaningModelObj = IBaseModelObj & TTCleaning;
+  interface TTFinalTest {
+    [key: string]: number;
+    TT_FINAL_TEST: number;
+  }
+  export type TFinalTestModelObj = IBaseModelObj & TTFinalTest;
+  interface TTPacking {
+    [key: string]: number;
+    TT_PACKING: number;
+  }
+  export type TPackingModelObj = IBaseModelObj & TTPacking;
 
-  export type IModelObj = TRepairModelObj;
+  export type IModelObj =
+    | TRepairModelObj
+    | TRegistrationModelObj
+    | TCleaningModelObj
+    | TFinalTestModelObj
+    | TPackingModelObj;
 
   export type IModelsObj = IModelObj[];
 

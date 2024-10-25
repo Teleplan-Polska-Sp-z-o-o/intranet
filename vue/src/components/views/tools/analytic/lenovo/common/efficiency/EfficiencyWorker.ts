@@ -21,6 +21,38 @@ addEventListener("message", (event) => {
       );
       break;
 
+    case "TRegistrationModelObj":
+      builder = new EfficiencyModels.EfficiencyBuilder<EfficiencyTypes.TRegistrationModelObj>(
+        parsedRawTransactions,
+        parsedModelsObj,
+        "TT_REGISTRATION"
+      );
+      break;
+
+    case "TCleaningModelObj":
+      builder = new EfficiencyModels.EfficiencyBuilder<EfficiencyTypes.TCleaningModelObj>(
+        parsedRawTransactions,
+        parsedModelsObj,
+        "TT_CLEANING"
+      );
+      break;
+
+    case "TFinalTestModelObj":
+      builder = new EfficiencyModels.EfficiencyBuilder<EfficiencyTypes.TFinalTestModelObj>(
+        parsedRawTransactions,
+        parsedModelsObj,
+        "TT_FINAL_TEST"
+      );
+      break;
+
+    case "TPackingModelObj":
+      builder = new EfficiencyModels.EfficiencyBuilder<EfficiencyTypes.TPackingModelObj>(
+        parsedRawTransactions,
+        parsedModelsObj,
+        "TT_PACKING"
+      );
+      break;
+
     default:
       throw new Error(`Unknown model type: ${modelType}`);
   }

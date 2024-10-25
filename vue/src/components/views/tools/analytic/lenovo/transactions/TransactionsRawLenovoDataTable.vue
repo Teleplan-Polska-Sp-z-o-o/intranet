@@ -74,8 +74,8 @@ const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
     } else {
       filtered.value = data;
     }
-    // console.log("store", unref(identification), unref(filtered));
     store.setItemsData(unref(identification), unref(filtered));
+    // console.log(store.itemsMap);
 
     return unref(filtered);
   } catch (error) {
@@ -100,7 +100,6 @@ const handleInterval = (preForm: AnalyticRaw.IPreFormData | undefined, every: nu
     };
 
     if (isSameDay(preForm.endOfDay, today)) {
-      console.log("handleInterval triggerAdaptiveLoad");
       stopInterval.value = TransactionsHelper.triggerAdaptiveLoad(() => load(false), every);
     } else {
       // If an interval is already running, stop it

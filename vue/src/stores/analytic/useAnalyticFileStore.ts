@@ -17,6 +17,18 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
       repair: {
         drive: ["models", "miscellaneous"],
       },
+      registration: {
+        drive: ["models", "miscellaneous"],
+      },
+      cleaning: {
+        drive: ["models", "miscellaneous"],
+      },
+      final: {
+        drive: ["models", "miscellaneous"],
+      },
+      packing: {
+        drive: ["models", "miscellaneous"],
+      },
     },
   };
 
@@ -52,6 +64,18 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
     },
     "lenovo-repair-drive": {
       models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_REPAIR"],
+    },
+    "lenovo-registration-drive": {
+      models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_REGISTRATION"],
+    },
+    "lenovo-cleaning-drive": {
+      models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_CLEANING"],
+    },
+    "lenovo-final-drive": {
+      models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_FINAL_TEST"],
+    },
+    "lenovo-packing-drive": {
+      models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_PACKING"],
     },
   };
 

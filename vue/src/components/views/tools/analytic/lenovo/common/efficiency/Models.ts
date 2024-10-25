@@ -31,7 +31,14 @@ export namespace EfficiencyModels {
       this.efficiency = totalWorkingTime > 0 ? (this.processing_time / totalWorkingTime) * 100 : 0;
     }
   }
-  export class EfficiencyBuilder<T extends EfficiencyTypes.TRepairModelObj> {
+  export class EfficiencyBuilder<
+    T extends
+      | EfficiencyTypes.TRepairModelObj
+      | EfficiencyTypes.TRegistrationModelObj
+      | EfficiencyTypes.TCleaningModelObj
+      | EfficiencyTypes.TFinalTestModelObj
+      | EfficiencyTypes.TPackingModelObj
+  > {
     private modelsCache: Map<string, T> = new Map(); // Cache for model data
     private processedEmployees: EfficiencyTypes.IProcessedEmployees = []; // Processed data
     private ttModelsKey: keyof T;
@@ -59,7 +66,10 @@ export namespace EfficiencyModels {
       transactions.forEach((transaction, index) => {
         const { emp_name, part_no, datedtz } = transaction;
         const modelData = this.modelsCache.get(part_no);
-        if (!modelData) return;
+        if (!modelData) {
+          // console.error(`No model data for part ${part_no}`);
+          return;
+        }
 
         const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
         const transactionDate = this.extractTransactionDate(datedtz);
@@ -260,8 +270,8 @@ export namespace EfficiencyModels {
 
       // Assign the calculated values to the employee's estimated target
       employee.estimated_target.units_per_worked_quarters = Math.round(unitsPerWorkedQuarters);
-      employee.estimated_target.difference_units_worked_time =
-        employee.processed_units - Math.round(unitsPerWorkedQuarters);
+      // employee.estimated_target.difference_units_worked_time =
+      //   employee.processed_units - Math.round(unitsPerWorkedQuarters);
       employee.estimated_target.units_per_hr = Math.round(unitsPerHour);
       employee.estimated_target.units_per_8hrs = Math.round(unitsPer8Hours);
     }
