@@ -44,10 +44,29 @@ export const useAnalyticRawTableStore = defineStore("analytic-raw-ingenico-table
     preFormDataMap.value.set(id, data);
   };
 
+  const efficiencyErrorMap = ref<Map<string, string>>(new Map());
+  const getEfficiencyErrorsData = (id: string) => {
+    return computed(() => {
+      const items = efficiencyErrorMap.value.get(id);
+      if (items === undefined) {
+        console.warn(
+          `efficiencyErrorMap by key [${id}]: items evaluate to undefined. Returning [].`
+        );
+        return [];
+      }
+      return items;
+    });
+  };
+  const setEfficiencyErrorData = (id: string, data: string) => {
+    efficiencyErrorMap.value.set(id, data);
+  };
+
   return {
     getItemsData,
     setItemsData,
     getPreFormData,
     setPreFormData,
+    getEfficiencyErrorsData,
+    setEfficiencyErrorData,
   };
 });

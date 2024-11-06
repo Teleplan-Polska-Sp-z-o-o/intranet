@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRefs, unref } from "vue";
 import { AnalyticRaw } from "./Types";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawLenovoTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawIngenicoTableStore";
 
 // import { useI18n } from "vue-i18n";
 const store = useAnalyticRawTableStore();

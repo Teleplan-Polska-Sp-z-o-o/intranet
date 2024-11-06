@@ -6,16 +6,35 @@ import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
 import FileDrive from "../../components/views/tools/analytic/files/drive/FileDrive.vue";
 import Documentation from "../../components/views/tools/analytic/Documentation.vue";
+// raws
 import TransactionsRawSkyDataTable from "../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
 import TransactionsRawLenovoDataTable from "../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
-import PackedUnitsOverview from "../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
-import PackingEfficiencyOverview from "../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
-import CosmeticEfficiencyOverview from "../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
-import OobaEfficiencyOverview from "../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
-import RepairEfficiencyOverview from "../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
-import CleaningEfficiencyOverview from "../../components/views/tools/analytic/lenovo/cleaning/efficiency/CleaningEfficiencyOverview.vue";
-import FinalEfficiencyOverview from "../../components/views/tools/analytic/lenovo/final/efficiency/FinalEfficiencyOverview.vue";
-import RegistrationEfficiencyOverview from "../../components/views/tools/analytic/lenovo/registration/efficiency/RegistrationEfficiencyOverview.vue";
+import TransactionsRawIngenicoDataTable from "../../components/views/tools/analytic/ingenico/transactions/TransactionsRawIngenicoDataTable.vue";
+
+// sky
+import SkyPackedUnitsOverview from "../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
+import SkyPackingEfficiencyOverview from "../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
+import SkyCosmeticEfficiencyOverview from "../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
+import SkyOobaEfficiencyOverview from "../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
+
+// lenovo
+import LenovoRepairEfficiencyOverview from "../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
+import LenovoCleaningEfficiencyOverview from "../../components/views/tools/analytic/lenovo/cleaning/efficiency/CleaningEfficiencyOverview.vue";
+import LenovoFinalEfficiencyOverview from "../../components/views/tools/analytic/lenovo/final/efficiency/FinalEfficiencyOverview.vue";
+import LenovoRegistrationEfficiencyOverview from "../../components/views/tools/analytic/lenovo/registration/efficiency/RegistrationEfficiencyOverview.vue";
+import LenovoPackingEfficiencyOverview from "../../components/views/tools/analytic/lenovo/packing/efficiency/PackingEfficiencyOverview.vue";
+
+// ingenico
+import VmiEfficiencyOverview from "../../components/views/tools/analytic/ingenico/vmi/VmiEfficiencyOverview.vue";
+import ScreeningEfficiencyOverview from "../../components/views/tools/analytic/ingenico/screening/ScreeningEfficiencyOverview.vue";
+import WintestEfficiencyOverview from "../../components/views/tools/analytic/ingenico/wintest/WintestEfficiencyOverview.vue";
+import FinaltestEfficiencyOverview from "../../components/views/tools/analytic/ingenico/finaltest/FinaltestEfficiencyOverview.vue";
+import ActivationEfficiencyOverview from "../../components/views/tools/analytic/ingenico/activation/ActivationEfficiencyOverview.vue";
+import CustomizationEfficiencyOverview from "../../components/views/tools/analytic/ingenico/customization/CustomizationEfficiencyOverview.vue";
+import KeyinjectionEfficiencyOverview from "../../components/views/tools/analytic/ingenico/keyinjection/KeyinjectionEfficiencyOverview.vue";
+import FgiEfficiencyOverview from "../../components/views/tools/analytic/ingenico/fgi/FgiEfficiencyOverview.vue";
+import Repair2EfficiencyOverview from "../../components/views/tools/analytic/ingenico/repair/Repair2EfficiencyOverview.vue";
+import Repair3EfficiencyOverview from "../../components/views/tools/analytic/ingenico/repair/Repair3EfficiencyOverview.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
@@ -204,6 +223,217 @@ const tabs: ToolTab[] = [
       },
     ],
   },
+  {
+    id: 3,
+    name: "ingenico",
+    icon: undefined,
+    meta: {
+      group: "analytic",
+      subgroup: "ingenico",
+    },
+    children: [
+      {
+        id: 31,
+        title: "VMI",
+        name: "vmi",
+        icon: undefined,
+        children: [
+          {
+            id: 311,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 312,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 32,
+        title: "Screening",
+        name: "screening",
+        icon: undefined,
+        children: [
+          {
+            id: 321,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 322,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 33,
+        title: "Win Test",
+        name: "wintest",
+        icon: undefined,
+        children: [
+          {
+            id: 331,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 332,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 34,
+        title: "Final Test",
+        name: "finaltest",
+        icon: undefined,
+        children: [
+          {
+            id: 341,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 342,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 35,
+        title: "Activation",
+        name: "activation",
+        icon: undefined,
+        children: [
+          {
+            id: 351,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 352,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 36,
+        title: "Customization",
+        name: "customization",
+        icon: undefined,
+        children: [
+          {
+            id: 361,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 362,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 37,
+        title: "Key Injection",
+        name: "keyinjection",
+        icon: undefined,
+        children: [
+          {
+            id: 371,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 372,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 38,
+        title: "FGI",
+        name: "fgi",
+        icon: undefined,
+        children: [
+          {
+            id: 381,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 382,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 39,
+        title: "Repair 2",
+        name: "repair2",
+        icon: undefined,
+        children: [
+          {
+            id: 391,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 392,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 310,
+        title: "Repair 3",
+        name: "repair3",
+        icon: undefined,
+        children: [
+          {
+            id: 3101,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 3102,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const filteredToolTabs = ref<ToolTab[]>([]);
@@ -339,13 +569,16 @@ onMounted(async () => {
                       group="packing"
                       identification="sky-packing-overview"
                     ></transactions-raw-sky-data-table>
-                    <packed-units-overview rawIdentification="sky-packing-overview" class="mt-6">
-                    </packed-units-overview>
-                    <packing-efficiency-overview
+                    <sky-packed-units-overview
                       rawIdentification="sky-packing-overview"
                       class="mt-6"
                     >
-                    </packing-efficiency-overview>
+                    </sky-packed-units-overview>
+                    <sky-packing-efficiency-overview
+                      rawIdentification="sky-packing-overview"
+                      class="mt-6"
+                    >
+                    </sky-packing-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- Cosmetic -->
@@ -364,11 +597,11 @@ onMounted(async () => {
                       group="cosmetic"
                       identification="sky-cosmetic-overview"
                     ></transactions-raw-sky-data-table>
-                    <cosmetic-efficiency-overview
+                    <sky-cosmetic-efficiency-overview
                       rawIdentification="sky-cosmetic-overview"
                       class="mt-6"
                     >
-                    </cosmetic-efficiency-overview>
+                    </sky-cosmetic-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- OOBA -->
@@ -384,8 +617,11 @@ onMounted(async () => {
                       group="ooba"
                       identification="sky-ooba-overview"
                     ></transactions-raw-sky-data-table>
-                    <ooba-efficiency-overview rawIdentification="sky-ooba-overview" class="mt-6">
-                    </ooba-efficiency-overview>
+                    <sky-ooba-efficiency-overview
+                      rawIdentification="sky-ooba-overview"
+                      class="mt-6"
+                    >
+                    </sky-ooba-efficiency-overview>
                   </template>
                 </v-window-item>
 
@@ -407,10 +643,10 @@ onMounted(async () => {
                       group="repair"
                       identification="lenovo-repair-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <repair-efficiency-overview
+                    <lenovo-repair-efficiency-overview
                       rawIdentification="lenovo-repair-overview"
                       class="mt-6"
-                    ></repair-efficiency-overview>
+                    ></lenovo-repair-efficiency-overview>
                   </template>
                 </v-window-item>
 
@@ -430,11 +666,11 @@ onMounted(async () => {
                       group="cleaning"
                       identification="lenovo-cleaning-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <cleaning-efficiency-overview
+                    <lenovo-cleaning-efficiency-overview
                       rawIdentification="lenovo-cleaning-overview"
                       class="mt-6"
                     >
-                    </cleaning-efficiency-overview>
+                    </lenovo-cleaning-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- REGISTRATION -->
@@ -453,11 +689,11 @@ onMounted(async () => {
                       group="registration"
                       identification="lenovo-registration-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <registration-efficiency-overview
+                    <lenovo-registration-efficiency-overview
                       rawIdentification="lenovo-registration-overview"
                       class="mt-6"
                     >
-                    </registration-efficiency-overview>
+                    </lenovo-registration-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- FINAL TEST -->
@@ -476,11 +712,11 @@ onMounted(async () => {
                       group="final"
                       identification="lenovo-final-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <final-efficiency-overview
+                    <lenovo-final-efficiency-overview
                       rawIdentification="lenovo-final-overview"
                       class="mt-6"
                     >
-                    </final-efficiency-overview>
+                    </lenovo-final-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- PACKING -->
@@ -499,32 +735,245 @@ onMounted(async () => {
                       group="packing"
                       identification="lenovo-packing-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <packing-efficiency-overview
-                      rawIdentification="lenovo-final-overview"
+                    <lenovo-packing-efficiency-overview
+                      rawIdentification="lenovo-packing-overview"
                       class="mt-6"
                     >
-                    </packing-efficiency-overview>
+                    </lenovo-packing-efficiency-overview>
                   </template>
                 </v-window-item>
 
                 <!-- INGENICO -->
-                <!-- <v-window-item value="lenovo-repair-drive">
-                  <file-drive
-                    subtitle="Lenovo Repair"
-                    identification="lenovo-repair-drive"
-                  ></file-drive>
+                <!-- VMI Group -->
+                <v-window-item value="ingenico-vmi-drive">
+                  <template v-if="windowItem === 'ingenico-vmi-drive'">
+                    <file-drive
+                      subtitle="Ingenico VMI"
+                      identification="ingenico-vmi-drive"
+                    ></file-drive>
+                  </template>
                 </v-window-item>
-                <v-window-item value="lenovo-repair-overview">
-                  <transactions-raw-lenovo-data-table
-                    program="lenovo"
-                    group="repair"
-                    identification="lenovo-repair-overview"
-                  ></transactions-raw-lenovo-data-table>
-                  <repair-efficiency-overview
-                    rawIdentification="lenovo-repair-overview"
-                    class="mt-6"
-                  ></repair-efficiency-overview>
-                </v-window-item> -->
+                <v-window-item value="ingenico-vmi-overview">
+                  <template v-if="windowItem === 'ingenico-vmi-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="vmi"
+                      identification="ingenico-vmi-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <vmi-efficiency-overview
+                      raw-identification="ingenico-vmi-overview"
+                      class="mt-6"
+                    ></vmi-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- Screening Group -->
+                <v-window-item value="ingenico-screening-drive">
+                  <template v-if="windowItem === 'ingenico-screening-drive'">
+                    <file-drive
+                      subtitle="Ingenico Screening"
+                      identification="ingenico-screening-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-screening-overview">
+                  <template v-if="windowItem === 'ingenico-screening-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="screening"
+                      identification="ingenico-screening-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <screening-efficiency-overview
+                      raw-identification="ingenico-screening-overview"
+                      class="mt-6"
+                    ></screening-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- Win Test Group -->
+                <v-window-item value="ingenico-wintest-drive">
+                  <template v-if="windowItem === 'ingenico-wintest-drive'">
+                    <file-drive
+                      subtitle="Ingenico Win Test"
+                      identification="ingenico-wintest-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-wintest-overview">
+                  <template v-if="windowItem === 'ingenico-wintest-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="wintest"
+                      identification="ingenico-wintest-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <wintest-efficiency-overview
+                      raw-identification="ingenico-wintest-overview"
+                      class="mt-6"
+                    >
+                    </wintest-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- Final Test Group -->
+                <v-window-item value="ingenico-finaltest-drive">
+                  <template v-if="windowItem === 'ingenico-finaltest-drive'">
+                    <file-drive
+                      subtitle="Ingenico Final Test"
+                      identification="ingenico-finaltest-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-finaltest-overview">
+                  <template v-if="windowItem === 'ingenico-finaltest-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="finaltest"
+                      identification="ingenico-finaltest-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <finaltest-efficiency-overview
+                      raw-identification="ingenico-finaltest-overview"
+                      class="mt-6"
+                    ></finaltest-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- Activation Group -->
+                <v-window-item value="ingenico-activation-drive">
+                  <template v-if="windowItem === 'ingenico-activation-drive'">
+                    <file-drive
+                      subtitle="Ingenico Activation"
+                      identification="ingenico-activation-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-activation-overview">
+                  <template v-if="windowItem === 'ingenico-activation-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="activation"
+                      identification="ingenico-activation-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <activation-efficiency-overview
+                      raw-identification="ingenico-activation-overview"
+                      class="mt-6"
+                    ></activation-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- Customization Group -->
+                <v-window-item value="ingenico-customization-drive">
+                  <template v-if="windowItem === 'ingenico-customization-drive'">
+                    <file-drive
+                      subtitle="Ingenico Customization"
+                      identification="ingenico-customization-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-customization-overview">
+                  <template v-if="windowItem === 'ingenico-customization-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="customization"
+                      identification="ingenico-customization-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <customization-efficiency-overview
+                      raw-identification="ingenico-customization-overview"
+                      class="mt-6"
+                    ></customization-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- Key Injection Group -->
+                <v-window-item value="ingenico-keyinjection-drive">
+                  <template v-if="windowItem === 'ingenico-keyinjection-drive'">
+                    <file-drive
+                      subtitle="Ingenico Key Injection"
+                      identification="ingenico-keyinjection-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-keyinjection-overview">
+                  <template v-if="windowItem === 'ingenico-keyinjection-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="keyinjection"
+                      identification="ingenico-keyinjection-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <keyinjection-efficiency-overview
+                      raw-identification="ingenico-keyinjection-overview"
+                      class="mt-6"
+                    ></keyinjection-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- FGI Group -->
+                <v-window-item value="ingenico-fgi-drive">
+                  <template v-if="windowItem === 'ingenico-fgi-drive'">
+                    <file-drive
+                      subtitle="Ingenico FGI"
+                      identification="ingenico-fgi-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-fgi-overview">
+                  <template v-if="windowItem === 'ingenico-fgi-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="fgi"
+                      identification="ingenico-fgi-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <fgi-efficiency-overview
+                      raw-identification="ingenico-fgi-overview"
+                      class="mt-6"
+                    ></fgi-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- Repair 2 Group -->
+                <v-window-item value="ingenico-repair2-drive">
+                  <template v-if="windowItem === 'ingenico-repair2-drive'">
+                    <file-drive
+                      subtitle="Ingenico Repair 2"
+                      identification="ingenico-repair2-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-repair2-overview">
+                  <template v-if="windowItem === 'ingenico-repair2-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="repair2"
+                      identification="ingenico-repair2-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <repair-2-efficiency-overview
+                      raw-identification="ingenico-repair2-overview"
+                      class="mt-6"
+                    ></repair-2-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- Repair 3 Group -->
+                <v-window-item value="ingenico-repair3-drive">
+                  <template v-if="windowItem === 'ingenico-repair3-drive'">
+                    <file-drive
+                      subtitle="Ingenico Repair 3"
+                      identification="ingenico-repair3-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-repair3-overview">
+                  <template v-if="windowItem === 'ingenico-repair3-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="repair3"
+                      identification="ingenico-repair3-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <repair-3-efficiency-overview
+                      raw-identification="ingenico-repair3-overview"
+                      class="mt-6"
+                    ></repair-3-efficiency-overview>
+                  </template>
+                </v-window-item>
               </v-window>
             </v-col>
           </v-row>

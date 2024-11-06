@@ -30,6 +30,18 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
         drive: ["models", "miscellaneous"],
       },
     },
+    ingenico: {
+      vmi: { drive: ["models", "miscellaneous"] },
+      screening: { drive: ["models", "miscellaneous"] },
+      wintest: { drive: ["models", "miscellaneous"] },
+      finaltest: { drive: ["models", "miscellaneous"] },
+      activation: { drive: ["models", "miscellaneous"] },
+      customization: { drive: ["models", "miscellaneous"] },
+      keyinjection: { drive: ["models", "miscellaneous"] },
+      fgi: { drive: ["models", "miscellaneous"] },
+      repair2: { drive: ["models", "miscellaneous"] },
+      repair3: { drive: ["models", "miscellaneous"] },
+    },
   };
 
   const getFileTypes = (
@@ -76,6 +88,36 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
     },
     "lenovo-packing-drive": {
       models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_PACKING"],
+    },
+    "ingenico-vmi-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    "ingenico-screening-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    "ingenico-wintest-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    "ingenico-finaltest-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    "ingenico-activation-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    "ingenico-customization-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    "ingenico-keyinjection-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    "ingenico-fgi-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    "ingenico-repair2-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    "ingenico-repair3-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
     },
   };
 

@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, toRefs, unref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { AnalyticFileManager } from "../../../../../../../models/analytic/AnalyticFileManager";
-import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
-import { AnalyticFileTypes } from "../../../files/Types";
-import { AnalyticRaw } from "../../transactions/Types";
-import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawLenovoTableStore";
-//
-import { EfficiencyTypes } from "../../common/efficiency/Types";
-import EmployeeDailyEfficiencyChart from "../../common/efficiency/EmployeeDailyEfficiencyChart.vue";
-import EmployeeQuarterlyEfficiencyChart from "../../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
-import EfficiencyWorker from "../../common/efficiency/EfficiencyWorker?worker";
-import Download from "../../../files/download/Download.vue";
-import { DataTableHeader } from "../../../files/download/DataTableHeader";
+import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawIngenicoTableStore";
+import { computed, ref, toRefs, unref, watch } from "vue";
+import { EfficiencyTypes } from "../common/efficiency/Types";
+import { AnalyticRaw } from "../transactions/Types";
+import EfficiencyWorker from "../common/efficiency/EfficiencyWorker?worker";
+import { DataTableHeader } from "../../files/download/DataTableHeader";
+import EmployeeDailyEfficiencyChart from "../common/efficiency/EmployeeDailyEfficiencyChart.vue";
+import EmployeeQuarterlyEfficiencyChart from "../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
+import { AnalyticFileManager } from "../../../../../../models/analytic/AnalyticFileManager";
+import { AnalyticFileTypes } from "../../files/Types";
+import { AnalyticFileHelper } from "../../files/drive/AnalyticFileHelper";
 
 const route = useRoute();
-const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
 const analyticRawTransactionsStore = useAnalyticRawTableStore();
 
 const props = defineProps<{
@@ -25,18 +22,30 @@ const props = defineProps<{
 
 const { title, rawIdentification } = toRefs(props);
 
-// required items
-// models
-const modelsObj = ref<EfficiencyTypes.IModelsObj>([]);
-// packed
 const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
 
-// table items
-
-const items = ref<EfficiencyTypes.IProcessedEmployees>([]);
+const items = ref<EfficiencyTypes.IProcessedEmployee[]>([]);
 const expanded = ref<string[]>([]);
 const loading = ref<false | "primary-container">("primary-container");
 const worker = new EfficiencyWorker();
+
+const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
+const modelsMatrix = ref<EfficiencyTypes.IModelMatrix[]>([]);
+const loadMatrix = async () => {
+  const progName = route.params.program as string;
+  const catName = route.params.cat as string;
+
+  const requiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
+    await analyticFileManager.getByProgAndCatAndSub(progName, catName, "drive");
+  const consideredRequiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
+    AnalyticFileHelper.addConsideredProperty(requiredFiles);
+
+  const modelsParsed = JSON.parse(
+    consideredRequiredFiles.find((file) => file.considered && file.fileType === "models")
+      ?.jsObjectJson!
+  );
+  modelsMatrix.value = modelsParsed[Object.keys(modelsParsed)[0]];
+};
 
 /**
  * Loading current transactions
@@ -46,29 +55,22 @@ watch(
   async (newRawTransactions: AnalyticRaw.TTransactions) => {
     rawTransactions.value = newRawTransactions;
 
-    if (!unref(modelsObj) && !unref(modelsObj).at(0)) return;
+    // const program = route.params.program as string;
+    // const models = (await new AnalyticInventoryCharacteristicManager(
+    //   program
+    // ).get()) as EfficiencyTypes.IInventoryCharacteristic[];
 
-    function hasTTFinalTestProperty(
-      model: EfficiencyTypes.IModelObj
-    ): model is EfficiencyTypes.TFinalTestModelObj {
-      return "TT_FINAL_TEST" in model;
-    }
+    // if (!models.length) return;
 
-    const finalTestModelsObj = unref(modelsObj).filter(
-      hasTTFinalTestProperty
-    ) as EfficiencyTypes.TFinalTestModelObj[];
-
-    if (finalTestModelsObj.length === 0) {
-      throw new Error("No models found with the 'TT_FINAL_TEST' property");
-    }
+    if (!unref(modelsMatrix).length) loadMatrix();
+    if (!unref(modelsMatrix).length) return;
 
     const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
-    const serializedModelsObj = JSON.stringify(unref(modelsObj));
+    const serializedModels = JSON.stringify(unref(modelsMatrix));
 
     worker.postMessage({
       rawTransactions: serializedRawTransactions,
-      modelsObj: serializedModelsObj,
-      modelType: "TFinalTestModelObj",
+      models: serializedModels,
     });
   },
   { deep: true }
@@ -80,7 +82,7 @@ worker.addEventListener("message", (event) => {
   items.value = processedData;
 
   if (items.value) loading.value = false;
-  // console.log("EfficiencyBuilder", items.value);
+  console.log("EfficiencyBuilder", items.value);
 });
 
 const isItTodaysDataOnly = ref<boolean>(true);
@@ -170,32 +172,20 @@ const headers = computed<object[]>(() => {
   ];
 });
 
-const load = async () => {
-  // Route params
-  const progName = route.params.program as string;
-  const catName = route.params.cat as string;
+// const load = async () => {
+//   try {
+//     const program = route.params.program as string;
+//     models.value = (await new AnalyticInventoryCharacteristicManager(
+//       program
+//     ).get()) as EfficiencyTypes.IInventoryCharacteristic[];
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-  const requiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
-    await analyticFileManager.getByProgAndCatAndSub(progName, catName, "drive");
-  const consideredRequiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
-    AnalyticFileHelper.addConsideredProperty(requiredFiles);
-
-  try {
-    const modelsParsed = JSON.parse(
-      consideredRequiredFiles.find((file) => file.considered && file.fileType === "models")
-        ?.jsObjectJson!
-    );
-    modelsObj.value = modelsParsed[Object.keys(modelsParsed)[0]];
-
-    // get targets for efficiency
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-onMounted(async () => {
-  await load();
-});
+// onMounted(async () => {
+//   await load();
+// });
 
 // format
 const formatShiftGroup = (shift: 1 | 2 | 3 | 4) => {
@@ -232,7 +222,6 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
         base-save-as="Employee Efficiency"
       ></download>
     </v-card-title>
-
     <v-data-table
       :items="items"
       item-value="id"
