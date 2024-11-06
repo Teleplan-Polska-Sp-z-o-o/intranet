@@ -46,8 +46,6 @@ watch(
   async (newRawTransactions: AnalyticRaw.TTransactions) => {
     rawTransactions.value = newRawTransactions;
 
-    console.log("rawTransactions.value", rawTransactions.value);
-
     if (!unref(modelsObj) && !unref(modelsObj).at(0)) return;
 
     function hasTTFinalTestProperty(

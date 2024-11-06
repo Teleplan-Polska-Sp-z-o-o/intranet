@@ -6,16 +6,20 @@ import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
 import FileDrive from "../../components/views/tools/analytic/files/drive/FileDrive.vue";
 import Documentation from "../../components/views/tools/analytic/Documentation.vue";
+// raws
 import TransactionsRawSkyDataTable from "../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
 import TransactionsRawLenovoDataTable from "../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
-import PackedUnitsOverview from "../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
-import PackingEfficiencyOverview from "../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
-import CosmeticEfficiencyOverview from "../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
-import OobaEfficiencyOverview from "../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
-import RepairEfficiencyOverview from "../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
-import CleaningEfficiencyOverview from "../../components/views/tools/analytic/lenovo/cleaning/efficiency/CleaningEfficiencyOverview.vue";
-import FinalEfficiencyOverview from "../../components/views/tools/analytic/lenovo/final/efficiency/FinalEfficiencyOverview.vue";
-import RegistrationEfficiencyOverview from "../../components/views/tools/analytic/lenovo/registration/efficiency/RegistrationEfficiencyOverview.vue";
+// sky
+import SkyPackedUnitsOverview from "../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
+import SkyPackingEfficiencyOverview from "../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
+import SkyCosmeticEfficiencyOverview from "../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
+import SkyOobaEfficiencyOverview from "../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
+// lenovo
+import LenovoRepairEfficiencyOverview from "../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
+import LenovoCleaningEfficiencyOverview from "../../components/views/tools/analytic/lenovo/cleaning/efficiency/CleaningEfficiencyOverview.vue";
+import LenovoFinalEfficiencyOverview from "../../components/views/tools/analytic/lenovo/final/efficiency/FinalEfficiencyOverview.vue";
+import LenovoRegistrationEfficiencyOverview from "../../components/views/tools/analytic/lenovo/registration/efficiency/RegistrationEfficiencyOverview.vue";
+import LenovoPackingEfficiencyOverview from "../../components/views/tools/analytic/lenovo/packing/efficiency/PackingEfficiencyOverview.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
@@ -339,13 +343,16 @@ onMounted(async () => {
                       group="packing"
                       identification="sky-packing-overview"
                     ></transactions-raw-sky-data-table>
-                    <packed-units-overview rawIdentification="sky-packing-overview" class="mt-6">
-                    </packed-units-overview>
-                    <packing-efficiency-overview
+                    <sky-packed-units-overview
                       rawIdentification="sky-packing-overview"
                       class="mt-6"
                     >
-                    </packing-efficiency-overview>
+                    </sky-packed-units-overview>
+                    <sky-packing-efficiency-overview
+                      rawIdentification="sky-packing-overview"
+                      class="mt-6"
+                    >
+                    </sky-packing-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- Cosmetic -->
@@ -364,11 +371,11 @@ onMounted(async () => {
                       group="cosmetic"
                       identification="sky-cosmetic-overview"
                     ></transactions-raw-sky-data-table>
-                    <cosmetic-efficiency-overview
+                    <sky-cosmetic-efficiency-overview
                       rawIdentification="sky-cosmetic-overview"
                       class="mt-6"
                     >
-                    </cosmetic-efficiency-overview>
+                    </sky-cosmetic-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- OOBA -->
@@ -384,8 +391,11 @@ onMounted(async () => {
                       group="ooba"
                       identification="sky-ooba-overview"
                     ></transactions-raw-sky-data-table>
-                    <ooba-efficiency-overview rawIdentification="sky-ooba-overview" class="mt-6">
-                    </ooba-efficiency-overview>
+                    <sky-ooba-efficiency-overview
+                      rawIdentification="sky-ooba-overview"
+                      class="mt-6"
+                    >
+                    </sky-ooba-efficiency-overview>
                   </template>
                 </v-window-item>
 
@@ -407,10 +417,10 @@ onMounted(async () => {
                       group="repair"
                       identification="lenovo-repair-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <repair-efficiency-overview
+                    <lenovo-repair-efficiency-overview
                       rawIdentification="lenovo-repair-overview"
                       class="mt-6"
-                    ></repair-efficiency-overview>
+                    ></lenovo-repair-efficiency-overview>
                   </template>
                 </v-window-item>
 
@@ -430,11 +440,11 @@ onMounted(async () => {
                       group="cleaning"
                       identification="lenovo-cleaning-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <cleaning-efficiency-overview
+                    <lenovo-cleaning-efficiency-overview
                       rawIdentification="lenovo-cleaning-overview"
                       class="mt-6"
                     >
-                    </cleaning-efficiency-overview>
+                    </lenovo-cleaning-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- REGISTRATION -->
@@ -453,11 +463,11 @@ onMounted(async () => {
                       group="registration"
                       identification="lenovo-registration-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <registration-efficiency-overview
+                    <lenovo-registration-efficiency-overview
                       rawIdentification="lenovo-registration-overview"
                       class="mt-6"
                     >
-                    </registration-efficiency-overview>
+                    </lenovo-registration-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- FINAL TEST -->
@@ -476,11 +486,11 @@ onMounted(async () => {
                       group="final"
                       identification="lenovo-final-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <final-efficiency-overview
+                    <lenovo-final-efficiency-overview
                       rawIdentification="lenovo-final-overview"
                       class="mt-6"
                     >
-                    </final-efficiency-overview>
+                    </lenovo-final-efficiency-overview>
                   </template>
                 </v-window-item>
                 <!-- PACKING -->
@@ -499,11 +509,11 @@ onMounted(async () => {
                       group="packing"
                       identification="lenovo-packing-overview"
                     ></transactions-raw-lenovo-data-table>
-                    <packing-efficiency-overview
-                      rawIdentification="lenovo-final-overview"
+                    <lenovo-packing-efficiency-overview
+                      rawIdentification="lenovo-packing-overview"
                       class="mt-6"
                     >
-                    </packing-efficiency-overview>
+                    </lenovo-packing-efficiency-overview>
                   </template>
                 </v-window-item>
 
