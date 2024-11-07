@@ -68,6 +68,11 @@ class LDAP {
 
     const options = getLDAPConfig(fromLogin);
 
+    // Check if options are valid before calling authenticate
+    if (!options) {
+      throw new Error(`Failed to retrieve LDAP configuration options for user: ${this.username}`);
+    }
+
     await authenticate(options);
 
     return this;
