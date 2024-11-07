@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
 import { AnalyticRaw } from "./Types";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawLenovoTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawIngenicoTableStore";
 import { TimeHelper } from "../../../../../../models/common/TimeHelper";
 import { TransactionsHelper } from "./TransactionsHelper";
 import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
@@ -241,7 +241,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
       <download
         :headers="downloadHeaders"
         :items="filteredItems"
-        base-save-as="Lenovo Raw Transactions"
+        base-save-as="Ingenico Raw Transactions"
       ></download>
     </v-card-title>
 

@@ -116,7 +116,7 @@ export namespace EfficiencyModels {
           estimated_target: {
             units: {},
             units_per_worked_quarters: 0,
-            difference_units_worked_time: 9,
+            difference_units_worked_time: 0,
             units_per_hr: 0,
             units_per_8hrs: 0,
           },

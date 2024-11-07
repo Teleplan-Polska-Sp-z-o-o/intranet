@@ -23,7 +23,7 @@ type TPermissionDocumentsSubgroup = "all" | "quick" | "assistant";
 type TPermissionChangeSubgroup = "pcr" | "pcn" | "dcr" | "dcn";
 type TPermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type TPermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
-type TPermissionAnalyticSubgroup = "sky" | "lenovo";
+type TPermissionAnalyticSubgroup = "sky" | "lenovo" | "ingenico";
 // type TPermissionSafetySubgroup = "manage-acknowledgment" | "document-acknowledged";
 
 type TPermissionSubgroup =
@@ -75,7 +75,7 @@ class StaticGroups {
       change: ["pcr", "pcn", "dcr", "dcn"],
       matrix: ["departments", "documents", "competences"],
       admin: ["user-info", "user-permissions", "news"],
-      analytic: ["sky", "lenovo"],
+      analytic: ["sky", "lenovo", "ingenico"],
       // safety: ["manage-acknowledgment", "document-acknowledged"],
     };
   }

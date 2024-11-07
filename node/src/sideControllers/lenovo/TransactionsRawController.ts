@@ -305,8 +305,6 @@ export {
 
 /**
  *
- * next work center nie zapisuje sie do excela
- *
  * rejestracja
  *
  * na 1FNTA
@@ -326,12 +324,4 @@ export {
  *
  * z 1PCKA na 1RDYA
  *
- * "GROUP_NAME",
-  "GROUP_LETTER",
-  "IFS_PART_NO",
-  "TT_REGISTRATION",
-  "TT_REPAIR",
-  "TT_CLEANING",
-  "TT_FINAL_TEST",
-  "TT_PACKING";
  */
