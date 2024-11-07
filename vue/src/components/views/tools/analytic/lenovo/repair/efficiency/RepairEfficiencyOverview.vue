@@ -7,12 +7,12 @@ import { AnalyticFileTypes } from "../../../files/Types";
 import { AnalyticRaw } from "../../transactions/Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawLenovoTableStore";
 //
-import { EfficiencyTypes } from "../../common/efficiency/Types";
-import EmployeeDailyEfficiencyChart from "../../common/efficiency/EmployeeDailyEfficiencyChart.vue";
-import EmployeeQuarterlyEfficiencyChart from "../../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
-import EfficiencyWorker from "../../common/efficiency/EfficiencyWorker?worker";
+import EmployeeDailyEfficiencyChart from "./EmployeeDailyEfficiencyChart.vue";
+import EmployeeHourlyEfficiencyChart from "./EmployeeHourlyEfficiencyChart.vue";
+import EfficiencyWorker from "./EfficiencyWorker?worker";
 import Download from "../../../files/download/Download.vue";
 import { DataTableHeader } from "../../../files/download/DataTableHeader";
+import { EfficiencyTypes } from "./Types";
 
 const route = useRoute();
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
@@ -20,10 +20,9 @@ const analyticRawTransactionsStore = useAnalyticRawTableStore();
 
 const props = defineProps<{
   rawIdentification: string;
-  title?: string;
 }>();
 
-const { title, rawIdentification } = toRefs(props);
+const { rawIdentification } = toRefs(props);
 
 // required items
 // models
@@ -48,16 +47,19 @@ watch(
 
     if (!unref(modelsObj) && !unref(modelsObj).at(0)) return;
 
+    // Function to check if the model is a PackModelObj (contains TT_PACK)
     function hasTTPackProperty(
       model: EfficiencyTypes.IModelObj
     ): model is EfficiencyTypes.TRepairModelObj {
       return "TT_REPAIR" in model;
     }
 
+    // Filter models to only those that have the TT_PACK property and assert the type
     const packModelsObj = unref(modelsObj).filter(
       hasTTPackProperty
     ) as EfficiencyTypes.TRepairModelObj[];
 
+    // Ensure that we have models with TT_PACK before proceeding
     if (packModelsObj.length === 0) {
       throw new Error("No models found with the 'TT_REPAIR' property");
     }
@@ -82,7 +84,7 @@ worker.addEventListener("message", (event) => {
   items.value = processedData;
 
   if (items.value) loading.value = false;
-  // console.log("EfficiencyBuilder", items.value);
+  console.log("EfficiencyBuilder", items.value);
 });
 
 const isItTodaysDataOnly = ref<boolean>(true);
@@ -129,8 +131,8 @@ const headers = computed<object[]>(() => {
     {
       title: "Worked Time (hrs)",
       align: "start",
-      key: "worked_quarters",
-      value: "worked_quarters",
+      key: "worked_hours",
+      value: "worked_hours",
     },
     {
       title: "Estimated Processing Time (hrs)",
@@ -147,8 +149,8 @@ const headers = computed<object[]>(() => {
     {
       title: "Estimated Units Processed Per Worked Time",
       align: "start",
-      key: "units_per_worked_quarters",
-      value: "estimated_target.units_per_worked_quarters",
+      key: "units_per_worked_hours",
+      value: "estimated_target.units_per_worked_hours",
     },
     {
       title: "Difference Between Processed and Estimated",
@@ -226,7 +228,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
     <v-card-title class="d-flex align-center">
-      {{ title ?? "Employee Repair Efficiency Overview" }}
+      Employee Packed Efficiency Overview
       <v-spacer></v-spacer>
       <download
         :headers="downloadHeaders"
@@ -282,9 +284,9 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
               <!-- <employee-hourly-efficiency-chart
                 :chart="item.hourlyChart"
               ></employee-hourly-efficiency-chart> -->
-              <employee-quarterly-efficiency-chart
-                :chart="item.quarterlyChart"
-              ></employee-quarterly-efficiency-chart>
+              <employee-hourly-efficiency-chart
+                :chart="item.hourlyChart"
+              ></employee-hourly-efficiency-chart>
             </template>
           </td>
         </tr>
