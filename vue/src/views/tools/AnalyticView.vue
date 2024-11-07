@@ -10,6 +10,7 @@ import Documentation from "../../components/views/tools/analytic/Documentation.v
 import TransactionsRawSkyDataTable from "../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
 import TransactionsRawLenovoDataTable from "../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
 import TransactionsRawIngenicoDataTable from "../../components/views/tools/analytic/ingenico/transactions/TransactionsRawIngenicoDataTable.vue";
+import TransactionsRawLibertyDataTable from "../../components/views/tools/analytic/liberty/common/transactions/TransactionsRawLibertyDataTable.vue";
 
 // sky
 import SkyPackedUnitsOverview from "../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
@@ -34,6 +35,8 @@ import KeyinjectionEfficiencyOverview from "../../components/views/tools/analyti
 import FgiEfficiencyOverview from "../../components/views/tools/analytic/ingenico/fgi/FgiEfficiencyOverview.vue";
 import Repair2EfficiencyOverview from "../../components/views/tools/analytic/ingenico/repair/Repair2EfficiencyOverview.vue";
 import Repair3EfficiencyOverview from "../../components/views/tools/analytic/ingenico/repair/Repair3EfficiencyOverview.vue";
+
+// liberty
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
@@ -425,6 +428,177 @@ const tabs: ToolTab[] = [
           },
           {
             id: 3102,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 4,
+    name: "liberty",
+    icon: undefined,
+    meta: {
+      group: "analytic",
+      subgroup: "liberty",
+    },
+    children: [
+      {
+        id: 41,
+        title: "VMI",
+        name: "vmi",
+        icon: undefined,
+        children: [
+          {
+            id: 411,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 412,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 42,
+        title: "TEST",
+        name: "test",
+        icon: undefined,
+        children: [
+          {
+            id: 421,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 422,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 43,
+        title: "DEBUG / REPAIR",
+        name: "debugrepair",
+        icon: undefined,
+        children: [
+          {
+            id: 431,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 432,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 44,
+        title: "COSMETIC",
+        name: "cosmetic",
+        icon: undefined,
+        children: [
+          {
+            id: 441,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 442,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 45,
+        title: "HIGH-POT",
+        name: "highpot",
+        icon: undefined,
+        children: [
+          {
+            id: 451,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 452,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 46,
+        title: "PACK",
+        name: "pack",
+        icon: undefined,
+        children: [
+          {
+            id: 461,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 462,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 47,
+        title: "SHIP",
+        name: "ship",
+        icon: undefined,
+        children: [
+          {
+            id: 471,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 472,
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
+      {
+        id: 48,
+        title: "OOBA",
+        name: "ooba",
+        icon: undefined,
+        children: [
+          {
+            id: 481,
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: 482,
             title: "Overview",
             name: "overview",
             icon: "mdi-chart-box-multiple-outline",
@@ -932,7 +1106,7 @@ onMounted(async () => {
                 <v-window-item value="ingenico-repair2-drive">
                   <template v-if="windowItem === 'ingenico-repair2-drive'">
                     <file-drive
-                      subtitle="Ingenico Repair 2"
+                      subtitle="Ingenico L2"
                       identification="ingenico-repair2-drive"
                     ></file-drive>
                   </template>
@@ -955,7 +1129,7 @@ onMounted(async () => {
                 <v-window-item value="ingenico-repair3-drive">
                   <template v-if="windowItem === 'ingenico-repair3-drive'">
                     <file-drive
-                      subtitle="Ingenico Repair 3"
+                      subtitle="Ingenico L3"
                       identification="ingenico-repair3-drive"
                     ></file-drive>
                   </template>
@@ -971,6 +1145,158 @@ onMounted(async () => {
                       raw-identification="ingenico-repair3-overview"
                       class="mt-6"
                     ></repair-3-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- Liberty VMI -->
+                <v-window-item value="liberty-vmi-drive">
+                  <template v-if="windowItem === 'liberty-vmi-drive'">
+                    <file-drive
+                      subtitle="Liberty VMI"
+                      identification="liberty-vmi-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="liberty-vmi-overview">
+                  <template v-if="windowItem === 'liberty-vmi-overview'">
+                    <transactions-raw-liberty-data-table
+                      program="liberty"
+                      group="vmi"
+                      identification="liberty-vmi-overview"
+                    ></transactions-raw-liberty-data-table>
+                  </template>
+                </v-window-item>
+
+                <!-- Liberty TEST -->
+                <v-window-item value="liberty-test-drive">
+                  <template v-if="windowItem === 'liberty-test-drive'">
+                    <file-drive
+                      subtitle="Liberty Test"
+                      identification="liberty-test-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="liberty-test-overview">
+                  <template v-if="windowItem === 'liberty-test-overview'">
+                    <transactions-raw-liberty-data-table
+                      program="liberty"
+                      group="test"
+                      identification="liberty-test-overview"
+                    ></transactions-raw-liberty-data-table>
+                  </template>
+                </v-window-item>
+
+                <!-- Liberty DEBUG / REPAIR -->
+                <v-window-item value="liberty-debugrepair-drive">
+                  <template v-if="windowItem === 'liberty-debugrepair-drive'">
+                    <file-drive
+                      subtitle="Liberty Debug / Repair"
+                      identification="liberty-debugrepair-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="liberty-debugrepair-overview">
+                  <template v-if="windowItem === 'liberty-debugrepair-overview'">
+                    <transactions-raw-liberty-data-table
+                      program="liberty"
+                      group="debugrepair"
+                      identification="liberty-debugrepair-overview"
+                    ></transactions-raw-liberty-data-table>
+                  </template>
+                </v-window-item>
+
+                <!-- Liberty COSMETIC -->
+                <v-window-item value="liberty-cosmetic-drive">
+                  <template v-if="windowItem === 'liberty-cosmetic-drive'">
+                    <file-drive
+                      subtitle="Liberty Cosmetic"
+                      identification="liberty-cosmetic-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="liberty-cosmetic-overview">
+                  <template v-if="windowItem === 'liberty-cosmetic-overview'">
+                    <transactions-raw-liberty-data-table
+                      program="liberty"
+                      group="cosmetic"
+                      identification="liberty-cosmetic-overview"
+                    ></transactions-raw-liberty-data-table>
+                  </template>
+                </v-window-item>
+
+                <!-- Liberty HIGH-POT -->
+                <v-window-item value="liberty-highpot-drive">
+                  <template v-if="windowItem === 'liberty-highpot-drive'">
+                    <file-drive
+                      subtitle="Liberty High-Pot"
+                      identification="liberty-highpot-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="liberty-highpot-overview">
+                  <template v-if="windowItem === 'liberty-highpot-overview'">
+                    <transactions-raw-liberty-data-table
+                      program="liberty"
+                      group="highpot"
+                      identification="liberty-highpot-overview"
+                    ></transactions-raw-liberty-data-table>
+                  </template>
+                </v-window-item>
+
+                <!-- Liberty PACK -->
+                <v-window-item value="liberty-pack-drive">
+                  <template v-if="windowItem === 'liberty-pack-drive'">
+                    <file-drive
+                      subtitle="Liberty Pack"
+                      identification="liberty-pack-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="liberty-pack-overview">
+                  <template v-if="windowItem === 'liberty-pack-overview'">
+                    <transactions-raw-liberty-data-table
+                      program="liberty"
+                      group="pack"
+                      identification="liberty-pack-overview"
+                    ></transactions-raw-liberty-data-table>
+                  </template>
+                </v-window-item>
+
+                <!-- Liberty SHIP -->
+                <v-window-item value="liberty-ship-drive">
+                  <template v-if="windowItem === 'liberty-ship-drive'">
+                    <file-drive
+                      subtitle="Liberty Ship"
+                      identification="liberty-ship-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="liberty-ship-overview">
+                  <template v-if="windowItem === 'liberty-ship-overview'">
+                    <transactions-raw-liberty-data-table
+                      program="liberty"
+                      group="ship"
+                      identification="liberty-ship-overview"
+                    ></transactions-raw-liberty-data-table>
+                  </template>
+                </v-window-item>
+
+                <!-- Liberty OOBA -->
+                <v-window-item value="liberty-ooba-drive">
+                  <template v-if="windowItem === 'liberty-ooba-drive'">
+                    <file-drive
+                      subtitle="Liberty OOBA"
+                      identification="liberty-ooba-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="liberty-ooba-overview">
+                  <template v-if="windowItem === 'liberty-ooba-overview'">
+                    <transactions-raw-liberty-data-table
+                      program="liberty"
+                      group="ooba"
+                      identification="liberty-ooba-overview"
+                    ></transactions-raw-liberty-data-table>
                   </template>
                 </v-window-item>
               </v-window>

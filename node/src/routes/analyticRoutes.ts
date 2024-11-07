@@ -26,6 +26,15 @@ import {
   getRepair3Transactions,
 } from "../sideControllers/ingenico/TransactionsRawController";
 import { getIngenicoModels } from "../sideControllers/ingenico/ModelsController";
+import {
+  getRawCosmTransactions,
+  getRawDebugRepairTransactions,
+  getRawHighPotTransactions,
+  getRawPackTransactions,
+  getRawShipTransactions,
+  getRawTestTransactions,
+  getRawVmiTransactions,
+} from "../sideControllers/liberty/TransactionsRawController";
 
 const router = express.Router();
 const decodeFormData = multer().none();
@@ -55,5 +64,14 @@ router.post("/raw/ingenico/keyinjection", decodeFormData, getKeyInjectionTransac
 router.post("/raw/ingenico/fgi", decodeFormData, getFgiTransactions);
 router.post("/raw/ingenico/repair2", decodeFormData, getRepair2Transactions);
 router.post("/raw/ingenico/repair3", decodeFormData, getRepair3Transactions);
+
+router.post("/raw/liberty/vmi", decodeFormData, getRawVmiTransactions);
+router.post("/raw/liberty/test", decodeFormData, getRawTestTransactions);
+router.post("/raw/liberty/debugrepair", decodeFormData, getRawDebugRepairTransactions);
+router.post("/raw/liberty/cosmetic", decodeFormData, getRawCosmTransactions);
+router.post("/raw/liberty/highpot", decodeFormData, getRawHighPotTransactions);
+router.post("/raw/liberty/pack", decodeFormData, getRawPackTransactions);
+router.post("/raw/liberty/ship", decodeFormData, getRawShipTransactions);
+router.post("/raw/liberty/ooba", decodeFormData, getRawOobaTransactions);
 
 export { router as analyticRoutes };
