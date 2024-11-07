@@ -198,7 +198,6 @@ export namespace EfficiencyModels {
         // Calculate efficiency for each day based on that day's worked hours
         Object.entries(dailyChart).forEach(([date, daily]) => {
           const dailyWorkedHours = workedHoursPerDay[date];
-          console.log("dailyWorkedHours", dailyWorkedHours);
           daily.calculateEfficiency(dailyWorkedHours);
         });
       });

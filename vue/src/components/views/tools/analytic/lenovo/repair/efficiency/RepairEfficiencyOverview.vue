@@ -84,7 +84,7 @@ worker.addEventListener("message", (event) => {
   items.value = processedData;
 
   if (items.value) loading.value = false;
-  console.log("EfficiencyBuilder", items.value);
+  // console.log("EfficiencyBuilder", items.value);
 });
 
 const isItTodaysDataOnly = ref<boolean>(true);
@@ -228,7 +228,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
     <v-card-title class="d-flex align-center">
-      Employee Packed Efficiency Overview
+      Employee Repair Efficiency Overview
       <v-spacer></v-spacer>
       <download
         :headers="downloadHeaders"
