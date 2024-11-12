@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { AnalyticRaw } from "../../components/views/tools/analytic/ingenico/transactions/Types";
+import { AnalyticRaw } from "../../components/views/tools/analytic/ingenico/common/transactions/Types";
 
 export const useAnalyticRawTableStore = defineStore("analytic-raw-ingenico-table", () => {
   // const loadMap = ref<Map<string, boolean>>(new Map());

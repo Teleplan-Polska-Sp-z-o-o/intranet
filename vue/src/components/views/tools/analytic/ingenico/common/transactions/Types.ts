@@ -1,4 +1,4 @@
-import { CommonTypes } from "../../../../../../interfaces/common/CommonTypes";
+import { CommonTypes } from "../../../../../../../interfaces/common/CommonTypes";
 
 export namespace AnalyticRaw {
   export type TPrograms = "ingenico";

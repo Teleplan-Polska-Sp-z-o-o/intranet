@@ -3,7 +3,7 @@ import { useRoute } from "vue-router";
 import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawIngenicoTableStore";
 import { computed, ref, toRefs, unref, watch } from "vue";
 import { EfficiencyTypes } from "../common/efficiency/Types";
-import { AnalyticRaw } from "../transactions/Types";
+import { AnalyticRaw } from "../common/transactions/Types";
 import EfficiencyWorker from "../common/efficiency/EfficiencyWorker?worker";
 import { DataTableHeader } from "../../files/download/DataTableHeader";
 import EmployeeDailyEfficiencyChart from "../common/efficiency/EmployeeDailyEfficiencyChart.vue";
@@ -62,7 +62,7 @@ watch(
 
     // Route params
 
-    if (!unref(modelsMatrix).length) loadMatrix();
+    if (!unref(modelsMatrix).length) await loadMatrix();
     if (!unref(modelsMatrix).length) return;
 
     const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
@@ -129,8 +129,8 @@ const headers = computed<object[]>(() => {
     {
       title: "Worked Time (hrs)",
       align: "start",
-      key: "worked_quarters",
-      value: "worked_quarters",
+      key: "worked_hours",
+      value: "worked_hours",
     },
     {
       title: "Estimated Processing Time (hrs)",

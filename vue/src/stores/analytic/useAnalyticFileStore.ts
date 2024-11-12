@@ -42,6 +42,16 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
       repair2: { drive: ["models", "miscellaneous"] },
       repair3: { drive: ["models", "miscellaneous"] },
     },
+    liberty: {
+      vmi: { drive: ["models", "miscellaneous"] },
+      test: { drive: ["models", "miscellaneous"] },
+      debugrepair: { drive: ["models", "miscellaneous"] },
+      cosmetic: { drive: ["models", "miscellaneous"] },
+      highpot: { drive: ["models", "miscellaneous"] },
+      pack: { drive: ["models", "miscellaneous"] },
+      ship: { drive: ["models", "miscellaneous"] },
+      ooba: { drive: ["models", "miscellaneous"] },
+    },
   };
 
   const getFileTypes = (
@@ -63,6 +73,7 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
   };
 
   const requiredFiles: Record<string, Record<string, string[]>> = {
+    // SKY
     "sky-packing-drive": {
       models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_PACK"],
       planning: ["LINE", "DATE", "SHIFT", "PACKING"],
@@ -74,6 +85,7 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
     "sky-ooba-drive": {
       models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_OOBA"],
     },
+    // LENOVO
     "lenovo-repair-drive": {
       models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_REPAIR"],
     },
@@ -89,6 +101,7 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
     "lenovo-packing-drive": {
       models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_PACKING"],
     },
+    // INGENICO
     "ingenico-vmi-drive": {
       models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
     },
@@ -118,6 +131,39 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
     },
     "ingenico-repair3-drive": {
       models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+    },
+    // LIBERTY
+    "liberty-vmi-drive": {
+      models: ["IFS_PN", "VMI_TT"],
+    },
+    "liberty-test-drive": {
+      models: ["IFS_PN", "TEST_TT"],
+    },
+    "liberty-debugrepair-drive": {
+      models: ["IFS_PN", "DEB_REP_TT"],
+    },
+    "liberty-cosmetic-drive": {
+      models: [
+        "IFS_PN",
+        "GROUP",
+        "COSMETIC_1",
+        "COSMETIC_2",
+        "COSMETIC_3",
+        "COSMETIC_4",
+        "COSMETIC_5",
+      ],
+    },
+    "liberty-highpot-drive": {
+      models: ["IFS_PN", "HIPOT_TT"],
+    },
+    "liberty-pack-drive": {
+      models: ["IFS_PN", "PACK_TT"],
+    },
+    "liberty-ship-drive": {
+      models: ["IFS_PN", "SHIP_TT"],
+    },
+    "liberty-ooba-drive": {
+      models: ["IFS_PN", "OBA_TT"],
     },
   };
 

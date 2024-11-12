@@ -9,7 +9,7 @@ import Documentation from "../../components/views/tools/analytic/Documentation.v
 // raws
 import TransactionsRawSkyDataTable from "../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
 import TransactionsRawLenovoDataTable from "../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
-import TransactionsRawIngenicoDataTable from "../../components/views/tools/analytic/ingenico/transactions/TransactionsRawIngenicoDataTable.vue";
+import TransactionsRawIngenicoDataTable from "../../components/views/tools/analytic/ingenico/common/transactions/TransactionsRawIngenicoDataTable.vue";
 import TransactionsRawLibertyDataTable from "../../components/views/tools/analytic/liberty/common/transactions/TransactionsRawLibertyDataTable.vue";
 
 // sky
@@ -37,6 +37,14 @@ import Repair2EfficiencyOverview from "../../components/views/tools/analytic/ing
 import Repair3EfficiencyOverview from "../../components/views/tools/analytic/ingenico/repair/Repair3EfficiencyOverview.vue";
 
 // liberty
+import LibertyVmiEfficiencyOverview from "../../components/views/tools/analytic/liberty/vmi/VmiEfficiencyOverview.vue";
+import LibertyTestEfficiencyOverview from "../../components/views/tools/analytic/liberty/test/TestEfficiencyOverview.vue";
+import LibertyDebugrepairEfficiencyOverview from "../../components/views/tools/analytic/liberty/debugrepair/DebugrepairEfficiencyOverview.vue";
+import LibertyHighpotEfficiencyOverview from "../../components/views/tools/analytic/liberty/highpot/HighpotEfficiencyOverview.vue";
+import LibertyCosmeticEfficiencyOverview from "../../components/views/tools/analytic/liberty/cosmetic/CosmeticEfficiencyOverview.vue";
+import LibertyPackEfficiencyOverview from "../../components/views/tools/analytic/liberty/pack/PackEfficiencyOverview.vue";
+import LibertyShipEfficiencyOverview from "../../components/views/tools/analytic/liberty/ship/ShipEfficiencyOverview.vue";
+import LibertyOobaEfficiencyOverview from "../../components/views/tools/analytic/liberty/ooba/OobaEfficiencyOverview.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
@@ -1164,6 +1172,11 @@ onMounted(async () => {
                       group="vmi"
                       identification="liberty-vmi-overview"
                     ></transactions-raw-liberty-data-table>
+                    <liberty-vmi-efficiency-overview
+                      raw-identification="liberty-vmi-overview"
+                      ttKey="VMI_TT"
+                      class="mt-6"
+                    />
                   </template>
                 </v-window-item>
 
@@ -1183,6 +1196,11 @@ onMounted(async () => {
                       group="test"
                       identification="liberty-test-overview"
                     ></transactions-raw-liberty-data-table>
+                    <liberty-test-efficiency-overview
+                      raw-identification="liberty-test-overview"
+                      ttKey="TEST_TT"
+                      class="mt-6"
+                    />
                   </template>
                 </v-window-item>
 
@@ -1202,6 +1220,11 @@ onMounted(async () => {
                       group="debugrepair"
                       identification="liberty-debugrepair-overview"
                     ></transactions-raw-liberty-data-table>
+                    <liberty-debugrepair-efficiency-overview
+                      raw-identification="liberty-debugrepair-overview"
+                      ttKey="DEB_REP_TT"
+                      class="mt-6"
+                    />
                   </template>
                 </v-window-item>
 
@@ -1221,6 +1244,10 @@ onMounted(async () => {
                       group="cosmetic"
                       identification="liberty-cosmetic-overview"
                     ></transactions-raw-liberty-data-table>
+                    <liberty-cosmetic-efficiency-overview
+                      raw-identification="liberty-cosmetic-overview"
+                      class="mt-6"
+                    />
                   </template>
                 </v-window-item>
 
@@ -1240,6 +1267,11 @@ onMounted(async () => {
                       group="highpot"
                       identification="liberty-highpot-overview"
                     ></transactions-raw-liberty-data-table>
+                    <liberty-highpot-efficiency-overview
+                      raw-identification="liberty-highpot-overview"
+                      ttKey="HIPOT_TT"
+                      class="mt-6"
+                    />
                   </template>
                 </v-window-item>
 
@@ -1259,6 +1291,11 @@ onMounted(async () => {
                       group="pack"
                       identification="liberty-pack-overview"
                     ></transactions-raw-liberty-data-table>
+                    <liberty-pack-efficiency-overview
+                      raw-identification="liberty-pack-overview"
+                      ttKey="PACK_TT"
+                      class="mt-6"
+                    />
                   </template>
                 </v-window-item>
 
@@ -1278,6 +1315,11 @@ onMounted(async () => {
                       group="ship"
                       identification="liberty-ship-overview"
                     ></transactions-raw-liberty-data-table>
+                    <liberty-ship-efficiency-overview
+                      raw-identification="liberty-ship-overview"
+                      ttKey="SHIP_TT"
+                      class="mt-6"
+                    />
                   </template>
                 </v-window-item>
 
@@ -1297,6 +1339,11 @@ onMounted(async () => {
                       group="ooba"
                       identification="liberty-ooba-overview"
                     ></transactions-raw-liberty-data-table>
+                    <liberty-ooba-efficiency-overview
+                      raw-identification="liberty-ooba-overview"
+                      ttKey="OBA_TT"
+                      class="mt-6"
+                    />
                   </template>
                 </v-window-item>
               </v-window>

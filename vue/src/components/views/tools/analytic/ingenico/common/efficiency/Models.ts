@@ -1,7 +1,7 @@
 import moment from "moment";
 import "moment-timezone";
 import { EfficiencyTypes } from "./Types";
-import { AnalyticRaw } from "../../transactions/Types";
+import { AnalyticRaw } from "../../common/transactions/Types";
 
 export namespace EfficiencyModels {
   export class TimePeriodMetrics implements EfficiencyTypes.ITimePeriodMetrics {
@@ -36,18 +36,13 @@ export namespace EfficiencyModels {
   }
 
   export class EfficiencyBuilder {
-    private models: Map<string, number>;
+    private models: Map<string, number> = new Map<string, number>();
     private processedEmployees: EfficiencyTypes.IProcessedEmployee[] = []; // Processed data
     constructor(
       rawTransactions: AnalyticRaw.TTransactions,
       models: EfficiencyTypes.IModelMatrix[]
     ) {
-      this.models = new Map<string, number>();
-      models.forEach((model) => {
-        const key = `${model.PART_NO}-${model.WORKSTATION}-${model.NEXT_WORKSTATION}`;
-        const value = parseInt(model.TT, 10);
-        this.models.set(key, value);
-      });
+      this.buildModelsCache(models);
 
       const { employeeDataMap, employeeWorkedQuarters } = this.processTransactions(rawTransactions);
 
@@ -58,6 +53,14 @@ export namespace EfficiencyModels {
       // Calculate weighted averages for each employee
       Object.values(employeeDataMap).forEach((employee) => {
         this.calculateWeightedAverages(employee);
+      });
+    }
+
+    private buildModelsCache(models: EfficiencyTypes.IModelMatrix[]) {
+      models.forEach((model) => {
+        const key = `${model.PART_NO}-${model.WORKSTATION}-${model.NEXT_WORKSTATION}`;
+        const value = parseInt(model.TT, 10);
+        this.models.set(key, value);
       });
     }
 
@@ -256,7 +259,6 @@ export namespace EfficiencyModels {
       // processing_time
       employeeDataMap[emp_name].processing_time += processingTime;
       // processed_units
-
       employeeDataMap[emp_name].processed_units.add(order_no);
 
       // Update estimated targets for the employee
@@ -390,7 +392,7 @@ export namespace EfficiencyModels {
           ...emp,
           processed_units: emp.processed_units.size,
           processing_time: Math.round((emp.processing_time / 60) * 10) / 10,
-          worked_quarters: emp.worked_quarters / 4,
+          worked_hours: emp.worked_quarters / 4,
         };
       });
     }
