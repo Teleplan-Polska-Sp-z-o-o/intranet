@@ -162,7 +162,7 @@ const getRawOobaTransactions = async (req: Request, res: Response): Promise<Resp
       .where("h.contract IN (:...contracts)", { contracts })
       .andWhere("h.reversed_flag = :reversedFlag", { reversedFlag: "N" })
       .andWhere("h.transaction = :transaction", { transaction: "OP FEED" })
-      .andWhere("h.work_center_no = :workCenter", { workCenter: "AOBA" })
+      .andWhere("h.work_center_no = :workCenter", { workCenter: "OOBA" })
       .andWhere("h.dated >= :startOfDay AND h.dated < :endOfDay")
       .setParameters({
         startOfDay: startOfDayISO,

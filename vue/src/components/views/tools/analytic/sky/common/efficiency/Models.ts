@@ -45,14 +45,14 @@ export namespace EfficiencyModels {
       if (!value) {
         switch (this.ttKey) {
           case "TT_PACK":
-            // return 1.56;
-            return Number(this.cache.get("AVERAGE")!["TT_PACK"]) || undefined;
+            const averagePack = this.cache.get("AVERAGE");
+            return averagePack ? Number(averagePack["TT_PACK"]) : undefined;
           case "TT_COSM":
-            // return 2.8;
-            return Number(this.cache.get("AVERAGE")!["TT_COSM"]) || undefined;
+            const averageCosm = this.cache.get("AVERAGE");
+            return averageCosm ? Number(averageCosm["TT_COSM"]) : undefined;
           case "TT_OOBA":
-            // return 5;
-            return Number(this.cache.get("AVERAGE")!["TT_OOBA"]) || undefined;
+            const averageOoba = this.cache.get("AVERAGE");
+            return averageOoba ? Number(averageOoba["TT_OOBA"]) : undefined;
 
           default:
             return undefined;
