@@ -40,19 +40,22 @@ export namespace EfficiencyModels {
   > {
     cache: Map<string, T> = new Map();
     ttKey: keyof T;
-    getAverage(part_no: string): number {
+    getAverage(part_no: string): number | undefined {
       const value = this.cache.get(part_no);
       if (!value) {
         switch (this.ttKey) {
           case "TT_PACK":
-            return 1.56;
+            // return 1.56;
+            return Number(this.cache.get("AVERAGE")!["TT_PACK"]) || undefined;
           case "TT_COSM":
-            return 2.8;
+            // return 2.8;
+            return Number(this.cache.get("AVERAGE")!["TT_COSM"]) || undefined;
           case "TT_OOBA":
-            return 5;
+            // return 5;
+            return Number(this.cache.get("AVERAGE")!["TT_OOBA"]) || undefined;
 
           default:
-            return 0;
+            return undefined;
         }
       } else return Number(value[this.ttKey]);
     }
