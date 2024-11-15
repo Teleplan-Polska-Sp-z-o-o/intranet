@@ -48,7 +48,7 @@ export namespace EfficiencyTypes {
       units_per_worked_quarters: number;
       difference_units_worked_time: number; // Difference between processed and estimated units
       units_per_hr: number; // weighted average of units based on processing time of specific model
-      units_per_8hrs: number; // weighted average of units based on 8 hours
+      units_per_8hrs: number | "n/a"; // weighted average of units based on 8 hours
     };
     //
     efficiency: number;

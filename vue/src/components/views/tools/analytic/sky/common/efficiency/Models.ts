@@ -31,30 +31,70 @@ export namespace EfficiencyModels {
       this.efficiency = totalWorkingTime > 0 ? (this.processing_time / totalWorkingTime) * 100 : 0;
     }
   }
+
+  class Models<
+    T extends
+      | EfficiencyTypes.TPackModelObj
+      | EfficiencyTypes.TCosmModelObj
+      | EfficiencyTypes.TOobaModelObj
+  > {
+    cache: Map<string, T> = new Map();
+    ttKey: keyof T;
+    getAverage(part_no: string): number {
+      const value = this.cache.get(part_no);
+      if (!value) {
+        switch (this.ttKey) {
+          case "TT_PACK":
+            return 1.56;
+          case "TT_COSM":
+            return 2.8;
+          case "TT_OOBA":
+            return 5;
+
+          default:
+            return 0;
+        }
+      } else return Number(value[this.ttKey]);
+    }
+
+    constructor(modelsObj: T[], ttKey: keyof T) {
+      this.ttKey = ttKey;
+
+      modelsObj.forEach((model) => {
+        const { IFS_PART_NO } = model;
+        if (IFS_PART_NO) {
+          this.cache.set(IFS_PART_NO, model);
+        }
+      });
+    }
+  }
+
   export class EfficiencyBuilder<
     T extends
       | EfficiencyTypes.TPackModelObj
       | EfficiencyTypes.TCosmModelObj
       | EfficiencyTypes.TOobaModelObj
   > {
-    private modelsCache: Map<string, T> = new Map(); // Cache for model data
+    // private modelsCache: Map<string, T> = new Map(); // Cache for model data
+    private models: Models<T>;
     private processedEmployees: EfficiencyTypes.IProcessedEmployees = []; // Processed data
-    private ttModelsKey: keyof T;
+    // private ttModelsKey: keyof T;
     constructor(rawTransactions: AnalyticRaw.TTransactions, modelsObj: T[], ttModelsKey: keyof T) {
-      this.buildModelsCache(modelsObj);
-      this.ttModelsKey = ttModelsKey;
+      // this.buildModelsCache(modelsObj);
+      this.models = new Models(modelsObj, ttModelsKey);
+      // this.ttModelsKey = ttModelsKey;
       this.processTransactions(rawTransactions);
     }
 
     // --- Preprocess modelsObj to build cache ---
-    private buildModelsCache(modelsObj: T[]) {
-      modelsObj.forEach((model) => {
-        const { IFS_PART_NO } = model;
-        if (IFS_PART_NO) {
-          this.modelsCache.set(IFS_PART_NO, model);
-        }
-      });
-    }
+    // private buildModelsCache(modelsObj: T[]) {
+    //   modelsObj.forEach((model) => {
+    //     const { IFS_PART_NO } = model;
+    //     if (IFS_PART_NO) {
+    //       this.modelsCache.set(IFS_PART_NO, model);
+    //     }
+    //   });
+    // }
 
     // --- Main method to process the raw transactions ---
     private processTransactions(transactions: AnalyticRaw.TTransactions) {
@@ -63,10 +103,12 @@ export namespace EfficiencyModels {
 
       transactions.forEach((transaction, index) => {
         const { emp_name, part_no, datedtz } = transaction;
-        const modelData = this.modelsCache.get(part_no);
+        // const modelData = this.modelsCache.get(part_no);
+        const modelData = this.models.getAverage(part_no);
         if (!modelData) return;
 
-        const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
+        // const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
+        const processingTimePerUnit = modelData;
         const transactionDate = this.extractTransactionDate(datedtz);
         const transactionQuarter = this.getTransactionQuarter(datedtz); // now it's quarterly
         const shift = this.getShift(datedtz);
@@ -243,10 +285,12 @@ export namespace EfficiencyModels {
 
       // Iterate over each unique model (part_no)
       for (const part_no in units) {
-        const modelData = this.modelsCache.get(part_no);
+        // const modelData = this.modelsCache.get(part_no);
+        const modelData = this.models.getAverage(part_no);
         if (!modelData) continue;
 
-        const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
+        // const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
+        const processingTimePerUnit = modelData;
         const unitsCount = units[part_no];
 
         // Add the processing time for all units of this model
@@ -268,7 +312,8 @@ export namespace EfficiencyModels {
       employee.estimated_target.difference_units_worked_time =
         employee.processed_units - Math.round(unitsPerWorkedQuarters);
       employee.estimated_target.units_per_hr = Math.round(unitsPerHour);
-      employee.estimated_target.units_per_8hrs = Math.round(unitsPer8Hours);
+      employee.estimated_target.units_per_8hrs =
+        workedMinutes > 60 ? Math.round(unitsPer8Hours) : "n/a";
     }
 
     // Calculate daily efficiency for all employees
