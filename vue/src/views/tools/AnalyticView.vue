@@ -535,7 +535,7 @@ const tabs: ToolTab[] = [
       },
       {
         id: 45,
-        title: "HIGH-POT",
+        title: "HI-POT",
         name: "highpot",
         icon: undefined,
         children: [
