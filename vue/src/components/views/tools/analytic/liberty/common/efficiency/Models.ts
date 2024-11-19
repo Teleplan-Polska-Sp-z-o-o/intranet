@@ -46,7 +46,6 @@ export namespace EfficiencyModels {
       const totalWorkingTime = workedQuarters
         ? workedQuarters * minutesPerPeriod
         : minutesPerPeriod;
-      console.log("totalWorkingTime", totalWorkingTime);
       const processingTime =
         processingTimeUnit === "sec" ? this.processing_time / 60 : this.processing_time;
       this.efficiency = totalWorkingTime > 0 ? (processingTime / totalWorkingTime) * 100 : 0;

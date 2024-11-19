@@ -1,628 +1,70 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ToolTab } from "../../interfaces/common/ToolTabTypes";
-import { useUserStore } from "../../stores/userStore";
-import { usePermissionStore } from "../../stores/permissionStore";
-import FileDrive from "../../components/views/tools/analytic/files/drive/FileDrive.vue";
-import Documentation from "../../components/views/tools/analytic/Documentation.vue";
+import { ToolTab } from "../../../interfaces/common/ToolTabTypes";
+import { useUserStore } from "../../../stores/userStore";
+import { usePermissionStore } from "../../../stores/permissionStore";
+import FileDrive from "../../../components/views/tools/analytic/files/drive/FileDrive.vue";
+import Documentation from "../../../components/views/tools/analytic/Documentation.vue";
 // raws
-import TransactionsRawSkyDataTable from "../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
-import TransactionsRawLenovoDataTable from "../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
-import TransactionsRawIngenicoDataTable from "../../components/views/tools/analytic/ingenico/common/transactions/TransactionsRawIngenicoDataTable.vue";
-import TransactionsRawLibertyDataTable from "../../components/views/tools/analytic/liberty/common/transactions/TransactionsRawLibertyDataTable.vue";
+import TransactionsRawSkyDataTable from "../../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
+import TransactionsRawLenovoDataTable from "../../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
+import TransactionsRawIngenicoDataTable from "../../../components/views/tools/analytic/ingenico/common/transactions/TransactionsRawIngenicoDataTable.vue";
+import TransactionsRawLibertyDataTable from "../../../components/views/tools/analytic/liberty/common/transactions/TransactionsRawLibertyDataTable.vue";
+import TransactionsRawDellDataTable from "../../../components/views/tools/analytic/dell/common/transactions/TransactionsRawDellDataTable.vue";
 
-// sky
-import SkyPackedUnitsOverview from "../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
-import SkyPackingEfficiencyOverview from "../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
-import SkyCosmeticEfficiencyOverview from "../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
-import SkyOobaEfficiencyOverview from "../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
+// sky "../../.
+import SkyPackedUnitsOverview from "../../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
+import SkyPackingEfficiencyOverview from "../../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
+import SkyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
+import SkyOobaEfficiencyOverview from "../../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
 // lenovo
-import LenovoRepairEfficiencyOverview from "../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
-import LenovoCleaningEfficiencyOverview from "../../components/views/tools/analytic/lenovo/cleaning/efficiency/CleaningEfficiencyOverview.vue";
-import LenovoFinalEfficiencyOverview from "../../components/views/tools/analytic/lenovo/final/efficiency/FinalEfficiencyOverview.vue";
-import LenovoRegistrationEfficiencyOverview from "../../components/views/tools/analytic/lenovo/registration/efficiency/RegistrationEfficiencyOverview.vue";
-import LenovoPackingEfficiencyOverview from "../../components/views/tools/analytic/lenovo/packing/efficiency/PackingEfficiencyOverview.vue";
+import LenovoRepairEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
+import LenovoCleaningEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/cleaning/efficiency/CleaningEfficiencyOverview.vue";
+import LenovoFinalEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/final/efficiency/FinalEfficiencyOverview.vue";
+import LenovoRegistrationEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/registration/efficiency/RegistrationEfficiencyOverview.vue";
+import LenovoPackingEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/packing/efficiency/PackingEfficiencyOverview.vue";
 
 // ingenico
-import VmiEfficiencyOverview from "../../components/views/tools/analytic/ingenico/vmi/VmiEfficiencyOverview.vue";
-import ScreeningEfficiencyOverview from "../../components/views/tools/analytic/ingenico/screening/ScreeningEfficiencyOverview.vue";
-import WintestEfficiencyOverview from "../../components/views/tools/analytic/ingenico/wintest/WintestEfficiencyOverview.vue";
-import FinaltestEfficiencyOverview from "../../components/views/tools/analytic/ingenico/finaltest/FinaltestEfficiencyOverview.vue";
-import ActivationEfficiencyOverview from "../../components/views/tools/analytic/ingenico/activation/ActivationEfficiencyOverview.vue";
-import CustomizationEfficiencyOverview from "../../components/views/tools/analytic/ingenico/customization/CustomizationEfficiencyOverview.vue";
-import KeyinjectionEfficiencyOverview from "../../components/views/tools/analytic/ingenico/keyinjection/KeyinjectionEfficiencyOverview.vue";
-import FgiEfficiencyOverview from "../../components/views/tools/analytic/ingenico/fgi/FgiEfficiencyOverview.vue";
-import Repair2EfficiencyOverview from "../../components/views/tools/analytic/ingenico/repair/Repair2EfficiencyOverview.vue";
-import Repair3EfficiencyOverview from "../../components/views/tools/analytic/ingenico/repair/Repair3EfficiencyOverview.vue";
+import VmiEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/vmi/VmiEfficiencyOverview.vue";
+import ScreeningEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/screening/ScreeningEfficiencyOverview.vue";
+import WintestEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/wintest/WintestEfficiencyOverview.vue";
+import FinaltestEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/finaltest/FinaltestEfficiencyOverview.vue";
+import ActivationEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/activation/ActivationEfficiencyOverview.vue";
+import CustomizationEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/customization/CustomizationEfficiencyOverview.vue";
+import KeyinjectionEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/keyinjection/KeyinjectionEfficiencyOverview.vue";
+import FgiEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/fgi/FgiEfficiencyOverview.vue";
+import Repair2EfficiencyOverview from "../../../components/views/tools/analytic/ingenico/repair/Repair2EfficiencyOverview.vue";
+import Repair3EfficiencyOverview from "../../../components/views/tools/analytic/ingenico/repair/Repair3EfficiencyOverview.vue";
 
 // liberty
-import LibertyVmiEfficiencyOverview from "../../components/views/tools/analytic/liberty/vmi/VmiEfficiencyOverview.vue";
-import LibertyTestEfficiencyOverview from "../../components/views/tools/analytic/liberty/test/TestEfficiencyOverview.vue";
-import LibertyDebugrepairEfficiencyOverview from "../../components/views/tools/analytic/liberty/debugrepair/DebugrepairEfficiencyOverview.vue";
-import LibertyHighpotEfficiencyOverview from "../../components/views/tools/analytic/liberty/highpot/HighpotEfficiencyOverview.vue";
-import LibertyCosmeticEfficiencyOverview from "../../components/views/tools/analytic/liberty/cosmetic/CosmeticEfficiencyOverview.vue";
-import LibertyPackEfficiencyOverview from "../../components/views/tools/analytic/liberty/pack/PackEfficiencyOverview.vue";
-import LibertyShipEfficiencyOverview from "../../components/views/tools/analytic/liberty/ship/ShipEfficiencyOverview.vue";
-import LibertyOobaEfficiencyOverview from "../../components/views/tools/analytic/liberty/ooba/OobaEfficiencyOverview.vue";
+import LibertyVmiEfficiencyOverview from "../../../components/views/tools/analytic/liberty/vmi/VmiEfficiencyOverview.vue";
+import LibertyTestEfficiencyOverview from "../../../components/views/tools/analytic/liberty/test/TestEfficiencyOverview.vue";
+import LibertyDebugrepairEfficiencyOverview from "../../../components/views/tools/analytic/liberty/debugrepair/DebugrepairEfficiencyOverview.vue";
+import LibertyHighpotEfficiencyOverview from "../../../components/views/tools/analytic/liberty/highpot/HighpotEfficiencyOverview.vue";
+import LibertyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/liberty/cosmetic/CosmeticEfficiencyOverview.vue";
+import LibertyPackEfficiencyOverview from "../../../components/views/tools/analytic/liberty/pack/PackEfficiencyOverview.vue";
+import LibertyShipEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ship/ShipEfficiencyOverview.vue";
+import LibertyOobaEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ooba/OobaEfficiencyOverview.vue";
+import { tabsObj } from "./tabsObj";
+
+// Dell
+import DellEfficiencyOverview from "../../../components/views/tools/analytic/dell/common/efficiency/EfficiencyOverview.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
 const route = useRoute();
 
-const tabs: ToolTab[] = [
-  {
-    id: 1,
-    name: "sky",
-    icon: undefined,
-    meta: {
-      group: "analytic",
-      subgroup: "sky",
-    },
-    children: [
-      {
-        id: 11,
-        title: "Packing",
-        name: "packing",
-        icon: undefined,
-        children: [
-          {
-            id: 111,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 112,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 12,
-        title: "Cosmetic",
-        name: "cosmetic",
-        icon: undefined,
-        children: [
-          {
-            id: 121,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 122,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 13,
-        title: "OOBA",
-        name: "ooba",
-        icon: undefined,
-        children: [
-          {
-            id: 131,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 132,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "lenovo",
-    icon: undefined,
-    meta: {
-      group: "analytic",
-      subgroup: "lenovo",
-    },
-    children: [
-      {
-        id: 21,
-        title: "Repair",
-        name: "repair",
-        icon: undefined,
-        children: [
-          {
-            id: 211,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 212,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 22,
-        title: "Registration",
-        name: "registration",
-        icon: undefined,
-        children: [
-          {
-            id: 221,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 222,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 23,
-        title: "Cleaning",
-        name: "cleaning",
-        icon: undefined,
-        children: [
-          {
-            id: 231,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 232,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 24,
-        title: "Final Test",
-        name: "final",
-        icon: undefined,
-        children: [
-          {
-            id: 241,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 242,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 25,
-        title: "Packing",
-        name: "packing",
-        icon: undefined,
-        children: [
-          {
-            id: 251,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 252,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "ingenico",
-    icon: undefined,
-    meta: {
-      group: "analytic",
-      subgroup: "ingenico",
-    },
-    children: [
-      {
-        id: 31,
-        title: "VMI",
-        name: "vmi",
-        icon: undefined,
-        children: [
-          {
-            id: 311,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 312,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 32,
-        title: "Screening",
-        name: "screening",
-        icon: undefined,
-        children: [
-          {
-            id: 321,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 322,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 33,
-        title: "Win Test",
-        name: "wintest",
-        icon: undefined,
-        children: [
-          {
-            id: 331,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 332,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 34,
-        title: "Final Test",
-        name: "finaltest",
-        icon: undefined,
-        children: [
-          {
-            id: 341,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 342,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 35,
-        title: "Activation",
-        name: "activation",
-        icon: undefined,
-        children: [
-          {
-            id: 351,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 352,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 36,
-        title: "Customization",
-        name: "customization",
-        icon: undefined,
-        children: [
-          {
-            id: 361,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 362,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 37,
-        title: "Key Injection",
-        name: "keyinjection",
-        icon: undefined,
-        children: [
-          {
-            id: 371,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 372,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 38,
-        title: "FGI",
-        name: "fgi",
-        icon: undefined,
-        children: [
-          {
-            id: 381,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 382,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 39,
-        title: "L2",
-        name: "repair2",
-        icon: undefined,
-        children: [
-          {
-            id: 391,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 392,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 310,
-        title: "L3",
-        name: "repair3",
-        icon: undefined,
-        children: [
-          {
-            id: 3101,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 3102,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: "liberty",
-    icon: undefined,
-    meta: {
-      group: "analytic",
-      subgroup: "liberty",
-    },
-    children: [
-      {
-        id: 41,
-        title: "VMI",
-        name: "vmi",
-        icon: undefined,
-        children: [
-          {
-            id: 411,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 412,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 42,
-        title: "TEST",
-        name: "test",
-        icon: undefined,
-        children: [
-          {
-            id: 421,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 422,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 43,
-        title: "DEBUG / REPAIR",
-        name: "debugrepair",
-        icon: undefined,
-        children: [
-          {
-            id: 431,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 432,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 44,
-        title: "COSMETIC",
-        name: "cosmetic",
-        icon: undefined,
-        children: [
-          {
-            id: 441,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 442,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 45,
-        title: "HI-POT",
-        name: "highpot",
-        icon: undefined,
-        children: [
-          {
-            id: 451,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 452,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 46,
-        title: "PACK",
-        name: "pack",
-        icon: undefined,
-        children: [
-          {
-            id: 461,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 462,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 47,
-        title: "SHIP",
-        name: "ship",
-        icon: undefined,
-        children: [
-          {
-            id: 471,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 472,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: 48,
-        title: "OOBA",
-        name: "ooba",
-        icon: undefined,
-        children: [
-          {
-            id: 481,
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: 482,
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-    ],
-  },
-];
+const tabs: ToolTab[] = tabsObj;
+
+const dellTab = tabs.filter((tab: ToolTab) => tab.name === "dell");
 
 const filteredToolTabs = ref<ToolTab[]>([]);
-const toggled = ref<number[]>([]);
+const toggled = ref<string[]>([]);
 const windowItem = ref<string>("documentation");
 
 // Helper function to find the corresponding IDs for program, category, and subcategory
-const findTabIds = (program: string, cat?: string, sub?: string): number[] => {
+const findTabIds = (program: string, cat?: string, sub?: string): string[] => {
   const programTab = tabs.find((tab) => tab.name === program);
   if (!programTab) return [];
 
@@ -653,12 +95,12 @@ const location = (program: string, cat?: string, sub?: string): void => {
   });
 };
 
-const isActive = (subId: number): boolean => {
+const isActive = (subId: string): boolean => {
   const routeProgram = route.params.program as string;
   const routeCat = route.params.cat as string | undefined;
   const routeSub = route.params.sub as string | undefined;
 
-  const ids: number[] = findTabIds(routeProgram, routeCat, routeSub);
+  const ids: string[] = findTabIds(routeProgram, routeCat, routeSub);
   return ids.length === 3 && ids.at(2) === subId;
 };
 
@@ -1344,6 +786,39 @@ onMounted(async () => {
                       ttKey="OBA_TT"
                       class="mt-6"
                     />
+                  </template>
+                </v-window-item>
+
+                <!-- DELL -->
+                <v-window-item
+                  v-for="subTab in dellTab.at(0)!.children!"
+                  :key="subTab.id"
+                  :value="`dell-${subTab.name}-drive`"
+                >
+                  <template v-if="windowItem === `dell-${subTab.name}-drive`">
+                    <file-drive
+                      :subtitle="`Dell ${subTab.title}`"
+                      :identification="`dell-${subTab.name}-drive`"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+
+                <v-window-item
+                  v-for="subTab in dellTab.at(0)!.children!"
+                  :key="subTab.id"
+                  :value="`dell-${subTab.name}-overview`"
+                >
+                  <template v-if="windowItem === `dell-${subTab.name}-overview`">
+                    <transactions-raw-dell-data-table
+                      program="dell"
+                      :group="subTab.name"
+                      :identification="`dell-${subTab.name}-overview`"
+                    ></transactions-raw-dell-data-table>
+                    <dell-efficiency-overview
+                      :raw-identification="`dell-${subTab.name}-overview`"
+                      :title="`Employee ${subTab.title} Efficiency Overview`"
+                      class="mt-6"
+                    ></dell-efficiency-overview>
                   </template>
                 </v-window-item>
               </v-window>

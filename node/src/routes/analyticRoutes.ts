@@ -36,6 +36,23 @@ import {
   getRawVmiTransactions,
 } from "../sideControllers/liberty/TransactionsRawController";
 
+import {
+  getDellEcoCheckTransactions,
+  getDellEcoWorksTransactions,
+  getDellFchTransactions,
+  getDellFinalTestTransactions,
+  getDellHoldTransactions,
+  getDellObaTransactions,
+  getDellPackTransactions,
+  getDellRepairL1L2Transactions,
+  getDellRepairL3Transactions,
+  getDellScrapTransactions,
+  getDellScreeningTransactions,
+  getDellShipTransactions,
+  getDellVmiTransactions,
+  getDellWffaTransactions,
+} from "../sideControllers/dell/TransactionsRawController";
+
 const router = express.Router();
 const decodeFormData = multer().none();
 
@@ -73,5 +90,20 @@ router.post("/raw/liberty/highpot", decodeFormData, getRawHighPotTransactions);
 router.post("/raw/liberty/pack", decodeFormData, getRawPackTransactions);
 router.post("/raw/liberty/ship", decodeFormData, getRawShipTransactions);
 router.post("/raw/liberty/ooba", decodeFormData, getRawOobaTransactions);
+
+router.post("/raw/dell/vmi", decodeFormData, getDellVmiTransactions);
+router.post("/raw/dell/wffa", decodeFormData, getDellWffaTransactions);
+router.post("/raw/dell/pack", decodeFormData, getDellPackTransactions);
+router.post("/raw/dell/finaltest", decodeFormData, getDellFinalTestTransactions);
+router.post("/raw/dell/ecocheck", decodeFormData, getDellEcoCheckTransactions);
+router.post("/raw/dell/fch", decodeFormData, getDellFchTransactions);
+router.post("/raw/dell/repairl1l2", decodeFormData, getDellRepairL1L2Transactions);
+router.post("/raw/dell/screening", decodeFormData, getDellScreeningTransactions);
+router.post("/raw/dell/ecoworks", decodeFormData, getDellEcoWorksTransactions);
+router.post("/raw/dell/oba", decodeFormData, getDellObaTransactions);
+router.post("/raw/dell/repairl3", decodeFormData, getDellRepairL3Transactions);
+router.post("/raw/dell/scrap", decodeFormData, getDellScrapTransactions);
+router.post("/raw/dell/hold", decodeFormData, getDellHoldTransactions);
+router.post("/raw/dell/ship", decodeFormData, getDellShipTransactions);
 
 export { router as analyticRoutes };

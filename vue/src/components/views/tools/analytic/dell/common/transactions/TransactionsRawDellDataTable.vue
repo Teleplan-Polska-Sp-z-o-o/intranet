@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
 import { AnalyticRaw } from "./Types";
-import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawIngenicoTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawDellTableStore";
 import { TimeHelper } from "../../../../../../../models/common/TimeHelper";
 import { TransactionsHelper } from "./TransactionsHelper";
 import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
@@ -15,7 +15,8 @@ import { TimerManager } from "../../../debug/Timers";
 
 const props = defineProps<{
   program: AnalyticRaw.TPrograms;
-  group: AnalyticRaw.TGroups;
+  // group: AnalyticRaw.TGroups;
+  group: string;
   identification: string;
 }>();
 
@@ -26,27 +27,46 @@ const route = useRoute();
 const abortController = ref<AbortController | null>(null);
 
 const headers: any = [
-  // { title: "Transaction ID", align: "start", key: "transaction_id" },
+  { title: "Id", align: "start", key: "id", value: "id" },
   { title: "Contract", align: "start", key: "contract", value: "contract" },
-  { title: "Order No", align: "start", key: "order_no", value: "order_no" },
-  { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
-  { title: "Part No", align: "start", key: "part_no", value: "part_no" },
-  { title: "From Work Center No", align: "start", key: "work_center_no", value: "work_center_no" },
-  { title: "Next Work Center No", align: "start", key: "next_work_center_no" },
-  { title: "Date", align: "start", key: "datedtz", value: "datedtz" },
+  { title: "Username", align: "start", key: "username", value: "username" },
+  { title: "Part No", align: "start", key: "partNo", value: "partNo" },
+  { title: "Serial No", align: "start", key: "serialNo", value: "serialNo" },
+  {
+    title: "Work Station Description",
+    align: "start",
+    key: "workStationDesc",
+    value: "workStationDesc",
+  },
+  {
+    title: "Next Work Station Description",
+    align: "start",
+    key: "nextWorkStationDesc",
+    value: "nextWorkStationDesc",
+  },
+  {
+    title: "Last Activity Date",
+    align: "start",
+    key: "lastActivityDate",
+    value: "lastActivityDate",
+  },
 ];
 
 const searchTerm = ref<string>(""); // search input
 const searchBy = [
   "contract",
-  "order_no",
-  "emp_name",
-  "part_no",
-  "work_center_no",
-  "next_work_center_no",
-  "datedtz",
+  "username",
+  "partNo",
+  "serialNo",
+  // "workStationCode",
+  "workStationDesc",
+  // "nextWorkStationCode",
+  "nextWorkStationDesc",
+  "lastActivityDate",
 ];
-const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "datedtz", order: "asc" }];
+const sortBy: { key: string; order: "asc" | "desc" }[] = [
+  { key: "lastActivityDate", order: "asc" },
+];
 
 const loadingVersion = ref<number>(0);
 const loading = ref<false | "primary-container">(false);
@@ -214,7 +234,7 @@ watch(
 );
 
 const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHeader) => {
-  const keyBlackList = ["transaction_id"];
+  const keyBlackList = ["id"];
   return !keyBlackList.includes(col.value);
 });
 </script>
@@ -241,7 +261,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
       <download
         :headers="downloadHeaders"
         :items="filteredItems"
-        base-save-as="Ingenico Raw Transactions"
+        base-save-as="Dell Raw Transactions"
       ></download>
     </v-card-title>
 

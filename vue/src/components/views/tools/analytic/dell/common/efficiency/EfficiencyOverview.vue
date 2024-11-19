@@ -1,27 +1,26 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawLibertyTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawDellTableStore";
 import { computed, ref, toRefs, unref, watch } from "vue";
-import { EfficiencyTypes } from "../common/efficiency/Types";
-import { AnalyticRaw } from "../common/transactions/Types";
-import EfficiencyWorker from "../common/efficiency/EfficiencyWorker?worker";
-import { DataTableHeader } from "../../files/download/DataTableHeader";
-import EmployeeDailyEfficiencyChart from "../common/efficiency/EmployeeDailyEfficiencyChart.vue";
-import EmployeeQuarterlyEfficiencyChart from "../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
-import { AnalyticFileTypes } from "../../files/Types";
-import { AnalyticFileManager } from "../../../../../../models/analytic/AnalyticFileManager";
-import { AnalyticFileHelper } from "../../files/drive/AnalyticFileHelper";
+import { EfficiencyTypes } from "./Types";
+import { AnalyticRaw } from "../transactions/Types";
+import EfficiencyWorker from "./EfficiencyWorker?worker";
+import { DataTableHeader } from "../../../files/download/DataTableHeader";
+import EmployeeDailyEfficiencyChart from "./EmployeeDailyEfficiencyChart.vue";
+import EmployeeQuarterlyEfficiencyChart from "./EmployeeQuarterlyEfficiencyChart.vue";
+import { AnalyticFileManager } from "../../../../../../../models/analytic/AnalyticFileManager";
+import { AnalyticFileTypes } from "../../../files/Types";
+import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
 
 const route = useRoute();
 const analyticRawTransactionsStore = useAnalyticRawTableStore();
 
 const props = defineProps<{
   rawIdentification: string;
-  ttKey?: string;
   title?: string;
 }>();
 
-const { title, rawIdentification, ttKey } = toRefs(props);
+const { title, rawIdentification } = toRefs(props);
 
 const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
 
@@ -31,7 +30,7 @@ const loading = ref<false | "primary-container">("primary-container");
 const worker = new EfficiencyWorker();
 
 const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
-const modelsMatrix = ref<EfficiencyTypes.IModels>([]);
+const modelsMatrix = ref<EfficiencyTypes.IModelRecord[]>([]);
 const loadMatrix = async () => {
   const progName = route.params.program as string;
   const catName = route.params.cat as string;
@@ -59,9 +58,9 @@ watch(
     // const program = route.params.program as string;
     // const models = (await new AnalyticInventoryCharacteristicManager(
     //   program
-    // ).get()) as EfficiencyTypes.IModelMatrix[];
+    // ).get()) as EfficiencyTypes.IInventoryCharacteristic[];
 
-    // Route params
+    // if (!models.length) return;
 
     if (!unref(modelsMatrix).length) await loadMatrix();
     if (!unref(modelsMatrix).length) return;
@@ -69,12 +68,9 @@ watch(
     const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
     const serializedModels = JSON.stringify(unref(modelsMatrix));
 
-    const serializedTT = JSON.stringify(unref(ttKey));
-
     worker.postMessage({
       rawTransactions: serializedRawTransactions,
       models: serializedModels,
-      ttKey: serializedTT,
     });
   },
   { deep: true }
@@ -218,7 +214,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
     <v-card-title class="d-flex align-center">
-      {{ title ?? "Employee Packing Efficiency Overview" }}
+      {{ title ?? "Employee FGI Efficiency Overview" }}
       <v-spacer></v-spacer>
       <download
         :headers="downloadHeaders"

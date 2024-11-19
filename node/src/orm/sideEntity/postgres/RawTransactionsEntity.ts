@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-import { SideAnalyticTypes } from "../../interfaces/analytic/SideAnalyticTypes";
+import { SideAnalyticTypes } from "../../../interfaces/analytic/SideAnalyticTypes";
 
 @Entity({ name: "operation_history", schema: "public" })
 export class RawTransaction implements SideAnalyticTypes.RawTransaction {

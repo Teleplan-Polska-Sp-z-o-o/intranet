@@ -17,7 +17,7 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const tabs: ToolTab[] = [
   {
-    id: 1,
+    id: "1",
     name: "pcr",
     icon: "mdi-invoice-text-arrow-right-outline",
     meta: {
@@ -26,7 +26,7 @@ const tabs: ToolTab[] = [
     },
   },
   {
-    id: 2,
+    id: "2",
     name: "pcn",
     icon: "mdi-invoice-text-check-outline",
     meta: {
@@ -35,7 +35,7 @@ const tabs: ToolTab[] = [
     },
   },
   {
-    id: 3,
+    id: "3",
     name: "dcr",
     icon: "mdi-file-document-arrow-right-outline",
     meta: {
@@ -44,7 +44,7 @@ const tabs: ToolTab[] = [
     },
   },
   {
-    id: 4,
+    id: "4",
     name: "dcn",
     icon: "mdi-file-document-check-outline",
     meta: {
@@ -69,19 +69,19 @@ const getTab = (
 
   switch (tabName) {
     case "pcr":
-      return getNumericValue ? 1 : "pcr";
+      return getNumericValue ? "1" : "pcr";
 
     case "pcn":
-      return getNumericValue ? 2 : "pcn";
+      return getNumericValue ? "2" : "pcn";
 
     case "dcr":
-      return getNumericValue ? 3 : "dcr";
+      return getNumericValue ? "3" : "dcr";
 
     case "dcn":
-      return getNumericValue ? 4 : "dcn";
+      return getNumericValue ? "4" : "dcn";
 
     default:
-      return getNumericValue ? 1 : "pcr";
+      return getNumericValue ? "1" : "pcr";
   }
 };
 
@@ -157,21 +157,21 @@ const dcnConnectorId = uuidv4();
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
-                <v-window-item :value="1">
+                <v-window-item value="1">
                   <p-c-r-table
                     class="bg-surface-2 pa-4 ma-1"
                     :instanceId="pcrConnectorId"
                     :tab="currentTab"
                   ></p-c-r-table>
                 </v-window-item>
-                <v-window-item :value="2">
+                <v-window-item value="2">
                   <p-c-n-table
                     class="bg-surface-2 pa-4 ma-1"
                     :instanceId="pcnConnectorId"
                     :tab="currentTab"
                   ></p-c-n-table>
                 </v-window-item>
-                <v-window-item :value="3">
+                <v-window-item value="3">
                   <d-c-r-table
                     class="bg-surface-2 pa-4 ma-1 mb-5"
                     :instanceId="dcrConnectorId"
@@ -179,7 +179,7 @@ const dcnConnectorId = uuidv4();
                   ></d-c-r-table>
                   <k-p-i-table class="bg-surface-2 pa-4 ma-1"></k-p-i-table>
                 </v-window-item>
-                <v-window-item :value="4">
+                <v-window-item value="4">
                   <d-c-n-table
                     class="bg-surface-2 pa-4 ma-1"
                     :instanceId="dcnConnectorId"

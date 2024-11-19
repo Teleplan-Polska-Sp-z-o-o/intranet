@@ -52,6 +52,22 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
       ship: { drive: ["models", "miscellaneous"] },
       ooba: { drive: ["models", "miscellaneous"] },
     },
+    dell: {
+      vmi: { drive: ["models", "miscellaneous"] },
+      wffa: { drive: ["models", "miscellaneous"] },
+      pack: { drive: ["models", "miscellaneous"] },
+      finaltest: { drive: ["models", "miscellaneous"] },
+      ecocheck: { drive: ["models", "miscellaneous"] },
+      fch: { drive: ["models", "miscellaneous"] },
+      repairl1l2: { drive: ["models", "miscellaneous"] },
+      screening: { drive: ["models", "miscellaneous"] },
+      ecoworks: { drive: ["models", "miscellaneous"] },
+      oba: { drive: ["models", "miscellaneous"] },
+      repairl3: { drive: ["models", "miscellaneous"] },
+      scrap: { drive: ["models", "miscellaneous"] },
+      hold: { drive: ["models", "miscellaneous"] },
+      ship: { drive: ["models", "miscellaneous"] },
+    },
   };
 
   const getFileTypes = (
@@ -164,6 +180,50 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
     },
     "liberty-ooba-drive": {
       models: ["IFS_PN", "OBA_TT"],
+    },
+
+    // DELL
+    "dell-vmi-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-wffa-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-pack-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-finaltest-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-ecocheck-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-fch-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-repairl1l2-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-screening-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-ecoworks-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-oba-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-repairl3-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-scrap-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-hold-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
+    },
+    "dell-ship-drive": {
+      models: ["WORKSTATION_DESC", "TT"],
     },
   };
 

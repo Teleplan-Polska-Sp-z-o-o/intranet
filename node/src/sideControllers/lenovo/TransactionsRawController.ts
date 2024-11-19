@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpResponseMessage } from "../../enums/response";
-import { RawTransaction } from "../../orm/sideEntity/RawTransactionsEntity";
+import { RawTransaction } from "../../orm/sideEntity/postgres/RawTransactionsEntity";
 import { SideDataSources } from "../../config/SideDataSources";
 
 const getRawRegistrationTransactions = async (req: Request, res: Response): Promise<Response> => {

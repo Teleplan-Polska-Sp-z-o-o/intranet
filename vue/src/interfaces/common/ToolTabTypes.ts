@@ -13,14 +13,14 @@ interface Tool {
 }
 
 interface ISubSubTab {
-  id: number;
+  id: string;
   title: string;
   name: string;
   icon: string | undefined;
 }
 
 interface ISubTab {
-  id: number;
+  id: string;
   title: string;
   name: string;
   icon: string | undefined;
@@ -28,7 +28,7 @@ interface ISubTab {
 }
 
 interface ToolTab {
-  id: number;
+  id: string;
   name: string;
   icon: string | undefined;
   meta: {

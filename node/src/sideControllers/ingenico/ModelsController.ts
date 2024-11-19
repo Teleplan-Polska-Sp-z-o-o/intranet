@@ -15,7 +15,7 @@
 
 import { Request, Response } from "express";
 import { HttpResponseMessage } from "../../enums/response";
-import { InventoryCharacteristic } from "../../orm/sideEntity/InventoryCharacteristicEntity";
+import { InventoryCharacteristic } from "../../orm/sideEntity/postgres/InventoryCharacteristicEntity";
 import { SideDataSources } from "../../config/SideDataSources";
 
 const getIngenicoModels = async (req: Request, res: Response): Promise<Response> => {

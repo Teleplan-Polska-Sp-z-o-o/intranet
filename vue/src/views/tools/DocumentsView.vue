@@ -16,7 +16,7 @@ const tabs: ToolTab[] = [
   //
   // },
   {
-    id: 2,
+    id: "2",
     name: "all",
     icon: "mdi-file-document",
     meta: {
@@ -52,7 +52,7 @@ const tabs: ToolTab[] = [
   //   },
   // },
   {
-    id: 3,
+    id: "3",
     name: "quick",
     icon: "mdi-file-star",
     meta: {
@@ -61,7 +61,7 @@ const tabs: ToolTab[] = [
     },
   },
   {
-    id: 4,
+    id: "4",
     name: "assistant",
     icon: "mdi-assistant",
     meta: {
@@ -86,7 +86,7 @@ const getTab = (
 
   switch (tabName) {
     case "all":
-      return getNumericValue ? 2 : "all";
+      return getNumericValue ? "2" : "all";
 
     // case "instructions":
     //   return getNumericValue ? 3 : "instructions";
@@ -98,13 +98,13 @@ const getTab = (
     //   return getNumericValue ? 5 : "msd";
 
     case "quick":
-      return getNumericValue ? 3 : "quick";
+      return getNumericValue ? "3" : "quick";
 
     case "assistant":
-      return getNumericValue ? 4 : "assistant";
+      return getNumericValue ? "4" : "assistant";
 
     default:
-      return getNumericValue ? 2 : "all";
+      return getNumericValue ? "2" : "all";
   }
 };
 
@@ -185,7 +185,7 @@ const quickAccessConnectorId = uuidv4();
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
                 <v-window-item :value="1"> </v-window-item>
                 <!-- all documents -->
-                <v-window-item :value="2">
+                <v-window-item value="2">
                   <chip-filters
                     :max-level="2"
                     :quickAccess="false"
@@ -200,7 +200,7 @@ const quickAccessConnectorId = uuidv4();
                   ></document-table>
                 </v-window-item>
                 <!-- quick access documents -->
-                <v-window-item :value="3">
+                <v-window-item value="3">
                   <chip-filters
                     :max-level="2"
                     :quickAccess="true"
@@ -216,7 +216,7 @@ const quickAccessConnectorId = uuidv4();
                   ></document-table>
                 </v-window-item>
                 <!-- ai assistant -->
-                <v-window-item :value="4">
+                <v-window-item value="4">
                   <custom-ai-assistant
                     tab="assistant"
                     assistantKey="documents"

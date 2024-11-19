@@ -21,7 +21,7 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const tabs: ToolTab[] = [
   {
-    id: 1,
+    id: "1",
     name: "user-info",
     icon: "mdi-badge-account",
     meta: {
@@ -30,7 +30,7 @@ const tabs: ToolTab[] = [
     },
   },
   {
-    id: 2,
+    id: "2",
     name: "user-permissions",
     icon: "mdi-shield-account",
     meta: {
@@ -39,7 +39,7 @@ const tabs: ToolTab[] = [
     },
   },
   {
-    id: 3,
+    id: "3",
     name: "news",
     icon: "mdi-pencil-outline",
     meta: {
@@ -64,16 +64,16 @@ const getTab = (
 
   switch (tabName) {
     case "user-info":
-      return getNumericValue ? 1 : "user-info";
+      return getNumericValue ? "1" : "user-info";
 
     case "user-permissions":
-      return getNumericValue ? 2 : "user-permissions";
+      return getNumericValue ? "2" : "user-permissions";
 
     case "news":
-      return getNumericValue ? 3 : "news";
+      return getNumericValue ? "3" : "news";
 
     default:
-      return getNumericValue ? 1 : "user-info";
+      return getNumericValue ? "1" : "user-info";
   }
 };
 
@@ -150,7 +150,7 @@ const newsConnectorId = uuidv4();
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
-                <v-window-item :value="1">
+                <v-window-item value="1">
                   <info-table
                     class="bg-surface-2 pa-4 ma-1 mb-5"
                     :instanceId="infoConnectorId"
@@ -166,7 +166,7 @@ const newsConnectorId = uuidv4();
                   <new-users-chart class="bg-surface-2 pa-4 ma-1 mb-5"></new-users-chart>
                   <returning-users-chart class="bg-surface-2 pa-4 ma-1"></returning-users-chart>
                 </v-window-item>
-                <v-window-item :value="2">
+                <v-window-item value="2">
                   <permissions-table-info class="mb-5 ma-1"></permissions-table-info>
                   <permissions-table
                     :instanceId="permissionConnectorId"
@@ -174,7 +174,7 @@ const newsConnectorId = uuidv4();
                     tab="user-permissions"
                   ></permissions-table>
                 </v-window-item>
-                <v-window-item :value="3">
+                <v-window-item value="3">
                   <news-table
                     class="bg-surface-2 pa-4 ma-1"
                     :instanceId="newsConnectorId"

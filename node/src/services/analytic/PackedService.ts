@@ -5,7 +5,7 @@ import {
   getRawSkyPackingTransactions,
 } from "../../sideControllers/sky/TransactionsRawController";
 import { HttpResponseMessage } from "../../enums/response";
-import { RawTransaction } from "../../orm/sideEntity/RawTransactionsEntity";
+import { RawTransaction } from "../../orm/sideEntity/postgres/RawTransactionsEntity";
 import { getByProgAndCatAndSub } from "../../controllers/analytic/AnalyticFileController";
 import { AnalyticFile } from "../../orm/entity/analytic/AnalyticFileEntity";
 import { PackedTypes } from "../../interfaces/analytic/overview/PackedTypes";

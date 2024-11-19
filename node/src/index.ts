@@ -23,55 +23,57 @@ dataSource
       .initialize()
       .then(() => {
         console.log(`Side Data Source for postgres has been initialized`);
+        SideDataSources.mssql.initialize().then(() => {
+          console.log(`Side Data Source for mssql has been initialized`);
+          let server: any;
 
-        let server: any;
+          if (serverConfig.test) {
+            // Initialize express-ws with the HTTP server
+            server = mountWsRoute(app).listen(serverConfig.port, () =>
+              console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
+            );
+          } else {
+            // Read SSL certificate and private key
+            const privateKey = fs.readFileSync("./private.key", "utf8");
+            const certificate = fs.readFileSync("./certificate.crt", "utf8");
+            const credentials = { key: privateKey, cert: certificate };
 
-        if (serverConfig.test) {
-          // Initialize express-ws with the HTTP server
-          server = mountWsRoute(app).listen(serverConfig.port, () =>
-            console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
-          );
-        } else {
-          // Read SSL certificate and private key
-          const privateKey = fs.readFileSync("./private.key", "utf8");
-          const certificate = fs.readFileSync("./certificate.crt", "utf8");
-          const credentials = { key: privateKey, cert: certificate };
+            // Create HTTPS server
+            server = https.createServer(credentials, app);
 
-          // Create HTTPS server
-          server = https.createServer(credentials, app);
+            // Initialize express-ws with the HTTPS server
+            mountWsRoute(app, server).listen(serverConfig.port, () =>
+              console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
+            );
+          }
 
-          // Initialize express-ws with the HTTPS server
-          mountWsRoute(app, server).listen(serverConfig.port, () =>
-            console.log(`Node listens at ${serverConfig.origin}:${serverConfig.port}`)
-          );
-        }
+          // mount tasks
 
-        // mount tasks
+          mountScheduledTasks();
+          mountOneTimeTasks();
 
-        mountScheduledTasks();
-        mountOneTimeTasks();
+          // Graceful shutdown on SIGTERM (e.g., Docker container stop)
+          process.on("SIGTERM", async () => {
+            console.log("Received SIGTERM, shutting down gracefully...");
 
-        // Graceful shutdown on SIGTERM (e.g., Docker container stop)
-        process.on("SIGTERM", async () => {
-          console.log("Received SIGTERM, shutting down gracefully...");
+            await UserSessionManager.getInstance().clearAllSessions();
 
-          await UserSessionManager.getInstance().clearAllSessions();
-
-          server.close(() => {
-            console.log("Server closed");
-            process.exit(0);
+            server.close(() => {
+              console.log("Server closed");
+              process.exit(0);
+            });
           });
-        });
 
-        // Handle SIGINT (e.g., Ctrl+C in terminal)
-        process.on("SIGINT", async () => {
-          console.log("Received SIGINT, shutting down gracefully...");
+          // Handle SIGINT (e.g., Ctrl+C in terminal)
+          process.on("SIGINT", async () => {
+            console.log("Received SIGINT, shutting down gracefully...");
 
-          await UserSessionManager.getInstance().clearAllSessions();
+            await UserSessionManager.getInstance().clearAllSessions();
 
-          server.close(() => {
-            console.log("Server closed");
-            process.exit(0);
+            server.close(() => {
+              console.log("Server closed");
+              process.exit(0);
+            });
           });
         });
       })

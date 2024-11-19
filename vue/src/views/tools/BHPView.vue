@@ -12,7 +12,7 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const tabs: ToolTab[] = [
   {
-    id: 1,
+    id: "1",
     name: "manage-acknowledgment",
     icon: "mdi-file-settings-outline",
     meta: {
@@ -21,7 +21,7 @@ const tabs: ToolTab[] = [
     },
   },
   {
-    id: 2,
+    id: "2",
     name: "document-acknowledged",
     icon: "mdi-file-sign",
     meta: {
@@ -46,13 +46,13 @@ const getTab = (
 
   switch (tabName) {
     case "manage-acknowledgment":
-      return getNumericValue ? 1 : "manage-acknowledgment";
+      return getNumericValue ? "1" : "manage-acknowledgment";
 
     case "document-acknowledged":
-      return getNumericValue ? 2 : "document-acknowledged";
+      return getNumericValue ? "2" : "document-acknowledged";
 
     default:
-      return getNumericValue ? 1 : "manage-acknowledgment";
+      return getNumericValue ? "1" : "manage-acknowledgment";
   }
 };
 
@@ -122,7 +122,7 @@ const acknowledgedConnectorId = uuidv4();
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
-                <v-window-item :value="1">
+                <v-window-item value="1">
                   <department-table
                     :quickAccess="false"
                     :tab="tabs.at(0)!.name"
@@ -130,7 +130,7 @@ const acknowledgedConnectorId = uuidv4();
                     class="bg-surface-2 pa-4 ma-1"
                   ></department-table>
                 </v-window-item>
-                <v-window-item :value="2">
+                <v-window-item value="2">
                   <document-table
                     :tab="tabs.at(1)!.name"
                     :instanceId="acknowledgedConnectorId"

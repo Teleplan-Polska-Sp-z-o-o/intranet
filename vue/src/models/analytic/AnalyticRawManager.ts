@@ -1,11 +1,11 @@
-import { AnalyticRaw } from "../../components/views/tools/analytic/sky/transactions/Types";
+// import { AnalyticRaw } from "../../components/views/tools/analytic/sky/transactions/Types";
 import { Endpoints } from "../../config/axios/Endpoints";
 import jwtAxios from "../../config/axios/jwtAxios";
 import { nodeConfig } from "../../config/env";
 import { useAlertStore } from "../../stores/alertStore";
 import { ResponseStatus } from "../common/ResponseStatus";
 
-class AnalyticRawManager {
+class AnalyticRawManager<T> {
   program: string;
   group: string;
 
@@ -44,7 +44,7 @@ class AnalyticRawManager {
     formData: FormData,
     signal?: AbortSignal,
     status: boolean = false
-  ): Promise<AnalyticRaw.TTransactions> => {
+  ): Promise<T> => {
     const response = await jwtAxios.post(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Analytic}/raw/${this.program}/${this.group}`,
       formData,

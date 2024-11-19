@@ -129,7 +129,7 @@ const load = async (interrupt: boolean = true) => {
 
     // Create a new AbortController for the new request
     abortController.value = new AbortController();
-    const arm = new AnalyticRawManager(unref(program), unref(group));
+    const arm = new AnalyticRawManager<AnalyticRaw.TTransactions>(unref(program), unref(group));
     const formData = arm.createFormData(preFormData);
 
     const startTime = performance.now();

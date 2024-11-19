@@ -21,7 +21,7 @@ const smallScreen = ref<boolean>(window.innerWidth < 960);
 
 const tabs: ToolTab[] = [
   {
-    id: 1,
+    id: "1",
     name: "departments",
     icon: "mdi-office-building",
     meta: {
@@ -30,7 +30,7 @@ const tabs: ToolTab[] = [
     },
   },
   {
-    id: 2,
+    id: "2",
     name: "documents",
     icon: "mdi-file-document",
     meta: {
@@ -39,7 +39,7 @@ const tabs: ToolTab[] = [
     },
   },
   {
-    id: 3,
+    id: "3",
     name: "competences",
     icon: "mdi-star-circle",
     meta: {
@@ -64,16 +64,16 @@ const getTab = (
 
   switch (tabName) {
     case "departments":
-      return getNumericValue ? 1 : "departments";
+      return getNumericValue ? "1" : "departments";
 
     case "documents":
-      return getNumericValue ? 2 : "documents";
+      return getNumericValue ? "2" : "documents";
 
     case "competences":
-      return getNumericValue ? 3 : "competences";
+      return getNumericValue ? "3" : "competences";
 
     default:
-      return getNumericValue ? 1 : "instructions";
+      return getNumericValue ? "1" : "instructions";
   }
 };
 
@@ -167,7 +167,7 @@ const competencesConnectorId = uuidv4();
           <v-row :class="smallScreen ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
               <v-window v-model="currentTabValue" class="w-100" :touch="false">
-                <v-window-item :value="1">
+                <v-window-item value="1">
                   <chip-filters
                     :table="table"
                     :max-level="1"
@@ -183,7 +183,7 @@ const competencesConnectorId = uuidv4();
                     class="bg-surface-2 pa-4 ma-1"
                   ></department-table>
                 </v-window-item>
-                <v-window-item :value="2">
+                <v-window-item value="2">
                   <chip-filters
                     :max-level="2"
                     :quickAccess="false"
@@ -200,7 +200,7 @@ const competencesConnectorId = uuidv4();
                     class="bg-surface-2 pa-4 ma-1"
                   ></simple-documents-posted-chart>
                 </v-window-item>
-                <v-window-item :value="3">
+                <v-window-item value="3">
                   <chip-filters
                     :table="table"
                     :max-level="1"
