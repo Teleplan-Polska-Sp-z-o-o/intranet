@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { HttpResponseMessage } from "../../enums/response";
 import { RawTransaction } from "../../orm/sideEntity/postgres/RawTransactionsEntity";
 import { SideDataSources } from "../../config/SideDataSources";
+import { Brackets } from "typeorm";
 
 /*
  *   VMI
@@ -290,8 +291,19 @@ const getRawPackTransactions = async (req: Request, res: Response): Promise<Resp
       .where("h.contract IN (:...contracts)", { contracts: JSON.parse(contracts) })
       .andWhere("h.reversed_flag = :reversedFlag", { reversedFlag: "N" })
       .andWhere("h.transaction = :transaction", { transaction: "OP FEED" })
-      .andWhere("h.work_center_no = :workCenter", { workCenter: "A1090" }) // PACK
-      .andWhere("h.part_no != :partNo", { partNo: "DECO M4" }) // Exclude "DECO M4"
+      // .andWhere("h.work_center_no = :workCenter", { workCenter: "A1090" }) // PACK
+      // .andWhere("h.part_no != :partNo", { partNo: "DECO M4" }) // Exclude "DECO M4"
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where("h.work_center_no = :workCenter1 AND h.part_no != :excludedPart", {
+            workCenter1: "A1090",
+            excludedPart: "DECO M4",
+          }).orWhere("h.work_center_no IN (:...otherWorkCenters) AND h.part_no = :includedPart", {
+            otherWorkCenters: ["A1095", "A1096", "A1097"],
+            includedPart: "DECO M4",
+          });
+        })
+      )
       .andWhere("h.dated >= :startOfDay AND h.dated < :endOfDay", {
         startOfDay: start.toISOString(),
         endOfDay: end.toISOString(),
