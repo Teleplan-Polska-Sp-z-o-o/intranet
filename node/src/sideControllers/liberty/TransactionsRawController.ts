@@ -291,6 +291,7 @@ const getRawPackTransactions = async (req: Request, res: Response): Promise<Resp
       .andWhere("h.reversed_flag = :reversedFlag", { reversedFlag: "N" })
       .andWhere("h.transaction = :transaction", { transaction: "OP FEED" })
       .andWhere("h.work_center_no = :workCenter", { workCenter: "A1090" }) // PACK
+      .andWhere("h.part_no != :partNo", { partNo: "DECO M4" }) // Exclude "DECO M4"
       .andWhere("h.dated >= :startOfDay AND h.dated < :endOfDay", {
         startOfDay: start.toISOString(),
         endOfDay: end.toISOString(),
