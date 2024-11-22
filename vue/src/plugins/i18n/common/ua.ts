@@ -49,11 +49,16 @@ const uaC = {
           card: {
             explore: "Дослідити",
           },
+          newsTitle: "Новини та Оголошення",
         },
         viewDocument: {
           small: "Маленький",
           large: "Великий",
           pageMessage: "Сторінка {currentPage} з {totalPages}",
+          important: "Важливо",
+          unsupported:
+            "Цей файл неможливо переглянути в браузері. Завантажте його, щоб отримати доступ до вмісту.",
+          download: "ЗАВАНТАЖИТИ ФАЙЛ",
         },
         tools: {
           documents: {

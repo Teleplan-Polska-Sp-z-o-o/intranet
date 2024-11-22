@@ -2,8 +2,9 @@ enum EDocumentType {
   Instruction = "Instruction",
   Visual = "Visual",
   MSD = "MSD",
+  Form = "Form",
 }
-type TDocumentType = "Instruction" | "Visual" | "MSD";
+type TDocumentType = "Instruction" | "Visual" | "MSD" | "Form";
 
 interface IChip {
   id: number;

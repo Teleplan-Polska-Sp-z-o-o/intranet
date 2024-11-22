@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, ComputedRef, onMounted, onUnmounted, Ref, ref } from "vue";
+import { computed, ComputedRef, onMounted, onUnmounted, Ref, ref, unref } from "vue";
+import { DocumentViewer } from "../../models/document/DocumentViewer/DocumentViewer";
 import VuePdfEmbed from "vue-pdf-embed";
 import "vue-pdf-embed/dist/style/index.css";
 import "vue-pdf-embed/dist/style/annotationLayer.css";
 import "vue-pdf-embed/dist/style/textLayer.css";
 import { useI18n } from "vue-i18n";
-import { DocumentViewer } from "../../models/document/DocumentViewer/DocumentViewer";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -14,14 +14,7 @@ const loaded: Ref<boolean> = ref<boolean>(false);
 
 const documentViewer: DocumentViewer = new DocumentViewer();
 const amIAuthorized: Ref<boolean> = ref<boolean>(false);
-const source: Ref<string | null> = ref<string | null>(null);
-
-documentViewer.amIAuthorized().then((result) => {
-  amIAuthorized.value = result;
-  if (result) {
-    source.value = documentViewer.getSource();
-  }
-});
+const source: Ref<string | null> = ref(null);
 
 const pageCount: Ref<number | undefined> = ref<number | undefined>(undefined);
 const pageNumber: Ref<number> = ref<number>(1);
@@ -101,18 +94,60 @@ const handleCtrlScroll = (event: WheelEvent) => {
     }
   }
 };
-onMounted(() => {
+
+const isSupported = ref<boolean>(true);
+const downloadNotSupported = (fileSource: string | null) => {
+  if (!fileSource) return;
+  const anchor = document.createElement("a");
+  anchor.href = fileSource;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+};
+
+onMounted(async () => {
   window.addEventListener("wheel", handleCtrlScroll, { passive: false });
+
+  amIAuthorized.value = await documentViewer.amIAuthorized();
+
+  source.value = await documentViewer.getSource();
+
+  const src = unref(source);
+  // Check if the source does not end with `.pdf`
+  if (src && typeof src === "string") {
+    if (!src.endsWith(".pdf")) {
+      isSupported.value = false;
+    }
+  } else {
+    console.error("Invalid source or source is not set.");
+  }
 });
 onUnmounted(() => {
   window.removeEventListener("wheel", handleCtrlScroll);
 });
+
+const handleError = (error: any) => {
+  console.error("Error loading PDF:", error);
+};
 </script>
 
 <template>
   <v-container class="layout-view-container bg-background">
     <v-row class="justify-center align-center position-relative">
-      <v-progress-circular v-if="loading" color="primary" indeterminate></v-progress-circular>
+      <v-progress-circular
+        v-if="loading && isSupported"
+        color="primary"
+        indeterminate
+      ></v-progress-circular>
+      <v-alert v-if="!isSupported" class="mx-8" type="info" variant="tonal" border="start">
+        <p>
+          <strong>{{ $t("common.default_layout.pages.viewDocument.important") }}:</strong>
+          {{ $t("common.default_layout.pages.viewDocument.unsupported") }}
+        </p>
+        <v-btn class="mt-2" color="primary" variant="tonal" @click="downloadNotSupported(source)">
+          {{ $t("common.default_layout.pages.viewDocument.download") }}
+        </v-btn>
+      </v-alert>
 
       <h1 v-if="loaded && amIAuthorized" class="text-body-2 position-absolute">
         {{ pageMessage }}
@@ -120,6 +155,7 @@ onUnmounted(() => {
     </v-row>
     <v-row class="justify-center align-center">
       <v-btn
+        v-show="loaded"
         @click="prev"
         :disabled="!isPrev"
         icon="mdi-arrow-left-thick"
@@ -129,6 +165,7 @@ onUnmounted(() => {
       >
       </v-btn>
       <v-btn
+        v-show="loaded"
         @click="next"
         :disabled="!isNext"
         icon="mdi-arrow-right-thick"
@@ -154,18 +191,16 @@ onUnmounted(() => {
         class="slider-ae905726-0509 ml-7 h-25"
       ></v-slider>
 
-      <v-col
-        class="pdfDocumentView-45183477-16ad"
-        :class="`canvas-scale-${pdfClassExtension}`"
-        v-if="amIAuthorized"
-      >
+      <v-col class="pdfDocumentView-45183477-16ad" :class="`canvas-scale-${pdfClassExtension}`">
         <vue-pdf-embed
+          v-if="amIAuthorized && !!source"
           ref="pdfEmbed"
           annotation-layer
           text-layer
           :source="source"
           @loaded="handleLoaded"
           @rendered="handleRendered"
+          @error="handleError"
           :page="pageNumber"
         />
       </v-col>

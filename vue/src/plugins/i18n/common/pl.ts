@@ -49,11 +49,16 @@ const plC = {
           card: {
             explore: "Eksploruj",
           },
+          newsTitle: "Aktualności i Ogłoszenia",
         },
         viewDocument: {
           small: "Mały",
           large: "Duży",
           pageMessage: "Strona {currentPage} z {totalPages}",
+          important: "Ważne",
+          unsupported:
+            "Tego pliku nie można wyświetlić w przeglądarce. Pobierz go, aby uzyskać dostęp do zawartości.",
+          download: "POBIERZ PLIK",
         },
         tools: {
           documents: {

@@ -16,7 +16,6 @@ const constructImgSrc = (item: INewsEntity): string => {
   const backend = `${nodeConfig.origin}:${nodeConfig.port}/uploads/news/`;
   return `${backend}${item.bgImage}`;
 };
-78;
 
 const newsPage = ref<number>(0);
 const news = ref<Array<INewsCard>>([]);
@@ -68,6 +67,7 @@ const exploreBtn = computed(() => t("common.default_layout.pages.home.card.explo
     </v-row>
     <v-row>
       <v-col class="pt-0" :cols="boardCols">
+        <div class="text-h6 pl-3">{{ $t("common.default_layout.pages.home.newsTitle") }}</div>
         <v-infinite-scroll :items="news" :onLoad="load" color="secondary">
           <template v-for="item in news" :key="item.id">
             <v-card class="ma-4 bg-surface-1 text-on-surface rounded-xl">

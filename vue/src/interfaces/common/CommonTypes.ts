@@ -8,6 +8,15 @@ namespace CommonTypes {
       analytic = "/analytic_documents",
     }
 
+    export enum EAcceptedFileType {
+      PDF = ".pdf",
+      PPT = ".ppt",
+      PPTX = ".pptx",
+      XLS = ".xls",
+      XLSX = ".xlsx",
+      DOC = ".doc",
+      DOCX = ".docx",
+    }
     export type AcceptedType = ".pdf" | ".ppt" | ".pptx" | ".xls" | ".xlsx" | ".doc" | ".docx";
   }
 

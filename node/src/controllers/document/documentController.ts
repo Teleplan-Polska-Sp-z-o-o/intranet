@@ -180,8 +180,26 @@ const editDocument = async (req: Request, res: Response) => {
         };
         const queryString = new URLSearchParams(oldParams).toString();
 
-        const oldFileName = `${oldDocName}_qs_${queryString}.pdf`;
-        fs.unlinkSync(path.join(UPLOADS_PATH, DOCUMENTS_FOLDER, oldFileName));
+        const oldFileNamePattern = `${oldDocName}_qs_${queryString}`;
+        // List all files in the target folder
+        const files = fs.readdirSync(path.join(UPLOADS_PATH, DOCUMENTS_FOLDER));
+
+        // Filter files that match the pattern
+        const matchingFiles = files.filter((file) => file.startsWith(oldFileNamePattern));
+
+        // Delete each matching file
+        for (const matchingFile of matchingFiles) {
+          const filePath = path.join(UPLOADS_PATH, DOCUMENTS_FOLDER, matchingFile);
+          try {
+            fs.unlinkSync(filePath);
+            console.log(`Deleted file: ${filePath}`);
+          } catch (error) {
+            console.warn(`Failed to delete file: ${filePath}`, error);
+          }
+        }
+
+        // const oldFileName = `${oldDocName}_qs_${queryString}.pdf`;
+        // fs.unlinkSync(path.join(UPLOADS_PATH, DOCUMENTS_FOLDER, oldFileName));
       }
 
       for (const [index, file] of uploadedFiles.entries()) {
@@ -198,7 +216,8 @@ const editDocument = async (req: Request, res: Response) => {
 
         const queryString = new URLSearchParams(params).toString();
 
-        const newFileName = `${updatedDocument.name}_qs_${queryString}.pdf`;
+        const fileExtension = path.extname(file.originalname).toLowerCase();
+        const newFileName = `${updatedDocument.name}_qs_${queryString}${fileExtension}`;
 
         fs.renameSync(file.path, path.join(UPLOADS_PATH, DOCUMENTS_FOLDER, newFileName));
       }

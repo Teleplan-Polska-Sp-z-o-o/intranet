@@ -2,12 +2,17 @@
 import { computed, ref, watch, watchEffect } from "vue";
 import VerifyTables from "./VerifyTables.vue";
 import FilesForm from "../../common/FilesForm.vue";
-import { IFileItem, ICompetence } from "../../../../../interfaces/document/DocumentTypes";
+import {
+  IFileItem,
+  ICompetence,
+  EDocumentType,
+} from "../../../../../interfaces/document/DocumentTypes";
 import { IDocumentEntity } from "../../../../../interfaces/document/IDocumentEntity";
 import { nodeConfig } from "../../../../../config/env";
 import { FileItem } from "../../../../../models/document/FileItem";
 import { CompetenceManager } from "../../../../../models/document/CompetenceManager";
 import jwtAxios from "../../../../../config/axios/jwtAxios";
+import { CommonTypes } from "../../../../../interfaces/common/CommonTypes";
 
 const emit = defineEmits(["save-data", "verified"]);
 
@@ -36,6 +41,12 @@ watchEffect(() => {
   document.value = props.componentProps.editedItem;
 });
 
+const filesFormAccept = computed<CommonTypes.FileTypes.AcceptedType[]>(() => {
+  if (document.value.type === EDocumentType.Form) {
+    return [".pdf", ".xls", ".xlsx", ".doc", ".docx"];
+  } else return [".pdf"];
+});
+
 const files = ref<Array<IFileItem>>([]);
 
 const retrievedFiles = ref<Array<IFileItem>>([]);
@@ -55,24 +66,59 @@ const competences = ref<Array<ICompetence>>([]);
   const docRef = document.value.ref;
   const docLangs = document.value.languages;
 
+  // if (docType && docConfidentiality && docName && docRef && docLangs) {
+  //   for (const [index, lang] of Object.entries(docLangs)) {
+  //     const fileName = `${docName}_qs_langs=${lang}&uuid=${docRef}`;
+  //     const fileUrl = `${nodeConfig.origin}:${nodeConfig.port}/uploads/documents/${fileName}.pdf`;
+
+  //     try {
+  //       const response = await jwtAxios.get(fileUrl, { responseType: "arraybuffer" });
+  //       const fileContent = response.data;
+
+  //       const blob = new Blob([fileContent]);
+
+  //       const file = new File([blob], fileName, { type: response.headers["content-type"] });
+
+  //       const fileItem: FileItem = new FileItem(parseInt(index, 10), [file], [lang]);
+
+  //       retrievedFiles.value.push(fileItem);
+  //     } catch (error) {
+  //       console.error(`Error fetching file for language ${lang}:`, error);
+  //     }
+  //   }
+  // }
   if (docType && docConfidentiality && docName && docRef && docLangs) {
     for (const [index, lang] of Object.entries(docLangs)) {
-      const fileName = `${docName}_qs_langs=${lang}&uuid=${docRef}`;
-      const fileUrl = `${nodeConfig.origin}:${nodeConfig.port}/uploads/documents/${fileName}.pdf`;
+      const baseFileName = `${docName}_qs_langs=${lang}&uuid=${docRef}`;
+      const extensions = filesFormAccept.value;
 
-      try {
-        const response = await jwtAxios.get(fileUrl, { responseType: "arraybuffer" });
-        const fileContent = response.data;
+      let fileRetrieved = false;
 
-        const blob = new Blob([fileContent]);
+      for (const ext of extensions) {
+        const fileName = `${baseFileName}${ext}`;
+        const fileUrl = `${nodeConfig.origin}:${nodeConfig.port}/uploads/documents/${fileName}`;
 
-        const file = new File([blob], fileName, { type: response.headers["content-type"] });
+        try {
+          const response = await jwtAxios.get(fileUrl, { responseType: "arraybuffer" });
+          const fileContent = response.data;
 
-        const fileItem: FileItem = new FileItem(parseInt(index, 10), [file], [lang]);
+          const blob = new Blob([fileContent]);
+          const file = new File([blob], fileName, { type: response.headers["content-type"] });
 
-        retrievedFiles.value.push(fileItem);
-      } catch (error) {
-        console.error(`Error fetching file for language ${lang}:`, error);
+          const fileItem: FileItem = new FileItem(parseInt(index, 10), [file], [lang]);
+
+          retrievedFiles.value.push(fileItem);
+          fileRetrieved = true;
+          break; // Exit the extension loop if file is successfully retrieved
+        } catch (error) {
+          console.warn(`Error fetching file for language ${lang} with extension ${ext}:`, error);
+        }
+      }
+
+      if (!fileRetrieved) {
+        console.error(
+          `Failed to retrieve any file for language ${lang} after trying all extensions.`
+        );
       }
     }
   }
@@ -153,7 +199,7 @@ watchEffect(() => {
           <v-select
             v-model="document.type"
             :label="$t(`tools.matrix.tabs.documents.stepper.vStepperWindowItem['1'].type.label`)"
-            :items="['Instruction', 'Visual', 'MSD']"
+            :items="['Instruction', 'Visual', 'MSD', 'Form']"
             variant="underlined"
           ></v-select>
           <v-select
@@ -214,7 +260,7 @@ watchEffect(() => {
           <files-form
             @files="handleFiles"
             :retrieved="retrievedFiles"
-            :accept="['.pdf']"
+            :accept="filesFormAccept"
           ></files-form>
         </v-card>
       </v-stepper-window-item>

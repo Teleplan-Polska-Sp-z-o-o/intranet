@@ -212,8 +212,11 @@ export class Document {
 
       const queryString = new URLSearchParams(params).toString();
 
+      // Extract the original file extension
+      let originalExtension = path.extname(file.originalname).toLowerCase();
+
       // Construct new file name
-      const newFileName = `${this.name}_qs_${queryString}.pdf`;
+      const newFileName = `${this.name}_qs_${queryString}${originalExtension}`;
 
       // Rename and move file to destination folder
       fs.renameSync(file.path, path.join(UPLOADS_PATH, DOCUMENTS_FOLDER, newFileName));

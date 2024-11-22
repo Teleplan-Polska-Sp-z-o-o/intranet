@@ -49,11 +49,16 @@ const enC = {
           card: {
             explore: "Explore",
           },
+          newsTitle: "News & Announcements",
         },
         viewDocument: {
           small: "Small",
           large: "Large",
           pageMessage: "Page {currentPage} out of {totalPages}",
+          important: "Important",
+          unsupported:
+            "This file cannot be viewed in the browser. Please download it to access the content.",
+          download: "DOWNLOAD FILE",
         },
         tools: {
           documents: {

@@ -6,24 +6,58 @@ import { TConfidentiality } from "../../../interfaces/user/UserTypes";
 import { useAlertStore } from "../../../stores/alertStore";
 import { ResponseStatus } from "../../common/ResponseStatus";
 import { EDocumentType } from "../../../interfaces/document/DocumentTypes";
+import { CommonTypes } from "../../../interfaces/common/CommonTypes";
+import jwtAxios from "../../../config/axios/jwtAxios";
 
 class DocumentViewer extends DocumentViewerBase {
   private source: string = "";
 
-  private buildSource(): DocumentViewer {
+  // private buildSource(): DocumentViewer {
+  //   if (this.fileName && this.fileLangs && this.fileUUID) {
+  //     const file = `${this.fileName}_qs_langs=${this.fileLangs}&uuid=${this.fileUUID}`;
+  //     this.source = `${this.BACKEND_PATH}${file}.pdf`;
+  //   }
+  //   return this;
+  // }
+
+  constructor() {
+    super();
+  }
+
+  private async buildSource(): Promise<DocumentViewer> {
     if (this.fileName && this.fileLangs && this.fileUUID) {
-      const file = `${this.fileName}_qs_langs=${this.fileLangs}&uuid=${this.fileUUID}`;
-      this.source = `${this.BACKEND_PATH}${file}.pdf`;
+      const baseFileName = `${this.fileName}_qs_langs=${this.fileLangs}&uuid=${this.fileUUID}`;
+      const extensions = Object.values(CommonTypes.FileTypes.EAcceptedFileType) as string[]; // Get allowed extensions
+
+      const BACKEND_PATH = this.BACKEND_PATH;
+
+      let fileSource: string | null = null;
+
+      for (const ext of extensions) {
+        const filePath = `${BACKEND_PATH}${baseFileName}${ext}`;
+        try {
+          // Check if the file exists
+          const response = await jwtAxios.head(filePath); // Use HEAD request
+          if (response.status === 200) {
+            fileSource = filePath; // If file exists, set source and break
+            break;
+          }
+        } catch (error) {
+          console.warn(`File not found: ${filePath}`);
+        }
+      }
+
+      if (fileSource) {
+        this.source = fileSource;
+      } else {
+        console.error("No file found for the given parameters.");
+      }
     }
     return this;
   }
 
-  constructor() {
-    super();
-    this.buildSource();
-  }
-
-  public getSource() {
+  public async getSource() {
+    await this.buildSource();
     return this.source;
   }
 
