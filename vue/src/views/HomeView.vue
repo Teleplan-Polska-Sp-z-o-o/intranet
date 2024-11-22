@@ -67,7 +67,7 @@ const exploreBtn = computed(() => t("common.default_layout.pages.home.card.explo
     </v-row>
     <v-row>
       <v-col class="pt-0" :cols="boardCols">
-        <div class="text-h6 pl-3">{{ $t("common.default_layout.pages.home.newsTitle") }}</div>
+        <div class="text-h6 pl-3 mt-4">{{ $t("common.default_layout.pages.home.newsTitle") }}</div>
         <v-infinite-scroll :items="news" :onLoad="load" color="secondary">
           <template v-for="item in news" :key="item.id">
             <v-card class="ma-4 bg-surface-1 text-on-surface rounded-xl">
