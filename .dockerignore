@@ -2,12 +2,14 @@
 *
 
 # Now, explicitly include
+# node
 !docker-compose.yaml
 !.env
 !/node/Dockerfile
 !/node/package*.json
 !/node/dist
 !/certs
+# vue
 
 # Allow specific file
-!/node/mnt/tppl03s005/resources/operations/sky/shift/plan/daily/auto-plan-update.xlsx
+# !/node/mnt/tppl03s005/resources/operations/sky/shift/plan/daily/auto-plan-update.xlsx
