@@ -46,7 +46,7 @@ import LibertyCosmeticEfficiencyOverview from "../../../components/views/tools/a
 import LibertyPackEfficiencyOverview from "../../../components/views/tools/analytic/liberty/pack/PackEfficiencyOverview.vue";
 import LibertyShipEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ship/ShipEfficiencyOverview.vue";
 import LibertyOobaEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ooba/OobaEfficiencyOverview.vue";
-import { tabsObj } from "./tabsObj";
+import { tabsObj } from "../warehouse/tabsObj";
 
 // Dell
 import DellEfficiencyOverview from "../../../components/views/tools/analytic/dell/common/efficiency/EfficiencyOverview.vue";

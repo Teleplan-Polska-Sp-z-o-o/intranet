@@ -4,9 +4,9 @@ import DocumentsView from "../../views/tools/DocumentsView.vue";
 import MatrixView from "../../views/tools/MatrixView.vue";
 import DocumentView from "../../views/documents/DocumentView.vue";
 import AdminView from "../../views/tools/AdminView.vue";
-import AnalyticView from "../../views/tools/Analytic/AnalyticView.vue";
-
+import AnalyticView from "../../views/tools/analytic/AnalyticView.vue";
 import ChangeView from "../../views/tools/ChangeView.vue";
+import WarehouseView from "../../views/tools/warehouse/WarehouseView.vue";
 
 import { RouteLocationNormalized } from "vue-router";
 
@@ -215,6 +215,33 @@ export const toolRoutes = {
           component: AnalyticView,
           meta: {
             toolName: "analytic",
+            breadcrumbs: {
+              include: false,
+            },
+          },
+        },
+      ],
+    },
+    {
+      path: "warehouse",
+      name: "warehouse",
+      component: WarehouseView,
+      meta: {
+        toolName: "warehouse",
+        breadcrumbs: {
+          include: true,
+          parent: "tool",
+          name: "warehouse",
+          path: "",
+        },
+      },
+      children: [
+        {
+          path: "browse/:program/:cat?/:sub?",
+          name: "browseWarehouse",
+          component: WarehouseView,
+          meta: {
+            toolName: "warehouse",
             breadcrumbs: {
               include: false,
             },

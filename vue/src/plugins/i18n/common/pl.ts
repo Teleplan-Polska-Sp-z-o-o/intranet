@@ -42,6 +42,7 @@ const plC = {
           },
           safety: "Bezpieczeństwo",
           analytic: "Analityka",
+          warehouse: "Magazyn",
         },
       },
       pages: {
@@ -92,6 +93,10 @@ const plC = {
           analytic: {
             title: "Analityka",
             text: "Dostarcza analizę danych, aby wspierać podejmowanie decyzji.",
+          },
+          warehouse: {
+            title: "Magazyn",
+            text: "Zapewnia efektywne zarządzanie zapasami",
           },
         },
         settings: {

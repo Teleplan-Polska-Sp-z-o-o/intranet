@@ -98,6 +98,17 @@ const tools: Tool[] = [
       baseHref: "/tool/analytic/browse/",
     },
   },
+  {
+    id: 9,
+    name: "warehouse",
+    href: "",
+    icon: "warehouse",
+    image: "../tools/warehouse.png",
+    meta: {
+      group: "analytic",
+      baseHref: "/tool/warehouse/browse/",
+    },
+  },
 ];
 
 const userInfo = userStore.info();

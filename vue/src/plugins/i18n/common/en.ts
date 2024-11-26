@@ -42,6 +42,7 @@ const enC = {
           },
           safety: "Safety",
           analytic: "Analytic",
+          warehouse: "Warehouse",
         },
       },
       pages: {
@@ -92,6 +93,10 @@ const enC = {
           analytic: {
             title: "Analytic",
             text: "Delivers data analysis to support decision-making.",
+          },
+          warehouse: {
+            title: "Warehouse",
+            text: "Provides efficient inventory management",
           },
         },
         settings: {

@@ -24,6 +24,7 @@ type TPermissionChangeSubgroup = "pcr" | "pcn" | "dcr" | "dcn";
 type TPermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type TPermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
 type TPermissionAnalyticSubgroup = "sky" | "lenovo" | "ingenico" | "liberty" | "dell";
+type TPermissionWarehouseSubgroup = "wip";
 // type TPermissionSafetySubgroup = "manage-acknowledgment" | "document-acknowledged";
 
 type TPermissionSubgroup =
@@ -31,7 +32,8 @@ type TPermissionSubgroup =
   | TPermissionChangeSubgroup
   | TPermissionMatrixSubgroup
   | TPermissionAdminSubgroup
-  | TPermissionAnalyticSubgroup;
+  | TPermissionAnalyticSubgroup
+  | TPermissionWarehouseSubgroup;
 // | TPermissionSafetySubgroup;
 
 type TPermissionSubgroupArray =
@@ -39,7 +41,8 @@ type TPermissionSubgroupArray =
   | Array<TPermissionChangeSubgroup>
   | Array<TPermissionMatrixSubgroup>
   | Array<TPermissionAdminSubgroup>
-  | Array<TPermissionAnalyticSubgroup>;
+  | Array<TPermissionAnalyticSubgroup>
+  | Array<TPermissionWarehouseSubgroup>;
 // | Array<TPermissionSafetySubgroup>;
 
 interface UserSubgroup {
@@ -47,7 +50,7 @@ interface UserSubgroup {
   name: TPermissionSubgroup;
 }
 
-type TPermissionGroup = "documents" | "change" | "matrix" | "admin" | "analytic";
+type TPermissionGroup = "documents" | "change" | "matrix" | "admin" | "analytic" | "warehouse";
 // | "safety";
 
 interface UserGroup {
@@ -65,6 +68,7 @@ interface IPermissionGroups {
   matrix: Array<TPermissionMatrixSubgroup>;
   admin: Array<TPermissionAdminSubgroup>;
   analytic: Array<TPermissionAnalyticSubgroup>;
+  warehouse: Array<TPermissionWarehouseSubgroup>;
   // safety: Array<TPermissionSafetySubgroup>;
 }
 
@@ -76,6 +80,7 @@ class StaticGroups {
       matrix: ["departments", "documents", "competences"],
       admin: ["user-info", "user-permissions", "news"],
       analytic: ["sky", "lenovo", "ingenico", "liberty", "dell"],
+      warehouse: ["wip"],
       // safety: ["manage-acknowledgment", "document-acknowledged"],
     };
   }
