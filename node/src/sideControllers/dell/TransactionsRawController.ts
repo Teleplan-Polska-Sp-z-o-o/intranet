@@ -56,32 +56,6 @@ async function fetchTransactions(
   workCenter: string,
   nextWorkCenter?: string
 ) {
-  //   const queryRunner = SideDataSources.mssql.createQueryRunner();
-  //   const result: RawDellBoseTransaction[] = await queryRunner.query(
-  //     `
-  //   SELECT
-  //     wosh.ID AS id,
-  //     woh.ProgramID AS contract,
-  //     u.Username AS username,
-  //     woh.PartNo AS partNo,
-  //     woh.SerialNo AS serialNo,
-  //     ws.Description AS workStationDesc,
-  //     nws.Description AS nextWorkStationDesc,
-  //     woh.LastActivityDate AS lastActivityDate
-  //   FROM pls.WOHeader woh
-  //   INNER JOIN pls.WOStationHistory wosh ON woh.ID = wosh.WOHeaderID
-  //   INNER JOIN pls.[User] u ON woh.UserID = CAST(u.ID AS INT)
-  //   LEFT JOIN pls.CodeWorkStation ws ON ws.ID = wosh.WorkStationID
-  //   LEFT JOIN pls.CodeWorkStation nws ON nws.ID = wosh.ToWorkStationID
-  //   WHERE woh.ProgramID = '10064'
-  //     AND wosh.Iteration = 1
-  //     AND woh.LastActivityDate >= @0
-  //     AND woh.LastActivityDate < @1
-  //     AND ws.Description = @2
-  // `,
-  //     [startOfDay, endOfDay, workCenter]
-  //   );
-
   const queryRunner = SideDataSources.mssql.createQueryRunner();
 
   try {
