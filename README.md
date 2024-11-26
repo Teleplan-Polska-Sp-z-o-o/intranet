@@ -87,7 +87,13 @@ To facilitate seamless development, it's important to note that Vue and Node app
    sudo mount -t cifs "//Your File Server IP/Your Path" /home/bydintranet/intranet/node/mnt -o username="BYD-Intranet",password="XYZ",vers=3.0
    ```
 
-   sudo mount -t cifs "//10.41.0.82/Resources/Operations/SKY/Shift_docs/Plan/Daily Plan+report" "/home/bydintranet/intranet/node/mnt_tppl03s005/Resources/Operations/SKY/Shift_docs/Plan/Daily Plan+report" -o username="BYD-Intranet",password="0mGdeTVK5M",vers=3.0
+   Note: mount example
+
+   ```bash
+   sudo mount -t cifs "//10.41.0.82/Resources/Operations/SKY/Shift_docs/Plan/Daily Plan+report" \
+   /home/bydintranet/intranet/node/mnt/tppl03s005/resources/operations/sky/shift/plan/daily \
+   -o username="BYD-Intranet",password=your_password
+   ```
 
 3. Make the Mount Persistent (optional): To ensure that this mount is remounted automatically after a reboot, add the following entry to your /etc/fstab file:
 
@@ -100,13 +106,13 @@ To facilitate seamless development, it's important to note that Vue and Node app
    - Add this line:
 
    ```bash
-   //Your File Server IP/Your Path /home/bydintranet/intranet/node/mnt cifs username=BYD-Intranet,password=XYZ,vers=3.0 0 0
+   //10.41.0.82/Resources/Operations/SKY/Shift_docs/Plan/Daily Plan+report /home/bydintranet/intranet/node/mnt/tppl03s005/resources/operations/sky/shift/plan/daily cifs username="BYD-Intranet",password=your_password,uid=1000,gid=1000,file_mode=0777,dir_mode=0777 0 0
    ```
 
 4. Verify the Mount: After mounting, check the contents of the directory to ensure everything is correctly mounted:
 
    ```bash
-   ls /home/bydintranet/intranet/node/mnt
+   ls /home/bydintranet/intranet/node/mnt_tppl03s005
    ```
 
 ### GitHub

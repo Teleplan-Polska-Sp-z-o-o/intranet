@@ -1,5 +1,5 @@
 const UPLOADS_PATH = "/usr/src/app/uploads";
-const TPPL03S005_PATH = "/usr/src/app/mnt_tppl03s005";
+const TPPL03S005_PATH = "/usr/src/app/mnt/tppl03s005";
 const ANALYTIC_DOCUMENTS_FOLDER = "analytic_documents";
 const DC_DOCUMENTS_FOLDER = "dc_documents";
 const DOCUMENTS_FOLDER = "documents";
