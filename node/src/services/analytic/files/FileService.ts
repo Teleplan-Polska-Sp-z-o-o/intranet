@@ -95,6 +95,7 @@ export namespace FileService {
     private catName: string;
     private subName: string;
     private fileType: string;
+    private fileName: string;
     private directoryPath: string;
 
     private fileOfType: AnalyticFile;
@@ -106,12 +107,14 @@ export namespace FileService {
       catName: string,
       subName: string,
       fileType: string,
+      fileName: string,
       directoryPath: string
     ) {
       this.progName = progName;
       this.catName = catName;
       this.subName = subName;
       this.fileType = fileType;
+      this.fileName = fileName;
       this.directoryPath = directoryPath;
 
       // Get the considered file information first
@@ -123,7 +126,7 @@ export namespace FileService {
 
     // Watch for file changes that match the pattern
     private setupWatcher() {
-      if (!this.fileOfType || !this.fileOfType.normalizedFileName) {
+      if (!this.fileOfType || !this.fileName || !this.fileOfType.normalizedFileName) {
         console.error("File of type not found, cannot setup watcher.");
         return;
       }
@@ -133,23 +136,35 @@ export namespace FileService {
       // console.log("files", files);
 
       // Exact file path to watch
-      const filePath = `${this.directoryPath}/${this.fileOfType.normalizedFileName}.xlsx`;
-
+      const filePath = `${this.directoryPath}/${this.fileName}.xlsx`;
+      console.log(`watched file: ${filePath}`);
       // console.log(`Watching for changes on file: ${filePath}`);
+      if (!fs.existsSync(filePath)) {
+        console.error(`File does not exist: ${filePath}`);
+      }
 
       // Watch the exact file using chokidar
       chokidar
         .watch(filePath, {
           persistent: true, // Keeps the watcher active
           usePolling: true, // Enables polling
-          interval: 60000, // Set polling interval to 1 minute (60000 ms)
+          interval: 30000, // Set polling interval to half a minute (30000 ms)
           awaitWriteFinish: {
             stabilityThreshold: 2000, // Waits 2 seconds after the last write event
             pollInterval: 1000, // Poll every 1 second while the file is being written
           },
+          atomic: false,
         })
-        .on("change", (filePath: string) => this.handleFileUpdate(filePath));
-      // .on("add", (filePath: string) => this.handleFileUpdate(filePath));
+        .on("change", (filePath: string, stats) => {
+          console.log(`change of ${filePath}`);
+          // console.dir(stats, { depth: null, colors: true });
+          this.handleFileUpdate(filePath);
+        })
+        .on("add", (filePath: string, stats) => {
+          console.log(`add of ${filePath}`);
+          // console.dir(stats, { depth: null, colors: true });
+          this.handleFileUpdate(filePath);
+        });
     }
 
     // Handle file changes or additions

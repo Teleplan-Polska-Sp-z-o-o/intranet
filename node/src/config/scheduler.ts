@@ -78,7 +78,8 @@ const mountOneTimeTasks = () => {
         "packing",
         "drive",
         "planning",
-        path.join(TPPL03S005_PATH, "Resources/Operations/SKY/Shift_docs/Plan/Daily Plan+report")
+        "auto-plan-update",
+        path.join(TPPL03S005_PATH, "resources/operations/sky/shift/plan/daily")
       );
     },
     "WatchModelAnalyticFiles"

@@ -11,9 +11,10 @@ RUN mkdir dist
 COPY ./node/dist ./dist
 
 COPY ./.env ./
-# COPY ./_.reconext.com.2024.pem ./
 COPY ./certs/certificate.crt ./
 COPY ./certs/private.key ./
 
+RUN mkdir -p /mnt/tppl03s005/resources/operations/sky/shift/plan/daily
+# COPY ./node/mnt/tppl03s005/resources/operations/sky/shift/plan/daily/auto-plan-update.xlsx ./mnt/tppl03s005/resources/operations/sky/shift/plan/daily
+ 
 CMD ["node", "./dist/index.js"]
-

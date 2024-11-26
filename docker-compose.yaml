@@ -13,7 +13,8 @@ services:
     restart: "unless-stopped"
     volumes:
       - ./node/uploads:/usr/src/app/uploads
-      - ./node/mnt_tppl03s005:/usr/src/app/mnt_tppl03s005
+      # - ./node/mnt/tppl03s005/resources/operations/sky/shift/plan/daily/auto-plan-update.xlsx:/usr/src/app/mnt/tppl03s005/resources/operations/sky/shift/plan/daily/auto-plan-update.xlsx
+      - ./node/mnt/tppl03s005/resources/operations/sky/shift/plan/daily:/usr/src/app/mnt/tppl03s005/resources/operations/sky/shift/plan/daily
     depends_on:
       - postgres
 
@@ -64,6 +65,15 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    ports:
+      - ${DOZZLE_PORT}:${DOZZLE_PORT}
+    restart: "unless-stopped"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   postgres_data:
