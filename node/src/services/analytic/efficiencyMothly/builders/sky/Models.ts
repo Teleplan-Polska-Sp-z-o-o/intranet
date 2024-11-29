@@ -1,7 +1,7 @@
 import moment from "moment";
 import "moment-timezone";
 import { EfficiencyTypes } from "./Types";
-import { AnalyticRaw } from "../../transactions/Types";
+import { RawTransactions } from "../Types";
 
 export namespace EfficiencyModels {
   export class TimePeriodMetrics implements EfficiencyTypes.ITimePeriodMetrics {
@@ -82,7 +82,11 @@ export namespace EfficiencyModels {
     private models: Models<T>;
     private processedEmployees: EfficiencyTypes.IProcessedEmployees = []; // Processed data
     // private ttModelsKey: keyof T;
-    constructor(rawTransactions: AnalyticRaw.TTransactions, modelsObj: T[], ttModelsKey: keyof T) {
+    constructor(
+      rawTransactions: RawTransactions.TTransactions,
+      modelsObj: T[],
+      ttModelsKey: keyof T
+    ) {
       // this.buildModelsCache(modelsObj);
       this.models = new Models(modelsObj, ttModelsKey);
       // this.ttModelsKey = ttModelsKey;
@@ -100,7 +104,7 @@ export namespace EfficiencyModels {
     // }
 
     // --- Main method to process the raw transactions ---
-    private processTransactions(transactions: AnalyticRaw.TTransactions) {
+    private processTransactions(transactions: RawTransactions.TTransactions) {
       const employeeDataMap: Record<string, EfficiencyTypes.IProcessedEmployee> = {};
       const employeeWorkedQuarters: Record<string, Set<string>> = {};
 
@@ -108,6 +112,7 @@ export namespace EfficiencyModels {
         const { emp_name, part_no, datedtz } = transaction;
         // const modelData = this.modelsCache.get(part_no);
         const modelData = this.models.getAverage(part_no);
+
         if (!modelData) return;
 
         // const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
@@ -187,6 +192,7 @@ export namespace EfficiencyModels {
       employeeWorkedQuarters[emp_name].add(
         `${transactionDate}-${this.getTransactionQuarter(datedtz)}`
       );
+
       // processing_time
       employeeDataMap[emp_name].processing_time += processingTimePerUnit;
       // processed_units

@@ -4,6 +4,7 @@ export namespace EfficiencyMonthlyTypes {
   export namespace Postgres {
     // PROGRAM CATEGORY
     export type ProgramCategories = {
+      [key: string]: string;
       sky: "packing" | "cosmetic" | "ooba";
       lenovo: "repair" | "registration" | "cleaning" | "final" | "packing";
       ingenico:
@@ -23,7 +24,30 @@ export namespace EfficiencyMonthlyTypes {
     export type Program = keyof ProgramCategories;
     export type Category<P extends Program> = ProgramCategories[P];
 
-    // RAW API
+    export type TT = {
+      [key: string]: string;
+      liberty:
+        | "VMI_TT"
+        | "TEST_TT"
+        | "DEB_REP_TT"
+        | "HIPOT_TT"
+        | "PACK_TT"
+        | "SHIP_TT"
+        | "OBA_TT"
+        | "COSMETIC_1"
+        | "COSMETIC_2"
+        | "COSMETIC_3"
+        | "COSMETIC_4"
+        | "COSMETIC_5";
+      sky: "TT_PACK" | "TT_COSM" | "TT_OOBA";
+      lenovo: "TT_REPAIR" | "TT_REGISTRATION" | "TT_CLEANING" | "TT_FINAL_TEST" | "TT_PACKING";
+      ingenico: "TT";
+    };
+    export type TTSMap = {
+      [P in Program]: {
+        [C in ProgramCategories[P]]?: TT[P];
+      };
+    };
 
     export interface ITransactionsRecord {
       [key: string]: number | string | Date;
@@ -42,78 +66,46 @@ export namespace EfficiencyMonthlyTypes {
       statusMessage: HttpResponseMessage;
     };
 
-    // RawTransactionHandler interface
-    // type RawMethod = (req: Request, res: Response) => Promise<Response>;
-    // type RawBody = {
-    //   contracts: string;
-    //   startOfDay: string;
-    //   endOfDay: string;
-    // };
-    // class RawTransactionHandler {
-    //   transactionMethods: Record<Category, RawMethod> = {
-    //     packing: getRawSkyPackingTransactions,
-    //     cosmetic: getRawCosmeticTransactions,
-    //     ooba: getRawOobaTransactions,
-    //   };
-    //   method: RawMethod;
-    //   transactionContracts: Record<Program, string[]> = {
-    //     sky: ["12195", "12196", "12176"],
-    //   };
-    //   mockRequest: Request;
-    //   mockResponse: Response;
+    interface ITimePeriodMetrics {
+      efficiency: number;
+      processing_time: number;
+      processed_units: number;
+    }
 
-    //   constructor(program: Program, category: Category) {
-    //     if (!this.transactionMethods[category]) {
-    //       throw new Error(
-    //         `RawTransactionHandler at PackedService: Invalid method type: ${category}.`
-    //       );
-    //     }
+    export interface IProcessedEmployeeUniversal {
+      id: string;
+      shift: 1 | 2 | 3;
+      emp_name: string;
+      worked_quarters: number; // Represents the total worked time in quarters of an hour
+      worked_hours: number;
+      processing_time: number; // Total processing time in minutes
+      processed_units: number | Set<string>; // Can be a count or a Set of identifiers
 
-    //     this.method = this.transactionMethods[category];
+      // Target and estimation details
+      estimated_target: {
+        units?: Record<string, number>; // Map of model to units (optional for flexibility)
+        part_no_processing?: Record<string, number>; // Alternative mapping for part numbers
+        units_per_worked_quarters: number; // Estimated units processed per worked time
+        difference_units_worked_time: number; // Difference between actual and estimated units
+        units_per_hr: number; // Weighted average units per hour
+        units_per_8hrs: number | "n/a"; // Weighted average for an 8-hour shift or not applicable
+      };
 
-    //     class MockRequest {
-    //       body: RawBody;
-    //       constructor(transactionContracts: Record<Program, string[]>) {
-    //         // Get the current time in the "Europe/Warsaw" timezone
-    //         const now = moment().tz("Europe/Warsaw");
-    //         // If the current time is between 00:00 and 06:00, subtract one day
-    //         const baseDate =
-    //           now.hour() >= 0 && now.hour() < 7 ? now.clone().subtract(1, "day") : now;
-    //         // Set startOfDay to 06:00 of the baseDate (either today or the previous day)
-    //         const startOfDay = baseDate
-    //           .clone()
-    //           .set({ hour: 6, minute: 0, second: 0, millisecond: 0 });
-    //         // Set endOfDay to 06:00 of the next day
-    //         const endOfDay = startOfDay.clone().add(1, "day");
-    //         this.body = {
-    //           contracts: JSON.stringify(transactionContracts[program]),
-    //           startOfDay: JSON.stringify(startOfDay),
-    //           endOfDay: JSON.stringify(endOfDay),
-    //         };
-    //       }
-    //     }
+      efficiency: number; // Efficiency as a percentage
 
-    //     class MockResponse {
-    //       statusCode?: number;
-    //       status(code: number): this {
-    //         this.statusCode = code;
-    //         return this;
-    //       }
-    //       json(object: object) {
-    //         return object;
-    //       }
-    //     }
+      // Time-period metrics
+      dailyChart?: Record<string, ITimePeriodMetrics>; // Daily performance metrics
+      quarterlyChart?: Record<string, ITimePeriodMetrics>; // Quarterly performance metrics
+      hourlyChart?: Record<string, ITimePeriodMetrics>; // Optional hourly metrics
+    }
 
-    //     this.mockRequest = new MockRequest(this.transactionContracts) as Request;
-    //     this.mockResponse = new MockResponse() as Response;
-    //   }
-
-    //   retrieve(): Promise<RawResponseObject> {
-    //     return this.method(
-    //       this.mockRequest,
-    //       this.mockResponse
-    //     ) as unknown as Promise<RawResponseObject>;
-    //   }
-    // }
+    export interface IReportsRecord {
+      [key: string]: any;
+      NAME: string;
+      SURNAME: string;
+      USERNAME: string;
+      MAIL: string | { text: string; hyperlink: string };
+      CONTENT: string; // 'EFF-MTH'
+    }
   }
 }

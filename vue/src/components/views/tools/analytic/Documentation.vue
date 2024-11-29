@@ -80,6 +80,11 @@
                     <b>Miscellaneous:</b> Files that do not fit the 'Models' or 'Planning'
                     categories, serving as helper files for various purposes.
                   </p>
+                  <p class="ms-2">
+                    <b>Reports:</b> These files are used for mailing purposes and currently support
+                    <code>EFF-MTH</code> or <code>PACK-HOURLY</code> as the CONTENT, focusing on
+                    efficiency metrics and monthly summaries.
+                  </p>
                 </v-list-item-content>
               </v-list-item>
 
@@ -95,7 +100,7 @@
                     >Files that are monitored for any changes made, such as the modification date
                     which trigger an automatic upload:
                   </v-list-item-title>
-                  <p class="ms-2"><b>Auto-plan update</b> required for planning of sky packing.</p>
+                  <p class="ms-2"><b>auto-plan-update</b> required for planning of sky packing.</p>
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-content>

@@ -137,8 +137,8 @@ const headers = computed<object[]>(() => {
     {
       title: "Worked Time (hrs)",
       align: "start",
-      key: "worked_quarters",
-      value: "worked_quarters",
+      key: "worked_hours",
+      value: "worked_hours",
     },
     {
       title: "Estimated Processing Time (hrs)",

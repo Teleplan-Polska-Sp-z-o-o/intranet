@@ -512,6 +512,12 @@ export namespace PackedService {
 
     sendMails_6() {
       const recipients = this.reportsJsObjs
+        .filter(
+          (rec) =>
+            rec.CONTENT_CODES.split(",")
+              .map((code: string) => code.trim()) // Trim each element
+              .includes("PACK-HOURLY") // Check if the array includes the desired value
+        )
         .map((rec) => {
           const mail = rec.MAIL;
 

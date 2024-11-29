@@ -61,7 +61,7 @@ async function fetchTransactions(
   try {
     const result: RawDellBoseTransactionDTO[] = await queryRunner.query(
       `
-    SELECT 
+    SELECT
       wosh.ID AS id,
       woh.ProgramID AS contract,
       u.Username AS username,
@@ -93,6 +93,27 @@ async function fetchTransactions(
   }
 }
 
+// async function fetchTransactions(
+//   startOfDay: Date,
+//   endOfDay: Date,
+//   workCenter: string,
+//   nextWorkCenter?: string
+// ) {
+//   const queryBuilder = SideDataSources.mssql.createQueryBuilder("dell");
+
+//   try {
+//     const query = queryBuilder.select("woh.ID", "id").from("WOHeader", "woh");
+
+//     console.log("query.getSql()", query.getSql()); // Log the raw SQL
+
+//     const result = await query.getRawMany();
+//     return result;
+//   } catch (error) {
+//     console.error("Error fetching transactions:", error);
+//     throw error;
+//   }
+// }
+
 // Utility function to fetch transactions
 const fetchTransactionsForWorkCenter = async (
   req: Request,
@@ -107,8 +128,6 @@ const fetchTransactionsForWorkCenter = async (
     startOfDay.setHours(6, 0, 0, 0);
     endOfDay.setHours(6, 0, 0, 0);
     endOfDay.setDate(endOfDay.getDate() + 1);
-
-    console.log(startOfDay, endOfDay);
 
     const rawTransactions = await fetchTransactions(startOfDay, endOfDay, workCenter);
     return res.status(200).json({

@@ -357,7 +357,7 @@ export namespace EfficiencyModels {
         return {
           ...emp,
           processing_time: Math.round((emp.processing_time / 60) * 10) / 10,
-          worked_quarters: emp.worked_quarters / 4,
+          worked_hours: emp.worked_quarters / 4,
         };
       });
     }
