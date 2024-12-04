@@ -97,20 +97,55 @@ async function fetchTransactions(
 //   startOfDay: Date,
 //   endOfDay: Date,
 //   workCenter: string,
-//   nextWorkCenter?: string
+//   nextWorkCenter?: string | string[] // Allow single or multiple nextWorkCenter values
 // ) {
-//   const queryBuilder = SideDataSources.mssql.createQueryBuilder("dell");
+//   const queryRunner = SideDataSources.mssql.createQueryRunner();
 
 //   try {
-//     const query = queryBuilder.select("woh.ID", "id").from("WOHeader", "woh");
+//     // Dynamically construct the condition for nextWorkCenter
+//     const nextWorkCenterCondition = Array.isArray(nextWorkCenter)
+//       ? `AND nws.Description IN (${nextWorkCenter.map((_, index) => `@${index + 3}`).join(", ")})`
+//       : nextWorkCenter
+//       ? "AND nws.Description = @3"
+//       : "";
 
-//     console.log("query.getSql()", query.getSql()); // Log the raw SQL
+//     // Build the parameters dynamically
+//     const parameters = [
+//       startOfDay,
+//       endOfDay,
+//       workCenter,
+//       ...(Array.isArray(nextWorkCenter) ? nextWorkCenter : nextWorkCenter ? [nextWorkCenter] : []),
+//     ];
 
-//     const result = await query.getRawMany();
+//     const result: RawDellBoseTransactionDTO[] = await queryRunner.query(
+//       `
+//       SELECT
+//         wosh.ID AS id,
+//         woh.ProgramID AS contract,
+//         u.Username AS username,
+//         woh.PartNo AS partNo,
+//         woh.SerialNo AS serialNo,
+//         ws.Description AS workStationDesc,
+//         nws.Description AS nextWorkStationDesc,
+//         woh.LastActivityDate AS lastActivityDate
+//       FROM pls.WOHeader woh
+//       INNER JOIN pls.WOStationHistory wosh ON woh.ID = wosh.WOHeaderID
+//       INNER JOIN pls.[User] u ON woh.UserID = CAST(u.ID AS INT)
+//       LEFT JOIN pls.CodeWorkStation ws ON ws.ID = wosh.WorkStationID
+//       LEFT JOIN pls.CodeWorkStation nws ON nws.ID = wosh.ToWorkStationID
+//       WHERE woh.ProgramID = '10064'
+//         AND wosh.Iteration = 1
+//         AND woh.LastActivityDate >= @0
+//         AND woh.LastActivityDate < @1
+//         AND ws.Description = @2
+//         ${nextWorkCenterCondition}
+//       `,
+//       parameters
+//     );
+
 //     return result;
-//   } catch (error) {
-//     console.error("Error fetching transactions:", error);
-//     throw error;
+//   } finally {
+//     await queryRunner.release();
 //   }
 // }
 

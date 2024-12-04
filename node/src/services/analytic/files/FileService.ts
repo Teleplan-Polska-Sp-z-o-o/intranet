@@ -205,7 +205,7 @@ export namespace FileService {
       }
 
       // Check if the filePath matches the file we're interested in
-      if (!filePath.includes(this.fileOfType.normalizedFileName)) {
+      if (!filePath.includes(this.fileName)) {
         return false;
       }
 

@@ -139,16 +139,16 @@ class MockRequest {
     endOfDay: string;
   };
   constructor(program: string) {
-    const startOfDay = "2024-11-01T06:00:00.000Z";
-    // moment()
-    //   .subtract(1, "months")
-    //   .startOf("month")
-    //   .hour(6)
-    //   .minute(0)
-    //   .second(0)
-    //   .toISOString();
-    const endOfDay = "2024-11-29T06:00:00.000Z";
-    // moment().startOf("month").hour(6).minute(0).second(0).toISOString();
+    // const startOfDay = "2024-11-01T06:00:00.000Z";
+    const startOfDay = moment()
+      .subtract(1, "months")
+      .startOf("month")
+      .hour(6)
+      .minute(0)
+      .second(0)
+      .toISOString();
+    // const endOfDay = "2024-11-29T06:00:00.000Z";
+    const endOfDay = moment().startOf("month").hour(6).minute(0).second(0).toISOString();
     this.body = {
       contracts: JSON.stringify(transactionContractsMapping[program]),
       startOfDay: JSON.stringify(startOfDay),
