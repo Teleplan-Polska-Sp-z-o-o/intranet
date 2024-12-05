@@ -123,6 +123,19 @@ export const toolRoutes = {
               include: false,
             },
           },
+          children: [
+            {
+              path: "creator",
+              name: "documentsCreator",
+              component: DocumentsView,
+              meta: {
+                toolName: "matrix",
+                breadcrumbs: {
+                  include: false,
+                },
+              },
+            },
+          ],
         },
       ],
     },

@@ -117,6 +117,14 @@ const enT = {
         },
         documents: {
           name: "DOCUMENTS",
+          creator: {
+            link: {
+              title: "Online Document Creator",
+              subtitle: "Simplify, create, and share",
+              text: "Say goodbye to uploading document files. Our online document creator offers an intuitive, user-friendly interface that ensures a consistent experience every time. Perfect for creating professional documents quickly and efficiently, it’s the modern solution for seamless collaboration and productivity.",
+              button: "Open Tool",
+            },
+          },
           table: {
             toolbar: "Documents",
             header: {

@@ -16,6 +16,7 @@ import { ToolTab } from "../../interfaces/common/ToolTabTypes";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
 import { v4 as uuidv4 } from "uuid";
+import LinkToCreatorCard from "../../components/views/tools/matrix/document/creator/LinkToCreatorCard.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -196,6 +197,7 @@ const competencesConnectorId = uuidv4();
                     :instanceId="documentsConnectorId"
                     class="bg-surface-2 pa-4 ma-1 mb-5"
                   ></document-table>
+                  <link-to-creator-card></link-to-creator-card>
                   <simple-documents-posted-chart
                     class="bg-surface-2 pa-4 ma-1"
                   ></simple-documents-posted-chart>
