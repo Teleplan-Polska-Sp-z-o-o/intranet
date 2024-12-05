@@ -68,6 +68,26 @@ export const tabsObj = [
           },
         ],
       },
+      {
+        id: "1-4",
+        title: "Test",
+        name: "test",
+        icon: undefined,
+        children: [
+          {
+            id: "1-4-1",
+            title: "Drive",
+            name: "drive",
+            icon: "mdi-folder-file-outline",
+          },
+          {
+            id: "1-4-2",
+            title: "Overview",
+            name: "overview",
+            icon: "mdi-chart-box-multiple-outline",
+          },
+        ],
+      },
     ],
   },
   {

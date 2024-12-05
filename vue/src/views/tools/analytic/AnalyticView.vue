@@ -247,6 +247,21 @@ onMounted(async () => {
                     </sky-ooba-efficiency-overview>
                   </template>
                 </v-window-item>
+                <!-- Test -->
+                <v-window-item v-if="windowItem === 'sky-test-drive'" value="sky-test-drive">
+                  <template v-if="windowItem === 'sky-test-drive'">
+                    <file-drive subtitle="SKY Test" identification="sky-test-drive"></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="sky-test-overview">
+                  <template v-if="windowItem === 'sky-test-overview'">
+                    <transactions-raw-sky-data-table
+                      program="sky"
+                      group="test"
+                      identification="sky-test-overview"
+                    ></transactions-raw-sky-data-table>
+                  </template>
+                </v-window-item>
 
                 <!-- LENOVO -->
 

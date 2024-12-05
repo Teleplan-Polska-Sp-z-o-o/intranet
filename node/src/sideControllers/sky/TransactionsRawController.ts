@@ -185,7 +185,121 @@ const getRawOobaTransactions = async (req: Request, res: Response): Promise<Resp
   }
 };
 
-export { getRawSkyPackingTransactions, getRawCosmeticTransactions, getRawOobaTransactions };
+const getRawSkyTestTransactions = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const body = req.body;
+
+    const contracts: string[] = JSON.parse(body.contracts);
+    const startOfDay = new Date(JSON.parse(body.startOfDay));
+    const endOfDay = new Date(JSON.parse(body.endOfDay));
+
+    startOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+
+    const startOfDayISO = startOfDay.toISOString();
+    const endOfDayISO = endOfDay.toISOString();
+
+    const rawTransactionsRepo = SideDataSources.postgres.getRepository(RawTransaction);
+
+    const rawTransactions = await rawTransactionsRepo
+      .createQueryBuilder("h")
+      .select([
+        "h.transaction_id AS transaction_id",
+        "h.contract AS contract",
+        "h.order_no AS order_no",
+        "h.part_no AS part_no",
+        "h.work_center_no AS work_center_no",
+        "h.next_work_center_no AS next_work_center_no",
+        "h.datedtz AS datedtz",
+      ])
+      .addSelect(
+        `(SELECT sr.serial_no 
+          FROM ifsapp_emrept02.service_request sr 
+          WHERE sr.service_request_no = 
+            (SELECT wo.wo_no 
+             FROM ifsapp_emrept02.work_order_shop_ord wo 
+             WHERE wo.order_no = h.order_no LIMIT 1) 
+          LIMIT 1)`,
+        "serial_no"
+      )
+      .addSelect(
+        `(SELECT ttr.test_value 
+          FROM info_emprod02.titan2_tests_results ttr 
+          WHERE ttr.test_name LIKE 'SkyQ::OperatorScan%' 
+            AND ttr.serial = 
+              (SELECT sr.serial_no 
+               FROM ifsapp_emrept02.service_request sr 
+               WHERE sr.service_request_no = 
+                 (SELECT wo.wo_no 
+                  FROM ifsapp_emrept02.work_order_shop_ord wo 
+                  WHERE wo.order_no = h.order_no LIMIT 1) 
+               LIMIT 1) 
+          LIMIT 1)`,
+        "emp_name"
+      )
+      .addSelect(
+        `(SELECT ttr.box_id 
+          FROM info_emprod02.titan2_tests_results ttr 
+          WHERE ttr.test_name LIKE 'SkyQ::OperatorScan%' 
+            AND ttr.serial = 
+              (SELECT sr.serial_no 
+               FROM ifsapp_emrept02.service_request sr 
+               WHERE sr.service_request_no = 
+                 (SELECT wo.wo_no 
+                  FROM ifsapp_emrept02.work_order_shop_ord wo 
+                  WHERE wo.order_no = h.order_no LIMIT 1) 
+               LIMIT 1) 
+          LIMIT 1)`,
+        "box_id"
+      )
+      .addSelect(
+        `(SELECT ttr.hostname 
+          FROM info_emprod02.titan2_tests_results ttr 
+          WHERE ttr.test_name LIKE 'SkyQ::OperatorScan%' 
+            AND ttr.serial = 
+              (SELECT sr.serial_no 
+               FROM ifsapp_emrept02.service_request sr 
+               WHERE sr.service_request_no = 
+                 (SELECT wo.wo_no 
+                  FROM ifsapp_emrept02.work_order_shop_ord wo 
+                  WHERE wo.order_no = h.order_no LIMIT 1) 
+               LIMIT 1) 
+          LIMIT 1)`,
+        "hostname"
+      )
+      .where("h.contract IN (:...contracts)", { contracts })
+      .andWhere("h.reversed_flag = :reversedFlag", { reversedFlag: "N" })
+      .andWhere("h.transaction = :transaction", { transaction: "OP FEED" })
+      .andWhere("h.work_center_no = :workCenter", { workCenter: "A1020" })
+      .andWhere("h.dated >= :startOfDay AND h.dated < :endOfDay")
+      .setParameters({
+        startOfDay: startOfDayISO,
+        endOfDay: endOfDayISO,
+      })
+      .getRawMany();
+
+    return res.status(200).json({
+      raw: rawTransactions,
+      message: "Enhanced RawTransactions retrieved successfully",
+      statusMessage: HttpResponseMessage.GET_SUCCESS,
+    });
+  } catch (error) {
+    console.error("Error retrieving Enhanced RawTransactions: ", error);
+    return res.status(500).json({
+      raw: [],
+      message: "Unknown error occurred. Failed to retrieve Enhanced RawTransactions.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
+export {
+  getRawSkyPackingTransactions,
+  getRawCosmeticTransactions,
+  getRawOobaTransactions,
+  getRawSkyTestTransactions,
+};
 
 // import { Request, Response } from "express";
 // import { HttpResponseMessage } from "../../enums/response";

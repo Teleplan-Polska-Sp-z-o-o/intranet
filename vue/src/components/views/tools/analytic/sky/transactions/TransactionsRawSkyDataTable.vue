@@ -25,16 +25,30 @@ const store = useAnalyticRawTableStore();
 const route = useRoute();
 const abortController = ref<AbortController | null>(null);
 
-const headers: any = [
-  // { title: "Transaction ID", align: "start", key: "transaction_id" },
-  { title: "Contract", align: "start", key: "contract", value: "contract" },
-  { title: "Order No", align: "start", key: "order_no", value: "order_no" },
-  { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
-  { title: "Part No", align: "start", key: "part_no", value: "part_no" },
-  { title: "From Work Center No", align: "start", key: "work_center_no", value: "work_center_no" },
-  // { title: "Next Work Center No", align: "start", key: "next_work_center_no" },
-  { title: "Date", align: "start", key: "datedtz", value: "datedtz" },
-];
+const headers: any = computed(() => {
+  const colsToManage = {
+    serial: { title: "Serial No", align: "start", key: "serial_no", value: "serial_no" },
+    emp: { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
+    box: { title: "Box Id", align: "start", key: "box_id", value: "box_id" },
+    host: { title: "Hostname", align: "start", key: "hostname", value: "hostname" },
+  };
+  const injectedColumns =
+    unref(group) === "test" ? Object.values(colsToManage) : [colsToManage.emp];
+  return [
+    { title: "Contract", align: "start", key: "contract", value: "contract" },
+    { title: "Order No", align: "start", key: "order_no", value: "order_no" },
+    // { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
+    ...injectedColumns,
+    { title: "Part No", align: "start", key: "part_no", value: "part_no" },
+    {
+      title: "From Work Center No",
+      align: "start",
+      key: "work_center_no",
+      value: "work_center_no",
+    },
+    { title: "Date", align: "start", key: "datedtz", value: "datedtz" },
+  ];
+});
 
 const searchTerm = ref<string>(""); // search input
 const searchBy = [
@@ -76,7 +90,6 @@ const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
     }
 
     store.setItemsData(unref(identification), unref(filtered));
-
     return unref(filtered);
   } catch (error) {
     console.error(`Transactions Raw Table at filteredItems, ${error}`);
@@ -211,7 +224,7 @@ watch(
   }
 );
 
-const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHeader) => {
+const downloadHeaders = (unref(headers) as DataTableHeader[]).filter((col: DataTableHeader) => {
   const keyBlackList = ["transaction_id"];
   return !keyBlackList.includes(col.value);
 });
