@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-// import { useRouter } from "vue-router";
 
 const show = ref<boolean>(false);
-// const router = useRouter();
-
-// const toCreatorRoute = (): void => {
-//   router.push({
-//     path: `/tool/matrix/browse/documents/creator`,
-//   });
-// };
 </script>
 
 <template>
@@ -26,7 +18,7 @@ const show = ref<boolean>(false);
       <v-btn
         color="primary"
         :text="$t('tools.matrix.tabs.documents.creator.link.button')"
-        :to="`/tool/matrix/browse/documents/creator`"
+        :to="`/tool/matrix/browse/documents/creator/dashboard`"
         class="rounded-xl"
       ></v-btn>
 

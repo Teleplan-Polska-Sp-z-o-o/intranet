@@ -124,6 +124,21 @@ const enT = {
               text: "Say goodbye to uploading document files. Our online document creator offers an intuitive, user-friendly interface that ensures a consistent experience every time. Perfect for creating professional documents quickly and efficiently, it’s the modern solution for seamless collaboration and productivity.",
               button: "Open Tool",
             },
+            mainView: {
+              tabs: {
+                dashboard: "Dashboard",
+                new: "Create New",
+                drafts: "Drafts",
+              },
+            },
+            createNew: {
+              stepper: {
+                actions: {
+                  previous: "Previous",
+                  next: "Next",
+                },
+              },
+            },
           },
           table: {
             toolbar: "Documents",

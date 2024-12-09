@@ -35,7 +35,10 @@ const plC = {
             browse: "Dokumenty",
             view: "Widok",
           },
-          matrix: "Macierz",
+          matrix: {
+            browse: "Macierz",
+            creator: "Twórca",
+          },
           admin: "Administrator",
           change: {
             browse: "Zmiana",

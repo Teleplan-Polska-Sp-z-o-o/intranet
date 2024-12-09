@@ -35,7 +35,10 @@ const uaC = {
             browse: "Документи",
             view: "Перегляд",
           },
-          matrix: "Матриця",
+          matrix: {
+            browse: "Матриця",
+            creator: "Створювач",
+          },
           admin: "Адміністратор",
           change: {
             browse: "Зміна",

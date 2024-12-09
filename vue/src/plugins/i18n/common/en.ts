@@ -35,7 +35,10 @@ const enC = {
             browse: "Documents",
             view: "View",
           },
-          matrix: "Matrix",
+          matrix: {
+            browse: "Matrix",
+            creator: "Creator",
+          },
           admin: "Admin",
           change: {
             browse: "Change",
