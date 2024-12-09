@@ -18,6 +18,7 @@ import SkyPackedUnitsOverview from "../../../components/views/tools/analytic/sky
 import SkyPackingEfficiencyOverview from "../../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
 import SkyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
 import SkyOobaEfficiencyOverview from "../../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
+
 // lenovo
 import LenovoRepairEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
 import LenovoCleaningEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/cleaning/efficiency/CleaningEfficiencyOverview.vue";

@@ -80,6 +80,7 @@ export class EfficiencyBuilderHandler<P extends EfficiencyMonthlyTypes.Postgres.
         packing: "TT_PACK",
         cosmetic: "TT_COSM",
         ooba: "TT_OOBA",
+        test: "TT_TEST",
       },
       lenovo: {
         repair: "TT_REPAIR",

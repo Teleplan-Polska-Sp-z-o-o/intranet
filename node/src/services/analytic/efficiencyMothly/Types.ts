@@ -5,7 +5,7 @@ export namespace EfficiencyMonthlyTypes {
     // PROGRAM CATEGORY
     export type ProgramCategories = {
       [key: string]: string;
-      sky: "packing" | "cosmetic" | "ooba";
+      sky: "packing" | "cosmetic" | "ooba" | "test";
       lenovo: "repair" | "registration" | "cleaning" | "final" | "packing";
       ingenico:
         | "models"
@@ -39,7 +39,7 @@ export namespace EfficiencyMonthlyTypes {
         | "COSMETIC_3"
         | "COSMETIC_4"
         | "COSMETIC_5";
-      sky: "TT_PACK" | "TT_COSM" | "TT_OOBA";
+      sky: "TT_PACK" | "TT_COSM" | "TT_OOBA" | "TT_TEST";
       lenovo: "TT_REPAIR" | "TT_REGISTRATION" | "TT_CLEANING" | "TT_FINAL_TEST" | "TT_PACKING";
       ingenico: "TT";
     };

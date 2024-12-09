@@ -2,6 +2,7 @@ import {
   getRawSkyPackingTransactions,
   getRawCosmeticTransactions,
   getRawOobaTransactions,
+  getRawSkyTestTransactions,
 } from "../../../sideControllers/sky/TransactionsRawController";
 
 import {
@@ -61,6 +62,7 @@ const transactionFunctionMapping: Record<string, Record<string, Function>> = {
     packing: getRawSkyPackingTransactions,
     cosmetic: getRawCosmeticTransactions,
     ooba: getRawOobaTransactions,
+    test: getRawSkyTestTransactions,
   },
   lenovo: {
     registration: getRawRegistrationTransactions,

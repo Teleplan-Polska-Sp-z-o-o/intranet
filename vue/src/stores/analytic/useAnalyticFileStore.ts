@@ -12,6 +12,9 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
       ooba: {
         drive: ["models", "reports", "miscellaneous"],
       },
+      test: {
+        drive: ["models", "reports", "miscellaneous"],
+      },
     },
     lenovo: {
       repair: {
@@ -101,6 +104,10 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
     },
     "sky-ooba-drive": {
       models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_OOBA"],
+      reports: ["NAME", "SURNAME", "USERNAME", "MAIL", "CONTENT_CODES"],
+    },
+    "sky-test-drive": {
+      models: ["GROUP_NAME", "GROUP_LETTER", "IFS_PART_NO", "TT_TEST"],
       reports: ["NAME", "SURNAME", "USERNAME", "MAIL", "CONTENT_CODES"],
     },
     // LENOVO

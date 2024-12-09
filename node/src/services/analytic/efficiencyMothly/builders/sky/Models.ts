@@ -37,6 +37,7 @@ export namespace EfficiencyModels {
       | EfficiencyTypes.TPackModelObj
       | EfficiencyTypes.TCosmModelObj
       | EfficiencyTypes.TOobaModelObj
+      | EfficiencyTypes.TTestModelObj
   > {
     cache: Map<string, T> = new Map();
     ttKey: keyof T;
@@ -53,6 +54,9 @@ export namespace EfficiencyModels {
           case "TT_OOBA":
             const averageOoba = this.cache.get("AVERAGE");
             return averageOoba ? Number(averageOoba["TT_OOBA"]) : undefined;
+          case "TT_TEST":
+            const averageTest = this.cache.get("AVERAGE");
+            return averageTest ? Number(averageTest["TT_TEST"]) : undefined;
 
           default:
             return undefined;
@@ -77,6 +81,7 @@ export namespace EfficiencyModels {
       | EfficiencyTypes.TPackModelObj
       | EfficiencyTypes.TCosmModelObj
       | EfficiencyTypes.TOobaModelObj
+      | EfficiencyTypes.TTestModelObj
   > {
     // private modelsCache: Map<string, T> = new Map(); // Cache for model data
     private models: Models<T>;
