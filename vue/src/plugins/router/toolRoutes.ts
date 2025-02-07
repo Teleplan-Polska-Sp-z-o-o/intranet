@@ -10,6 +10,8 @@ import WarehouseView from "../../views/tools/warehouse/WarehouseView.vue";
 
 import { RouteLocationNormalized } from "vue-router";
 
+import MainCreatorView from "../../components/views/tools/matrix/document/creator/MainCreatorView.vue";
+
 // documents: ["instructions", "visuals", "msd", "assistant"],
 //       change: ["pcr", "pcn"],
 //       matrix: ["departments", "documents", "competences"],
@@ -100,6 +102,36 @@ export const toolRoutes = {
       ],
     },
     {
+      path: "matrix/browse/:tab/creator",
+      name: "matrixCreator",
+      component: MainCreatorView,
+      meta: {
+        toolName: "matrix",
+        breadcrumbs: {
+          include: true,
+          parent: "tool.matrix",
+          name: "browse",
+          path: "/tool/matrix/browse/documents",
+        },
+      },
+      children: [
+        {
+          path: ":functionality/:id?",
+          name: "matrixCreatorFunctionality",
+          component: MainCreatorView,
+          meta: {
+            toolName: "matrix",
+            breadcrumbs: {
+              include: true,
+              parent: "tool.matrix",
+              name: "creator",
+              path: "",
+            },
+          },
+        },
+      ],
+    },
+    {
       path: "matrix",
       name: "matrix",
       component: MatrixView,
@@ -107,8 +139,8 @@ export const toolRoutes = {
         toolName: "matrix",
         breadcrumbs: {
           include: true,
-          parent: "tool",
-          name: "matrix",
+          parent: "tool.matrix",
+          name: "browse",
           path: "",
         },
       },

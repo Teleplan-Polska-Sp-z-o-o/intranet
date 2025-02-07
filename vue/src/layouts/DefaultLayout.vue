@@ -3,7 +3,6 @@ import DefaultNavDrawer from "./../components/layouts/default/NavigationDrawer.v
 import DefaultAppBar from "./../components/layouts/default/AppBar.vue";
 import LayoutBreadcrumbs from "../components/layouts/Breadcrumbs.vue";
 import LayoutFooter from "../components/layouts/Footer.vue";
-
 import { ref } from "vue";
 
 const drawerVisible = ref<boolean>(false);

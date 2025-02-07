@@ -35,7 +35,10 @@ const plC = {
             browse: "Dokumenty",
             view: "Widok",
           },
-          matrix: "Macierz",
+          matrix: {
+            browse: "Macierz",
+            creator: "Twórca",
+          },
           admin: "Administrator",
           change: {
             browse: "Zmiana",
@@ -181,6 +184,12 @@ const plC = {
       reference_format_error: "Wartość referencji ma nieprawidłowy format.",
       reference_already_contains_error: "Jakiś dokument już zawiera tę referencje.",
       filters_applied: "Filtry zostały zastosowane.",
+
+      draft_duplicate_name: "Szkic o tej nazwie już istnieje. Wybierz inną nazwę.",
+      draft_duplicate_uuid:
+        "Wystąpił problem z powodu ponownego użycia tej samej instancji steppera. Odśwież stronę i spróbuj ponownie.", // Twoja praca nie zostanie utracona.
+      draft_consumed_hold:
+        "Twój zapisany postęp został przywrócony po odświeżeniu strony. Możesz teraz kontynuować pracę nad dokumentem.",
     },
     component: {
       file_form: {

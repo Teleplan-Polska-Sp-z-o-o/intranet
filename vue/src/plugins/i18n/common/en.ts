@@ -35,7 +35,10 @@ const enC = {
             browse: "Documents",
             view: "View",
           },
-          matrix: "Matrix",
+          matrix: {
+            browse: "Matrix",
+            creator: "Creator",
+          },
           admin: "Admin",
           change: {
             browse: "Change",
@@ -184,6 +187,13 @@ const enC = {
       reference_already_contains_error: "Some document already contains this reference.",
 
       filters_applied: "The filters have been applied.",
+
+      draft_duplicate_name:
+        "A draft with this name already exists. Please choose a different name.",
+      draft_duplicate_uuid:
+        "An issue occurred due to reusing the same stepper instance. Please reload the page and try again.", // Your work will not be lost.
+      draft_consumed_hold:
+        "Your saved progress has been restored after refreshing the page. You can now continue working on your document.",
     },
     component: {
       file_form: {

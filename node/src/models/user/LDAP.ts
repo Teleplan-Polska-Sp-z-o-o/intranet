@@ -1,11 +1,10 @@
 import { authenticate } from "ldap-authentication";
-import { ILogin, IUser } from "../../interfaces/user/UserTypes";
+import { ILogin } from "../../interfaces/user/UserTypes";
 import { getLDAPConfig } from "../../config/ldap";
 import { serverConfig } from "../../config/server";
 import { JwtPayload, Secret, SignOptions, sign, verify } from "jsonwebtoken";
 import { User } from "../../orm/entity/user/UserEntity";
 import { SimpleUser } from "./SimpleUser";
-import { decode } from "punycode";
 
 class LDAP {
   username: string;

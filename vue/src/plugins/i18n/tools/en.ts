@@ -117,6 +117,38 @@ const enT = {
         },
         documents: {
           name: "DOCUMENTS",
+          creator: {
+            link: {
+              title: "Online Document Creator",
+              subtitle: "Simplify, create, and share",
+              text: "Say goodbye to uploading document files. Our online document creator offers an intuitive, user-friendly interface that ensures a consistent experience every time. Perfect for creating professional documents quickly and efficiently, it’s the modern solution for seamless collaboration and productivity.",
+              button: "Open Tool",
+            },
+            mainView: {
+              title: {
+                create: "You're about to start a new Draft",
+                update: "Updating the Draft titled '{name}'",
+              },
+              tabs: {
+                dashboard: "Dashboard",
+                new: "Create",
+                drafts: "Drafts",
+              },
+            },
+            createNew: {
+              stepper: {
+                actions: {
+                  previous: "Previous",
+                  next: "Next",
+                  save: "Save",
+                  saveDialog: {
+                    title: "Confirmation",
+                    text: "Are you sure you want to save this draft?",
+                  },
+                },
+              },
+            },
+          },
           table: {
             toolbar: "Documents",
             header: {

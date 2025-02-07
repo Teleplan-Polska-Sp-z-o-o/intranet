@@ -98,6 +98,38 @@ const plT = {
     },
     matrix: {
       name: "Macierz",
+      creator: {
+        link: {
+          title: "Kreator Dokumentów Online",
+          subtitle: "Uprość, twórz i udostępniaj",
+          text: "Pożegnaj się z przesyłaniem plików dokumentów. Nasz kreator dokumentów online oferuje intuicyjny, przyjazny dla użytkownika interfejs, który zapewnia spójne doświadczenie za każdym razem. Idealny do szybkiego i efektywnego tworzenia profesjonalnych dokumentów, to nowoczesne rozwiązanie dla płynnej współpracy i produktywności.",
+          button: "Otwórz Narzędzie",
+        },
+        mainView: {
+          title: {
+            create: "Zaraz rozpoczniesz nowy szkic",
+            update: "Aktualizujesz szkic zatytułowany '{name}'",
+          },
+          tabs: {
+            dashboard: "Panel główny",
+            new: "Utwórz",
+            drafts: "Szkice",
+          },
+        },
+        createNew: {
+          stepper: {
+            actions: {
+              previous: "Poprzedni",
+              next: "Następny",
+              save: "Zapisz",
+              saveDialog: {
+                title: "Potwierdzenie",
+                text: "Czy na pewno chcesz zapisać ten szkic dokumentu?",
+              },
+            },
+          },
+        },
+      },
       tabs: {
         departments: {
           name: "DZIAŁY",
