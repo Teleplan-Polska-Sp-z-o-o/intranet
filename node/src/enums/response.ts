@@ -15,6 +15,8 @@ enum HttpResponseMessage {
   REFERENCE_FORMAT_ERROR = "reference_format_error",
   REFERENCE_ALREADY_CONTAINS_ERROR = "reference_already_contains_error",
   UNAUTHORIZED = "unauthorized",
+  DRAFT_DUPLICATE_NAME = "draft_duplicate_name",
+  DRAFT_DUPLICATE_UUID = "draft_duplicate_uuid",
 }
 
 // enum HttpUserResponseMessage {}

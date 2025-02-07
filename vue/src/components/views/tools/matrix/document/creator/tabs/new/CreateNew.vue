@@ -1,52 +1,71 @@
 <script setup lang="ts">
-import { ref, unref } from "vue";
-import { Draft } from "./DocumentTypes";
-import { Stepper } from "./StepperTypes";
-import AddInfo from "./AddInfo.vue";
+import InfoStep from "./steps/info/InfoStep.vue";
+import BeforeStep from "./steps/before/BeforeStep.vue";
+import {
+  EStatus,
+  useStepperStore,
+} from "../../../../../../../../stores/documents/creator/useStepperStore";
+import ContentStep from "./steps/content/ContentStep.vue";
+import SaveDialog from "./SaveDialog.vue";
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-const stepper = ref<Stepper>(
-  new Stepper({
-    1: {
-      name: "Info",
-    },
-    2: {
-      name: "Content",
-    },
-    3: {
-      name: "Verify",
-    },
-  })
-);
+const router = useRouter();
 
-const draft = ref<Draft>(new Draft());
-console.log("draft", unref(draft));
+const store = useStepperStore();
+
+onMounted(() => {
+  if (store.status.enum === EStatus.NULL)
+    store.setStepper({
+      navigation: {
+        router,
+      },
+    });
+});
 </script>
 
 <template>
   <v-stepper
+    v-if="store.stepper"
     style="overflow-y: auto"
     :mobile="false"
-    v-model="stepper.currentStep"
-    class="rounded-xl ma-1"
+    v-model="store.stepper!.currentStep"
+    class="rounded-xl bg-surface-2 ma-1"
   >
     <v-stepper-header class="rounded-xl">
-      <template v-for="([key, step], index) in Object.entries(stepper.steps)" :key="key">
-        <v-stepper-item :value="Number(key)" :title="step.name"></v-stepper-item>
-        <v-divider v-if="index < Object.keys(stepper.steps).length - 1"></v-divider>
+      <template
+        v-for="([key, step], index) in Object.entries(store.stepper!.steps || {})"
+        :key="key"
+      >
+        <v-stepper-item
+          :value="Number(key)"
+          :title="step.name"
+          :editable="step.editable"
+          :complete="step.complete"
+          :color="step.color"
+        ></v-stepper-item>
+        <v-divider v-if="index < Object.keys(store.stepper!.steps || {}).length - 1"></v-divider>
       </template>
     </v-stepper-header>
 
     <v-stepper-window>
       <v-stepper-window-item :value="1">
         <v-card flat>
-          <add-info></add-info>
+          <info-step></info-step>
         </v-card>
       </v-stepper-window-item>
       <v-stepper-window-item :value="2">
-        <v-card flat> </v-card>
+        <v-card flat>
+          <before-step></before-step>
+        </v-card>
       </v-stepper-window-item>
 
       <v-stepper-window-item :value="3">
+        <v-card flat>
+          <content-step></content-step>
+        </v-card>
+      </v-stepper-window-item>
+      <v-stepper-window-item :value="4">
         <v-card flat> </v-card>
       </v-stepper-window-item>
     </v-stepper-window>
@@ -54,22 +73,23 @@ console.log("draft", unref(draft));
     <template v-slot:actions>
       <v-card-actions class="mx-6 mb-6 rounded-xl">
         <v-btn
-          @click="stepper.prevStep()"
+          @click="store.stepper!.prevStep()"
           color="secondary"
           variant="text"
           class="rounded-xl"
-          :disabled="!stepper.prevable"
+          :disabled="!store.stepper!.prevable"
           >{{ $t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.previous`) }}</v-btn
         >
         <v-spacer></v-spacer>
         <v-btn
-          @click="stepper.nextStep()"
+          v-if="store.stepper!.nextable"
+          @click="store.stepper!.nextStep()"
           color="secondary"
           variant="text"
           class="rounded-xl"
-          :disabled="!stepper.nextable"
           >{{ $t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.next`) }}</v-btn
         >
+        <save-dialog v-else></save-dialog>
       </v-card-actions>
     </template>
   </v-stepper>

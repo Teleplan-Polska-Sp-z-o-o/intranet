@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed, ref } from "vue";
+import { RouteLocationNormalizedLoadedGeneric, useRoute, useRouter } from "vue-router";
 import { ToolTab } from "../../../../../../interfaces/common/ToolTabTypes";
-import { useUserStore } from "../../../../../../stores/userStore";
-import { usePermissionStore } from "../../../../../../stores/permissionStore";
 import CreateNew from "./tabs/new/CreateNew.vue";
+import Drafts from "./tabs/drafts/Drafts.vue";
+import Dashboard from "./tabs/dashboard/Dashboard.vue";
+import { useStepperStore } from "../../../../../../stores/documents/creator/useStepperStore";
+import { useI18n } from "vue-i18n";
 
-// SHOW ALWAYS SMALL SCREEN
 const showAsMobile = ref<boolean>(true);
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 
@@ -41,60 +42,34 @@ const tabs: ToolTab[] = [
 ];
 
 const router = useRouter();
-const route = useRoute();
+const route: RouteLocationNormalizedLoadedGeneric = useRoute();
 
-const getFunctionality = (
-  functionalityName: string | Array<string> | undefined,
-  getNumericValue: boolean
-): number | string => {
-  if (Array.isArray(functionalityName))
-    throw new Error(
-      `functionalityName at getFunctionality at MatrixView evaluates to Array<string>: ${functionalityName}, length: ${functionalityName.length}`
-    );
-  if (!functionalityName)
-    throw new Error("functionalityName at getFunctionality at MatrixView evaluates to undefined");
+const store = useStepperStore();
 
-  switch (functionalityName) {
-    case "dashboard":
-      return getNumericValue ? "1" : "dashboard";
+const { t } = useI18n();
 
-    case "new":
-      return getNumericValue ? "2" : "new";
+const functionality = computed(() => route.params.functionality);
 
-    case "drafts":
-      return getNumericValue ? "3" : "drafts";
-
-    default:
-      return getNumericValue ? "1" : "dashboard";
-  }
-};
-
-const currentFunctionalityValue = ref<number>(
-  getFunctionality(route.params.functionality, true) as number
-);
-
-watch(
-  () => route.params.functionality,
-  (newTab) => {
-    currentFunctionalityValue.value = getFunctionality(newTab, true) as number;
-  }
-);
-
-// filter tabs
-const userInfo = useUserStore().info();
-const filteredToolTabs = ref<ToolTab[]>([]);
-
-if (userInfo) {
-  usePermissionStore()
-    .filterToolTabs<ToolTab>(userInfo, tabs)
-    .then((fTT) => {
-      filteredToolTabs.value = fTT;
-      currentFunctionalityValue.value = getFunctionality(
-        filteredToolTabs.value.find((tab) => route.path.includes(tab.meta.subgroup))?.meta.subgroup,
-        true
-      ) as number;
+const title = computed(() => {
+  if (functionality.value !== "new") return;
+  if (!!route.params.id && store.stepper !== null) {
+    return t(`tools.matrix.tabs.documents.creator.mainView.title.update`, {
+      name: store.stepper!.name,
     });
-}
+  } else {
+    return t(`tools.matrix.tabs.documents.creator.mainView.title.create`);
+  }
+});
+
+const push = (tabName: string) => {
+  if (tabName === "new") {
+    store.setStepper({
+      navigation: {
+        router,
+      },
+    });
+  } else router.push({ path: `/tool/matrix/browse/documents/creator/${tabName}` });
+};
 </script>
 
 <template>
@@ -110,19 +85,17 @@ if (userInfo) {
             <v-col>
               <v-card class="rounded-xl bg-surface-2 elevation-2 ma-1">
                 <v-tabs
-                  v-model="currentFunctionalityValue"
+                  v-model="functionality"
                   color="secondary"
                   class="ma-4"
                   :direction="showAsMobile ? 'horizontal' : 'vertical'"
                 >
                   <v-tab
-                    v-for="tab in filteredToolTabs"
+                    v-for="tab in tabs"
                     :key="tab.id"
-                    :value="tab.id"
+                    :value="tab.name"
                     class="rounded"
-                    @click="
-                      router.push({ path: `/tool/matrix/browse/documents/creator/${tab.name}` })
-                    "
+                    @click="() => push(tab.name)"
                   >
                     <v-icon size="28">{{ tab.icon }}</v-icon>
                     {{
@@ -137,12 +110,27 @@ if (userInfo) {
           </v-row>
           <v-row :class="showAsMobile ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
-              <v-window v-model="currentFunctionalityValue" class="w-100" :touch="false">
-                <v-window-item value="1"> dashboard </v-window-item>
-                <v-window-item value="2">
+              <v-alert
+                v-if="title"
+                border="start"
+                border-color="primary"
+                class="ma-1 mb-6"
+                :title="title"
+                type="info"
+                variant="tonal"
+              >
+              </v-alert>
+
+              <v-window v-model="functionality" class="w-100" :touch="false">
+                <v-window-item value="dashboard">
+                  <dashboard></dashboard>
+                </v-window-item>
+                <v-window-item value="new">
                   <create-new></create-new>
                 </v-window-item>
-                <v-window-item value="3"> drafts </v-window-item>
+                <v-window-item value="drafts">
+                  <drafts></drafts>
+                </v-window-item>
               </v-window>
             </v-col>
           </v-row>

@@ -106,9 +106,13 @@ const plT = {
           button: "Otwórz Narzędzie",
         },
         mainView: {
+          title: {
+            create: "Zaraz rozpoczniesz nowy szkic",
+            update: "Aktualizujesz szkic zatytułowany '{name}'",
+          },
           tabs: {
             dashboard: "Panel główny",
-            new: "Utwórz nowy",
+            new: "Utwórz",
             drafts: "Szkice",
           },
         },
@@ -117,6 +121,11 @@ const plT = {
             actions: {
               previous: "Poprzedni",
               next: "Następny",
+              save: "Zapisz",
+              saveDialog: {
+                title: "Potwierdzenie",
+                text: "Czy na pewno chcesz zapisać ten szkic dokumentu?",
+              },
             },
           },
         },

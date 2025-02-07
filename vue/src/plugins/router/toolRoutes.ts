@@ -116,7 +116,7 @@ export const toolRoutes = {
       },
       children: [
         {
-          path: ":functionality",
+          path: ":functionality/:id?",
           name: "matrixCreatorFunctionality",
           component: MainCreatorView,
           meta: {

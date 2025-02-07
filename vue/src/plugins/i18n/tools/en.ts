@@ -125,9 +125,13 @@ const enT = {
               button: "Open Tool",
             },
             mainView: {
+              title: {
+                create: "You're about to start a new Draft",
+                update: "Updating the Draft titled '{name}'",
+              },
               tabs: {
                 dashboard: "Dashboard",
-                new: "Create New",
+                new: "Create",
                 drafts: "Drafts",
               },
             },
@@ -136,6 +140,11 @@ const enT = {
                 actions: {
                   previous: "Previous",
                   next: "Next",
+                  save: "Save",
+                  saveDialog: {
+                    title: "Confirmation",
+                    text: "Are you sure you want to save this draft?",
+                  },
                 },
               },
             },

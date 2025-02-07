@@ -20,6 +20,14 @@ enum Endpoints {
   DocumentSubcategory = "/api/document/subcategory",
   Competence = "/api/competence",
 
+  /// creator
+
+  AddDraft = "/api/document/creator/new/post",
+  PutDrafts = "/api/document/creator/new/put", // /:id
+  GetDrafts = "/api/document/creator/get",
+  DeleteDrafts = "/api/document/creator/delete", // /:id
+  GenerateDrafts = "/api/document/creator/generate", // /:id/:language
+
   // editor
   News = "/api/editor/news",
   Request = "/api/editor/request",

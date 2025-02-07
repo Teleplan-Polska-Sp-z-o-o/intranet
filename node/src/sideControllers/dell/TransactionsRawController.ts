@@ -180,6 +180,16 @@ const fetchTransactionsForWorkCenter = async (
   }
 };
 
+// 1. RECEIVING   gTask0 => gTask1
+// 2. VMI gTask1 => gTest0
+// 3. SCREENING = QUICK TEST gTest0 =>
+// 4. REPAIR  1  gTask4 => gTest1 / Scrap / gTask12
+// 5. REPAIR  2 gTask5 => gTest1 / Scrap / gTask12
+// 6. REPAIR  3   gTask6 => gTest1 / Scrap / gTask12
+// 7. FINALTEST gTest1 => gTask4 / gTask5 / gTask6 / gTask8
+// 8. PACK gTask8 => gTask9 / gTask10
+//? 9. OBA gTask9 => gTask10 /
+
 enum WorkStationMapping {
   VMI = "gTask1",
   WFFA = "gTask0",
