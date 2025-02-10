@@ -199,7 +199,7 @@ watchEffect(() => {
           <v-select
             v-model="document.type"
             :label="$t(`tools.matrix.tabs.documents.stepper.vStepperWindowItem['1'].type.label`)"
-            :items="['Instruction', 'Visual', 'MSD', 'Form']"
+            :items="['Instruction', 'Visual', 'MSD', 'Form', 'Regulations']"
             variant="underlined"
           ></v-select>
           <v-select
