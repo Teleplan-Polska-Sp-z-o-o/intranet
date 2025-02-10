@@ -3,7 +3,7 @@ import { components } from "../../../../../../../../plugins/vuetify/components";
 import { DraftTypes } from "./DraftTypes";
 import { v4 as uuidv4 } from "uuid";
 import stringify from "safe-stable-stringify";
-import { RouteLocationNormalizedLoadedGeneric } from "vue-router";
+import { RouteLocationNormalizedLoaded } from "vue-router";
 import moment from "moment-timezone";
 
 export namespace DocumentCreatorStepper {
@@ -360,10 +360,7 @@ export namespace DocumentCreatorStepper {
       }
     }
 
-    public save = async (
-      name: string,
-      route?: RouteLocationNormalizedLoadedGeneric
-    ): Promise<any> => {
+    public save = async (name: string, route?: RouteLocationNormalizedLoaded): Promise<any> => {
       this._name = name;
 
       const steps: DocumentCreatorStepper.Header.TStepKey[] = [1, 2, 3];

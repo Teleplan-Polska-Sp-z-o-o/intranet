@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { RouteLocationNormalizedLoadedGeneric, useRoute, useRouter } from "vue-router";
+import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router";
 import { ToolTab } from "../../../../../../interfaces/common/ToolTabTypes";
 import CreateNew from "./tabs/new/CreateNew.vue";
 import Drafts from "./tabs/drafts/Drafts.vue";
@@ -42,7 +42,7 @@ const tabs: ToolTab[] = [
 ];
 
 const router = useRouter();
-const route: RouteLocationNormalizedLoadedGeneric = useRoute();
+const route: RouteLocationNormalizedLoaded = useRoute();
 
 const store = useStepperStore();
 
