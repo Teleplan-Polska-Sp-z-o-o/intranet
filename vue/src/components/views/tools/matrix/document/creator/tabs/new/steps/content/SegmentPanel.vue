@@ -30,10 +30,10 @@ const { segment } = toRefs(props);
           <v-row no-gutters class="flex-nowrap">
             <!-- Column for status chip -->
             <v-col cols="auto">
-              <v-chip v-if="segment.content.isSaved" class="ma-2" label color="success">
+              <!-- <v-chip v-if="segment.content.isSaved" class="ma-2" label color="success">
                 Saved
               </v-chip>
-              <v-chip v-else class="ma-2" label color="warning"> Changes </v-chip>
+              <v-chip v-else class="ma-2" label color="warning"> Changes </v-chip> -->
             </v-col>
 
             <!-- Column for title -->
@@ -52,18 +52,18 @@ const { segment } = toRefs(props);
           <v-col>
             <v-sheet class="rounded elevation-2 overflow-hidden mx-auto a4 tiptap-container">
               <v-label>Segment Body</v-label>
-              <VuetifyTiptap v-model="segment.content.tmpBody" />
+              <VuetifyTiptap spellcheck="false" v-model="segment.content.tmpBody" />
             </v-sheet>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
             <v-btn-toggle borderless>
-              <v-btn @click="segment.saveContent()">
+              <!-- <v-btn @click="segment.saveContent()">
                 <span class="hidden-sm-and-down">Save</span>
 
                 <v-icon end> mdi-check </v-icon>
-              </v-btn>
+              </v-btn> -->
 
               <v-btn @click="segment.addSubSegment()">
                 <span class="hidden-sm-and-down">Add</span>

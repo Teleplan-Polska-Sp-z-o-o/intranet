@@ -82,26 +82,24 @@ export namespace DraftTypes {
       return this._isSaved;
     }
     get tmpTitle(): string {
-      return this._tmpTitle;
+      // return this._tmpTitle;
+      return this.title;
     }
     set tmpTitle(value: string) {
-      this._tmpTitle = value;
-      this.updateIsSaved();
+      // this._tmpTitle = value;
+      // this.updateIsSaved();
+      this.title = value;
     }
     get tmpBody(): string {
-      if (this.title.startsWith("WORK TOOLS")) console.log(this._tmpBody);
-      return this._tmpBody;
+      // return this._tmpBody;
+      return this.body;
     }
     set tmpBody(value: string) {
-      // const store = useCreatorTipTapStore();
-
-      // if (store.charactersCount > store.documentContentLimit) {
-      //   return;
-      // }
-
       const cleanValue = value.replace(/<([a-z][a-z0-9]*)\s*>\s*<\/\1>/gi, "").trim();
-      this._tmpBody = cleanValue;
-      this.updateIsSaved();
+      // this._tmpBody = cleanValue;
+      // this.updateIsSaved();
+
+      this.body = cleanValue;
     }
     private updateIsSaved(): void {
       this._isSaved = this.title === this._tmpTitle && this.body === this._tmpBody;

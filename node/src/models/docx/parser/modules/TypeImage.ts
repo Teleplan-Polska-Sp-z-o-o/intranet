@@ -29,32 +29,55 @@ export class TypeImage implements TypeModuleInterface {
       const target = `image_${uuidv4()}.${mimeType}`;
       const targetPath = `media/${target}`;
 
-      // THIS WORKED
-      // const dimensions = sizeOf(Buffer.from(base64Data, "base64")); // Get the original dimensions of the image
-      // // Convert px to EMU (1px = 9525 EMU units)
-      // const widthEMU = dimensions.width * 9525;
-      // const heightEMU = dimensions.height * 9525;
+      // console.log("content:", element.removeAttr("src").toString());
 
       // Get original image size from base64
       const originalDimensions = sizeOf(Buffer.from(base64Data, "base64"));
       let width = originalDimensions.width;
       let height = originalDimensions.height;
 
-      // Get width, height & lockAspectRatio from <img> attributes
+      // console.log(`originalDimensions - width: ${width}, height: ${height}`);
+
+      // Define A4 usable width in pixels (16.94cm = ~640px)
+      const A4_USABLE_WIDTH_PX = 640;
+
+      // Extract relevant attributes
       const htmlWidth = element.attr("width");
       const htmlHeight = element.attr("height");
       const lockAspectRatio = element.attr("lockaspectratio") === "true";
 
-      if (lockAspectRatio && htmlWidth) {
-        // Resize while maintaining aspect ratio
-        const scaleFactor = parseInt(htmlWidth, 10) / width;
-        width = parseInt(htmlWidth, 10);
-        height = Math.round(height * scaleFactor);
-      } else if (!lockAspectRatio && htmlWidth && htmlHeight) {
-        // Use explicit width & height
-        width = parseInt(htmlWidth, 10);
-        height = parseInt(htmlHeight, 10);
+      // console.log(
+      //   `htmlAttributes - width: ${htmlWidth}, height: ${htmlHeight}, lockAspectRatio: ${lockAspectRatio}`
+      // );
+
+      // Determine width and height from attributes
+      if (htmlWidth) {
+        if (htmlWidth.endsWith("%")) {
+          // If width is percentage, calculate based on A4 usable width (not original image width)
+          width = (parseInt(htmlWidth, 10) / 100) * A4_USABLE_WIDTH_PX;
+        } else {
+          // Handle explicit width in px
+          width = parseInt(htmlWidth, 10);
+        }
+
+        // If `lockaspectratio` is true and height is not explicitly set, calculate height
+        if (lockAspectRatio && !htmlHeight) {
+          const aspectRatio = originalDimensions.height / originalDimensions.width;
+          height = Math.round(width * aspectRatio);
+        }
       }
+
+      if (htmlHeight) {
+        if (htmlHeight.endsWith("%")) {
+          // Handle height as percentage of original
+          height = (parseInt(htmlHeight, 10) / 100) * originalDimensions.height;
+        } else {
+          // Handle explicit height in px
+          height = parseInt(htmlHeight, 10);
+        }
+      }
+
+      // console.log(`Final Dimensions - width: ${width}px, height: ${height}px`);
 
       // Convert px → EMU (1px = 9525 EMU units)
       const widthEMU = width * 9525;

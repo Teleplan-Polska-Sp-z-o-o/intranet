@@ -1,34 +1,35 @@
+import "vuetify-pro-tiptap/style.css";
+import "./github.scss";
+
 import {
   VuetifyTiptap,
   VuetifyViewer,
   createVuetifyProTipTap,
   defaultBubbleList,
 } from "vuetify-pro-tiptap";
+
 import {
   BaseKit,
   Bold,
   Italic,
   Underline,
   Strike,
-  // Heading,
   Color,
-  // Highlight,
-  // TextAlign,
-  // FontSize,
   BulletList,
   OrderedList,
-  // TaskList,
   Indent,
   Image,
   Table,
   Clear,
   History,
 } from "vuetify-pro-tiptap";
-import "vuetify-pro-tiptap/style.css";
-import "./github.scss";
+
 import { CharacterLimit } from "./custom/CharacterLimit";
+import { WholeWordSelection } from "./custom/WholeWordSelection";
+// import { SpellCheck } from "./custom/SpellCheck";
 
 const vuetifyProTipTap = createVuetifyProTipTap({
+  lang: undefined,
   markdownTheme: "github",
   components: {
     VuetifyTiptap,
@@ -39,45 +40,21 @@ const vuetifyProTipTap = createVuetifyProTipTap({
       bubble: {
         list: {
           image: ["image", "image-aspect-ratio", "remove"],
-          text: [
-            "bold",
-            "italic",
-            "underline",
-            "strike",
-            "divider",
-            "color",
-            // "highlight",
-            // "textAlign",
-            "indent",
-            // "divider",
-            // "link",
-          ],
+          text: ["bold", "italic", "underline", "strike", "divider", "color", "indent"],
         },
         defaultBubbleList: (editor) => {
-          // You can customize the bubble menu here
-          return defaultBubbleList(editor); // default customize bubble list
+          return defaultBubbleList(editor);
         },
       },
-      // paragraph: false,
     }),
     Bold,
     Italic,
     Underline,
     Strike,
-    // TextAlign.configure({
-    //   types: ["listItem", "paragraph"],
-    //   alignments: ["left", "center", "right", "justify"],
-    // }),
-    // FontSize.configure({
-    //   types: ["textStyle"],
-    //   fontSizes: [10, 11, 12],
-    // }),
     Color,
-    // Highlight.configure(),
     Clear.configure({ divider: true }),
     BulletList,
     OrderedList,
-    // TaskList,
     Indent,
     Image.configure({
       allowBase64: true,
@@ -101,10 +78,10 @@ const vuetifyProTipTap = createVuetifyProTipTap({
     }),
     Table.configure({ divider: true }),
     History.configure(),
+    // customs
     CharacterLimit,
-    // Heading.configure({
-    //   levels: [], // Supports heading levels but not in UI
-    // }),
+    WholeWordSelection,
+    // SpellCheck,
   ],
 });
 
