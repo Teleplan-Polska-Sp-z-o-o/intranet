@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { nextTick, ref, unref, watchEffect } from "vue";
-import { components } from "../../../../../../../../../../plugins/vuetify/components";
+import { components } from "../../../../../../../../../../../plugins/vuetify/components";
 import SegmentPanel from "./SegmentPanel.vue";
 import SubSegmentPanel from "./SubSegmentPanel.vue";
-import { useStepperStore } from "../../../../../../../../../../stores/documents/creator/useStepperStore";
+import { useStepperStore } from "../../../../../../../../../../../stores/documents/creator/useStepperStore";
 
 const formContent = ref<components.VForm | null>(null);
 const THIS_STEP = 3;

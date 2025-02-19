@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, unref, watch } from "vue";
-import { DocumentTypes } from "../../../../../../../../../../interfaces/document/DocumentTypes";
-import { Chips } from "../../../../../../../../../../models/document/Chips";
-import { CompetenceManager } from "../../../../../../../../../../models/document/CompetenceManager";
-import { components } from "../../../../../../../../../../plugins/vuetify/components";
-import { UserManager } from "../../../../../../../../../../models/user/UserManager";
-import { SimpleUser } from "../../../../../../../../../../models/user/SimpleUser";
+import { DocumentTypes } from "../../../../../../../../../../../interfaces/document/DocumentTypes";
+import { Chips } from "../../../../../../../../../../../models/document/Chips";
+import { CompetenceManager } from "../../../../../../../../../../../models/document/CompetenceManager";
+import { components } from "../../../../../../../../../../../plugins/vuetify/components";
+import { UserManager } from "../../../../../../../../../../../models/user/UserManager";
+import { SimpleUser } from "../../../../../../../../../../../models/user/SimpleUser";
 import { esdBase64, noEsdBase64 } from "./esdBase64";
 import {
   EStatus,
   useStepperStore,
-} from "../../../../../../../../../../stores/documents/creator/useStepperStore";
+} from "../../../../../../../../../../../stores/documents/creator/useStepperStore";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+const tBase = "tools.matrix.tabs.documents.creator.createNew.stepper.info";
 
 const THIS_STEP = 1;
 const store = useStepperStore();
@@ -99,15 +103,17 @@ watch(
 const rules = {
   product: [
     (v: string | null) =>
-      typeof v === "string" ? !!v.trim() || "Product is required" : "Product is required",
+      typeof v === "string"
+        ? !!v.trim() || t(`${tBase}.validationRules.product`)
+        : t(`${tBase}.validationRules.product`),
   ],
   owner: [
     (v: { id: number; name: string } | string | null) =>
-      typeof v === "string" ? !!v.trim() : !!v || "Owner is required",
+      typeof v === "string" ? !!v.trim() : !!v || t(`${tBase}.validationRules.owner`),
   ],
   author: [
     (v: { id: number; name: string } | string | null) =>
-      typeof v === "string" ? !!v.trim() : !!v || "Author is required",
+      typeof v === "string" ? !!v.trim() : !!v || t(`${tBase}.validationRules.author`),
   ],
 };
 
@@ -119,9 +125,9 @@ const esdOptions = [
   {
     id: 1,
     image: esdBase64,
-    name: "ESD (Electrostatic Discharge)",
+    name: t(`${tBase}.esdOptionESD`),
   },
-  { id: 0, image: noEsdBase64, name: "N/A" },
+  { id: 0, image: noEsdBase64, name: t(`${tBase}.esdOptionNA`) },
 ];
 
 onMounted(async () => {
@@ -154,9 +160,10 @@ onMounted(async () => {
         (val: any) => (store.stepper!.getWindow(THIS_STEP).model.product = val ? val.trim() : '')
       "
       :rules="rules.product"
-      label="Product"
+      :label="t(`${tBase}.product`)"
       variant="solo-filled"
-      hint="Enter the name of the commodity or item."
+      :hint="t(`${tBase}.productHint`)"
+      persistent-hint
       prepend-icon="mdi-text-short"
     ></v-text-field>
 
@@ -166,9 +173,10 @@ onMounted(async () => {
       item-title="name"
       return-object
       :rules="rules.owner"
-      label="Owner"
+      :label="t(`${tBase}.owner`)"
       variant="solo-filled"
-      hint="Specify the person responsible for the process."
+      :hint="t(`${tBase}.ownerHint`)"
+      persistent-hint
       prepend-icon="mdi-text-short"
     ></v-combobox>
 
@@ -178,9 +186,9 @@ onMounted(async () => {
       show-adjacent-months
       clearable
       @click:clear="() => (store.stepper!.getWindow(THIS_STEP).model.lastUpdate = null)"
-      label="Last Update"
+      :label="t(`${tBase}.lastUpdate`)"
       variant="solo-filled"
-      hint="The date when this document was last updated."
+      :hint="t(`${tBase}.lastUpdateHint`)"
       persistent-hint
     ></v-date-input>
 
@@ -190,9 +198,10 @@ onMounted(async () => {
       item-title="name"
       return-object
       :rules="rules.author"
-      label="Author"
+      :label="t(`${tBase}.author`)"
       variant="solo-filled"
-      hint="The individual who made the last change."
+      :hint="t(`${tBase}.authorHint`)"
+      persistent-hint
       prepend-icon="mdi-text-short"
     ></v-combobox>
 
@@ -200,9 +209,9 @@ onMounted(async () => {
       v-model="store.stepper!.getWindow(THIS_STEP).model.created"
       :first-day-of-week="1"
       show-adjacent-months
-      label="Created"
+      :label="t(`${tBase}.created`)"
       variant="solo-filled"
-      hint="The date this document was initially created."
+      :hint="t(`${tBase}.createdHint`)"
       persistent-hint
     ></v-date-input>
 
@@ -213,9 +222,9 @@ onMounted(async () => {
       return-object
       multiple
       chips
-      label="Training Codes"
+      :label="t(`${tBase}.trainingCodes`)"
       variant="solo-filled"
-      hint="Select codes for related training competencies."
+      :hint="t(`${tBase}.trainingCodesHint`)"
       persistent-hint
       prepend-icon="mdi-format-list-checks"
     ></v-combobox>
@@ -225,9 +234,9 @@ onMounted(async () => {
       :items="esdOptions"
       item-title="name"
       item-value="id"
-      label="ESD"
+      :label="t(`${tBase}.esd`)"
       prepend-icon="mdi-format-list-text"
-      hint="Select the ESD (Electrostatic Discharge) category or choose N/A if not applicable."
+      :hint="t(`${tBase}.esdHint`)"
       persistent-hint
       variant="solo-filled"
     >

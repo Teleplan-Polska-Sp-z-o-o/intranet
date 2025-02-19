@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { dataSource } from "../../config/dataSource";
-import { HttpResponseMessage } from "../../enums/response";
+import { HttpResponseMessage, TransCreateDocsResponseMessage } from "../../enums/response";
 import { SimpleUser } from "../../models/user/SimpleUser";
 import { TStepper } from "../../interfaces/document/creatorTypes";
 import { Draft } from "../../orm/entity/document/creator/DraftEntity";
 import { Repository } from "typeorm";
-import DocumentGenerator from "../../models/docx/DocumentGenerator";
-import { DeepLTranslator } from "../../models/docx/translator/DeepLTranslator";
+import { DOCXGenerator } from "../../models/docx/DOCXGenerator";
+import { MSTranslatorError } from "../../models/docx/translator/MSTranslatorTypes";
 
 const postDraft = async (req: Request, res: Response) => {
   const body = req.body;
@@ -97,6 +97,7 @@ const putDraft = async (req: Request<{ id: number }>, res: Response) => {
     });
   } catch (error) {
     console.error("Error updating draft: ", error);
+
     return res.status(500).json({
       message: "Unknown error occurred. Failed to update draft.",
       statusMessage: HttpResponseMessage.UNKNOWN,
@@ -198,20 +199,8 @@ const generateDraft = async (
         }
       }
 
-      async function translateDraft(languageCode: string): Promise<TStepper> {
-        // if (1 == 1) {
-        //   const translator = new DeepLTranslator();
-        //   const stepper: TStepper = draft.stepper;
-        //   return translator.translateDraft(stepper, languageCode);
-        // } else {
-        return draft.stepper;
-        // }
-      }
-
-      const translatedObject: TStepper = await translateDraft(language);
-
-      const documentGenerator = new DocumentGenerator(deepSafeParse(translatedObject));
-      const documentBuffer = await documentGenerator.generateDocument();
+      const documentGenerator = new DOCXGenerator(deepSafeParse<TStepper>(draft.stepper));
+      const documentBuffer = await documentGenerator.generateDocument(language);
       const base64Document = documentBuffer.toString("base64");
 
       return res.status(200).json({
@@ -221,6 +210,17 @@ const generateDraft = async (
       });
     });
   } catch (error) {
+    if (error.statusMessage === TransCreateDocsResponseMessage.TEMPLATE_NOT_FOUND) {
+      return res.status(404).json({
+        message: "The requested document template was not found.",
+        statusMessage: error.statusMessage,
+      });
+    }
+
+    if (error instanceof MSTranslatorError) {
+      return res.status(500).json(error.toJSON());
+    }
+
     console.error("Error generating document: ", error);
     return res.status(500).json({
       message: `Unknown error occurred. Failed to generate document.`,

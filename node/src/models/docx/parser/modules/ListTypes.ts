@@ -43,7 +43,9 @@ export class TypeLI implements ITypeLI {
     `;
   }
 
-  createNumberingDefinition(): string {
+  createNumberingDefinition(): string | false {
+    if (this.mapping.size === 0) return false;
+
     let numberingXml = `<w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">`;
 
     this.mapping.forEach((list, _) => {
@@ -94,14 +96,12 @@ export class TypeLI implements ITypeLI {
 
 export class TypeOL implements TypeModuleInterface {
   process(element: cheerio.Cheerio<any>, content: string): string {
-    console.log(content);
     return `${content}`;
   }
 }
 
 export class TypeUL implements TypeModuleInterface {
   process(element: cheerio.Cheerio<any>, content: string): string {
-    console.log(content);
     return `${content}`;
   }
 }

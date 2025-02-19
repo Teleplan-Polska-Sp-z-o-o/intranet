@@ -190,6 +190,8 @@ const plC = {
         "Wystąpił problem z powodu ponownego użycia tej samej instancji steppera. Odśwież stronę i spróbuj ponownie.", // Twoja praca nie zostanie utracona.
       draft_consumed_hold:
         "Twój zapisany postęp został przywrócony po odświeżeniu strony. Możesz teraz kontynuować pracę nad dokumentem.",
+
+      template_not_found: "Nazwa szablonu dokumentu nie została znaleziona",
     },
     component: {
       file_form: {

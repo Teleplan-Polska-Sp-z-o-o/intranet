@@ -1,27 +1,41 @@
 <script setup lang="ts">
-import { ref, unref } from "vue";
+import { ref, unref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStepperStore } from "../../../../../../../../stores/documents/creator/useStepperStore";
+import { DocumentCreatorStepper } from "./StepperTypes";
 
 const store = useStepperStore();
 
 const name = ref<string>(store.stepper!.name || "");
 const dialog = ref<boolean>(false);
 
+watch(dialog, (nd) => {
+  if (nd) console.log("store.stepper", store.stepper);
+});
+
 // const router = computed(() => useRouter());
 const route = useRoute();
 const router = useRouter();
 // const route: RouteLocationNormalizedLoadedGeneric = useRoute();
 
+const loading = ref<"secondary" | false>(false);
 const save = async () => {
-  await store.stepper!.save(unref(name).trim(), route);
-  dialog.value = false;
+  try {
+    loading.value = "secondary";
 
-  store.setStepper({
-    navigation: {
-      router,
-    },
-  });
+    await store.stepper!.save(unref(name).trim(), route);
+  } catch (error) {
+    throw error;
+  } finally {
+    loading.value = false;
+    dialog.value = false;
+    store.setStepper({
+      type: DocumentCreatorStepper.EStepperType.INSTRUCTION,
+      navigation: {
+        router,
+      },
+    });
+  }
 };
 </script>
 
@@ -44,6 +58,7 @@ const save = async () => {
           $t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.saveDialog.title`)
         "
         :text="$t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.saveDialog.text`)"
+        :loading="loading"
       >
         <v-card-text>
           <v-text-field

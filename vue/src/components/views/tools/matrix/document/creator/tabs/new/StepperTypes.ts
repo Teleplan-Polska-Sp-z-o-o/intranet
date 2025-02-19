@@ -146,74 +146,75 @@ export namespace DocumentCreatorStepper {
         model: DraftTypes.Draft;
         form: components.VForm | null;
       };
-      // 4: {
-      //   model: null;
-      //   form: components.VForm | null;
-      // };
     }
     export interface IStepperBody {
       windows: IWindows;
     }
   }
 
-  export interface IBaseStepper {
+  export enum EStepperType {
+    INSTRUCTION = "instruction",
+  }
+
+  interface IVuetifyValidation {
+    valid: boolean;
+    errors: {
+      id: number | string;
+      errorMessages: string[];
+    }[];
+  }
+
+  export interface IStepper {
     uuid: string;
     tz: string;
     _name: string;
+    type: EStepperType;
+    _documentTitle: string;
+    _documentIdRevision: string;
     header: DocumentCreatorStepper.Header.IStepperHeader;
     body: DocumentCreatorStepper.Body.IStepperBody;
+
+    get name(): string;
+    set name(name: string);
+    get steps(): Record<
+      DocumentCreatorStepper.Header.TStepKey,
+      DocumentCreatorStepper.Header.IStep
+    >;
+    get currentStep(): DocumentCreatorStepper.Header.TStepKey;
+    set currentStep(step: DocumentCreatorStepper.Header.TStepKey);
+
+    get minStep(): number;
+    get maxStep(): number;
+    get prevable(): boolean;
+    get nextable(): boolean;
+
+    prevStep(): void;
+    validateForm(form: components.VForm | null): Promise<IVuetifyValidation | undefined>;
+    nextStep(): Promise<void>;
+    setStep(step: DocumentCreatorStepper.Header.TStepKey): void;
+    getWindow<T extends keyof Body.IWindows>(step: T): Body.IWindows[T];
+    updateWindow<T extends keyof Body.IWindows>(step: T, data: Body.IWindows[T]): void;
+    save(name: string, route?: RouteLocationNormalizedLoaded): Promise<any>;
   }
 
-  export class Stepper implements IBaseStepper {
+  export class InstructionStepper implements IStepper {
     readonly uuid: string;
     readonly tz: string;
+    readonly type: EStepperType = EStepperType.INSTRUCTION;
+    _name: string;
+    _documentTitle: string;
+    _documentIdRevision: string;
 
-    _name: string = "";
     get name(): string {
       return this._name;
     }
 
+    set name(name: string) {
+      this._name = name;
+    }
+
     header: Header.IStepperHeader;
     body: Body.IStepperBody;
-
-    // header: Header.IStepperHeader = {
-    //   steps: {
-    //     1: {
-    //       name: "Info",
-    //       editable: false,
-    //       complete: false,
-    //       color: "",
-    //     },
-    //     2: {
-    //       name: "Before",
-    //       editable: false,
-    //       complete: false,
-    //       color: "",
-    //     },
-    //     3: {
-    //       name: "Content",
-    //       editable: false,
-    //       complete: false,
-    //       color: "",
-    //     },
-    //   },
-    //   currentStep: 1,
-    // };
-
-    // body: Body.IStepperBody = {
-    //   windows: {
-    //     1: {
-    //       model: new Body.Info(this.tz),
-    //       form: null,
-    //     },
-    //     2: {
-    //       model: new Body.Before(),
-    //       form: null,
-    //     },
-    //     3: { model: new DraftTypes.Draft(), form: null },
-    //     // 4: { model: null, form: null },
-    //   },
-    // };
 
     constructor(stepper?: {
       body: Body.IStepperBody;
@@ -221,11 +222,16 @@ export namespace DocumentCreatorStepper {
       uuid: string;
       tz: string;
       _name: string;
+      type: string;
+      _documentTitle: string;
+      _documentIdRevision: string;
     }) {
       if (!stepper) {
         this.uuid = uuidv4();
         this.tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
+        this._name = "";
+        this._documentTitle = "";
+        this._documentIdRevision = "";
         this.body = {
           windows: {
             1: {
@@ -256,6 +262,11 @@ export namespace DocumentCreatorStepper {
         this.tz = stepper.tz;
         this._name = stepper._name;
 
+        // additions
+        this._documentTitle = stepper._documentTitle ?? "";
+        if (!this.type) this.type = EStepperType.INSTRUCTION;
+        this._documentIdRevision = stepper._documentIdRevision ?? "";
+
         stepper.body.windows[1].model = new Body.Info(this.tz, stepper.body.windows[1].model);
         stepper.body.windows[2].model = new Body.Before(stepper.body.windows[2].model);
         stepper.body.windows[3].model = new DraftTypes.Draft(stepper.body.windows[3].model);
@@ -266,30 +277,30 @@ export namespace DocumentCreatorStepper {
     }
 
     // Getters
-    get steps() {
+    get steps(): Record<Header.TStepKey, Header.IStep> {
       return this.header.steps;
     }
 
-    get currentStep() {
+    get currentStep(): Header.TStepKey {
       return this.header.currentStep;
     }
     set currentStep(step: DocumentCreatorStepper.Header.TStepKey) {
       this.header.currentStep = step;
     }
 
-    get minStep() {
+    get minStep(): number {
       return Math.min(...Object.keys(this.header.steps).map(Number));
     }
 
-    get maxStep() {
+    get maxStep(): number {
       return Math.max(...Object.keys(this.header.steps).map(Number));
     }
 
-    get prevable() {
+    get prevable(): boolean {
       return this.currentStep > this.minStep;
     }
 
-    get nextable() {
+    get nextable(): boolean {
       return this.currentStep < this.maxStep;
     }
 
@@ -302,17 +313,11 @@ export namespace DocumentCreatorStepper {
       }
     }
 
-    async validateForm(form: components.VForm | null) {
+    async validateForm(form: components.VForm | null): Promise<IVuetifyValidation | undefined> {
       const currentStep = this.currentStep;
 
       if (form) {
-        const validation: {
-          valid: boolean;
-          errors: {
-            id: number | string;
-            errorMessages: string[];
-          }[];
-        } = await form.validate();
+        const validation: IVuetifyValidation = await form.validate();
         if (!validation.valid) {
           this.header.steps[currentStep].editable = true;
           this.header.steps[currentStep].complete = false;
@@ -324,7 +329,7 @@ export namespace DocumentCreatorStepper {
         }
 
         return validation;
-      }
+      } else return undefined;
     }
 
     async nextStep(): Promise<void> {
@@ -360,8 +365,12 @@ export namespace DocumentCreatorStepper {
       }
     }
 
-    public save = async (name: string, route?: RouteLocationNormalizedLoaded): Promise<any> => {
+    async save(name: string, route?: RouteLocationNormalizedLoaded): Promise<any> {
       this._name = name;
+      const beforeModel = this.getWindow(2).model;
+      this._documentTitle = beforeModel.title;
+      this._documentIdRevision =
+        beforeModel.id && beforeModel.revision ? `${beforeModel.id}-${beforeModel.revision}` : "";
 
       const steps: DocumentCreatorStepper.Header.TStepKey[] = [1, 2, 3];
       for (const step of steps) {
@@ -376,6 +385,7 @@ export namespace DocumentCreatorStepper {
       this.header.steps[3].complete = false;
       this.header.steps[3].color = "info";
       this.setStep(1);
+      console.log("stepper", this);
       formData.append("stepper", stringify(this));
 
       if (route && route.params && route.params.id.length > 0) {
@@ -385,8 +395,29 @@ export namespace DocumentCreatorStepper {
       } else {
         return new DocumentCreatorManager().post(formData, true);
       }
-    };
+    }
+  }
 
-    public preview = async (): Promise<any> => {};
+  export class StepperFactory {
+    static createStepper(
+      type: EStepperType,
+      stepperData?: {
+        body: DocumentCreatorStepper.Body.IStepperBody;
+        header: DocumentCreatorStepper.Header.IStepperHeader;
+        uuid: string;
+        tz: string;
+        _name: string;
+        type: string;
+        _documentTitle: string;
+        _documentIdRevision: string;
+      }
+    ): IStepper {
+      switch (type) {
+        case EStepperType.INSTRUCTION:
+          return new InstructionStepper(stepperData);
+        default:
+          throw new Error(`Unsupported stepper type: ${type}`);
+      }
+    }
   }
 }

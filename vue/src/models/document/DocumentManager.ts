@@ -80,6 +80,7 @@ class DocumentManager {
     const response = await jwtAxios.get(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Document}/${params.join("/")}`
     );
+
     return response.data.documents;
   };
 

@@ -29,13 +29,13 @@ class Template implements ITemplate {
   }
 }
 
-class CustomTemplate implements ITemplate {
+export class CustomTemplate implements ITemplate {
   id: number = 6;
   name: string = "Custom";
   images: string[] = [reconextLogoBase64];
 
-  constructor(images: string[]) {
-    if (images.length > 0) this.images = images;
+  constructor(images?: string[]) {
+    if (Array.isArray(images) && images.length > 0) this.images = images;
   }
 }
 

@@ -1,30 +1,31 @@
 <script setup lang="ts">
-import InfoStep from "./steps/info/InfoStep.vue";
-import BeforeStep from "./steps/before/BeforeStep.vue";
-import {
-  EStatus,
-  useStepperStore,
-} from "../../../../../../../../stores/documents/creator/useStepperStore";
-import ContentStep from "./steps/content/ContentStep.vue";
+// import InfoStep from "./instruction/steps/info/InfoStep.vue";
+// import BeforeStep from "./instruction/steps/before/BeforeStep.vue";
+// import ContentStep from "./instruction/steps/content/ContentStep.vue";
+import { useStepperStore } from "../../../../../../../../stores/documents/creator/useStepperStore";
 import SaveDialog from "./SaveDialog.vue";
-import { onMounted } from "vue";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
+import InstructionStepperWindow from "./instruction/InstructionStepperWindow.vue";
+import ChooseStepperType from "./ChooseStepperType.vue";
 
-const router = useRouter();
+// const router = useRouter();
 
 const store = useStepperStore();
 
-onMounted(() => {
-  if (store.status.enum === EStatus.NULL)
-    store.setStepper({
-      navigation: {
-        router,
-      },
-    });
-});
+// onMounted(() => {
+//   if (store.status.enum === EStatus.NULL)
+//     store.setStepper({
+//       type: DocumentCreatorStepper.EStepperType.INSTRUCTION,
+//       navigation: {
+//         router,
+//       },
+//     });
+// });
 </script>
 
 <template>
+  <choose-stepper-type v-if="!store.stepper"></choose-stepper-type>
+
   <v-stepper
     v-if="store.stepper"
     style="overflow-y: auto"
@@ -47,7 +48,7 @@ onMounted(() => {
         <v-divider v-if="index < Object.keys(store.stepper!.steps || {}).length - 1"></v-divider>
       </template>
     </v-stepper-header>
-
+    <!-- 
     <v-stepper-window>
       <v-stepper-window-item :value="1">
         <v-card flat>
@@ -65,10 +66,9 @@ onMounted(() => {
           <content-step></content-step>
         </v-card>
       </v-stepper-window-item>
-      <v-stepper-window-item :value="4">
-        <v-card flat> </v-card>
-      </v-stepper-window-item>
-    </v-stepper-window>
+    </v-stepper-window> -->
+
+    <instruction-stepper-window />
 
     <template v-slot:actions>
       <v-card-actions class="mx-6 mb-6 rounded-xl">

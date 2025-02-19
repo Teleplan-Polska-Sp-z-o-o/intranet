@@ -124,10 +124,87 @@ const plT = {
               save: "Zapisz",
               saveDialog: {
                 title: "Potwierdzenie",
-                text: "Czy na pewno chcesz zapisać ten szkic dokumentu?",
+                text: "Czy na pewno chcesz zapisać ten szkic?",
               },
             },
+            info: {
+              product: "Produkt",
+              productHint: "Wprowadź nazwę towaru lub przedmiotu.",
+              owner: "Właściciel",
+              ownerHint: "Określ osobę odpowiedzialną za proces.",
+              lastUpdate: "Ostatnia aktualizacja",
+              lastUpdateHint: "Data ostatniej aktualizacji tego dokumentu.",
+              author: "Autor",
+              authorHint: "Osoba, która dokonała ostatniej zmiany.",
+              created: "Utworzono",
+              createdHint: "Data pierwotnego utworzenia tego dokumentu.",
+              trainingCodes: "Kody szkoleniowe",
+              trainingCodesHint: "Wybierz kody dla powiązanych kompetencji szkoleniowych.",
+              esd: "ESD",
+              esdHint:
+                "Wybierz kategorię ESD (Elektrostatyczne Rozładowanie) lub wybierz N/A, jeśli nie dotyczy.",
+              // Dodane zasady walidacji
+              validationRules: {
+                owner:
+                  "Właściciel musi być określony i powinien być poprawnym imieniem i nazwiskiem.",
+                author: "Autor musi być określony i powinien być poprawnym imieniem i nazwiskiem.",
+              },
+
+              // Dodane opcje ESD
+              esdOptionESD: "Kategoria wyładowań elektrostatycznych (ESD)",
+              esdOptionNA: "Nie dotyczy (N/A)",
+            },
+            before: {
+              documentTitle: "Tytuł dokumentu",
+              documentTitleHint: "Tytuł powinien być jasny i zwięzły.",
+              documentTemplate: "Szablon dokumentu",
+              documentTemplateHint:
+                "Wybierz szablon dla logotypów na stronie tytułowej lub wybierz 'Niestandardowy', aby przesłać własne obrazy.",
+              documentTemplateItems: ["BYD-QA-TMP-0001_01"],
+              logosTemplate: "Szablon logotypów",
+              logosTemplateHint:
+                "Wybierz szablon dla logotypów na stronie tytułowej lub wybierz 'Niestandardowy', aby przesłać własny obraz.",
+              uploadImageLabel: "Prześlij obraz",
+              uploadImageHint: "Upuść plik tutaj lub kliknij, aby przesłać",
+              documentId: "Identyfikator dokumentu",
+              documentRevision: "Rewizja dokumentu",
+              documentRevisionPrefix: "R",
+              documentRevisionPrefixSingleDigit: "R0",
+              validationRules: {
+                title: "Tytuł jest wymagany",
+                documentTemplate: "Szablon dokumentu jest wymagany",
+              },
+            },
+            content: {
+              segmentBody: "Treść segmentu",
+              addButton: "Dodaj",
+              segmentTitle: "Tytuł segmentu",
+              segmentTitleHint: "Edytuj tytuł segmentu.",
+              insertBefore: "Wstaw przed",
+              insertAfter: "Wstaw po",
+              remove: "Usuń",
+              untitledSegment: "Segment bez tytułu",
+            },
           },
+        },
+        drafts: {
+          recordId: "Identyfikator rekordu",
+          draftName: "Nazwa szkicu",
+          documentTitle: "Tytuł dokumentu",
+          documentIdRev: "Identyfikator dokumentu - Rewizja",
+          actions: "Akcje",
+          deleteConfirmation: "Czy na pewno chcesz usunąć ten element?",
+          cancel: "Anuluj",
+          ok: "OK",
+          selectDocumentLanguage: "Wybierz język dokumentu",
+          documentLanguage: "Język dokumentu",
+          search: "Szukaj",
+          editRecordTooltip: "Edytuj ten rekord.",
+          removeRecordTooltip: "Usuń ten rekord.",
+          generateDocumentTooltip: "Wygeneruj dokument na podstawie tego rekordu.",
+          pleaseSelectLanguage: "Proszę wybrać język",
+          selectOrSearchLanguageHint:
+            "Wybierz lub wyszukaj język, aby wygenerować dokument odpowiednio.",
         },
       },
       tabs: {

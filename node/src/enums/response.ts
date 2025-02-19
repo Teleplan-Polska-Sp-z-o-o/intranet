@@ -22,4 +22,8 @@ enum HttpResponseMessage {
 // enum HttpUserResponseMessage {}
 // PUT_INFO_EDIT_ERROR = "put_info_edit_error",
 
-export { HttpResponseMessage };
+enum TransCreateDocsResponseMessage {
+  TEMPLATE_NOT_FOUND = "template_not_found",
+}
+
+export { HttpResponseMessage, TransCreateDocsResponseMessage };

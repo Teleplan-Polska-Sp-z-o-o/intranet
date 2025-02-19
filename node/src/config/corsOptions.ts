@@ -1,7 +1,7 @@
 import { serverConfig } from "./server";
 import { CorsOptions } from "cors";
 
-const whitelist: Array<string> = [serverConfig.origin];
+const whitelist: Array<string> = [serverConfig.origin, "http://localhost"];
 
 const corsOptions: CorsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {

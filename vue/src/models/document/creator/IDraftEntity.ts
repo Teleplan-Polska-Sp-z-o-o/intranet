@@ -1,6 +1,8 @@
+import { DocumentCreatorStepper } from "../../../components/views/tools/matrix/document/creator/tabs/new/StepperTypes";
+
 export interface IDraftEntity {
   id: number;
   uuid: string;
   name: string;
-  stepper: any;
+  stepper: DocumentCreatorStepper.IStepper;
 }

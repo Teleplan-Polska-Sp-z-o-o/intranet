@@ -4,7 +4,8 @@ import { DocumentCreatorStepper } from "../../../components/views/tools/matrix/d
 import { Router } from "vue-router";
 
 export type FSetStepper = (options: {
-  stepper?: string;
+  type: DocumentCreatorStepper.EStepperType;
+  stepper?: DocumentCreatorStepper.IStepper;
   navigation?: {
     router: Router;
     path?: string;
@@ -23,7 +24,7 @@ export interface Status {
 }
 
 export const useStepperStore = defineStore("document-creator-stepper", () => {
-  const stepper = ref<DocumentCreatorStepper.Stepper | null>(null);
+  const stepper = ref<DocumentCreatorStepper.IStepper | null>(null);
 
   const status = ref<Status>({
     enum: EStatus.NULL,
@@ -40,9 +41,8 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
   const setStepper: FSetStepper = (options) => {
     const flags = { instantiated: false };
     if (options.stepper) {
-      const instantiated: DocumentCreatorStepper.Stepper = new DocumentCreatorStepper.Stepper(
-        options.stepper as unknown as DocumentCreatorStepper.IBaseStepper
-      );
+      const instantiated: DocumentCreatorStepper.IStepper =
+        DocumentCreatorStepper.StepperFactory.createStepper(options.type, options.stepper);
 
       if (instantiated) {
         flags.instantiated = !!instantiated;
@@ -53,7 +53,7 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
 
     if (!options.stepper) {
       setStatus(EStatus.NEW);
-      stepper.value = new DocumentCreatorStepper.Stepper();
+      stepper.value = DocumentCreatorStepper.StepperFactory.createStepper(options.type);
     }
 
     if (options.navigation) {
@@ -65,9 +65,15 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
     }
   };
 
+  const clearStepper = () => {
+    stepper.value = null;
+    setStatus(EStatus.NULL);
+  };
+
   return {
     stepper,
     status,
     setStepper,
+    clearStepper,
   };
 });

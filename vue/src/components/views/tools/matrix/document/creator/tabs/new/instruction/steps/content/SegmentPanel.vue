@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { toRefs } from "vue";
-import { DraftTypes } from "../../DraftTypes";
+import { DraftTypes } from "../../../DraftTypes";
 // import { useCreatorTipTapStore } from "../../../../../../../../../../stores/documents/creator/useCreatorTipTapStore";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+const tBase = "tools.matrix.tabs.documents.creator.createNew.stepper.content";
 
 const props = defineProps<{
   segment: DraftTypes.Segment;
@@ -51,7 +55,7 @@ const { segment } = toRefs(props);
         <v-row>
           <v-col>
             <v-sheet class="rounded elevation-2 overflow-hidden mx-auto a4 tiptap-container">
-              <v-label>Segment Body</v-label>
+              <v-label>{{ t(`${tBase}.segmentBody`) }}</v-label>
               <VuetifyTiptap spellcheck="false" v-model="segment.content.tmpBody" />
             </v-sheet>
           </v-col>
@@ -66,7 +70,7 @@ const { segment } = toRefs(props);
               </v-btn> -->
 
               <v-btn @click="segment.addSubSegment()">
-                <span class="hidden-sm-and-down">Add</span>
+                <span class="hidden-sm-and-down">{{ t(`${tBase}.addButton`) }}</span>
 
                 <v-icon end> mdi-plus </v-icon>
               </v-btn>

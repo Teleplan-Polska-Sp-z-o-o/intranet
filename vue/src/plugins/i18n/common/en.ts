@@ -194,6 +194,8 @@ const enC = {
         "An issue occurred due to reusing the same stepper instance. Please reload the page and try again.", // Your work will not be lost.
       draft_consumed_hold:
         "Your saved progress has been restored after refreshing the page. You can now continue working on your document.",
+
+      template_not_found: "Document template name not found",
     },
     component: {
       file_form: {

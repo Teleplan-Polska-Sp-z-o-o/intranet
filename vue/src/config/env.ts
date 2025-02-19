@@ -5,19 +5,19 @@ interface ServerConfig {
   port: number;
 }
 
-const TEST_ORIGIN = "http://192.168.0.1"; // 192.168.0.45
+const TEST_ORIGIN = "http://192.168.0.1"; //192.168.0.1; work // 192.168.0.45 home
 const ORIGIN = "https://bydintranet.reconext.com";
 
 const nodeConfig: ServerConfig = {
-  origin: window.location.origin,
+  origin: window.location.origin === ORIGIN ? ORIGIN : TEST_ORIGIN, // window.location.origin,
   port: 3000,
 };
 
-if (![TEST_ORIGIN, ORIGIN].includes(nodeConfig.origin)) {
-  throw new Error(
-    `Invalid nodeConfig origin at env.ts. [TEST_ORIGIN, ORIGIN] doesn't include result of window.location.origin (${nodeConfig.origin})`
-  );
-}
+// if (![TEST_ORIGIN, ORIGIN].includes(nodeConfig.origin)) {
+//   throw new Error(
+//     `Invalid nodeConfig origin at env.ts. [TEST_ORIGIN, ORIGIN] doesn't include result of window.location.origin (${nodeConfig.origin})`
+//   );
+// }
 
 interface AssistantConfig {
   url: string;

@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { toRefs } from "vue";
-import { DraftTypes } from "../../DraftTypes";
+import { DraftTypes } from "../../../DraftTypes";
 // import { useCreatorTipTapStore } from "../../../../../../../../../../stores/documents/creator/useCreatorTipTapStore";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+const tBase = "tools.matrix.tabs.documents.creator.createNew.stepper.content";
 
 const props = defineProps<{
   subSegment: DraftTypes.Segment;
@@ -57,7 +61,7 @@ const { subSegment, disableAdd } = toRefs(props);
                 v-model="subSegment.content.tmpTitle"
                 label="Segment Title"
                 variant="solo-filled"
-                hint="Edit the segment title."
+                :hint="t(`${tBase}.segmentTitleHint`)"
                 rows="3"
                 counter="100"
                 persistent-counter
@@ -70,7 +74,7 @@ const { subSegment, disableAdd } = toRefs(props);
         <v-row>
           <v-col>
             <v-sheet class="rounded elevation-2 overflow-hidden mx-auto a4 tiptap-container">
-              <v-label>Segment Body</v-label>
+              <v-label>{{ t(`${tBase}.segmentBody`) }}</v-label>
               <!-- v-model="subSegment.content.tmpBody" -->
               <VuetifyTiptap spellcheck="false" v-model="subSegment.content.tmpBody" />
               <!-- <p v-if="errorMessages[subSegment.uuid]" class="text-error">
@@ -88,22 +92,22 @@ const { subSegment, disableAdd } = toRefs(props);
               </v-btn> -->
 
               <v-btn v-if="!disableAdd" @click="subSegment.addSubSegment()">
-                <span class="hidden-sm-and-down">Add</span>
+                <span class="hidden-sm-and-down">{{ t(`${tBase}.addButton`) }}</span>
                 <v-icon end> mdi-plus </v-icon>
               </v-btn>
 
               <v-btn v-if="subSegment.parent" @click="subSegment.insertSegment('before')">
-                <span class="hidden-sm-and-down">Insert Before</span>
+                <span class="hidden-sm-and-down">{{ t(`${tBase}.insertBefore`) }}</span>
                 <v-icon end> mdi-arrow-up </v-icon>
               </v-btn>
 
               <v-btn v-if="subSegment.parent" @click="subSegment.insertSegment('after')">
-                <span class="hidden-sm-and-down">Insert After</span>
+                <span class="hidden-sm-and-down">{{ t(`${tBase}.insertAfter`) }}</span>
                 <v-icon end> mdi-arrow-down </v-icon>
               </v-btn>
 
               <v-btn v-if="subSegment.parent" @click="subSegment.removeSegment()">
-                <span class="hidden-sm-and-down">Remove</span>
+                <span class="hidden-sm-and-down">{{ t(`${tBase}.remove`) }}</span>
                 <v-icon end> mdi-delete </v-icon>
               </v-btn>
             </v-btn-toggle>

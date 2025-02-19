@@ -7,6 +7,7 @@ import Drafts from "./tabs/drafts/Drafts.vue";
 import Dashboard from "./tabs/dashboard/Dashboard.vue";
 import { useStepperStore } from "../../../../../../stores/documents/creator/useStepperStore";
 import { useI18n } from "vue-i18n";
+// import { DocumentCreatorStepper } from "./tabs/new/StepperTypes";
 
 const showAsMobile = ref<boolean>(true);
 const smallScreen = ref<boolean>(window.innerWidth < 960);
@@ -63,12 +64,16 @@ const title = computed(() => {
 
 const push = (tabName: string) => {
   if (tabName === "new") {
-    store.setStepper({
-      navigation: {
-        router,
-      },
-    });
-  } else router.push({ path: `/tool/matrix/browse/documents/creator/${tabName}` });
+    // store.setStepper({
+    //   type: DocumentCreatorStepper.EStepperType.INSTRUCTION,
+    //   navigation: {
+    //     router,
+    //   },
+    // });
+    store.clearStepper();
+  }
+
+  router.push({ path: `/tool/matrix/browse/documents/creator/${tabName}` });
 };
 </script>
 

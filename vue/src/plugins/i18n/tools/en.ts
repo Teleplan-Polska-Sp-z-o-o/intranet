@@ -146,7 +146,83 @@ const enT = {
                     text: "Are you sure you want to save this draft?",
                   },
                 },
+                info: {
+                  product: "Product",
+                  productHint: "Enter the name of the commodity or item.",
+                  owner: "Owner",
+                  ownerHint: "Specify the person responsible for the process.",
+                  lastUpdate: "Last Update",
+                  lastUpdateHint: "The date when this document was last updated.",
+                  author: "Author",
+                  authorHint: "The individual who made the last change.",
+                  created: "Created",
+                  createdHint: "The date this document was initially created.",
+                  trainingCodes: "Training Codes",
+                  trainingCodesHint: "Select codes for related training competencies.",
+                  esd: "ESD",
+                  esdHint:
+                    "Select the ESD (Electrostatic Discharge) or choose N/A if not applicable.",
+                  // Added validation rules
+                  validationRules: {
+                    owner: "Owner must be specified and should be a valid name.",
+                    author: "Author must be specified and should be a valid name.",
+                  },
+
+                  // Added ESD options
+                  esdOptionESD: "Electrostatic Discharge (ESD)",
+                  esdOptionNA: "Not Applicable (N/A)",
+                },
+                before: {
+                  documentTitle: "Document Title",
+                  documentTitleHint: "The title should be clear and concise.",
+                  documentTemplate: "Document Template",
+                  documentTemplateHint:
+                    "Choose a template for Front Page Logos or select 'Custom' to upload your own images.",
+                  documentTemplateItems: ["BYD-QA-TMP-0001_01"],
+                  logosTemplate: "Logos Template",
+                  logosTemplateHint:
+                    "Choose a template for Front Page Logos or select 'Custom' to upload your own image.",
+                  uploadImageLabel: "Upload image",
+                  uploadImageHint: "Drop your file here or click to upload",
+                  documentId: "Document Id",
+                  documentRevision: "Document Revision",
+                  documentRevisionPrefix: "R",
+                  documentRevisionPrefixSingleDigit: "R0",
+                  validationRules: {
+                    title: "Title is required",
+                    documentTemplate: "Document Template is required",
+                  },
+                },
+                content: {
+                  segmentBody: "Segment Body",
+                  addButton: "Add",
+                  segmentTitle: "Segment Title",
+                  segmentTitleHint: "Edit the segment title.",
+                  insertBefore: "Insert Before",
+                  insertAfter: "Insert After",
+                  remove: "Remove",
+                  untitledSegment: "Untitled Segment",
+                },
               },
+            },
+            drafts: {
+              recordId: "Record Id",
+              draftName: "Draft Name",
+              documentTitle: "Document Title",
+              documentIdRev: "Document Id-Rev",
+              actions: "Actions",
+              deleteConfirmation: "Are you sure you want to delete this item?",
+              cancel: "Cancel",
+              ok: "OK",
+              selectDocumentLanguage: "Select Document Language",
+              documentLanguage: "Document Language",
+              search: "Search",
+              editRecordTooltip: "Edit this record.",
+              removeRecordTooltip: "Remove this record.",
+              generateDocumentTooltip: "Generate Document based on this record.",
+              pleaseSelectLanguage: "Please select a language",
+              selectOrSearchLanguageHint:
+                "Select or search for a language to generate the document accordingly.",
             },
           },
           table: {
@@ -318,49 +394,41 @@ const enT = {
               departments: "Restrict to departments",
             },
           },
-
           review: {
             tooltip: "Open Review",
             close: "Close",
             title: "Review",
             timeline: "Timeline",
-
             comment: "Comment",
             files: "Files",
             no_files: "No files found",
             no_affected: "No description of changes",
             changes: "Changes",
-
             alert: {
               reviewControlsAppearOnComplete:
                 "Review controls will appear once the document change request is 'Complete'.",
               reviewGranted: "Review for this document change request has been granted.",
               reviewControlsAppearOnChecked: "Review controls will appear once checked.",
             },
-
             reviewControls: {
               cancel: "Cancel",
               confirm: "Confirm",
               commentOptional: "Comment (optional)",
-
               check: "Check",
               approve: "Approve",
               reject: "Reject",
               register: "Register",
               unregister: "Unregister",
-
               variant: {
                 check: "checked",
                 approve: "approved",
                 reject: "rejected",
                 register: "registered",
                 unregister: "unregistered",
-
                 question: "Are you sure you want to mark this document change as '{variant}'?",
               },
             },
           },
-
           stepper: {
             actions: {
               prev: "Previous",
@@ -485,7 +553,6 @@ const enT = {
               viewPcr: "View/Approve PCR",
               numberOfNotice: "Notice No",
               actions: "Actions",
-
               requestedBy: "Requested By",
               customerContactPerson: "Customer Contact Person",
               customerContactEmail: "Customer Contact Email",
@@ -554,7 +621,6 @@ const enT = {
             },
           },
         },
-
         pcn: {
           name: "Process Change Notice",
           table: {

@@ -62,18 +62,18 @@ export interface IDraft {
   meta: IDraftMeta;
 }
 
-export interface IStepperReadOnly {
+export interface IInstructionStepper {
   readonly uuid: string;
   readonly tz: string;
   readonly _name: string;
+  readonly type: string;
   body: {
     windows: {
       1: { model: IInfo };
       2: { model: IBefore };
       3: { model: IDraft };
     };
-    footerText: string;
   };
 }
 
-export type TStepper = IStepperReadOnly;
+export type TStepper = IInstructionStepper;

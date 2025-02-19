@@ -1,5 +1,5 @@
 import { Extension } from "@tiptap/core";
-import { Plugin, PluginKey, TextSelection } from "prosemirror-state";
+import { PluginKey, Plugin, TextSelection } from "@tiptap/pm/state";
 
 const wholeWordSelectionKey = new PluginKey("wholeWordSelection"); // ✅ Unique key for plugin
 
@@ -10,6 +10,7 @@ const WholeWordSelection = Extension.create({
     return {
       lastSelection: null, // ✅ Store last selection range
       isDragging: false, // ✅ Track if the user is dragging
+      isCellSelection: false, // ✅ Track if multiple table cells are selected
     };
   },
 
@@ -22,12 +23,26 @@ const WholeWordSelection = Extension.create({
             // ✅ 1️⃣ Detect when the user starts dragging
             mousedown: (_view, event) => {
               this.options.isDragging = false;
+              // this.options.isCellSelection = false;
 
               // ✅ Ensure event.target exists before using it
               if (event.target instanceof HTMLElement) {
                 event.target.addEventListener(
                   "mousemove",
                   () => {
+                    // function isProbablyCellSelection(selection: any): boolean {
+                    //   return (
+                    //     selection &&
+                    //     selection.ranges &&
+                    //     selection.ranges.length > 1 && // Multiple ranges suggest table selection
+                    //     selection.$anchorCell && // CellSelection has $anchorCell
+                    //     selection.$headCell && // CellSelection has $headCell
+                    //     typeof selection.isColSelection === "function" && // CellSelection has this method
+                    //     typeof selection.isRowSelection === "function"
+                    //   );
+                    // }
+                    // this.options.isCellSelection = isProbablyCellSelection(view.state.selection);
+
                     this.options.isDragging = true;
                   },
                   { once: true }
@@ -42,10 +57,21 @@ const WholeWordSelection = Extension.create({
               let { from, to } = state.selection;
               const lastSelection = this.options.lastSelection;
 
-              //   // ✅ If dragging, allow natural selection (don't modify behavior)
-              //   if (this.options.isDragging) {
-              //     return false;
-              //   }
+              function isProbablyCellSelection(selection: any): boolean {
+                return (
+                  selection &&
+                  selection.ranges &&
+                  selection.ranges.length > 1 && // Multiple ranges suggest table selection
+                  selection.$anchorCell && // CellSelection has $anchorCell
+                  selection.$headCell && // CellSelection has $headCell
+                  typeof selection.isColSelection === "function" && // CellSelection has this method
+                  typeof selection.isRowSelection === "function"
+                );
+              }
+
+              if (isProbablyCellSelection(view.state.selection)) {
+                return false; // Let Tiptap handle multi-cell selections
+              }
 
               // ✅ 1️⃣ If clicking inside an existing selection, clear selection
               if (lastSelection && from >= lastSelection.from && to <= lastSelection.to) {

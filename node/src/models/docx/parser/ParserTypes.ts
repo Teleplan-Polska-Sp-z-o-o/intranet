@@ -9,7 +9,7 @@ export interface TypeModuleInterface {
 }
 
 export interface ITypeLI extends TypeModuleInterface {
-  createNumberingDefinition(): string;
+  createNumberingDefinition(): string | false;
   resetMapping(): void;
 }
 

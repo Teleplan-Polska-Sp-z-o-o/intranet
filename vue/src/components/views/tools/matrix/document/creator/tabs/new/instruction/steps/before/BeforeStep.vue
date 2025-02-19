@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import { nextTick, ref, unref, watch } from "vue";
-import { findOrCreateCustomTemplate, imageTemplateOptions, ITemplate } from "./ImageTemplates";
-import { components } from "../../../../../../../../../../plugins/vuetify/components";
+import {
+  CustomTemplate,
+  findOrCreateCustomTemplate,
+  imageTemplateOptions,
+  ITemplate,
+} from "./ImageTemplates";
+import { components } from "../../../../../../../../../../../plugins/vuetify/components";
 import {
   EStatus,
   useStepperStore,
-} from "../../../../../../../../../../stores/documents/creator/useStepperStore";
+} from "../../../../../../../../../../../stores/documents/creator/useStepperStore";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+const tBase = "tools.matrix.tabs.documents.creator.createNew.stepper.before";
 
 const THIS_STEP = 2;
 const store = useStepperStore();
@@ -102,27 +111,17 @@ watch(
         filesTypeBase64: template.images,
         filesTypeFile: await convertBase64ToFiles(template.images),
       };
+      store.stepper!.getWindow(THIS_STEP).model.logosTemplate = uploadedFiles.value.filesTypeBase64;
     })();
-
-    store.stepper!.getWindow(THIS_STEP).model.logosTemplate = uploadedFiles.value.filesTypeBase64;
-
-    // logoPreviews.value = mapPreviews(newTemplate);
-
-    // store.stepper!.getWindow(THIS_STEP).model.logosTemplate = logoPreviews.value.map(
-    //   (p) => p.preview
-    // );
   },
   { deep: true, immediate: true }
 );
 
 // Handle file uploads
-const onFileUpload = async (newFiles: File[]) => {
-  // Convert existing `selectedLogosTemplate.images` to files
-  const existingFiles = await convertBase64ToFiles(selectedLogosTemplate.value?.images || []);
-
-  // Merge old and new files
-
-  uploadedFiles.value.filesTypeFile = [...newFiles, ...existingFiles];
+const onFileUpload = async (newFile: File[]) => {
+  const existingFile = await convertBase64ToFiles(new CustomTemplate().images);
+  // Merge old and new file
+  uploadedFiles.value.filesTypeFile = [...newFile, ...existingFile];
   uploadedFiles.value.filesTypeBase64 = await Promise.all(
     uploadedFiles.value.filesTypeFile.map(fileToBase64)
   );
@@ -173,13 +172,15 @@ const fileToBase64 = (file: File): Promise<string> => {
 const rules = {
   title: [
     (v: string | null) =>
-      typeof v === "string" ? !!v.trim() || "Title is required" : "Title is required",
+      typeof v === "string"
+        ? !!v.trim() || t(`${tBase}.validationRules.title`)
+        : t(`${tBase}.validationRules.title`),
   ],
   documentTemplate: [
     (v: string | null) =>
       typeof v === "string"
-        ? !!v.trim() || "Document Template is required"
-        : "Document Template is required",
+        ? !!v.trim() || t(`${tBase}.validationRules.documentTemplate`)
+        : t(`${tBase}.validationRules.documentTemplate`),
   ],
   // logosTemplate: [(v: ITemplate) => !!v || "Logos Template is required"],
 };
@@ -190,8 +191,9 @@ const rules = {
     <v-text-field
       v-model="store.stepper!.getWindow(THIS_STEP).model.title"
       :rules="rules.title"
-      label="Document Title"
-      hint="The title should be clear and concise."
+      :label="t(`${tBase}.documentTitle`)"
+      :hint="t(`${tBase}.documentTitleHint`)"
+      persistent-hint
       variant="solo-filled"
       prepend-icon="mdi-text-short"
     ></v-text-field>
@@ -200,9 +202,9 @@ const rules = {
       v-model="store.stepper!.getWindow(THIS_STEP).model.documentTemplate"
       :rules="rules.documentTemplate"
       :items="['BYD-QA-TMP-0001_01']"
-      label="Document Template"
+      :label="t(`${tBase}.documentTemplate`)"
       prepend-icon="mdi-format-list-text"
-      hint="Choose a template for Front Page Logos or select 'Custom' to upload your own images."
+      :hint="t(`${tBase}.documentTemplateHint`)"
       variant="solo-filled"
       persistent-hint
     ></v-select>
@@ -213,9 +215,9 @@ const rules = {
       :items="templates"
       item-title="name"
       return-object
-      label="Logos Template"
+      :label="t(`${tBase}.logosTemplate`)"
       prepend-icon="mdi-image-multiple"
-      hint="Choose a template for Front Page Logos or select 'Custom' to upload your own image."
+      :hint="t(`${tBase}.logosTemplateHint`)"
       variant="solo-filled"
       persistent-hint
     ></v-select>
@@ -241,7 +243,7 @@ const rules = {
         scrim="primary"
         density="compact"
         variant="compact"
-        title="Drop your file here or click to upload"
+        :title="t(`${tBase}.uploadImageHint`)"
       ></v-file-upload>
     </div>
 
@@ -270,7 +272,7 @@ const rules = {
 
     <v-text-field
       v-model="store.stepper!.getWindow(THIS_STEP).model.id"
-      label="Document Id"
+      :label="t(`${tBase}.documentId`)"
       variant="solo-filled"
       prepend-icon="mdi-text-short"
     ></v-text-field>
@@ -279,7 +281,7 @@ const rules = {
       v-model="store.stepper!.getWindow(THIS_STEP).model.revision"
       :reverse="false"
       controlVariant="default"
-      label="Document Revision"
+      :label="t(`${tBase}.documentRevision`)"
       :hideInput="false"
       inset
       :min="1"
