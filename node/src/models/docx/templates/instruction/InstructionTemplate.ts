@@ -33,7 +33,7 @@ export class InstructionTemplateKeys {
 
 export class InstructionTemplateValues {
   private stepper: TStepper;
-  private values: Record<string, string | any[]>;
+  private values: Record<string, string | boolean | any[]>;
   private keys: Record<string, string>;
   private targetLanguage: string;
 
@@ -155,7 +155,7 @@ export class InstructionTemplateValues {
     windows: Record<number, { model: any }>,
     relationships: Relationship[],
     converter: HtmlToDocxXml
-  ): Promise<Record<string, string | any[]>> {
+  ): Promise<Record<string, string | boolean | any[]>> {
     const { author, competences, _created, esd, _lastUpdate, owner, product } = windows[1].model;
     const { documentTemplate, logosTemplate, title, id, _revision } = windows[2].model;
 
@@ -165,11 +165,25 @@ export class InstructionTemplateValues {
       converter
     );
 
+    const logos: string[] = logosTemplate
+      .map((img: string) => img.split(",")?.at(1) || "")
+      .filter((img: string) => !!img);
+    const hasLogo1: boolean = logosTemplate.length > 0 && !!logos.at(0);
+    const hasLogo2: boolean = logosTemplate.length > 1 && !!logos.at(1);
+    const logo1: string = logos.at(0);
+    const logo2: string = logos.at(1);
+
     return {
       document_template: documentTemplate || "",
       esd: String(esd) || "0",
-      logo1: logosTemplate?.[0]?.split(",")?.[1] ?? "",
-      logo2: logosTemplate?.[1]?.split(",")?.[1] ?? "", // THIS BREAKS (if no second image from form)
+      // logo1: logosTemplate?.[0]?.split(",")?.[1] ?? "", // {%logo1}
+      // logo2: logosTemplate?.[1]?.split(",")?.[1] ?? "", // {%logo2}
+      //
+      hasLogo1,
+      logo1,
+      hasLogo2,
+      logo2,
+      //
       title: title || "",
       document_id_rev: id && _revision ? `${id}-${_revision}` : "",
       product: product || "",
@@ -197,9 +211,13 @@ export class InstructionTemplateValues {
     const objectKeys = ["title", "product"];
 
     // Get non-empty keys
-    const notEmptyKeys = objectKeys.filter(
-      (key) => typeof this.values[key] === "string" && this.values[key].trim() !== ""
-    );
+    const notEmptyKeys = objectKeys.filter((key) => {
+      if (typeof this.values[key] === "string") {
+        if (this.values[key].trim() !== "") return true;
+      }
+
+      return false;
+    });
     const content = notEmptyKeys.map((key) => this.values[key] as string); // Ensure string type
 
     if (content.length > 0) {

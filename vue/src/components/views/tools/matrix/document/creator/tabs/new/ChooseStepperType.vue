@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useStepperStore } from "../../../../../../../../stores/documents/creator/useStepperStore";
 import { computed, ref, watch } from "vue";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 import { DocumentCreatorStepper } from "./StepperTypes";
 
-const router = useRouter();
+// const router = useRouter();
 const store = useStepperStore();
 
 // Reactive state for stepper type
@@ -23,7 +23,7 @@ watch(stepperType, (type) => {
   if (type) {
     store.setStepper({
       type,
-      navigation: { router },
+      // navigation: { router },
     });
 
     stepperType.value = undefined;

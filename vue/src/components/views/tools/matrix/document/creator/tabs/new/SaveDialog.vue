@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, unref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useStepperStore } from "../../../../../../../../stores/documents/creator/useStepperStore";
-import { DocumentCreatorStepper } from "./StepperTypes";
 
 const store = useStepperStore();
 
@@ -15,7 +14,7 @@ watch(dialog, (nd) => {
 
 // const router = computed(() => useRouter());
 const route = useRoute();
-const router = useRouter();
+// const router = useRouter();
 // const route: RouteLocationNormalizedLoadedGeneric = useRoute();
 
 const loading = ref<"secondary" | false>(false);
@@ -29,12 +28,13 @@ const save = async () => {
   } finally {
     loading.value = false;
     dialog.value = false;
-    store.setStepper({
-      type: DocumentCreatorStepper.EStepperType.INSTRUCTION,
-      navigation: {
-        router,
-      },
-    });
+    // store.setStepper({
+    //   type: DocumentCreatorStepper.EStepperType.INSTRUCTION,
+    //   // navigation: {
+    //   //   router,
+    //   // },
+    // });
+    store.clearStepper();
   }
 };
 </script>

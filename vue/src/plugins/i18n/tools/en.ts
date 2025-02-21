@@ -164,6 +164,7 @@ const enT = {
                     "Select the ESD (Electrostatic Discharge) or choose N/A if not applicable.",
                   // Added validation rules
                   validationRules: {
+                    product: "Product must be specified.",
                     owner: "Owner must be specified and should be a valid name.",
                     author: "Author must be specified and should be a valid name.",
                   },

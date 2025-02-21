@@ -20,92 +20,39 @@ const THIS_STEP = 1;
 const store = useStepperStore();
 const formInfo = ref<components.VForm | null>(null);
 
-// watch(
-//   () => store.status,
-//   (status) => {
-//     nextTick(() => {
-//       if (status.enum !== EStatus.EDIT) {
-//         const form = unref(formInfo);
-//         if (!form) return;
-
-//         // console.log("Reset form (not in EDIT mode)");
-//         form.reset();
-//       }
-//     });
-//   },
-//   { deep: true }
-// );
-
-// watchEffect(() => {
-//   const form = unref(formInfo);
-//   const stepper = store.stepper;
-//   if (!stepper) return;
-
-//   const step = stepper.currentStep;
-
-//   nextTick(async () => {
-//     if (!form || step !== THIS_STEP) return;
-//     // console.log("form and step are both valid");
-
-//     const isEditState = store.status.enum === EStatus.EDIT;
-//     if (isEditState) {
-//       // console.log("validate form");
-//       await stepper.validateForm(form);
-//     }
-
-//     const window = stepper.getWindow(step);
-//     if (!window.form) {
-//       // console.log("assign of form");
-//       window.form = form;
-//     }
-//   });
-// });
-
 watch(
-  [() => store.stepper, () => store.status],
-  ([stepper, status], [_oldStepper, oldStatus]) => {
-    if (stepper === null || status === null) return;
+  [() => store.stepper?.currentStep, () => store.status],
+  ([step, status], [_oldStep, _oldStatus]) => {
+    if (!step || !status) return;
 
-    const window = stepper.getWindow(THIS_STEP);
-    const step = stepper.currentStep;
+    nextTick(async () => {
+      const form = unref(formInfo);
+      if (!form) return;
 
-    if (status.tick !== oldStatus?.tick)
-      nextTick(() => {
-        if (status.enum !== EStatus.EDIT) {
-          const form = unref(formInfo);
-          if (!form) return;
-
-          form.reset();
-        }
-      });
-
-    if (step !== THIS_STEP)
-      nextTick(async () => {
-        const form = unref(formInfo);
-        if (!form) return;
-
-        // console.log("form and step are both valid");
-        const isEditState = status.enum === EStatus.EDIT;
-        if (isEditState) {
-          // console.log("validate form");
-          await stepper.validateForm(form);
-        }
-
-        if (!window.form) {
-          // console.log("assign of form");
+      if (step === THIS_STEP) {
+        const window = store.stepper?.getWindow(THIS_STEP);
+        if (window && !window.form) {
           window.form = form;
         }
-      });
+
+        if (status.enum === EStatus.EDIT) {
+          await store.stepper?.validateForm(form, THIS_STEP);
+        }
+      }
+
+      // if (step > THIS_STEP) {
+      //   await store.stepper?.validateForm(form, THIS_STEP);
+      // }
+    });
   },
   { deep: true, immediate: true }
 );
 
 const rules = {
   product: [
-    (v: string | null) =>
-      typeof v === "string"
-        ? !!v.trim() || t(`${tBase}.validationRules.product`)
-        : t(`${tBase}.validationRules.product`),
+    (v: string) => {
+      return !!v.trim() || t(`${tBase}.validationRules.product`);
+    },
   ],
   owner: [
     (v: { id: number; name: string } | string | null) =>
@@ -153,12 +100,13 @@ onMounted(async () => {
 </script>
 <template>
   <v-form ref="formInfo" class="bg-surface-2">
-    <!-- props.stepper.getWindow(1).model.product -->
     <v-text-field
       :model-value="store.stepper!.getWindow(THIS_STEP).model.product"
-      @update:model-value="
-        (val: any) => (store.stepper!.getWindow(THIS_STEP).model.product = val ? val.trim() : '')
-      "
+      @update:model-value="(v)=> {
+        if (typeof v === 'string') {
+          store.stepper!.getWindow(THIS_STEP).model.product = v
+        }
+      }"
       :rules="rules.product"
       :label="t(`${tBase}.product`)"
       variant="solo-filled"
@@ -205,6 +153,7 @@ onMounted(async () => {
       prepend-icon="mdi-text-short"
     ></v-combobox>
 
+    <!-- v-model="model.created" -->
     <v-date-input
       v-model="store.stepper!.getWindow(THIS_STEP).model.created"
       :first-day-of-week="1"
@@ -229,6 +178,7 @@ onMounted(async () => {
       prepend-icon="mdi-format-list-checks"
     ></v-combobox>
 
+    <!-- v-model="model.esd" -->
     <v-select
       v-model="store.stepper!.getWindow(THIS_STEP).model.esd"
       :items="esdOptions"

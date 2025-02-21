@@ -53,50 +53,40 @@ const uploadedFiles = ref<{ filesTypeBase64: string[]; filesTypeFile: File[] }>(
 });
 
 watch(
-  [() => store.stepper, () => store.status],
-  ([stepper, status], [_oldStepper, oldStatus]) => {
-    if (stepper === null || status === null) return;
+  // [() => store.stepper, () => store.status],
+  // ([stepper, status], [_oldStepper, oldStatus]) => {
+  //   if (stepper === null || status === null) return;
+  [() => store.stepper?.currentStep, () => store.status],
+  ([step, status], [_oldStep, _oldStatus]) => {
+    if (!step || !status) return;
+    nextTick(async () => {
+      // if (status.tick !== oldStatus?.tick) console.log(1);
 
-    const window = stepper.getWindow(THIS_STEP);
-    const step = stepper.currentStep;
-
-    if (status.tick !== oldStatus?.tick)
-      nextTick(async () => {
-        if (status.enum !== EStatus.EDIT) {
-          const form = unref(formBefore);
-          if (!form) return;
-
-          form.reset();
-        }
-
-        // const stepperImages = window.model.logosTemplate;
-        // const template = findOrCreateCustomTemplate(stepperImages);
-        // selectedLogosTemplate.value = template;
-
-        const stepperImages = window.model.logosTemplate;
+      const window = store.stepper?.getWindow(THIS_STEP);
+      if (window) {
+        const stepperImages = window?.model.logosTemplate;
         const template = findOrCreateCustomTemplate(stepperImages);
         selectedLogosTemplate.value = template;
         uploadedFiles.value.filesTypeBase64 = template.images;
         uploadedFiles.value.filesTypeFile = await convertBase64ToFiles(template.images);
-      });
+      }
 
-    if (step !== THIS_STEP)
-      nextTick(async () => {
-        const form = unref(formBefore);
-        if (!form) return;
+      const form = unref(formBefore);
+      if (!form) return;
 
-        // console.log("form and step are both valid");
-        const isEditState = status.enum === EStatus.EDIT;
-        if (isEditState) {
-          // console.log("validate form");
-          await stepper.validateForm(form);
-        }
-
-        if (!window.form) {
-          // console.log("assign of form");
+      if (step === THIS_STEP) {
+        if (window && !window.form) {
           window.form = form;
         }
-      });
+        if (status.enum === EStatus.EDIT) {
+          await store.stepper?.validateForm(form, THIS_STEP);
+        }
+      }
+
+      // if (step > THIS_STEP) {
+      //   await store.stepper?.validateForm(form);
+      // }
+    });
   },
   { deep: true, immediate: true }
 );

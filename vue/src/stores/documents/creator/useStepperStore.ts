@@ -8,7 +8,7 @@ export type FSetStepper = (options: {
   stepper?: DocumentCreatorStepper.IStepper;
   navigation?: {
     router: Router;
-    path?: string;
+    path: string;
   };
 }) => void;
 
@@ -46,21 +46,21 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
 
       if (instantiated) {
         flags.instantiated = !!instantiated;
-        setStatus(EStatus.EDIT);
         stepper.value = instantiated;
+        setStatus(EStatus.EDIT);
       }
     }
 
     if (!options.stepper) {
+      stepper.value = DocumentCreatorStepper.StepperFactory.createStepper(options.type, undefined);
       setStatus(EStatus.NEW);
-      stepper.value = DocumentCreatorStepper.StepperFactory.createStepper(options.type);
     }
 
     if (options.navigation) {
       if (options.stepper && !flags.instantiated) return;
 
-      options.navigation.router?.push({
-        path: options.navigation.path || `/tool/matrix/browse/documents/creator/new`,
+      options.navigation.router.push({
+        path: options.navigation.path, // || `/tool/matrix/browse/documents/creator/new`,
       });
     }
   };

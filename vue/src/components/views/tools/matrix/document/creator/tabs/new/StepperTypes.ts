@@ -26,57 +26,90 @@ export namespace DocumentCreatorStepper {
     export interface IInfo {
       product: string;
       owner: { id: number; name: string } | string | null;
-      _lastUpdate: Date | null;
+      _lastUpdate: string | null;
       author: { id: number; name: string } | string | null;
-      _created: Date;
+      _created: string;
       competences: { id: number; name: string }[] | string[]; // {id: number - id of db obj, name: string - code of db obj}
       esd: 0 | 1; // 0 - false, 1 - true
     }
     export class Info implements IInfo {
-      public product: string = "";
-      public owner: { id: number; name: string } | string | null = null;
-      public _lastUpdate: Date | null = null;
-      public author: { id: number; name: string } | string | null = null;
-      public _created: Date;
-      public competences: { id: number; name: string }[] | string[] = [];
-      public esd: 0 | 1 = 0;
+      public product: string;
+      public owner: { id: number; name: string } | string | null;
+      public _lastUpdate: string | null;
+      public author: { id: number; name: string } | string | null;
+      public _created: string; // ISOString
+      public competences: { id: number; name: string }[] | string[];
+      public esd: 0 | 1;
 
-      private getCurrentTimeInTZ(tz: string): Date {
-        // const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        return moment().tz(tz).toDate(); // Ensures date is always in user's time zone
+      private getCurrentTimeInTZ(tz: string): string {
+        const time = moment().tz(tz).toISOString();
+        // console.log("getCurrentTimeInTZ", time.toISOString());
+        return time;
       }
 
       constructor(tz: string, obj?: IInfo) {
-        this.product = obj?.product ?? "";
-        this.owner = obj?.owner ?? null;
-        this._lastUpdate = obj?._lastUpdate ?? null;
-        this.author = obj?.author ?? null;
-        this._created = obj?._created ?? this.getCurrentTimeInTZ(tz);
-        this.competences = obj?.competences ?? [];
-        this.esd = obj?.esd ?? 0;
+        this.product = obj && obj.product ? obj.product : "";
+        this.owner = obj && obj.owner ? obj.owner : null;
+        this._lastUpdate =
+          obj && typeof obj._lastUpdate === "string" && !isNaN(new Date(obj._lastUpdate).getTime())
+            ? obj._lastUpdate
+            : null;
+        this.author = obj && obj.author ? obj.author : null;
+        this._created =
+          obj && !isNaN(new Date(obj._created).getTime())
+            ? obj._created
+            : this.getCurrentTimeInTZ(tz);
+        this.competences = obj && Array.isArray(obj) ? obj.competences : [];
+        this.esd = obj && (obj.esd === 0 || obj.esd === 1) ? obj.esd : 0;
       }
 
       // Getter for 'created'
       public get created(): Date {
-        return this._created;
+        // const date = this._created;
+
+        // const day = String(date.getDate()).padStart(2, "0"); // Ensure two digits
+        // const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is zero-based
+        // const year = date.getFullYear();
+
+        // `${month}/${day}/${year}`;
+
+        const getCreated = moment(this._created)
+          .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+          .toDate();
+
+        return getCreated;
       }
 
       // Setter for 'created' (Ensures it is always stored in the correct TZ)
-      public set created(value: Date | string) {
-        if (typeof value === "string") {
-          this._created = moment
-            .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
-            .toDate();
-        } else {
-          this._created = moment(value)
-            .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
-            .toDate();
-        }
+      public set created(value: string) {
+        // if (typeof value === "string") {
+        //   this._created = moment
+        //     .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
+        //     .toDate();
+        // }
+        // else {
+        //   this._created = moment(value)
+        //     .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+        //     .toISOString();
+        // }
+
+        this._created = moment
+          .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
+          .toISOString();
       }
 
       // Getter for 'lastUpdate'
       public get lastUpdate(): Date | null {
-        return this._lastUpdate;
+        const lu =
+          typeof this._lastUpdate === "string"
+            ? !isNaN(new Date(this._lastUpdate).getTime())
+            : false;
+        if (lu) {
+          const getLastUpdate = moment(this._lastUpdate)
+            .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+            .toDate();
+          return getLastUpdate;
+        } else return null;
       }
 
       // Setter for 'lastUpdate' (Ensures correct TZ conversion)
@@ -86,15 +119,18 @@ export namespace DocumentCreatorStepper {
           return;
         }
 
-        if (typeof value === "string") {
-          this._lastUpdate = moment
-            .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
-            .toDate();
-        } else {
-          this._lastUpdate = moment(value)
-            .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
-            .toDate();
-        }
+        // if (typeof value === "string") {
+        //   this._lastUpdate = moment
+        //     .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
+        //     .toDate();
+        // } else {
+        //   this._lastUpdate = moment(value)
+        //     .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+        //     .toDate();
+        // }
+        this._lastUpdate = moment
+          .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
+          .toISOString();
       }
     }
 
@@ -189,7 +225,10 @@ export namespace DocumentCreatorStepper {
     get nextable(): boolean;
 
     prevStep(): void;
-    validateForm(form: components.VForm | null): Promise<IVuetifyValidation | undefined>;
+    validateForm(
+      form: components.VForm | null,
+      step: Header.TStepKey
+    ): Promise<IVuetifyValidation | undefined>;
     nextStep(): Promise<void>;
     setStep(step: DocumentCreatorStepper.Header.TStepKey): void;
     getWindow<T extends keyof Body.IWindows>(step: T): Body.IWindows[T];
@@ -232,18 +271,23 @@ export namespace DocumentCreatorStepper {
         this._name = "";
         this._documentTitle = "";
         this._documentIdRevision = "";
+
+        const newInfo = new Body.Info(this.tz);
+        const newBefore = new Body.Before();
+        const newDraft = new DraftTypes.Draft();
+
         this.body = {
           windows: {
             1: {
-              model: new Body.Info(this.tz),
+              model: newInfo,
               form: null,
             },
             2: {
-              model: new Body.Before(),
+              model: newBefore,
               form: null,
             },
             3: {
-              model: new DraftTypes.Draft(),
+              model: newDraft,
               form: null,
             },
           },
@@ -313,19 +357,28 @@ export namespace DocumentCreatorStepper {
       }
     }
 
-    async validateForm(form: components.VForm | null): Promise<IVuetifyValidation | undefined> {
-      const currentStep = this.currentStep;
+    async validateForm(
+      form: components.VForm | null,
+      step: Header.TStepKey
+    ): Promise<IVuetifyValidation | undefined> {
+      // const currentStep = this.currentStep;
 
       if (form) {
         const validation: IVuetifyValidation = await form.validate();
         if (!validation.valid) {
-          this.header.steps[currentStep].editable = true;
-          this.header.steps[currentStep].complete = false;
-          this.header.steps[currentStep].color = "warning";
+          this.header.steps[step] = {
+            ...this.header.steps[step],
+            editable: true,
+            complete: false,
+            color: "warning",
+          };
         } else {
-          this.header.steps[currentStep].editable = false;
-          this.header.steps[currentStep].complete = true;
-          this.header.steps[currentStep].color = "secondary";
+          this.header.steps[step] = {
+            ...this.header.steps[step],
+            editable: false,
+            complete: true,
+            color: "secondary",
+          };
         }
 
         return validation;
@@ -336,9 +389,13 @@ export namespace DocumentCreatorStepper {
       if (this.nextable) {
         const currentStep = this.currentStep;
         const currentForm = this.getWindow(currentStep).form;
-        await this.validateForm(currentForm);
 
-        this.header.currentStep++;
+        if (currentForm) {
+          await this.validateForm(currentForm, currentStep);
+          // this.getWindow(currentStep).model = { ...currentForm.$data } as any;
+
+          this.header.currentStep++;
+        }
       } else {
         throw new Error("Cannot move to the next step. Already at the last step.");
       }
@@ -385,7 +442,7 @@ export namespace DocumentCreatorStepper {
       this.header.steps[3].complete = false;
       this.header.steps[3].color = "info";
       this.setStep(1);
-      console.log("stepper", this);
+
       formData.append("stepper", stringify(this));
 
       if (route && route.params && route.params.id.length > 0) {

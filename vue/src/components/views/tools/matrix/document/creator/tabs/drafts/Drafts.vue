@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { DocumentCreatorManager } from "../../../../../../../../models/document/creator/CreatorManager";
 import { IDraftEntity } from "../../../../../../../../models/document/creator/IDraftEntity";
@@ -85,16 +85,20 @@ const drafts = ref<IDraftEntity[]>([]);
 
 const editDraft = (item: IDraftEntity) => {
   const stepper: DocumentCreatorStepper.IStepper = deepSafeParse<IDraftEntity>(item).stepper;
-  let type = stepper.type;
-  // must be
-  if (!type) type = DocumentCreatorStepper.EStepperType.INSTRUCTION;
-  store.setStepper({
-    type,
-    stepper,
-    navigation: {
-      router,
-      path: `/tool/matrix/browse/documents/creator/new/${item.id}`,
-    },
+  const type = stepper.type;
+  if (!type) return;
+
+  store.clearStepper();
+
+  nextTick(() => {
+    store.setStepper({
+      type,
+      stepper,
+      navigation: {
+        router,
+        path: `/tool/matrix/browse/documents/creator/new/${item.id}`,
+      },
+    });
   });
 };
 

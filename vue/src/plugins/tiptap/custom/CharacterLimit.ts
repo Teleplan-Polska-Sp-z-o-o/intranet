@@ -23,7 +23,6 @@ const CharacterLimit = Extension.create({
   onTransaction({ editor, transaction }) {
     const text = transaction.doc.textContent;
     if (text.length > this.options.limit) {
-      console.log("call undo()");
       editor.commands.undo(); // Reverts the last action instead of truncating
     }
   },

@@ -96,6 +96,7 @@ export namespace DraftTypes {
     }
     set tmpBody(value: string) {
       const cleanValue = value.replace(/<([a-z][a-z0-9]*)\s*>\s*<\/\1>/gi, "").trim();
+      // console.log(cleanValue);
       // this._tmpBody = cleanValue;
       // this.updateIsSaved();
       this.body = cleanValue;
@@ -427,9 +428,17 @@ export namespace DraftTypes {
         secondSubSegment.content.title = "Collective PPE Usage";
         secondSubSegment.content.tmpTitle = "Collective PPE Usage";
         secondSubSegment.content.body =
-          '<p>We understand collective PPE as a PPE that is still available at the station, for example a face shield, which we properly clean after use and put back in position, or it can be disposable aids such as nitrile gloves or ear plugs.</p><table class="table-wrapper" style="min-width: 75px"><colgroup><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>PPE</strong></p></th><th colspan="1" rowspan="1"><p><strong>Mandatory / Recommended</strong></p></th><th colspan="1" rowspan="1"><p><strong>Individual / Collective</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr><tr><td colspan="3" rowspan="1"><p><strong>Legend</strong></p></td></tr><tr><td colspan="3" rowspan="1"><p>Mandatory – Required at all times</p></td></tr><tr><td colspan="3" rowspan="1"><p>Recommended – Suggested for safety</p></td></tr><tr><td colspan="3" rowspan="1"><p>Individual – Worn by each person</p></td></tr><tr><td colspan="3" rowspan="1"><p>Collective – Shared at workstations</p></td></tr></tbody></table>';
+          "<p>We understand collective PPE as a PPE that is still available at the station, for example a face shield, which we properly clean after use and put back in position, or it can be disposable aids such as nitrile gloves or ear plugs.</p>";
         secondSubSegment.content.tmpBody =
-          '<p>We understand collective PPE as a PPE that is still available at the station, for example a face shield, which we properly clean after use and put back in position, or it can be disposable aids such as nitrile gloves or ear plugs.</p><table class="table-wrapper" style="min-width: 75px"><colgroup><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>PPE</strong></p></th><th colspan="1" rowspan="1"><p><strong>Mandatory / Recommended</strong></p></th><th colspan="1" rowspan="1"><p><strong>Individual / Collective</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr><tr><td colspan="3" rowspan="1"><p><strong>Legend</strong></p></td></tr><tr><td colspan="3" rowspan="1"><p>Mandatory – Required at all times</p></td></tr><tr><td colspan="3" rowspan="1"><p>Recommended – Suggested for safety</p></td></tr><tr><td colspan="3" rowspan="1"><p>Individual – Worn by each person</p></td></tr><tr><td colspan="3" rowspan="1"><p>Collective – Shared at workstations</p></td></tr></tbody></table>';
+          "<p>We understand collective PPE as a PPE that is still available at the station, for example a face shield, which we properly clean after use and put back in position, or it can be disposable aids such as nitrile gloves or ear plugs.</p>";
+
+        const thirdSubSegment = _1_.addSubSegment();
+        thirdSubSegment.content.title = "PPE Classification Table";
+        thirdSubSegment.content.tmpTitle = "PPE Classification Table";
+        thirdSubSegment.content.body =
+          '<table class="table-wrapper" style="min-width: 75px"><colgroup><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>PPE</strong></p></th><th colspan="1" rowspan="1"><p><strong>Mandatory / Recommended</strong></p></th><th colspan="1" rowspan="1"><p><strong>Individual / Collective</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table><p>Legend:</p><ul><li><p>Mandatory – Required at all times</p></li><li><p>Recommended – Suggested for safety</p></li><li><p>Individual – Worn by each person</p></li><li><p>Collective – Shared at workstations</p></li></ul>';
+        thirdSubSegment.content.tmpBody =
+          '<table class="table-wrapper" style="min-width: 75px"><colgroup><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>PPE</strong></p></th><th colspan="1" rowspan="1"><p><strong>Mandatory / Recommended</strong></p></th><th colspan="1" rowspan="1"><p><strong>Individual / Collective</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table><p>Legend:</p><ul><li><p>Mandatory – Required at all times</p></li><li><p>Recommended – Suggested for safety</p></li><li><p>Individual – Worn by each person</p></li><li><p>Collective – Shared at workstations</p></li></ul>';
 
         const _2_ = this.addSegment();
         _2_.content.title = "QUALITY CONTROL";
