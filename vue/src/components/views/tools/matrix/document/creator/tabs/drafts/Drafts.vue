@@ -8,12 +8,19 @@ import "/node_modules/flag-icons/css/flag-icons.min.css";
 import jwtAxios from "../../../../../../../../config/axios/jwtAxios";
 import { DocumentCreatorStepper } from "../new/StepperTypes";
 import { useI18n } from "vue-i18n";
+import DraftFilters from "./DraftFilters.vue";
+import { useDraftsStore } from "../../../../../../../../stores/documents/drafts/useDraftsStore";
+import moment from "moment";
+import "moment-timezone";
 
 const router = useRouter();
 const route = useRoute();
 const manager = new DocumentCreatorManager();
-const store = useStepperStore();
-const search = ref<string>("");
+
+const draftsStore = useDraftsStore();
+
+const stepperStore = useStepperStore();
+// const search = ref<string>("");
 
 const { t } = useI18n();
 const tBase = "tools.matrix.tabs.documents.creator.drafts";
@@ -50,7 +57,6 @@ const headers = computed<object[]>(() => {
       key: "title",
       value: (item: IDraftEntity) => {
         try {
-          // return deepSafeParse<IDraftEntity>(item).stepper.body.windows[2].model.title;
           return deepSafeParse<IDraftEntity>(item).stepper._documentTitle || "- - -";
         } catch (error) {
           console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
@@ -64,10 +70,45 @@ const headers = computed<object[]>(() => {
       key: "document_id_rev",
       value: (item: IDraftEntity) => {
         try {
-          // const model = deepSafeParse<IDraftEntity>(item).stepper.body.windows[2].model;
           return deepSafeParse<IDraftEntity>(item).stepper._documentIdRevision || "- - -";
         } catch (error) {
           console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
+          return "- - -";
+        }
+      },
+    },
+    {
+      title: t(`${tBase}.created`),
+      align: "start",
+      key: "created",
+      value: (item: IDraftEntity) => {
+        try {
+          const tz = deepSafeParse<IDraftEntity>(item).stepper.tz;
+          const utcDate = item.createdBy.date;
+          const tzDate = moment(utcDate).tz(tz).format("DD-MMM-YYYY");
+          return tzDate;
+        } catch (error) {
+          console.error(
+            `Error at getting value of stepper creation date: ${error}. Returning "- - -"`
+          );
+          return "- - -";
+        }
+      },
+    },
+    {
+      title: t(`${tBase}.lastUpdate`),
+      align: "start",
+      key: "lastUpdate",
+      value: (item: IDraftEntity) => {
+        try {
+          const tz = deepSafeParse<IDraftEntity>(item).stepper.tz;
+          const utcDate = item.updatedBy.at(-1)?.date;
+          const tzDate = utcDate !== undefined ? moment().tz(tz).format("DD-MMM-YYYY") : false;
+          return tzDate || "- - -";
+        } catch (error) {
+          console.error(
+            `Error at getting value of stepper last update date: ${error}. Returning "- - -"`
+          );
           return "- - -";
         }
       },
@@ -81,17 +122,18 @@ const headers = computed<object[]>(() => {
     },
   ];
 });
-const drafts = ref<IDraftEntity[]>([]);
+
+// const drafts = ref<IDraftEntity[]>([]);
 
 const editDraft = (item: IDraftEntity) => {
   const stepper: DocumentCreatorStepper.IStepper = deepSafeParse<IDraftEntity>(item).stepper;
   const type = stepper.type;
   if (!type) return;
 
-  store.clearStepper();
+  stepperStore.clearStepper();
 
   nextTick(() => {
-    store.setStepper({
+    stepperStore.setStepper({
       type,
       stepper,
       navigation: {
@@ -103,6 +145,19 @@ const editDraft = (item: IDraftEntity) => {
 };
 
 const openedItem = ref<IDraftEntity | null>(null);
+
+const loadingTable = ref<string | false>(false);
+const loadTable = async () => {
+  try {
+    loadingTable.value = "primary";
+
+    const drafts = await manager.get();
+    console.log("drafts", drafts);
+    return drafts;
+  } finally {
+    loadingTable.value = false;
+  }
+};
 
 const loading = ref<"secondary" | false>(false);
 
@@ -120,7 +175,8 @@ const deleteDraftConfirm = async () => {
     loading.value = "secondary";
     if (openedItem.value) {
       await manager.delete(openedItem.value.id, true); // delete
-      drafts.value = await manager.get();
+
+      draftsStore.drafts = await loadTable();
     }
   } catch (error) {
     throw error;
@@ -217,7 +273,7 @@ watch(
   () => route.params.functionality,
   async (functionality: string | string[]) => {
     if (functionality === "drafts") {
-      drafts.value = await manager.get();
+      draftsStore.drafts = await loadTable();
     }
   },
   { immediate: true, deep: true }
@@ -292,11 +348,12 @@ watch(
   </v-dialog>
 
   <v-card class="rounded-xl bg-surface-2 elevation-2 ma-1">
-    <v-card-title class="d-flex align-center pe-2">
+    <!-- <v-card-title class="d-flex align-center pe-2">
       <v-spacer></v-spacer>
 
       <v-text-field
         v-model="search"
+        class="me-2"
         density="compact"
         :label="t(`${tBase}.search`)"
         prepend-inner-icon="mdi-magnify"
@@ -305,9 +362,17 @@ watch(
         hide-details
         single-line
       ></v-text-field>
-    </v-card-title>
+    </v-card-title> -->
 
-    <v-data-table v-model:search="search" :headers="headers" :items="drafts" class="bg-surface-2">
+    <draft-filters></draft-filters>
+
+    <!-- v-model:search="search" -->
+    <v-data-table
+      :headers="headers"
+      :items="draftsStore.computedDrafts"
+      :loading="loadingTable"
+      class="bg-surface-2"
+    >
       <template v-slot:item.actions="{ item }">
         <v-tooltip :text="t(`${tBase}.editRecordTooltip`)">
           <template v-slot:activator="{ props: tooltip }">

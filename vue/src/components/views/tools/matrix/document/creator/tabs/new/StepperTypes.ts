@@ -167,7 +167,7 @@ export namespace DocumentCreatorStepper {
 
     export interface IWindows {
       [key: number]: {
-        model: Info | Before | DraftTypes.Draft;
+        model: IInfo | IBefore | DraftTypes.IDraft;
         form: components.VForm | null;
       };
       1: {
@@ -200,15 +200,26 @@ export namespace DocumentCreatorStepper {
     }[];
   }
 
-  export interface IStepper {
+  export interface IStepperProperties {
     uuid: string;
     tz: string;
     _name: string;
     type: EStepperType;
     _documentTitle: string;
     _documentIdRevision: string;
-    header: DocumentCreatorStepper.Header.IStepperHeader;
-    body: DocumentCreatorStepper.Body.IStepperBody;
+    header: Header.IStepperHeader;
+    body: Body.IStepperBody;
+  }
+
+  export type IStepper = IStepperProperties & {
+    // uuid: string;
+    // tz: string;
+    // _name: string;
+    // type: EStepperType;
+    // _documentTitle: string;
+    // _documentIdRevision: string;
+    // header: DocumentCreatorStepper.Header.IStepperHeader;
+    // body: DocumentCreatorStepper.Body.IStepperBody;
 
     get name(): string;
     set name(name: string);
@@ -234,7 +245,7 @@ export namespace DocumentCreatorStepper {
     getWindow<T extends keyof Body.IWindows>(step: T): Body.IWindows[T];
     updateWindow<T extends keyof Body.IWindows>(step: T, data: Body.IWindows[T]): void;
     save(name: string, route?: RouteLocationNormalizedLoaded): Promise<any>;
-  }
+  };
 
   export class InstructionStepper implements IStepper {
     readonly uuid: string;
@@ -255,16 +266,19 @@ export namespace DocumentCreatorStepper {
     header: Header.IStepperHeader;
     body: Body.IStepperBody;
 
-    constructor(stepper?: {
-      body: Body.IStepperBody;
-      header: Header.IStepperHeader;
-      uuid: string;
-      tz: string;
-      _name: string;
-      type: string;
-      _documentTitle: string;
-      _documentIdRevision: string;
-    }) {
+    constructor(
+      stepper?: IStepperProperties
+      //   {
+      //   body: Body.IStepperBody;
+      //   header: Header.IStepperHeader;
+      //   uuid: string;
+      //   tz: string;
+      //   _name: string;
+      //   type: string;
+      //   _documentTitle: string;
+      //   _documentIdRevision: string;
+      // }
+    ) {
       if (!stepper) {
         this.uuid = uuidv4();
         this.tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -458,16 +472,17 @@ export namespace DocumentCreatorStepper {
   export class StepperFactory {
     static createStepper(
       type: EStepperType,
-      stepperData?: {
-        body: DocumentCreatorStepper.Body.IStepperBody;
-        header: DocumentCreatorStepper.Header.IStepperHeader;
-        uuid: string;
-        tz: string;
-        _name: string;
-        type: string;
-        _documentTitle: string;
-        _documentIdRevision: string;
-      }
+      stepperData?: IStepperProperties
+      // {
+      //   body: DocumentCreatorStepper.Body.IStepperBody;
+      //   header: DocumentCreatorStepper.Header.IStepperHeader;
+      //   uuid: string;
+      //   tz: string;
+      //   _name: string;
+      //   type: string;
+      //   _documentTitle: string;
+      //   _documentIdRevision: string;
+      // }
     ): IStepper {
       switch (type) {
         case EStepperType.INSTRUCTION:

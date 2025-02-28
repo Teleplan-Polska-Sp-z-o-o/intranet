@@ -311,7 +311,7 @@ export namespace DraftTypes {
     }
   }
 
-  interface IDraft {
+  export interface IDraft {
     uuid: string;
     segments: Segment[];
     meta: DraftMeta;
@@ -464,9 +464,9 @@ export namespace DraftTypes {
         _6_.content.title = "CHANGE HISTORY";
         _6_.content.tmpTitle = "CHANGE HISTORY";
         _6_.content.body =
-          '<table translate="no" class="table-wrapper" style="min-width: 125px"><colgroup><col><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>Revision</strong></p></th><th colspan="1" rowspan="1"><p><strong>Revision Date</strong></p></th><th colspan="1" rowspan="1"><p><strong>ECN# - Description of change</strong></p></th><th colspan="1" rowspan="1"><p><strong>Change Author</strong></p></th><th colspan="1" rowspan="1"><p><strong>Affected Pages</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table>';
+          '<table class="table-wrapper notranslate" style="min-width: 125px"><colgroup><col><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>Revision</strong></p></th><th colspan="1" rowspan="1"><p><strong>Revision Date</strong></p></th><th colspan="1" rowspan="1"><p><strong>ECN# - Description of change</strong></p></th><th colspan="1" rowspan="1"><p><strong>Change Author</strong></p></th><th colspan="1" rowspan="1"><p><strong>Affected Pages</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table>';
         _6_.content.tmpBody =
-          '<table translate="no" class="table-wrapper" style="min-width: 125px"><colgroup><col><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>Revision</strong></p></th><th colspan="1" rowspan="1"><p><strong>Revision Date</strong></p></th><th colspan="1" rowspan="1"><p><strong>ECN# - Description of change</strong></p></th><th colspan="1" rowspan="1"><p><strong>Change Author</strong></p></th><th colspan="1" rowspan="1"><p><strong>Affected Pages</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table>';
+          '<table class="table-wrapper notranslate" style="min-width: 125px"><colgroup><col><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>Revision</strong></p></th><th colspan="1" rowspan="1"><p><strong>Revision Date</strong></p></th><th colspan="1" rowspan="1"><p><strong>ECN# - Description of change</strong></p></th><th colspan="1" rowspan="1"><p><strong>Change Author</strong></p></th><th colspan="1" rowspan="1"><p><strong>Affected Pages</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table>';
       }
     }
   }

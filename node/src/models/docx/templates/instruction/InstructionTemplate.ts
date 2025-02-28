@@ -125,8 +125,13 @@ export class InstructionTemplateValues {
       //   }
       // }
 
+      const isSub = (segmentIndex: string): boolean => {
+        return segmentIndex.split(".").length > 2;
+      };
+
       contentArray.push({
         segmentIndex,
+        isSub: isSub(segmentIndex),
         title: processedTitle,
         body: docxXml,
       });
@@ -189,11 +194,11 @@ export class InstructionTemplateValues {
       product: product || "",
       owner: (typeof owner === "string" ? owner : owner.name) || "",
       last_update: moment(_lastUpdate).isValid()
-        ? moment.tz(_lastUpdate, this.stepper.tz).format("YYYY-MM-DD")
+        ? moment.tz(_lastUpdate, this.stepper.tz).format("DD-MMM-YYYY")
         : "- - -",
       author: (typeof author === "string" ? author : author.name) || "",
       created: moment(_created).isValid()
-        ? moment.tz(_created, this.stepper.tz).format("YYYY-MM-DD")
+        ? moment.tz(_created, this.stepper.tz).format("DD-MMM-YYYY")
         : "- - -",
       competences: competences
         .map((c: { id: number; name: string } | string) => (typeof c === "string" ? c : c.name))
@@ -212,8 +217,9 @@ export class InstructionTemplateValues {
 
     // Get non-empty keys
     const notEmptyKeys = objectKeys.filter((key) => {
-      if (typeof this.values[key] === "string") {
-        if (this.values[key].trim() !== "") return true;
+      const isString = typeof this.values[key] === "string";
+      if (isString) {
+        if ((this.values[key] as string).trim() !== "") return true;
       }
 
       return false;

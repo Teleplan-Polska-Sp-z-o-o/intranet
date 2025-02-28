@@ -192,6 +192,8 @@ const plT = {
           draftName: "Nazwa szkicu",
           documentTitle: "Tytuł dokumentu",
           documentIdRev: "Identyfikator dokumentu - Rewizja",
+          created: "Utworzono",
+          lastUpdate: "Ostatnia aktualizacja",
           actions: "Akcje",
           deleteConfirmation: "Czy na pewno chcesz usunąć ten element?",
           cancel: "Anuluj",
@@ -205,6 +207,39 @@ const plT = {
           pleaseSelectLanguage: "Proszę wybrać język",
           selectOrSearchLanguageHint:
             "Wybierz lub wyszukaj język, aby wygenerować dokument odpowiednio.",
+          filters: {
+            reset: "Usuń filtry",
+            locator: {
+              label: "Filtruj wersje robocze według strefy czasowej ich utworzenia.",
+              messages: {
+                title: "Lokalizacja",
+              },
+            },
+            creator: {
+              sideLabel: "Wpisz nazwę użytkownika, aby filtrować wersje robocze.",
+              messages: {
+                title: "Twórca",
+                subtitle: "Przełącz, aby filtrować wersje robocze według twórcy.",
+                subtitleMap: {
+                  true: "Wyświetlanie tylko wersji roboczych utworzonych przeze mnie.",
+                  false: "Wykluczanie wersji roboczych utworzonych przeze mnie.",
+                  null: "Przełącz, aby filtrować wersje robocze według twórcy.",
+                },
+              },
+            },
+            editor: {
+              sideLabel: "Wpisz nazwę użytkownika, aby filtrować wersje robocze.",
+              messages: {
+                title: "Edytor",
+                subtitle: "Przełącz, aby filtrować wersje robocze według edytora.",
+                subtitleMap: {
+                  true: "Wyświetlanie tylko wersji roboczych edytowanych przeze mnie.",
+                  false: "Wykluczanie wersji roboczych edytowanych przeze mnie.",
+                  null: "Przełącz, aby filtrować wersje robocze według edytora.",
+                },
+              },
+            },
+          },
         },
       },
       tabs: {

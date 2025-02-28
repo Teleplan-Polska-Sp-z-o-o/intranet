@@ -211,6 +211,8 @@ const enT = {
               draftName: "Draft Name",
               documentTitle: "Document Title",
               documentIdRev: "Document Id-Rev",
+              created: "Created",
+              lastUpdate: "Last Update",
               actions: "Actions",
               deleteConfirmation: "Are you sure you want to delete this item?",
               cancel: "Cancel",
@@ -224,6 +226,39 @@ const enT = {
               pleaseSelectLanguage: "Please select a language",
               selectOrSearchLanguageHint:
                 "Select or search for a language to generate the document accordingly.",
+              filters: {
+                reset: "Remove Filters",
+                locator: {
+                  label: "Filter drafts by the time zone of their creation.",
+                  messages: {
+                    title: "Location",
+                  },
+                },
+                creator: {
+                  sideLabel: "Type to filter drafts by username.",
+                  messages: {
+                    title: "Creator",
+                    subtitle: "Toggle to filter drafts by creator.",
+                    subtitleMap: {
+                      true: "Showing only drafts created by me.",
+                      false: "Excluding drafts created by me.",
+                      null: "Toggle to filter drafts by creator.",
+                    },
+                  },
+                },
+                editor: {
+                  sideLabel: "Type to filter drafts by username.",
+                  messages: {
+                    title: "Editor",
+                    subtitle: "Toggle to filter drafts by editor.",
+                    subtitleMap: {
+                      true: "Showing only drafts edited by me.",
+                      false: "Excluding drafts edited by me.",
+                      null: "Toggle to filter drafts by editor.",
+                    },
+                  },
+                },
+              },
             },
           },
           table: {

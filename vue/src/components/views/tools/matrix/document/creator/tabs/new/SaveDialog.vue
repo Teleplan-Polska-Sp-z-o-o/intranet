@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, unref, watch } from "vue";
+import { ref, unref } from "vue";
 import { useRoute } from "vue-router";
 import { useStepperStore } from "../../../../../../../../stores/documents/creator/useStepperStore";
 
@@ -8,9 +8,9 @@ const store = useStepperStore();
 const name = ref<string>(store.stepper!.name || "");
 const dialog = ref<boolean>(false);
 
-watch(dialog, (nd) => {
-  if (nd) console.log("store.stepper", store.stepper);
-});
+// watch(dialog, (nd) => {
+//   if (nd) console.log("store.stepper", store.stepper);
+// });
 
 // const router = computed(() => useRouter());
 const route = useRoute();
