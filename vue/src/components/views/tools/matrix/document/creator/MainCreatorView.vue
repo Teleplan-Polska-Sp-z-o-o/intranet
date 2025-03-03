@@ -52,14 +52,17 @@ const { t } = useI18n();
 const functionality = computed(() => route.params.functionality);
 
 const title = computed(() => {
-  if (functionality.value !== "new") return;
-  if (!!route.params.id && store.stepper !== null) {
-    return t(`tools.matrix.tabs.documents.creator.mainView.title.update`, {
-      name: store.stepper!.name,
-    });
-  } else {
-    return t(`tools.matrix.tabs.documents.creator.mainView.title.create`);
-  }
+  if (functionality.value === "new") {
+    if (!!route.params.id && store.stepper !== null) {
+      return t(`tools.matrix.tabs.documents.creator.mainView.title.update`, {
+        name: store.stepper!.name,
+      });
+    } else {
+      return t(`tools.matrix.tabs.documents.creator.mainView.title.create`);
+    }
+  } else if (functionality.value === "drafts") {
+    return t(`tools.matrix.tabs.documents.creator.mainView.title.drafts`);
+  } else return;
 });
 
 const push = (tabName: string) => {

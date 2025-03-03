@@ -109,6 +109,8 @@ const plT = {
           title: {
             create: "Zaraz rozpoczniesz nowy szkic",
             update: "Aktualizujesz szkic zatytułowany '{name}'",
+            drafts:
+              "Tutaj możesz zarządzać swoimi wersjami roboczymi — wyszukiwać, edytować, usuwać i generować dokumenty DOCX.",
           },
           tabs: {
             dashboard: "Panel główny",

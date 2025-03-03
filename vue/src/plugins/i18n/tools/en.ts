@@ -128,6 +128,8 @@ const enT = {
               title: {
                 create: "You're about to start a new Draft",
                 update: "Updating the Draft titled '{name}'",
+                drafts:
+                  "This is where you can manage your drafts — search, edit, delete and generate DOCX documents",
               },
               tabs: {
                 dashboard: "Dashboard",
