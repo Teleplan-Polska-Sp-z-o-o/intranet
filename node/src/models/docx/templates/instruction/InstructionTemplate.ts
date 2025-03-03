@@ -50,7 +50,9 @@ export class InstructionTemplateValues {
   private findInSwitch(name: string) {
     switch (name) {
       case "BYD-QA-TMP-0001_01":
-        return InstructionTemplateKeysJSON[this.targetLanguage];
+        return InstructionTemplateKeysJSON[
+          this.targetLanguage === "original" ? "en" : this.targetLanguage
+        ];
       default:
         return {};
     }
@@ -126,12 +128,12 @@ export class InstructionTemplateValues {
       // }
 
       const isSub = (segmentIndex: string): boolean => {
-        return segmentIndex.split(".").length > 2;
+        return segmentIndex.split(".").length > 1;
       };
 
       contentArray.push({
         segmentIndex,
-        isSub: isSub(segmentIndex),
+        isSub: isSub(segmentIndex.toString()),
         title: processedTitle,
         body: docxXml,
       });

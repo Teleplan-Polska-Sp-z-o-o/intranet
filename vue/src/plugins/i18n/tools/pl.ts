@@ -188,6 +188,9 @@ const plT = {
           },
         },
         drafts: {
+          original: "Oryginalny",
+          originalAlert:
+            "Wybór języka jako 'Oryginalny' pominie tłumaczenie i wygeneruje dokument w jego pierwotnej formie.",
           recordId: "Identyfikator rekordu",
           draftName: "Nazwa szkicu",
           documentTitle: "Tytuł dokumentu",
@@ -237,6 +240,18 @@ const plT = {
                   false: "Wykluczanie wersji roboczych edytowanych przeze mnie.",
                   null: "Przełącz, aby filtrować wersje robocze według edytora.",
                 },
+              },
+            },
+            created: {
+              label: "Filtruj wersje robocze według zakresu dat ich utworzenia.",
+              messages: {
+                title: "Utworzono",
+              },
+            },
+            updated: {
+              label: "Filtruj wersje robocze według zakresu dat ich ostatniej aktualizacji.",
+              messages: {
+                title: "Zaktualizowano",
               },
             },
           },

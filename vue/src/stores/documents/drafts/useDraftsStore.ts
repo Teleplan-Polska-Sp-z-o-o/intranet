@@ -4,6 +4,8 @@ import { IDraftEntity } from "../../../models/document/creator/IDraftEntity";
 import { DraftsSearch } from "../../../components/views/tools/matrix/document/creator/tabs/drafts/DraftFiltersTypes";
 import { useUserStore } from "../../userStore";
 import { SimpleUser } from "../../../models/user/SimpleUser";
+import moment from "moment";
+import "moment-timezone";
 
 export const useDraftsStore = defineStore("document-drafts", () => {
   const drafts = ref<IDraftEntity[]>([]);
@@ -77,6 +79,49 @@ export const useDraftsStore = defineStore("document-drafts", () => {
       if (typeof editorSideInput === "object") {
         const isEditor = draft.updatedBy.some((update) => update.user.id === user.id);
         if (!isEditor) return false;
+      }
+
+      ///
+      // 🕒 Created Date Range Filter (Using Time Zone)
+      ///
+      const createdDateRange = filters.created.mainInput.value;
+      if (createdDateRange && createdDateRange.length > 0) {
+        const startCreatedDate = moment
+          .tz(createdDateRange[0], draft.stepper.tz)
+          .startOf("day")
+          .valueOf();
+        const endCreatedDate = moment
+          .tz(createdDateRange[createdDateRange.length - 1], draft.stepper.tz)
+          .endOf("day")
+          .valueOf();
+
+        const draftCreatedDate = moment.tz(draft.createdBy.date, draft.stepper.tz).valueOf();
+        if (draftCreatedDate < startCreatedDate || draftCreatedDate > endCreatedDate) {
+          return false;
+        }
+      }
+
+      ///
+      // 🕒 Last Edited Date Range Filter (Using Time Zone)
+      ///
+      const editedDateRange = filters.updated.mainInput.value;
+      if (editedDateRange && editedDateRange.length > 0) {
+        const startEditedDate = moment
+          .tz(editedDateRange[0], draft.stepper.tz)
+          .startOf("day")
+          .valueOf();
+        const endEditedDate = moment
+          .tz(editedDateRange[editedDateRange.length - 1], draft.stepper.tz)
+          .endOf("day")
+          .valueOf();
+
+        const lastUpdated = draft.updatedBy.at(-1)?.date;
+        if (lastUpdated) {
+          const draftEditedDate = moment.tz(lastUpdated, draft.stepper.tz).valueOf();
+          if (draftEditedDate < startEditedDate || draftEditedDate > endEditedDate) {
+            return false;
+          }
+        }
       }
 
       return true;

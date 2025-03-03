@@ -279,6 +279,7 @@ export class MSTranslatorLoaded extends MSTranslatorBase implements IMSTranslato
       // Ensure `this.loaded` is an array of strings
       const load = Array.isArray(this.loaded) ? this.loaded : [this.loaded];
 
+      if (targetLanguage === "original") return load;
       // if ((await this.detectLanguage()) === targetLanguage) return load;
 
       // Prepare the request body

@@ -47,6 +47,19 @@ function deepSafeParse<T>(item: unknown): T {
   }
 }
 
+const tableDate = (item: IDraftEntity, variant: "createdBy" | "lastUpdate") => {
+  const tz = deepSafeParse<IDraftEntity>(item).stepper.tz;
+  if (variant === "createdBy") {
+    const utcDate = item.createdBy.date;
+    const tzDate = moment(utcDate).tz(tz).format("DD-MMM-YYYY");
+    return tzDate || "- - -";
+  } else if (variant === "lastUpdate") {
+    const utcDate = item.updatedBy.at(-1)?.date;
+    const tzDate = utcDate !== undefined ? moment(utcDate).tz(tz).format("DD-MMM-YYYY") : false;
+    return tzDate || "- - -";
+  }
+};
+
 const headers = computed<object[]>(() => {
   return [
     { title: t(`${tBase}.recordId`), align: "start", key: "id", value: "id" },
@@ -81,37 +94,37 @@ const headers = computed<object[]>(() => {
       title: t(`${tBase}.created`),
       align: "start",
       key: "created",
-      value: (item: IDraftEntity) => {
-        try {
-          const tz = deepSafeParse<IDraftEntity>(item).stepper.tz;
-          const utcDate = item.createdBy.date;
-          const tzDate = moment(utcDate).tz(tz).format("DD-MMM-YYYY");
-          return tzDate;
-        } catch (error) {
-          console.error(
-            `Error at getting value of stepper creation date: ${error}. Returning "- - -"`
-          );
-          return "- - -";
-        }
-      },
+      // value: (item: IDraftEntity) => {
+      //   try {
+      //     const tz = deepSafeParse<IDraftEntity>(item).stepper.tz;
+      //     const utcDate = item.createdBy.date;
+      //     const tzDate = moment(utcDate).tz(tz).format("DD-MMM-YYYY");
+      //     return tzDate;
+      //   } catch (error) {
+      //     console.error(
+      //       `Error at getting value of stepper creation date: ${error}. Returning "- - -"`
+      //     );
+      //     return "- - -";
+      //   }
+      // },
     },
     {
       title: t(`${tBase}.lastUpdate`),
       align: "start",
       key: "lastUpdate",
-      value: (item: IDraftEntity) => {
-        try {
-          const tz = deepSafeParse<IDraftEntity>(item).stepper.tz;
-          const utcDate = item.updatedBy.at(-1)?.date;
-          const tzDate = utcDate !== undefined ? moment().tz(tz).format("DD-MMM-YYYY") : false;
-          return tzDate || "- - -";
-        } catch (error) {
-          console.error(
-            `Error at getting value of stepper last update date: ${error}. Returning "- - -"`
-          );
-          return "- - -";
-        }
-      },
+      // value: (item: IDraftEntity) => {
+      //   try {
+      //     const tz = deepSafeParse<IDraftEntity>(item).stepper.tz;
+      //     const utcDate = item.updatedBy.at(-1)?.date;
+      //     const tzDate = utcDate !== undefined ? moment().tz(tz).format("DD-MMM-YYYY") : false;
+      //     return tzDate || "- - -";
+      //   } catch (error) {
+      //     console.error(
+      //       `Error at getting value of stepper last update date: ${error}. Returning "- - -"`
+      //     );
+      //     return "- - -";
+      //   }
+      // },
     },
     {
       title: t(`${tBase}.actions`),
@@ -152,7 +165,7 @@ const loadTable = async () => {
     loadingTable.value = "primary";
 
     const drafts = await manager.get();
-    console.log("drafts", drafts);
+
     return drafts;
   } finally {
     loadingTable.value = false;
@@ -221,10 +234,10 @@ const fetchLanguages = async () => {
         code,
         name: details.name,
       }));
-    // languageOptions.value.unshift({
-    //   code: "original",
-    //   name: "Preserve Original Language",
-    // });
+    languageOptions.value.unshift({
+      code: "original",
+      name: t(`${tBase}.original`),
+    });
   } catch (error) {
     console.error("Error fetching languages:", error);
   }
@@ -306,6 +319,17 @@ watch(
       <v-card-title class="text-h5">{{ t(`${tBase}.selectDocumentLanguage`) }}</v-card-title>
 
       <v-card-text>
+        <v-alert
+          v-if="language === 'original'"
+          border="start"
+          border-color="primary"
+          :text="t(`${tBase}.originalAlert`)"
+          type="info"
+          variant="tonal"
+          class="mb-6"
+        >
+        </v-alert>
+
         <v-autocomplete
           v-model="language"
           :items="languageOptions"
@@ -373,6 +397,13 @@ watch(
       :loading="loadingTable"
       class="bg-surface-2"
     >
+      <template v-slot:item.created="{ item }">
+        <span class="no-wrap">{{ tableDate(item as IDraftEntity, "createdBy") }}</span>
+      </template>
+      <template v-slot:item.lastUpdate="{ item }">
+        <span class="no-wrap">{{ tableDate(item as IDraftEntity, "lastUpdate") }}</span>
+      </template>
+
       <template v-slot:item.actions="{ item }">
         <v-tooltip :text="t(`${tBase}.editRecordTooltip`)">
           <template v-slot:activator="{ props: tooltip }">

@@ -207,6 +207,9 @@ const enT = {
               },
             },
             drafts: {
+              original: "Original",
+              originalAlert:
+                "Choosing the language as 'Original' will skip translation and generate the document as it is.",
               recordId: "Record Id",
               draftName: "Draft Name",
               documentTitle: "Document Title",
@@ -256,6 +259,18 @@ const enT = {
                       false: "Excluding drafts edited by me.",
                       null: "Toggle to filter drafts by editor.",
                     },
+                  },
+                },
+                created: {
+                  label: "Filter drafts by their creation date range.",
+                  messages: {
+                    title: "Created",
+                  },
+                },
+                updated: {
+                  label: "Filter drafts by their last updated date range.",
+                  messages: {
+                    title: "Updated",
                   },
                 },
               },

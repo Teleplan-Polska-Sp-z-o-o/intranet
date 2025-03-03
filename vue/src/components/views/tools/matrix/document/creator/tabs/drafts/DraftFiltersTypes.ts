@@ -1,14 +1,12 @@
 import { useI18n } from "vue-i18n";
 import { IUser } from "../../../../../../../../interfaces/user/UserTypes";
 
-const { t } = useI18n();
 const tBase = "tools.matrix.tabs.documents.creator.drafts";
-
-t(`${tBase}.filters.creator.messages.title`);
 
 export enum FilterInputType {
   SWITCH,
   SELECT,
+  DATE,
 }
 
 export enum FilterKey {
@@ -16,18 +14,24 @@ export enum FilterKey {
   CREATOR = "creator",
   EDITOR = "editor",
   LOCATOR = "locator",
+  CREATED = "created",
+  UPDATED = "updated",
 }
 
 type FilterKeyTypes = {
   [FilterKey.CREATOR]: boolean;
   [FilterKey.EDITOR]: boolean;
   [FilterKey.LOCATOR]: string;
+  [FilterKey.CREATED]: string[];
+  [FilterKey.UPDATED]: string[];
 };
 
 type FilterSideTypes = {
-  [FilterKey.CREATOR]: IUser | null;
-  [FilterKey.EDITOR]: IUser | null;
+  [FilterKey.CREATOR]: IUser;
+  [FilterKey.EDITOR]: IUser;
   [FilterKey.LOCATOR]: null;
+  [FilterKey.CREATED]: null;
+  [FilterKey.UPDATED]: null;
 };
 
 export class BaseFilter<
@@ -79,9 +83,10 @@ export class BaseFilter<
   /**
    * mainInput
    *
-   * You can use this with any switch input type
+   * You can use this with any input type
    */
-  set(input: TMain | null) {
+  set(input: TMain | null, log: boolean = false) {
+    if (log) console.log(`${this.options.key} - input`, input);
     this.mainInput.previous = this.mainInput.value;
     this.mainInput.value = input;
     this.mainInput.indeterminate = input === null;
@@ -112,7 +117,7 @@ export class BaseFilter<
   /**
    * sideInput
    *
-   * You can use this with any switch input type
+   * You can use this with any input type
    */
   input(input: TSide | null) {
     this.sideInput = { value: input };
@@ -121,6 +126,8 @@ export class BaseFilter<
 
 export class Creator extends BaseFilter<FilterKey.CREATOR> {
   constructor() {
+    const { t } = useI18n();
+
     const options = {
       key: FilterKey.CREATOR,
       inputType: FilterInputType.SWITCH,
@@ -142,6 +149,8 @@ export class Creator extends BaseFilter<FilterKey.CREATOR> {
 
 export class Editor extends BaseFilter<FilterKey.EDITOR> {
   constructor() {
+    const { t } = useI18n();
+
     const options = {
       key: FilterKey.EDITOR,
       inputType: FilterInputType.SWITCH,
@@ -163,6 +172,8 @@ export class Editor extends BaseFilter<FilterKey.EDITOR> {
 
 export class Locator extends BaseFilter<FilterKey.LOCATOR> {
   constructor() {
+    const { t } = useI18n();
+
     const options = {
       key: FilterKey.LOCATOR,
       inputType: FilterInputType.SELECT,
@@ -175,11 +186,61 @@ export class Locator extends BaseFilter<FilterKey.LOCATOR> {
     super(options, messages);
   }
 
-  setLocation(tz: string) {
-    this.mainInput.previous = this.mainInput.value;
-    this.mainInput.value = tz;
-    this.mainInput.indeterminate = false;
+  // customSet(tz: string | null) {
+  //   console.log("tz", tz);
+  //   this.mainInput.previous = this.mainInput.value;
+  //   this.mainInput.value = tz;
+  //   this.mainInput.indeterminate = tz === null;
+  // }
+}
+
+export class Created extends BaseFilter<FilterKey.CREATED> {
+  constructor() {
+    const { t } = useI18n();
+
+    const options = {
+      key: FilterKey.CREATED,
+      inputType: FilterInputType.DATE,
+    } as const;
+
+    const messages = {
+      title: t(`${tBase}.filters.created.messages.title`),
+      subtitle: ``,
+    };
+
+    super(options, messages);
   }
+
+  // customSet(dateRange: string[] | null) {
+  //   console.log("created", dateRange);
+  //   this.mainInput.previous = this.mainInput.value;
+  //   this.mainInput.value = dateRange;
+  //   this.mainInput.indeterminate = dateRange === null;
+  // }
+}
+export class Updated extends BaseFilter<FilterKey.UPDATED> {
+  constructor() {
+    const { t } = useI18n();
+
+    const options = {
+      key: FilterKey.UPDATED,
+      inputType: FilterInputType.DATE,
+    } as const;
+
+    const messages = {
+      title: t(`${tBase}.filters.updated.messages.title`),
+      subtitle: ``,
+    };
+
+    super(options, messages);
+  }
+
+  // customSet(dateRange: string[] | null) {
+  //   console.log("updated", dateRange);
+  //   this.mainInput.previous = this.mainInput.value;
+  //   this.mainInput.value = dateRange;
+  //   this.mainInput.indeterminate = dateRange === null;
+  // }
 }
 
 class Filters {
@@ -187,12 +248,16 @@ class Filters {
   locator: Locator;
   creator: Creator;
   editor: Editor;
+  created: Created;
+  updated: Updated;
 
   constructor() {
     // this.owner = new Owner();
     this.locator = new Locator();
     this.creator = new Creator();
     this.editor = new Editor();
+    this.created = new Created();
+    this.updated = new Updated();
   }
 }
 
