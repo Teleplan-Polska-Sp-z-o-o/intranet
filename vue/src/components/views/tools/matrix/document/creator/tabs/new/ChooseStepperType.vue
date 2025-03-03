@@ -36,6 +36,9 @@ function formatOption(option: DocumentCreatorStepper.EStepperType) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // 2) Uppercase first letter
     .join(" "); // 3) Join with space
 }
+
+//:image="`../../../../../documents/${option}-doc-type.png`"
+// height="200"
 </script>
 
 <template>
@@ -46,12 +49,20 @@ function formatOption(option: DocumentCreatorStepper.EStepperType) {
           <v-item v-slot="{ selectedClass }">
             <v-card
               :class="['d-flex align-center rounded-xl bg-surface-2 elevation-2', selectedClass]"
-              height="200"
               @click="selectStepperType(option)"
             >
-              <div class="text-h4 flex-grow-1 text-center">
+              <v-img
+                :src="`../../../../../documents/${option}-doc-type.png`"
+                class="align-end"
+                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                height="200px"
+                cover
+              >
+                <v-card-title class="text-white" v-text="formatOption(option)"></v-card-title>
+              </v-img>
+              <!-- <div class="text-h4 flex-grow-1 text-center">
                 {{ formatOption(option) }}
-              </div>
+              </div> -->
             </v-card>
           </v-item>
         </v-col>
