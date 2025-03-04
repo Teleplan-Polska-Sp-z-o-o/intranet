@@ -14,9 +14,12 @@ import {
   InstructionTemplateValues,
 } from "./templates/instruction/InstructionTemplate";
 import { TransCreateDocsResponseMessage } from "../../enums/response";
+import { SimpleUser } from "../user/SimpleUser";
 
 class DOCXGenerator {
   stepper: TStepper;
+  issuer: SimpleUser;
+  token: string;
   documentTemplate: string;
   //
   templateName: string;
@@ -25,8 +28,10 @@ class DOCXGenerator {
   //
   relationships: Relationship[] = []; // Store extracted relationship entries
 
-  constructor(stepper: TStepper) {
+  constructor(stepper: TStepper, issuer: SimpleUser, token: string) {
     this.stepper = stepper;
+    this.issuer = issuer;
+    this.token = token;
 
     switch (this.stepper.type) {
       case "instruction":
@@ -75,7 +80,9 @@ class DOCXGenerator {
           const instructionTemplateValues = new InstructionTemplateValues(
             this.documentTemplate,
             targetLanguage,
-            this.stepper
+            this.stepper,
+            this.issuer,
+            this.token
           );
           stepperEntries.values = await instructionTemplateValues.getValues(
             this.relationships,

@@ -11,6 +11,11 @@ import {
   MSErrorDetails,
   MSTranslatorError,
 } from "./MSTranslatorTypes";
+import { SimpleUser } from "../../user/SimpleUser";
+import { dataSource } from "../../../config/dataSource";
+import { Repository } from "typeorm";
+import { MSTranslatorUsage } from "../../../orm/entity/document/creator/MSTranslatorUsageEntity";
+import { serverConfig } from "../../../config/server";
 
 /**
  * Base class for interacting with the Microsoft Translator API.
@@ -23,7 +28,13 @@ class MSTranslatorBase {
   protected httpClient: AxiosInstance;
   protected endpoints: typeof EMSEndpoints;
 
-  constructor() {
+  protected issuer: SimpleUser;
+  protected token: string;
+
+  constructor(issuer: SimpleUser, token: string) {
+    this.issuer = issuer;
+    this.token = token;
+
     this.apiKey = msTranslatorConfig.apiKey;
     if (typeof this.apiKey !== "string" || !this.apiKey.trim()) {
       const error = new MSTranslatorError(
@@ -97,8 +108,8 @@ class MSTranslatorBase {
  * Preloaded class that detects content type and fetches supported languages.
  */
 export class MSTranslatorPreloaded extends MSTranslatorBase implements IMSTranslatorPreloaded {
-  constructor() {
-    super();
+  constructor(issuer: SimpleUser, token: string) {
+    super(issuer, token);
   }
 
   /**
@@ -157,7 +168,7 @@ export class MSTranslatorPreloaded extends MSTranslatorBase implements IMSTransl
         return null; // Gracefully skip translation
       }
 
-      return new MSTranslatorLoaded(load, loadedType);
+      return new MSTranslatorLoaded(load, loadedType, this.issuer, this.token);
     } catch (error) {
       if (error instanceof MSTranslatorError) {
         error.log();
@@ -181,8 +192,13 @@ export class MSTranslatorLoaded extends MSTranslatorBase implements IMSTranslato
   private loaded: string | string[];
   private loadedType: EMSLoadedType;
 
-  constructor(loaded: string | string[], loadedType: EMSLoadedType) {
-    super();
+  constructor(
+    loaded: string | string[],
+    loadedType: EMSLoadedType,
+    issuer: SimpleUser,
+    token: string
+  ) {
+    super(issuer, token);
     this.loaded = loaded;
     this.loadedType = loadedType;
   }
@@ -270,6 +286,46 @@ export class MSTranslatorLoaded extends MSTranslatorBase implements IMSTranslato
   //   }
 
   /**
+   * Logs translation usage in the database or sends a request to the middleware.
+   */
+  logTranslationUsage = async (
+    charactersUsed: number,
+    resultedInError: boolean,
+    errorMessage?: string
+  ): Promise<void> => {
+    try {
+      if (!serverConfig.test) {
+        // ✅ Directly log usage in the database
+        await dataSource.transaction(async (transactionalEntityManager) => {
+          const repo: Repository<MSTranslatorUsage> =
+            transactionalEntityManager.getRepository(MSTranslatorUsage);
+
+          const usage = new MSTranslatorUsage()
+            .build(charactersUsed, resultedInError, errorMessage)
+            .setCreatedBy(this.issuer);
+
+          await repo.save(usage);
+        });
+      } else {
+        // ✅ Make API request to update usage in test mode
+        await axios.post(
+          `${serverConfig.production_origin}/api/document/creator/ms-translator-usage/postUsage`,
+          {
+            charactersUsed: charactersUsed,
+            resultedInError,
+            errorMessage,
+          },
+          {
+            headers: { Authorization: `Bearer ${this.token}` }, // Attach JWT token
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Failed to log translation usage:", error);
+    }
+  };
+
+  /**
    * Translates the loaded content into the target language.
    *
    * Docs: {@link https://learn.microsoft.com/en-us/azure/ai-services/translator/reference/v3-0-translate Microsoft Docs}
@@ -278,6 +334,9 @@ export class MSTranslatorLoaded extends MSTranslatorBase implements IMSTranslato
     try {
       // Ensure `this.loaded` is an array of strings
       const load = Array.isArray(this.loaded) ? this.loaded : [this.loaded];
+
+      // Count total characters used in translation request
+      const totalCharactersUsed = load.reduce((sum, text) => sum + text.length, 0);
 
       if (targetLanguage === "original") return load;
       // if ((await this.detectLanguage()) === targetLanguage) return load;
@@ -294,6 +353,9 @@ export class MSTranslatorLoaded extends MSTranslatorBase implements IMSTranslato
         },
       });
 
+      // ✅ Log successful translation usage
+      await this.logTranslationUsage(totalCharactersUsed, false, null);
+
       // Extract translated texts
       const translatedTexts = response.data.map((item: any) => item.translations[0].text);
 
@@ -301,17 +363,8 @@ export class MSTranslatorLoaded extends MSTranslatorBase implements IMSTranslato
       return translatedTexts;
     } catch (error) {
       console.error("Translation API Request Failed:", error?.response?.data || error);
+      await this.logTranslationUsage(0, true, error?.message || "Unknown translation error");
       return Array.isArray(this.loaded) ? this.loaded : [this.loaded]; // Return original text(s) on error
     }
   }
 }
-
-/**
- * Example Usage:
- *
- * (async () => {
- *     const loadedTranslator: MSTranslatorLoaded =  new MSTranslatorPreloaded().load("<p>Hello, world!</p>", "es");
- *     const translatedLoad: string = await loadedTranslator.translate();
- *     console.log(`Translated: ${translatedLoad}`);
- * })();
- */

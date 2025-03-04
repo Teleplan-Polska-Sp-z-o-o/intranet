@@ -4,7 +4,7 @@ import jwtAxios from "../../../config/axios/jwtAxios";
 import { nodeConfig } from "../../../config/env";
 import { useAlertStore } from "../../../stores/alertStore";
 import { ResponseStatus } from "../../common/ResponseStatus";
-import { IDraftEntity } from "./IDraftEntity";
+import { IDraftEntity } from "../../../interfaces/document/creator/IDraftEntity";
 
 enum EMSErrorCodes {
   INVALID_API_KEY = "INVALID_API_KEY_TYPE",

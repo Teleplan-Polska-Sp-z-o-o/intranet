@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref, unref } from "vue";
-import { IDraftEntity } from "../../../models/document/creator/IDraftEntity";
+import { IDraftEntity } from "../../../interfaces/document/creator/IDraftEntity";
 import { DraftsSearch } from "../../../components/views/tools/matrix/document/creator/tabs/drafts/DraftFiltersTypes";
 import { useUserStore } from "../../userStore";
 import { SimpleUser } from "../../../models/user/SimpleUser";

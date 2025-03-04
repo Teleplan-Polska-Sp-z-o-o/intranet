@@ -2,7 +2,7 @@
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { DocumentCreatorManager } from "../../../../../../../../models/document/creator/CreatorManager";
-import { IDraftEntity } from "../../../../../../../../models/document/creator/IDraftEntity";
+import { IDraftEntity } from "../../../../../../../../interfaces/document/creator/IDraftEntity";
 import { useStepperStore } from "../../../../../../../../stores/documents/creator/useStepperStore";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import jwtAxios from "../../../../../../../../config/axios/jwtAxios";

@@ -5,6 +5,7 @@ import { HtmlToDocxXml } from "../../parser/HtmlToDocxXml";
 import { Relationship } from "../../parser/ParserTypes";
 import { ImagePlaceholderProcessor } from "../../translator/MSTranslatorHelpers";
 import InstructionTemplateKeysJSON from "./InstructionTemplateKeys.json";
+import { SimpleUser } from "../../../user/SimpleUser";
 
 export class InstructionTemplateKeys {
   private keys: Record<string, string>;
@@ -33,12 +34,22 @@ export class InstructionTemplateKeys {
 
 export class InstructionTemplateValues {
   private stepper: TStepper;
+  private issuer: SimpleUser;
+  private token: string;
   private values: Record<string, string | boolean | any[]>;
   private keys: Record<string, string>;
   private targetLanguage: string;
 
-  constructor(name: string, targetLanguage: string, stepper: TStepper) {
+  constructor(
+    name: string,
+    targetLanguage: string,
+    stepper: TStepper,
+    issuer: SimpleUser,
+    token: string
+  ) {
     this.stepper = stepper;
+    this.issuer = issuer;
+    this.token = token;
     this.targetLanguage = targetLanguage;
     this.keys = this.findInSwitch(name);
     this.values = {};
@@ -74,7 +85,7 @@ export class InstructionTemplateValues {
     relationships: Relationship[],
     converter: HtmlToDocxXml
   ): Promise<any[]> {
-    const translator = new MSTranslatorPreloaded();
+    const translator = new MSTranslatorPreloaded(this.issuer, this.token);
     const contentArray = [];
 
     const processSegment = async (segment: TSegment) => {
@@ -214,7 +225,7 @@ export class InstructionTemplateValues {
    * @param targetLanguage The target language for translation.
    */
   private async translateValues(targetLanguage: string): Promise<void> {
-    const preloadedTranslator = new MSTranslatorPreloaded();
+    const preloadedTranslator = new MSTranslatorPreloaded(this.issuer, this.token);
     const objectKeys = ["title", "product"];
 
     // Get non-empty keys

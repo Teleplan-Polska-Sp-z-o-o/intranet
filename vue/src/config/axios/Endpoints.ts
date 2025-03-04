@@ -28,6 +28,9 @@ enum Endpoints {
   DeleteDrafts = "/api/document/creator/delete", // /:id
   GenerateDrafts = "/api/document/creator/generate", // /:id/:language
 
+  GetUsageLogs = "/api/document/creator/ms-translator-usage/getUsageLogs",
+  GetTotalUsage = "/api/document/creator/ms-translator-usage/getTotalUsage",
+
   // editor
   News = "/api/editor/news",
   Request = "/api/editor/request",

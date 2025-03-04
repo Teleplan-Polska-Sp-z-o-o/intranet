@@ -1,5 +1,5 @@
 import { DocumentCreatorStepper } from "../../../components/views/tools/matrix/document/creator/tabs/new/StepperTypes";
-import { IUser } from "../../../interfaces/user/UserTypes";
+import { IUser } from "../../user/UserTypes";
 
 interface IOrmUserAction {
   user: IUser;

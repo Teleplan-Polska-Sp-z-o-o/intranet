@@ -118,6 +118,27 @@ const plT = {
             drafts: "Szkice",
           },
         },
+        dashboard: {
+          usage: "Przegląd użycia znaków",
+          FreeCharacterUsageChart: {
+            labels: {
+              used: "Zużyte znaki",
+              remaining: "Pozostałe darmowe znaki",
+            },
+            title: {
+              text: "Użycie darmowych znaków i pozostały limit",
+            },
+          },
+          PaidCharacterUsageChart: {
+            labels: {
+              used: "Wykorzystane płatne znaki",
+              remaining: "Całkowity koszt (USD)",
+            },
+            title: {
+              text: "Użycie płatnych znaków i koszt",
+            },
+          },
+        },
         createNew: {
           stepper: {
             actions: {

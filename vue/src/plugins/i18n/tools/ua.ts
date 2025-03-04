@@ -137,6 +137,27 @@ const uaT = {
                 drafts: "Чернетки",
               },
             },
+            dashboard: {
+              usage: "Огляд використання символів",
+              FreeCharacterUsageChart: {
+                labels: {
+                  used: "Використані символи",
+                  remaining: "Залишок безкоштовних символів",
+                },
+                title: {
+                  text: "Використання безкоштовних символів та залишкова квота",
+                },
+              },
+              PaidCharacterUsageChart: {
+                labels: {
+                  used: "Використані платні символи",
+                  remaining: "Загальна вартість (USD)",
+                },
+                title: {
+                  text: "Використання платних символів та вартість",
+                },
+              },
+            },
             createNew: {
               stepper: {
                 actions: {

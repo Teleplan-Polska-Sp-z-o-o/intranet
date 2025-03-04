@@ -19,6 +19,11 @@ import {
   deleteDraft,
   generateDraft,
 } from "../controllers/document/creatorController";
+import {
+  getTotalUsage,
+  getUsageLogs,
+  postUsage,
+} from "../controllers/document/msTranslatorUsageController";
 
 const router = express.Router();
 const upload = multer({ dest: path.join(UPLOADS_PATH, DOCUMENTS_FOLDER) });
@@ -43,5 +48,10 @@ router.put("/creator/new/put/:id", creatorUpload.any(), putDraft);
 router.get("/creator/get", getDrafts);
 router.delete("/creator/delete/:id", deleteDraft);
 router.post("/creator/generate/:id/:language", generateDraft);
+
+router.get("/creator/ms-translator-usage/getUsageLogs", getUsageLogs);
+router.get("/creator/ms-translator-usage/getTotalUsage", getTotalUsage);
+
+router.post("/creator/ms-translator-usage/postUsage", postUsage);
 
 export { router as documentRoutes };

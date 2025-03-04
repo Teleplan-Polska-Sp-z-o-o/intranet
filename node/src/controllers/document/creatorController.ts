@@ -165,6 +165,9 @@ const generateDraft = async (
   try {
     const { id, language } = req.params;
 
+    const issuer = new SimpleUser().build(req.user);
+    const token = req.headers["authorization"];
+
     await dataSource.transaction(async (transactionalEntityManager) => {
       const repo: Repository<Draft> = transactionalEntityManager.getRepository(Draft);
 
@@ -199,7 +202,11 @@ const generateDraft = async (
         }
       }
 
-      const documentGenerator = new DOCXGenerator(deepSafeParse<TStepper>(draft.stepper));
+      const documentGenerator = new DOCXGenerator(
+        deepSafeParse<TStepper>(draft.stepper),
+        issuer,
+        token
+      );
       const documentBuffer = await documentGenerator.generateDocument(language);
       const base64Document = documentBuffer.toString("base64");
 

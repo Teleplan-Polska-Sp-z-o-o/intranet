@@ -137,6 +137,27 @@ const enT = {
                 drafts: "Drafts",
               },
             },
+            dashboard: {
+              usage: "Character Usage Overview",
+              FreeCharacterUsageChart: {
+                labels: {
+                  used: "Used Characters",
+                  remaining: "Remaining Free Characters",
+                },
+                title: {
+                  text: "Free Character Usage & Remaining Quota",
+                },
+              },
+              PaidCharacterUsageChart: {
+                labels: {
+                  used: "Paid Characters Used",
+                  cost: "Total Cost (USD)",
+                },
+                title: {
+                  text: "Paid Character Usage & Cost",
+                },
+              },
+            },
             createNew: {
               stepper: {
                 actions: {
