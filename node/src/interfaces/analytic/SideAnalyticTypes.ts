@@ -11,4 +11,16 @@ export namespace SideAnalyticTypes {
   }
 
   export type RawTransactions = RawTransaction[];
+
+  export interface ITitanTestRawTransaction {
+    transaction_id: string;
+    part_no: string;
+    test_date: Date;
+    serial_no: string;
+    emp_hrid: string;
+    box_id: string;
+    hostname: string;
+  }
+
+  export type TTitanTestRawTransactions = ITitanTestRawTransaction[];
 }

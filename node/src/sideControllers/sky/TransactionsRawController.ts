@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { HttpResponseMessage } from "../../enums/response";
 import { RawTransaction } from "../../orm/sideEntity/postgres/RawTransactionsEntity";
 import { SideDataSources } from "../../config/SideDataSources";
+import { TitanTestRawTransaction } from "../../orm/sideEntity/postgres/TitanTestRawTransactionsEntity";
+import { Between, LessThan, MoreThanOrEqual } from "typeorm";
 
 const getRawSkyPackingTransactions = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -294,11 +296,52 @@ const getRawSkyTestTransactions = async (req: Request, res: Response): Promise<R
   }
 };
 
+const getRawSkyTestTransactions2 = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const body = req.body;
+
+    const startOfDay = new Date(JSON.parse(body.startOfDay));
+    const endOfDay = new Date(JSON.parse(body.endOfDay));
+
+    startOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+
+    // const startOfDayISO = startOfDay.toISOString();
+    // const endOfDayISO = endOfDay.toISOString();
+
+    const rawTransactionsRepo = SideDataSources.postgres.getRepository(TitanTestRawTransaction);
+
+    const rawTransactions = await rawTransactionsRepo.find({
+      where: {
+        test_date: Between(startOfDay, endOfDay),
+      },
+      order: {
+        test_date: "DESC",
+      },
+    });
+
+    return res.status(200).json({
+      raw: rawTransactions,
+      message: "Enhanced RawTransactions retrieved successfully",
+      statusMessage: HttpResponseMessage.GET_SUCCESS,
+    });
+  } catch (error) {
+    console.error("Error retrieving Enhanced RawTransactions: ", error);
+    return res.status(500).json({
+      raw: [],
+      message: "Unknown error occurred. Failed to retrieve Enhanced RawTransactions.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
 export {
   getRawSkyPackingTransactions,
   getRawCosmeticTransactions,
   getRawOobaTransactions,
   getRawSkyTestTransactions,
+  getRawSkyTestTransactions2,
 };
 
 // import { Request, Response } from "express";

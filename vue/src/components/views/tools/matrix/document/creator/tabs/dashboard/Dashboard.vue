@@ -27,7 +27,7 @@ onMounted(() => {
     image="../../../../../documents/build.png"
   ></v-empty-state> -->
   <v-container fluid>
-    <div class="text-h6">{{ t(`${tBase}.usage`) }}</div>
+    <div class="text-body-1 text-center">{{ t(`${tBase}.usage`) }}</div>
     <v-row no-gutters>
       <v-col :cols="6">
         <free-character-usage-chart :usedCharacters="msTotalUsage"></free-character-usage-chart>

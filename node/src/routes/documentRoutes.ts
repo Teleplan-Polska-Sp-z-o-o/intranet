@@ -27,14 +27,14 @@ import {
 
 const router = express.Router();
 const upload = multer({ dest: path.join(UPLOADS_PATH, DOCUMENTS_FOLDER) });
-// const decodeFormData = multer().none();
+
 const creatorUpload = multer({
   limits: {
     fieldSize: 10 * 1024 * 1024, // Increase the limit to 10MB
   },
 });
-// Define routes
 
+// Define routes
 router.post("/", upload.any(), addDocument);
 router.put("/", upload.any(), editDocument);
 router.put("/toggle-quick/:id", toggleQuickAccess);

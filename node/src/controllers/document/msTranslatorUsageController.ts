@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { dataSource } from "../../config/dataSource";
 import { HttpResponseMessage } from "../../enums/response";
-import { Repository } from "typeorm";
+import { LessThan, Repository } from "typeorm";
 import { SimpleUser } from "../../models/user/SimpleUser";
 import { MSTranslatorUsage } from "../../orm/entity/document/creator/MSTranslatorUsageEntity";
 import moment from "moment";
@@ -17,13 +17,15 @@ const postUsage = async (req: Request, res: Response) => {
 
       // Step 1: Calculate the cut-off date (First day of three months ago)
       const cutoffDate = moment().startOf("month").subtract(3, "months").toDate();
-
       // Step 2: Remove records older than the cutoff date
-      await repo
-        .createQueryBuilder()
-        .delete()
-        .where("createdAt < :cutoffDate", { cutoffDate })
-        .execute();
+      // await repo
+      //   .createQueryBuilder()
+      //   .delete()
+      //   .where("createdAt < :cutoffDate", { cutoffDate })
+      //   .execute();
+      await repo.delete({
+        ormCreateDate: LessThan(cutoffDate),
+      });
 
       // Step 3: Add new usage record
       const usage = new MSTranslatorUsage()

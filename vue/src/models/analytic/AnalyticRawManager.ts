@@ -62,6 +62,37 @@ class AnalyticRawManager<T> {
     }
     return response.data.raw ?? [];
   };
+
+  /**
+   *
+   * Returns transactions for "today" (between 6 AM of the current day and 6 AM of the next day)
+   *
+   * @param formData
+   * @param status
+   * @returns
+   */
+  public get2 = async (
+    formData: FormData,
+    signal?: AbortSignal,
+    status: boolean = false
+  ): Promise<T> => {
+    const response = await jwtAxios.post(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.Analytic}/raw/${this.program}/${this.group}-2`,
+      formData,
+      {
+        signal,
+      }
+    );
+    if (status) {
+      useAlertStore().process(
+        new ResponseStatus({
+          code: response.status,
+          message: response.data.statusMessage,
+        })
+      );
+    }
+    return response.data.raw ?? [];
+  };
 }
 
 export { AnalyticRawManager };

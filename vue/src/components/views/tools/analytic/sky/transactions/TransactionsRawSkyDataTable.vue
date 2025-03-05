@@ -147,6 +147,10 @@ const load = async (interrupt: boolean = true) => {
 
     const startTime = performance.now();
     const res = await arm.get(formData, abortController.value.signal);
+
+    const res2 = await arm.get2(formData, undefined);
+    console.log("titan test ver2: ", res2);
+
     const duration = performance.now() - startTime;
 
     // If the task is heavy, switch to a longer interval (5 minutes)

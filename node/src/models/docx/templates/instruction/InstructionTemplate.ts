@@ -21,7 +21,9 @@ export class InstructionTemplateKeys {
   private findInSwitch(name: string) {
     switch (name) {
       case "BYD-QA-TMP-0001_01":
-        return InstructionTemplateKeysJSON[this.targetLanguage];
+        return InstructionTemplateKeysJSON[
+          this.targetLanguage === "original" ? "en" : this.targetLanguage
+        ];
       default:
         return {};
     }

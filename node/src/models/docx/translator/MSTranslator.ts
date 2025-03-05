@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { msTranslatorConfig } from "../../../config/msTranslatorConfig";
-
+import https from "https";
 import {
   EMSEndpoints,
   EMSErrorCodes,
@@ -307,18 +307,26 @@ export class MSTranslatorLoaded extends MSTranslatorBase implements IMSTranslato
           await repo.save(usage);
         });
       } else {
+        const url = `${serverConfig.production_origin}:${serverConfig.port}/api/document/creator/ms-translator-usage/postUsage`;
+        const payload = {
+          charactersUsed: charactersUsed,
+          resultedInError,
+          errorMessage,
+        };
+
+        // Create an HTTPS agent with certificate and private key
+        const agent = new https.Agent({
+          rejectUnauthorized: false,
+        });
+
         // ✅ Make API request to update usage in test mode
-        await axios.post(
-          `${serverConfig.production_origin}/api/document/creator/ms-translator-usage/postUsage`,
-          {
-            charactersUsed: charactersUsed,
-            resultedInError,
-            errorMessage,
+        await axios.post(url, payload, {
+          headers: {
+            Authorization: `${this.token}`, // Attach JWT token
+            "Content-Type": "application/json",
           },
-          {
-            headers: { Authorization: `Bearer ${this.token}` }, // Attach JWT token
-          }
-        );
+          httpsAgent: agent,
+        });
       }
     } catch (error) {
       console.error("Failed to log translation usage:", error);
