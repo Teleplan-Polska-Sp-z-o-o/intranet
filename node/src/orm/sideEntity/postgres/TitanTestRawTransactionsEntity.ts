@@ -56,4 +56,7 @@ export class TitanTestRawTransaction implements SideAnalyticTypes.ITitanTestRawT
 
   @Column({ name: "hostname", type: "varchar", length: 100, transformer: varcharTransformer })
   hostname: string;
+
+  @Column({ name: "test_name", type: "varchar", length: 100, transformer: varcharTransformer })
+  test_name: string;
 }

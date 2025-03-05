@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
 import { AnalyticRaw } from "./Types";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore2";
 import { TimeHelper } from "../../../../../../models/common/TimeHelper";
 import { TransactionsHelper } from "./TransactionsHelper";
 import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
@@ -25,42 +25,84 @@ const store = useAnalyticRawTableStore();
 const route = useRoute();
 const abortController = ref<AbortController | null>(null);
 
+///
+// OLD
+///
+// const headers: any = computed(() => {
+//   const colsToManage = {
+//     serial: { title: "Serial No", align: "start", key: "serial_no", value: "serial_no" },
+//     emp: { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
+//     box: { title: "Box Id", align: "start", key: "box_id", value: "box_id" },
+//     host: { title: "Hostname", align: "start", key: "hostname", value: "hostname" },
+//   };
+//   const injectedColumns =
+//     unref(group) === "test" ? Object.values(colsToManage) : [colsToManage.emp];
+//   return [
+//     { title: "Contract", align: "start", key: "contract", value: "contract" },
+//     { title: "Order No", align: "start", key: "order_no", value: "order_no" },
+//     // { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
+//     ...injectedColumns,
+//     { title: "Part No", align: "start", key: "part_no", value: "part_no" },
+//     {
+//       title: "From Work Center No",
+//       align: "start",
+//       key: "work_center_no",
+//       value: "work_center_no",
+//     },
+//     { title: "Date", align: "start", key: "datedtz", value: "datedtz" },
+//   ];
+// });
+///
+// NEW
+///
 const headers: any = computed(() => {
   const colsToManage = {
     serial: { title: "Serial No", align: "start", key: "serial_no", value: "serial_no" },
-    emp: { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
-    box: { title: "Box Id", align: "start", key: "box_id", value: "box_id" },
+    emp: { title: "Employee HR ID", align: "start", key: "emp_hrid", value: "emp_hrid" },
+    box: { title: "Box ID", align: "start", key: "box_id", value: "box_id" },
     host: { title: "Hostname", align: "start", key: "hostname", value: "hostname" },
   };
+
   const injectedColumns =
     unref(group) === "test" ? Object.values(colsToManage) : [colsToManage.emp];
+
   return [
-    { title: "Contract", align: "start", key: "contract", value: "contract" },
-    { title: "Order No", align: "start", key: "order_no", value: "order_no" },
-    // { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
-    ...injectedColumns,
+    { title: "Transaction ID", align: "start", key: "transaction_id", value: "transaction_id" },
     { title: "Part No", align: "start", key: "part_no", value: "part_no" },
-    {
-      title: "From Work Center No",
-      align: "start",
-      key: "work_center_no",
-      value: "work_center_no",
-    },
-    { title: "Date", align: "start", key: "datedtz", value: "datedtz" },
+    { title: "Test Date", align: "start", key: "test_date", value: "test_date" },
+    ...injectedColumns,
   ];
 });
+///
 
 const searchTerm = ref<string>(""); // search input
+///
+// OLD
+///
+// const searchBy = ["contract", "order_no", "emp_name", "part_no", "work_center_no", "datedtz"];
+///
+// NEW
+///
 const searchBy = [
-  "contract",
-  "order_no",
-  "emp_name",
+  "transaction_id",
   "part_no",
-  "work_center_no",
-  // "next_work_center_no",
-  "datedtz",
+  "test_date",
+  "serial_no",
+  "emp_hrid",
+  "box_id",
+  "hostname",
 ];
-const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "datedtz", order: "asc" }];
+///
+
+///
+// OLD
+///
+// const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "datedtz", order: "asc" }];
+///
+// NEW
+///
+const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "test_date", order: "asc" }];
+///
 
 const loadingVersion = ref<number>(0);
 const loading = ref<false | "primary-container">(false);
@@ -68,6 +110,40 @@ let every = ref<number>(1); // Start with 1-minute intervals
 // Set threshold for task to be considered heavy (e.g., 10 seconds)
 const TASK_THRESHOLD = 10000;
 
+///
+// OLD
+///
+// const items = ref<AnalyticRaw.TTransactions>([]);
+// const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
+//   try {
+//     const data = unref(items);
+//     const searchTermLowered = unref(searchTerm).toLocaleLowerCase();
+//     const filtered = ref<AnalyticRaw.TTransactions>([]);
+
+//     if (searchTerm.value) {
+//       filtered.value = data.filter((item: AnalyticRaw.ITransactionsRow) => {
+//         for (const key of searchBy) {
+//           const valueFromColumnOfKey = JSON.stringify(item[key])?.toLocaleLowerCase();
+//           if (valueFromColumnOfKey && valueFromColumnOfKey.includes(searchTermLowered)) {
+//             return true;
+//           }
+//         }
+//         return false;
+//       });
+//     } else {
+//       filtered.value = data;
+//     }
+
+//     store.setItemsData(unref(identification), unref(filtered));
+//     return unref(filtered);
+//   } catch (error) {
+//     console.error(`Transactions Raw Table at filteredItems, ${error}`);
+//     return items.value;
+//   }
+// });
+///
+// NEW
+///
 const items = ref<AnalyticRaw.TTransactions>([]);
 const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
   try {
@@ -124,6 +200,78 @@ const handleInterval = (preForm: AnalyticRaw.IPreFormData | undefined, every: nu
   }
 };
 
+///
+// OLD
+///
+// const load = async (interrupt: boolean = true) => {
+//   try {
+//     const preFormData = unref(store.getPreFormData(unref(identification)));
+//     if (preFormData === undefined) throw new Error(`preFormData evaluates to undefined.`);
+
+//     // If there's an ongoing request, abort it
+//     if (abortController.value !== null) {
+//       if (interrupt === false) return;
+//       abortController.value.abort(); // Abort only if `interrupt` is true
+//     }
+
+//     const tm = TimerManager.getInstance();
+//     if (tm.isTimerRunning("raw")) {
+//       tm.startTimer("raw");
+//     }
+
+//     abortController.value = new AbortController();
+//     const arm = new AnalyticRawManager<AnalyticRaw.TTransactions>(unref(program), unref(group));
+//     const formData = arm.createFormData(preFormData);
+
+//     const startTime = performance.now();
+//     const res = await arm.get(formData, abortController.value.signal);
+
+//     const res2 = await arm.get2(formData, undefined);
+//     console.log("titan test ver2: ", res2);
+
+//     const duration = performance.now() - startTime;
+
+//     // If the task is heavy, switch to a longer interval (5 minutes)
+//     if (duration > TASK_THRESHOLD) {
+//       // console.log(`Heavy task detected, switching to 5-minute intervals. Task time: ${duration}ms`);
+//       const si = unref(stopInterval);
+//       if (unref(every) !== 5 || !si) {
+//         every.value = 5;
+//         if (si) {
+//           si();
+//           stopInterval.value = null;
+//         }
+//         handleInterval(preFormData, unref(every));
+//       }
+//     } else {
+//       // console.log(`Light task detected, switching to 1-minute intervals. Task time: ${duration}ms`);
+//       const si = unref(stopInterval);
+//       if (unref(every) > 1 || !si) {
+//         // Switch back to 1-minute intervals
+//         every.value = 1;
+//         if (si) {
+//           si();
+//           stopInterval.value = null;
+//         }
+//         handleInterval(preFormData, unref(every));
+//       }
+//     }
+
+//     items.value = res;
+//     loading.value = false;
+//   } catch (error) {
+//     if (axios.isCancel(error)) {
+//       console.log("Transactions Raw Table at load, previous request aborted");
+//     } else {
+//       console.error(`Transactions Raw Table at load, ${error}`);
+//     }
+//   } finally {
+//     abortController.value = null;
+//   }
+// };
+///
+// NEW
+///
 const load = async (interrupt: boolean = true) => {
   try {
     const preFormData = unref(store.getPreFormData(unref(identification)));
@@ -140,13 +288,12 @@ const load = async (interrupt: boolean = true) => {
       tm.startTimer("raw");
     }
 
-    // Create a new AbortController for the new request
     abortController.value = new AbortController();
     const arm = new AnalyticRawManager<AnalyticRaw.TTransactions>(unref(program), unref(group));
     const formData = arm.createFormData(preFormData);
 
     const startTime = performance.now();
-    const res = await arm.get(formData, abortController.value.signal);
+    const res = await arm.get2(formData, abortController.value.signal);
 
     const duration = performance.now() - startTime;
 
@@ -188,6 +335,7 @@ const load = async (interrupt: boolean = true) => {
     abortController.value = null;
   }
 };
+///
 
 // Cleanup on component unmount
 onUnmounted(() => {

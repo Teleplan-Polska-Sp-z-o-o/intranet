@@ -3,7 +3,7 @@ import { HttpResponseMessage } from "../../enums/response";
 import { RawTransaction } from "../../orm/sideEntity/postgres/RawTransactionsEntity";
 import { SideDataSources } from "../../config/SideDataSources";
 import { TitanTestRawTransaction } from "../../orm/sideEntity/postgres/TitanTestRawTransactionsEntity";
-import { Between, LessThan, MoreThanOrEqual } from "typeorm";
+import { Between, In, LessThan, MoreThanOrEqual } from "typeorm";
 
 const getRawSkyPackingTransactions = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -312,14 +312,43 @@ const getRawSkyTestTransactions2 = async (req: Request, res: Response): Promise<
 
     const rawTransactionsRepo = SideDataSources.postgres.getRepository(TitanTestRawTransaction);
 
-    const rawTransactions = await rawTransactionsRepo.find({
-      where: {
-        test_date: Between(startOfDay, endOfDay),
-      },
-      order: {
-        test_date: "DESC",
-      },
-    });
+    // const rawTransactions = await rawTransactionsRepo.find({
+    //   where: {
+    //     test_date: Between(startOfDay, endOfDay),
+    //     test_name: In([
+    //       "EUROMODEM::OPERATORSCAN->OPERATORBARCODE",
+    //       "SKYMODEM::OPERATORSCAN->OPERATORBARCODE",
+    //       "SKYQ::OPERATORSCAN->OPERATORBARCODE",
+    //       "SKYQ::OPERATORSCAN->OPERATORSCAN",
+    //       "SKYMODEM::OPERATORSCAN->OPERATORSCAN",
+    //       "EUROMODEM::OPERATORSCAN->OPERATORSCAN",
+    //     ]),
+    //   },
+    //   order: {
+    //     test_date: "ASC",
+    //   },
+    // });
+    const rawTransactions = await rawTransactionsRepo
+      .createQueryBuilder("ial")
+      .where("ial.test_date BETWEEN :startOfDay AND :endOfDay", {
+        startOfDay,
+        endOfDay,
+      })
+      .andWhere(
+        "UPPER(ial.test_name) IN (:...testNames)", // Apply UPPER to test_name
+        {
+          testNames: [
+            "EUROMODEM::OPERATORSCAN->OPERATORBARCODE",
+            "SKYMODEM::OPERATORSCAN->OPERATORBARCODE",
+            "SKYQ::OPERATORSCAN->OPERATORBARCODE",
+            "SKYQ::OPERATORSCAN->OPERATORSCAN",
+            "SKYMODEM::OPERATORSCAN->OPERATORSCAN",
+            "EUROMODEM::OPERATORSCAN->OPERATORSCAN",
+          ].map((name) => name.toUpperCase()), // Convert values to uppercase
+        }
+      )
+      .orderBy("ial.test_date", "ASC")
+      .getMany();
 
     return res.status(200).json({
       raw: rawTransactions,

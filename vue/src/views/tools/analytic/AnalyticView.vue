@@ -7,7 +7,7 @@ import { usePermissionStore } from "../../../stores/permissionStore";
 import FileDrive from "../../../components/views/tools/analytic/files/drive/FileDrive.vue";
 import Documentation from "../../../components/views/tools/analytic/Documentation.vue";
 // raws
-import TransactionsRawSkyDataTable from "../../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
+import TransactionsRawSkyDataTable from "../../../components/views/tools/analytic/sky/transactions2/TransactionsRawSkyDataTable.vue";
 import TransactionsRawLenovoDataTable from "../../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
 import TransactionsRawIngenicoDataTable from "../../../components/views/tools/analytic/ingenico/common/transactions/TransactionsRawIngenicoDataTable.vue";
 import TransactionsRawLibertyDataTable from "../../../components/views/tools/analytic/liberty/common/transactions/TransactionsRawLibertyDataTable.vue";
@@ -18,7 +18,7 @@ import SkyPackedUnitsOverview from "../../../components/views/tools/analytic/sky
 import SkyPackingEfficiencyOverview from "../../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
 import SkyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
 import SkyOobaEfficiencyOverview from "../../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
-import SkyTestEfficiencyOverview from "../../../components/views/tools/analytic/sky/test/efficiency/TestEfficiencyOverview.vue";
+import SkyTestEfficiencyOverview from "../../../components/views/tools/analytic/sky/test/efficiency2/TestEfficiencyOverview.vue";
 
 // lenovo
 import LenovoRepairEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";

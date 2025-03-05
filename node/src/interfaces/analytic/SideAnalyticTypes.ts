@@ -20,6 +20,7 @@ export namespace SideAnalyticTypes {
     emp_hrid: string;
     box_id: string;
     hostname: string;
+    test_name: string;
   }
 
   export type TTitanTestRawTransactions = ITitanTestRawTransaction[];
