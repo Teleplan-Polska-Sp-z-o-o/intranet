@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, unref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useStepperStore } from "../../../../../../../../stores/documents/creator/useStepperStore";
 
 const store = useStepperStore();
@@ -12,7 +12,7 @@ const dialog = ref<boolean>(false);
 //   if (nd) console.log("store.stepper", store.stepper);
 // });
 
-// const router = computed(() => useRouter());
+const router = useRouter();
 const route = useRoute();
 // const router = useRouter();
 // const route: RouteLocationNormalizedLoadedGeneric = useRoute();
@@ -26,6 +26,7 @@ const save = async () => {
   } catch (error) {
     throw error;
   } finally {
+    store.clearStepper();
     loading.value = false;
     dialog.value = false;
     // store.setStepper({
@@ -34,7 +35,7 @@ const save = async () => {
     //   //   router,
     //   // },
     // });
-    store.clearStepper();
+    router.push({ path: `/tool/matrix/browse/documents/creator/new` });
   }
 };
 </script>

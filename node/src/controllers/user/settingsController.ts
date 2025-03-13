@@ -36,7 +36,6 @@ const setSettingsTheme = async (req: Request, res: Response) => {
     userSettings.theme = settings.theme;
 
     await dataSource.getRepository(UserSettings).save(userSettings);
-
     return res.status(200).json({
       message: "Theme updated successfully.",
       statusMessage: HttpResponseMessage.PUT_SUCCESS,

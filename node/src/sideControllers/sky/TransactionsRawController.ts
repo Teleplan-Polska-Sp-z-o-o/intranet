@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { HttpResponseMessage } from "../../enums/response";
 import { RawTransaction } from "../../orm/sideEntity/postgres/RawTransactionsEntity";
 import { SideDataSources } from "../../config/SideDataSources";
-import { TitanTestRawTransaction } from "../../orm/sideEntity/postgres/TitanTestRawTransactionsEntity";
-import { Between, In, LessThan, MoreThanOrEqual } from "typeorm";
+import { ProdTitanTestRawTransaction } from "../../orm/sideEntity/postgres/ProdTitanTestRawTransactionsEntity";
+import { ReptTitanTestRawTransaction } from "../../orm/sideEntity/postgres/ReptTitanTestRawTransactionsEntity";
 
 const getRawSkyPackingTransactions = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -310,33 +310,125 @@ const getRawSkyTestTransactions2 = async (req: Request, res: Response): Promise<
     // const startOfDayISO = startOfDay.toISOString();
     // const endOfDayISO = endOfDay.toISOString();
 
-    const rawTransactionsRepo = SideDataSources.postgres.getRepository(TitanTestRawTransaction);
+    const prodRawTransactionsRepo = SideDataSources.postgres.getRepository(
+      ProdTitanTestRawTransaction
+    );
+    const reptRawTransactionsRepo = SideDataSources.postgres.getRepository(
+      ReptTitanTestRawTransaction
+    );
 
-    // const rawTransactions = await rawTransactionsRepo.find({
-    //   where: {
-    //     test_date: Between(startOfDay, endOfDay),
-    //     test_name: In([
-    //       "EUROMODEM::OPERATORSCAN->OPERATORBARCODE",
-    //       "SKYMODEM::OPERATORSCAN->OPERATORBARCODE",
-    //       "SKYQ::OPERATORSCAN->OPERATORBARCODE",
-    //       "SKYQ::OPERATORSCAN->OPERATORSCAN",
-    //       "SKYMODEM::OPERATORSCAN->OPERATORSCAN",
-    //       "EUROMODEM::OPERATORSCAN->OPERATORSCAN",
-    //     ]),
-    //   },
-    //   order: {
-    //     test_date: "ASC",
-    //   },
-    // });
-    const rawTransactions = await rawTransactionsRepo
-      .createQueryBuilder("ial")
-      .where("ial.test_date BETWEEN :startOfDay AND :endOfDay", {
-        startOfDay,
-        endOfDay,
-      })
-      .andWhere(
-        "UPPER(ial.test_name) IN (:...testNames)", // Apply UPPER to test_name
-        {
+    // const rawTransactions = await rawTransactionsRepo
+    //   .createQueryBuilder("ial")
+    //   .where("ial.test_date BETWEEN :startOfDay AND :endOfDay", {
+    //     startOfDay,
+    //     endOfDay,
+    //   })
+    //   .andWhere(
+    //     "UPPER(ial.test_name) IN (:...testNames)", // Apply UPPER to test_name
+    //     {
+    //       testNames: [
+    //         "EUROMODEM::OPERATORSCAN->OPERATORBARCODE",
+    //         "SKYMODEM::OPERATORSCAN->OPERATORBARCODE",
+    //         "SKYQ::OPERATORSCAN->OPERATORBARCODE",
+    //         "SKYQ::OPERATORSCAN->OPERATORSCAN",
+    //         "SKYMODEM::OPERATORSCAN->OPERATORSCAN",
+    //         "EUROMODEM::OPERATORSCAN->OPERATORSCAN",
+    //       ].map((name) => name.toUpperCase()), // Convert values to uppercase
+    //     }
+    //   )
+    //   .orderBy("ial.test_date", "ASC")
+    //   .getMany();
+
+    const today = new Date();
+    today.setHours(6, 0, 0, 0); // Align with your system start time
+
+    const includesToday = endOfDay > today && startOfDay <= today;
+
+    let reptTransactions = [];
+    let prodTransactions = [];
+
+    // Fetch historical data from REPT (excluding today)
+    // Fetch today's data from PROD if today's date is within range
+    if (includesToday) {
+      [reptTransactions, prodTransactions] = await Promise.all([
+        reptRawTransactionsRepo
+          .createQueryBuilder("ial")
+          .where("ial.test_date BETWEEN :startOfDay AND :endOfDay", {
+            startOfDay,
+            endOfDay: today, // Fetch until today but not including today
+          })
+          .andWhere("UPPER(ial.test_name) IN (:...testNames)", {
+            testNames: [
+              "EUROMODEM::OPERATORSCAN->OPERATORBARCODE",
+              "SKYMODEM::OPERATORSCAN->OPERATORBARCODE",
+              "SKYQ::OPERATORSCAN->OPERATORBARCODE",
+              "SKYQ::OPERATORSCAN->OPERATORSCAN",
+              "SKYMODEM::OPERATORSCAN->OPERATORSCAN",
+              "EUROMODEM::OPERATORSCAN->OPERATORSCAN",
+            ].map((name) => name.toUpperCase()),
+          })
+          .andWhere("ial.hostname IN (:...hostnames)", {
+            hostnames: [
+              "siteserver77",
+              "siteserver90",
+              "siteserver78",
+              "siteserver97",
+              "siteserver85",
+              "siteserver86",
+              "siteserver91",
+              "siteserver104",
+              "siteserver94",
+              "siteserver92",
+              "siteserver82",
+              "siteserver115",
+            ],
+          })
+          .orderBy("ial.test_date", "ASC")
+          .getMany(),
+        prodRawTransactionsRepo
+          .createQueryBuilder("ial")
+          .where("ial.test_date BETWEEN :todayStart AND :endOfDay", {
+            todayStart: today, // Fetch from today's start to the specified end date
+            endOfDay,
+          })
+          .andWhere("UPPER(ial.test_name) IN (:...testNames)", {
+            testNames: [
+              "EUROMODEM::OPERATORSCAN->OPERATORBARCODE",
+              "SKYMODEM::OPERATORSCAN->OPERATORBARCODE",
+              "SKYQ::OPERATORSCAN->OPERATORBARCODE",
+              "SKYQ::OPERATORSCAN->OPERATORSCAN",
+              "SKYMODEM::OPERATORSCAN->OPERATORSCAN",
+              "EUROMODEM::OPERATORSCAN->OPERATORSCAN",
+            ].map((name) => name.toUpperCase()),
+          })
+          .andWhere("ial.hostname IN (:...hostnames)", {
+            hostnames: [
+              "siteserver77",
+              "siteserver90",
+              "siteserver78",
+              "siteserver97",
+              "siteserver85",
+              "siteserver86",
+              "siteserver91",
+              "siteserver104",
+              "siteserver94",
+              "siteserver92",
+              "siteserver82",
+              "siteserver115",
+            ],
+          })
+          .orderBy("ial.test_date", "ASC")
+          .getMany(),
+      ]);
+    } else {
+      // If today is NOT in range, get everything from REPT
+      reptTransactions = await reptRawTransactionsRepo
+        .createQueryBuilder("ial")
+        .where("ial.test_date BETWEEN :startOfDay AND :endOfDay", {
+          startOfDay,
+          endOfDay,
+        })
+        .andWhere("UPPER(ial.test_name) IN (:...testNames)", {
           testNames: [
             "EUROMODEM::OPERATORSCAN->OPERATORBARCODE",
             "SKYMODEM::OPERATORSCAN->OPERATORBARCODE",
@@ -344,14 +436,17 @@ const getRawSkyTestTransactions2 = async (req: Request, res: Response): Promise<
             "SKYQ::OPERATORSCAN->OPERATORSCAN",
             "SKYMODEM::OPERATORSCAN->OPERATORSCAN",
             "EUROMODEM::OPERATORSCAN->OPERATORSCAN",
-          ].map((name) => name.toUpperCase()), // Convert values to uppercase
-        }
-      )
-      .orderBy("ial.test_date", "ASC")
-      .getMany();
+          ].map((name) => name.toUpperCase()),
+        })
+        .orderBy("ial.test_date", "ASC")
+        .getMany();
+    }
+
+    // Merge both results
+    const combinedTransactions = [...reptTransactions, ...prodTransactions];
 
     return res.status(200).json({
-      raw: rawTransactions,
+      raw: combinedTransactions,
       message: "Enhanced RawTransactions retrieved successfully",
       statusMessage: HttpResponseMessage.GET_SUCCESS,
     });

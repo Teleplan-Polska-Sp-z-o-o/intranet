@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn } from "typeorm";
 import { SideAnalyticTypes } from "../../../interfaces/analytic/SideAnalyticTypes";
-import * as moment from "moment-timezone";
+import moment from "moment-timezone";
 import { ValueTransformer } from "typeorm";
 
 const timestampTransformer: ValueTransformer = {
@@ -14,7 +14,7 @@ const timestampTransformer: ValueTransformer = {
     if (!value) {
       return "";
     }
-    return moment.tz(value, "Europe/Warsaw").toISOString();
+    return moment(value).toISOString();
   },
 };
 
@@ -35,7 +35,7 @@ const varcharTransformer: ValueTransformer = {
 };
 
 @Entity({ name: "titan2_tests_results", schema: "info_emprod02" })
-export class TitanTestRawTransaction implements SideAnalyticTypes.ITitanTestRawTransaction {
+export class ProdTitanTestRawTransaction implements SideAnalyticTypes.ITitanTestRawTransaction {
   @PrimaryColumn({ name: "id", type: "varchar", length: 20, transformer: varcharTransformer })
   transaction_id: string;
 

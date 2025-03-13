@@ -10,6 +10,15 @@ import "moment-timezone";
 export const useDraftsStore = defineStore("document-drafts", () => {
   const drafts = ref<IDraftEntity[]>([]);
   const draftsSearch = ref<DraftsSearch>(new DraftsSearch());
+
+  // watch(
+  //   draftsSearch,
+  //   (nV) => {
+  //     console.log("draftsSearch", nV);
+  //   },
+  //   { deep: true, immediate: true }
+  // );
+
   const resetDraftsSearch = (): void => {
     draftsSearch.value = new DraftsSearch();
   };
@@ -26,11 +35,12 @@ export const useDraftsStore = defineStore("document-drafts", () => {
 
       // 🔎 Search Bar Filter (Draft Name, Document Title, Document Id-Rev)
       if (bar) {
+        const trimmedBar = bar.trim();
         const matchesSearch =
-          draft.id.toString().includes(bar) ||
-          draft.name.toLowerCase().includes(bar) ||
-          draft.stepper._documentTitle.toLowerCase().includes(bar) ||
-          draft.stepper._documentIdRevision.toLowerCase().includes(bar);
+          draft.id.toString().includes(trimmedBar) ||
+          draft.name.toLowerCase().includes(trimmedBar) ||
+          draft.stepper._documentTitle.toLowerCase().includes(trimmedBar) ||
+          draft.stepper._documentIdRevision.toLowerCase().includes(trimmedBar);
         if (!matchesSearch) return false;
       }
 
@@ -48,16 +58,18 @@ export const useDraftsStore = defineStore("document-drafts", () => {
       ///
       // Creator filter
       ///
-      const creatorSwitch = filters.creator.mainInput.value;
-      if (creatorSwitch !== null) {
-        const isCreator = draft.createdBy.user.id === user.id;
+      // const creatorSwitch = filters.creator.mainInput.value;
+      // if (creatorSwitch !== null) {
+      //   console.log("creatorSwitch", creatorSwitch);
+      //   const isCreator = draft.createdBy.user.id === user.id;
 
-        if (creatorSwitch && !isCreator) return false;
-        if (creatorSwitch === false && isCreator) return false;
-      }
+      //   if (creatorSwitch && !isCreator) return false;
+      //   if (creatorSwitch === false && isCreator) return false;
+      // }
 
       const creatorSideInput = filters.creator.sideInput?.value;
-      if (typeof creatorSideInput === "object") {
+      if (creatorSideInput !== null) {
+        // console.log("creatorSideInput", creatorSideInput);
         const isCreator = draft.createdBy.user.id === user.id;
 
         if (!isCreator) return false;
@@ -67,16 +79,18 @@ export const useDraftsStore = defineStore("document-drafts", () => {
       ///
       /// Editor filter (Applying Same Logic as Creator)
       ///
-      const editorSwitch = filters.editor.mainInput.value;
-      if (editorSwitch !== null) {
-        const isEditor = draft.updatedBy.some((update) => update.user.id === user.id);
+      // const editorSwitch = filters.editor.mainInput.value;
+      // if (editorSwitch !== null) {
+      //   console.log("editorSwitch", creatorSwitch);
+      //   const isEditor = draft.updatedBy.some((update) => update.user.id === user.id);
 
-        if (editorSwitch && !isEditor) return false;
-        if (editorSwitch === false && isEditor) return false;
-      }
+      //   if (editorSwitch && !isEditor) return false;
+      //   if (editorSwitch === false && isEditor) return false;
+      // }
 
       const editorSideInput = filters.editor.sideInput?.value;
-      if (typeof editorSideInput === "object") {
+      if (editorSideInput !== null) {
+        // console.log("editorSideInput", editorSideInput);
         const isEditor = draft.updatedBy.some((update) => update.user.id === user.id);
         if (!isEditor) return false;
       }

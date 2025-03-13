@@ -2,7 +2,6 @@
 import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
 import { AnalyticRaw } from "./Types";
 import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore2";
-import { TimeHelper } from "../../../../../../models/common/TimeHelper";
 import { TransactionsHelper } from "./TransactionsHelper";
 import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
 import { useRoute } from "vue-router";
@@ -12,6 +11,7 @@ import { DataTableHeader } from "../common/download/DataTableHeader";
 import { AnalyticRawManager } from "../../../../../../models/analytic/AnalyticRawManager";
 import axios from "axios";
 import { TimerManager } from "../common/debug/Timers";
+import moment from "moment-timezone";
 
 const props = defineProps<{
   program: AnalyticRaw.TPrograms;
@@ -425,8 +425,8 @@ const downloadHeaders = (unref(headers) as DataTableHeader[]).filter((col: DataT
       ]"
       class="bg-surface-2"
     >
-      <template v-slot:item.datedtz="{ item }: { item: AnalyticRaw.ITransactionsRow }">
-        {{ TimeHelper.removeTimezone(TimeHelper.convertToLocalTime(item.datedtz)) }}
+      <template v-slot:item.test_date="{ item }: { item: AnalyticRaw.ITransactionsRow }">
+        {{ moment.utc(item.test_date).format("YYYY-MM-DD HH:mm:ss") }}
       </template>
     </v-data-table>
   </v-card>

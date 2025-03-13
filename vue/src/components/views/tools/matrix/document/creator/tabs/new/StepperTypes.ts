@@ -192,6 +192,10 @@ export namespace DocumentCreatorStepper {
     INSTRUCTION = "instruction",
   }
 
+  export const ChooseStepperTypeImages: Record<EStepperType, string> = {
+    [EStepperType.INSTRUCTION]: "../../../../../documents/instruction-doc-type.png",
+  };
+
   interface IVuetifyValidation {
     valid: boolean;
     errors: {

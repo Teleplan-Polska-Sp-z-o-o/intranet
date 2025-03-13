@@ -75,7 +75,6 @@ const push = (tabName: string) => {
     // });
     store.clearStepper();
   }
-
   router.push({ path: `/tool/matrix/browse/documents/creator/${tabName}` });
 };
 </script>

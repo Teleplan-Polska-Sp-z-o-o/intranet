@@ -64,7 +64,7 @@ const uniqueTzs = computed(() => {
   <v-card-text>
     <!-- style="width: calc(100% - 2 * (4 /* <- number from mx-<number> */ * 4px))" mx-4 -->
     <v-sheet border="tertiary md" class="rounded-lg">
-      <v-expansion-panels elevation="0" multiple>
+      <v-expansion-panels elevation="0" multiple :disabled="true">
         <v-expansion-panel class="bg-surface-2" elevation="0">
           <v-expansion-panel-title
             expand-icon="mdi-filter-menu-outline"

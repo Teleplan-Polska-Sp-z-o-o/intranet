@@ -16,18 +16,22 @@ export namespace EfficiencyModels {
     }
 
     update(processingTimePerUnit: number) {
-      const processingTimeInMinutes = processingTimePerUnit / 60; // Convert seconds to minutes
-      this.processing_time += processingTimeInMinutes;
+      // const processingTimeInMinutes = processingTimePerUnit / 60; // Convert seconds to minutes
+      this.processing_time += processingTimePerUnit;
       this.processed_units += 1;
     }
 
-    calculateEfficiency(
-      workedQuarters: number | undefined = undefined,
-      minutesPerQuarter: number = 15
-    ) {
-      const totalWorkingTime = workedQuarters
-        ? workedQuarters * minutesPerQuarter
-        : minutesPerQuarter;
+    // calculateEfficiency(
+    //   workedQuarters: number | undefined = undefined,
+    //   minutesPerQuarter: number = 15
+    // ) {
+    //   const totalWorkingTime = workedQuarters
+    //     ? workedQuarters * minutesPerQuarter
+    //     : minutesPerQuarter;
+    //   this.efficiency = totalWorkingTime > 0 ? (this.processing_time / totalWorkingTime) * 100 : 0;
+    // }
+    calculateEfficiency(workedQuarters: number | undefined = undefined) {
+      const totalWorkingTime = (workedQuarters ?? 1) * 15; // Ensure minutes
       this.efficiency = totalWorkingTime > 0 ? (this.processing_time / totalWorkingTime) * 100 : 0;
     }
   }
@@ -215,6 +219,11 @@ export namespace EfficiencyModels {
           quarter.calculateEfficiency();
         });
       });
+
+      // const firstEmployee = Object.values(employeeDataMap)[0]; // Get first employee
+      // if (firstEmployee) {
+      //   console.log("quarterlyChart", firstEmployee.quarterlyChart);
+      // }
     }
 
     private calculateEmployeesDaily(
@@ -233,11 +242,19 @@ export namespace EfficiencyModels {
           ).length;
         });
         // Calculate efficiency for each day based on that day's worked hours
+
         Object.entries(dailyChart).forEach(([date, daily]) => {
-          const dailyWorkedHours = workedHoursPerDay[date];
-          daily.calculateEfficiency(dailyWorkedHours);
+          // looks like its not hours but quarters already
+          // const dailyWorkedHours = workedHoursPerDay[date];
+          const dailyWorkedQuarters = workedHoursPerDay[date];
+          daily.calculateEfficiency(dailyWorkedQuarters);
         });
       });
+
+      // const firstEmployee = Object.values(employeeDataMap)[0]; // Get first employee
+      // if (firstEmployee) {
+      //   console.log("dailyChart", firstEmployee.dailyChart);
+      // }
     }
 
     private calculateWeightedAverages(employee: EfficiencyTypes.IProcessedEmployee) {

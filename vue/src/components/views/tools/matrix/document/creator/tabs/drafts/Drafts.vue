@@ -371,8 +371,9 @@ watch(
     </v-card>
   </v-dialog>
 
-  <v-card class="rounded-xl bg-surface-2 elevation-2 ma-1">
-    <!-- <v-card-title class="d-flex align-center pe-2">
+  <v-fade-transition hide-on-leave>
+    <v-card class="rounded-xl bg-surface-2 elevation-2 ma-1">
+      <!-- <v-card-title class="d-flex align-center pe-2">
       <v-spacer></v-spacer>
 
       <v-text-field
@@ -388,67 +389,68 @@ watch(
       ></v-text-field>
     </v-card-title> -->
 
-    <draft-filters></draft-filters>
+      <draft-filters></draft-filters>
 
-    <!-- v-model:search="search" -->
-    <v-card-text>
-      <v-data-table
-        :headers="headers"
-        :items="draftsStore.computedDrafts"
-        :loading="loadingTable"
-        class="bg-surface-2"
-      >
-        <template v-slot:item.created="{ item }">
-          <span class="no-wrap">{{ tableDate(item as IDraftEntity, "createdBy") }}</span>
-        </template>
-        <template v-slot:item.lastUpdate="{ item }">
-          <span class="no-wrap">{{ tableDate(item as IDraftEntity, "lastUpdate") }}</span>
-        </template>
+      <!-- v-model:search="search" -->
+      <v-card-text>
+        <v-data-table
+          :headers="headers"
+          :items="draftsStore.computedDrafts"
+          :loading="loadingTable"
+          class="bg-surface-2"
+        >
+          <template v-slot:item.created="{ item }">
+            <span class="no-wrap">{{ tableDate(item as IDraftEntity, "createdBy") }}</span>
+          </template>
+          <template v-slot:item.lastUpdate="{ item }">
+            <span class="no-wrap">{{ tableDate(item as IDraftEntity, "lastUpdate") }}</span>
+          </template>
 
-        <template v-slot:item.actions="{ item }">
-          <v-tooltip :text="t(`${tBase}.editRecordTooltip`)">
-            <template v-slot:activator="{ props: tooltip }">
-              <v-btn
-                variant="tonal"
-                color="info"
-                size="small"
-                v-bind="tooltip"
-                @click="editDraft(item as IDraftEntity)"
-                icon="mdi-pencil"
-                class="ma-2"
-              />
-            </template>
-          </v-tooltip>
+          <template v-slot:item.actions="{ item }">
+            <v-tooltip :text="t(`${tBase}.editRecordTooltip`)">
+              <template v-slot:activator="{ props: tooltip }">
+                <v-btn
+                  variant="tonal"
+                  color="info"
+                  size="small"
+                  v-bind="tooltip"
+                  @click="editDraft(item as IDraftEntity)"
+                  icon="mdi-pencil"
+                  class="ma-2"
+                />
+              </template>
+            </v-tooltip>
 
-          <v-tooltip :text="t(`${tBase}.removeRecordTooltip`)">
-            <template v-slot:activator="{ props: tooltip }">
-              <v-btn
-                variant="tonal"
-                color="error"
-                size="small"
-                v-bind="tooltip"
-                @click="openDeleteDialog(item as IDraftEntity)"
-                icon="mdi-delete"
-                class="ma-2"
-              />
-            </template>
-          </v-tooltip>
+            <v-tooltip :text="t(`${tBase}.removeRecordTooltip`)">
+              <template v-slot:activator="{ props: tooltip }">
+                <v-btn
+                  variant="tonal"
+                  color="error"
+                  size="small"
+                  v-bind="tooltip"
+                  @click="openDeleteDialog(item as IDraftEntity)"
+                  icon="mdi-delete"
+                  class="ma-2"
+                />
+              </template>
+            </v-tooltip>
 
-          <v-tooltip :text="t(`${tBase}.generateDocumentTooltip`)">
-            <template v-slot:activator="{ props: tooltip }">
-              <v-btn
-                variant="tonal"
-                color="primary"
-                size="small"
-                v-bind="tooltip"
-                @click="openLanguageDialog(item as IDraftEntity)"
-                icon="mdi-file-download-outline"
-                class="ma-2"
-              />
-            </template>
-          </v-tooltip>
-        </template>
-      </v-data-table>
-    </v-card-text>
-  </v-card>
+            <v-tooltip :text="t(`${tBase}.generateDocumentTooltip`)">
+              <template v-slot:activator="{ props: tooltip }">
+                <v-btn
+                  variant="tonal"
+                  color="primary"
+                  size="small"
+                  v-bind="tooltip"
+                  @click="openLanguageDialog(item as IDraftEntity)"
+                  icon="mdi-file-download-outline"
+                  class="ma-2"
+                />
+              </template>
+            </v-tooltip>
+          </template>
+        </v-data-table>
+      </v-card-text>
+    </v-card>
+  </v-fade-transition>
 </template>

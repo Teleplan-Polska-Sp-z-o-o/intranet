@@ -7,7 +7,8 @@ import { usePermissionStore } from "../../../stores/permissionStore";
 import FileDrive from "../../../components/views/tools/analytic/files/drive/FileDrive.vue";
 import Documentation from "../../../components/views/tools/analytic/Documentation.vue";
 // raws
-import TransactionsRawSkyDataTable from "../../../components/views/tools/analytic/sky/transactions2/TransactionsRawSkyDataTable.vue";
+import TransactionsRawSkyDataTable from "../../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
+import TransactionsRawSkyDataTable2 from "../../../components/views/tools/analytic/sky/transactions2/TransactionsRawSkyDataTable.vue";
 import TransactionsRawLenovoDataTable from "../../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
 import TransactionsRawIngenicoDataTable from "../../../components/views/tools/analytic/ingenico/common/transactions/TransactionsRawIngenicoDataTable.vue";
 import TransactionsRawLibertyDataTable from "../../../components/views/tools/analytic/liberty/common/transactions/TransactionsRawLibertyDataTable.vue";
@@ -18,7 +19,7 @@ import SkyPackedUnitsOverview from "../../../components/views/tools/analytic/sky
 import SkyPackingEfficiencyOverview from "../../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
 import SkyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
 import SkyOobaEfficiencyOverview from "../../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
-import SkyTestEfficiencyOverview from "../../../components/views/tools/analytic/sky/test/efficiency2/TestEfficiencyOverview.vue";
+import SkyTestEfficiencyOverview2 from "../../../components/views/tools/analytic/sky/test/efficiency2/TestEfficiencyOverview.vue";
 
 // lenovo
 import LenovoRepairEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
@@ -257,16 +258,16 @@ onMounted(async () => {
                 </v-window-item>
                 <v-window-item value="sky-test-overview">
                   <template v-if="windowItem === 'sky-test-overview'">
-                    <transactions-raw-sky-data-table
+                    <transactions-raw-sky-data-table-2
                       program="sky"
                       group="test"
                       identification="sky-test-overview"
-                    ></transactions-raw-sky-data-table>
-                    <sky-test-efficiency-overview
+                    ></transactions-raw-sky-data-table-2>
+                    <sky-test-efficiency-overview-2
                       rawIdentification="sky-test-overview"
                       class="mt-6"
                     >
-                    </sky-test-efficiency-overview>
+                    </sky-test-efficiency-overview-2>
                   </template>
                 </v-window-item>
 
