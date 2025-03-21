@@ -32,6 +32,7 @@
     "exceljs",
     "fieldname",
     "finaltest",
+    "gandziarowska",
     "grupa",
     "highpot",
     "hightpot",
@@ -43,8 +44,10 @@
     "ipct",
     "jspdf",
     "keyinjection",
+    "kuberska",
     "lanczos",
     "linia",
+    "maciej",
     "nextable",
     "nodebuffer",
     "officedocument",
@@ -62,6 +65,7 @@
     "siteserver",
     "spreadsheetml",
     "subcategoryname",
+    "teleplan",
     "testdate",
     "testset",
     "timestamptz",
@@ -74,6 +78,7 @@
     "Wffa",
     "wintest",
     "workcenter",
+    "zablocki",
     "zmiana"
   ]
 }

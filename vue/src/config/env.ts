@@ -2,6 +2,7 @@ import { useUserStore } from "../stores/userStore";
 
 interface ServerConfig {
   origin: string;
+  production_origin: string;
   port: number;
 }
 
@@ -10,6 +11,7 @@ const ORIGIN = "https://bydintranet.reconext.com";
 
 const nodeConfig: ServerConfig = {
   origin: window.location.origin === ORIGIN ? ORIGIN : TEST_ORIGIN, // window.location.origin,
+  production_origin: ORIGIN,
   port: 3000,
 };
 

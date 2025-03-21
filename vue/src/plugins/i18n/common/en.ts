@@ -46,6 +46,7 @@ const enC = {
           safety: "Safety",
           analytic: "Analytic",
           warehouse: "Warehouse",
+          tcd: "TransCreateDocs",
         },
       },
       pages: {
@@ -97,9 +98,13 @@ const enC = {
             title: "Analytic",
             text: "Delivers data analysis to support decision-making.",
           },
-          warehouse: {
-            title: "Warehouse",
-            text: "Provides efficient inventory management",
+          // warehouse: {
+          //   title: "Warehouse",
+          //   text: "Provides efficient inventory management",
+          // },
+          tcd: {
+            title: "TransCreateDocs",
+            text: "Create and translate documents.",
           },
         },
         settings: {

@@ -17,6 +17,12 @@ const getLDAPConfig = (loginData: ILogin): AuthenticationOptions => {
   //   }
   // };
 
+  const allowedDomains = ["reconext.com", "tgn.teleplan.com"];
+
+  if (!allowedDomains.includes(loginData.domain)) {
+    throw new Error(`Access denied: domain '${loginData.domain}' is not allowed.`);
+  }
+
   const ldapHost = `ldap://${loginData.domain}`;
   const userDn = `${loginData.username}@${loginData.domain}`;
 

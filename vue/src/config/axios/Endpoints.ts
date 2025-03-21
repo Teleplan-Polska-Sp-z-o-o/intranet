@@ -27,10 +27,11 @@ enum Endpoints {
   GetDrafts = "/api/document/creator/get",
   DeleteDrafts = "/api/document/creator/delete", // /:id
   GenerateDrafts = "/api/document/creator/generate", // /:id/:language
-
+  ChangeStatusOfDraft = "/api/document/creator/change-status", // /:id/:status
+  CheckDraftRevision = "/api/document/creator/check-revision", // /:docId/:revision
   GetUsageLogs = "/api/document/creator/ms-translator-usage/getUsageLogs",
   GetTotalUsage = "/api/document/creator/ms-translator-usage/getTotalUsage",
-
+  DownloadGeneratedDocuments = "/api/document/creator/download-files", // /:id
   // editor
   News = "/api/editor/news",
   Request = "/api/editor/request",

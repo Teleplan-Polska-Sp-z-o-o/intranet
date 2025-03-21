@@ -128,17 +128,18 @@ const uaT = {
               title: {
                 create: "Ви збираєтеся розпочати новий Чернетку",
                 update: "Оновлення Чернетки з назвою '{name}'",
-                drafts:
-                  "Тут ви можете керувати своїми чернетками — шукати, редагувати, видаляти та створювати документи DOCX.",
+                // drafts:
+                //   "Тут ви можете керувати своїми чернетками — шукати, редагувати, видаляти та створювати документи DOCX.",
+                basedOn: "Створення нової чернетки на основі Документа '{name}'",
               },
               tabs: {
                 dashboard: "Панель приладів",
                 new: "Створити",
-                drafts: "Чернетки",
+                released: "Опубліковано",
               },
             },
             dashboard: {
-              usage: "Огляд використання символів",
+              usage: "Огляд використання символів (Microsoft Translator)",
               FreeCharacterUsageChart: {
                 labels: {
                   used: "Використані символи",
@@ -167,6 +168,8 @@ const uaT = {
                   saveDialog: {
                     title: "Підтвердження",
                     text: "Ви впевнені, що хочете зберегти цей чернетку?",
+                    revisionInvalid:
+                      "Чернетка з ідентифікатором '{id}' вже має таку саму або вищу версію. Збільште номер версії перед збереженням.",
                   },
                 },
                 info: {
@@ -233,12 +236,43 @@ const uaT = {
                   "Вибір мови як 'Оригінальна' пропустить переклад і згенерує документ у його початковому вигляді.",
                 recordId: "Ідентифікатор запису",
                 draftName: "Назва чернетки",
+                myDrafts: "Мої чернетки",
+                manage: "Керування документами",
+                releasedDrafts: "Опубліковані чернетки",
+                archivedDrafts: "Архівовані чернетки",
+                changeOfDraftStatusTooltip: "Змінити статус запису.",
+                changeOfDraftStatusConfirmationTitle: "Підтвердити зміну статусу",
+                changeOfDraftStatusConfirmationText:
+                  "Ви впевнені, що хочете змінити статус чернетки на 'До випуску'? Цю дію не можна скасувати, крім як Контролером Документів.",
+                download: {
+                  selectFilesTitle: "Завантажити доступні файли",
+                  selectFilesLabel: "Виберіть файли для завантаження",
+                  selectFilesHint:
+                    "Оберіть один або декілька файлів, пов’язаних із цим документом.",
+                },
+                draftStatus: {
+                  title: "Статус чернетки",
+                  chip: {
+                    draftOption: "Чернетка",
+                    forReleaseOption: "До випуску",
+                    releasedOption: "Опубліковано",
+                    archived: "Заархівовано",
+                    unknown: "Невідомо",
+                  },
+                  targetDraftStatus: {
+                    label: "Виберіть статус",
+                  },
+                  targetDraftStatusComment: {
+                    label: "Коментар",
+                  },
+                },
                 documentTitle: "Назва документа",
                 documentIdRev: "Ідентифікатор документа - Редакція",
                 created: "Створено",
                 lastUpdate: "Останнє оновлення",
                 actions: "Дії",
-                deleteConfirmation: "Ви впевнені, що хочете видалити цей елемент?",
+                deleteConfirmationTextTitle: "Підтвердити видалення",
+                deleteConfirmationText: "Ви впевнені, що хочете видалити цей елемент?",
                 cancel: "Скасувати",
                 ok: "OK",
                 selectDocumentLanguage: "Виберіть мову документа",
@@ -247,6 +281,10 @@ const uaT = {
                 editRecordTooltip: "Редагувати цей запис.",
                 removeRecordTooltip: "Видалити цей запис.",
                 generateDocumentTooltip: "Створити документ на основі цього запису.",
+                newBasedOnRecordTooltip:
+                  "Створити новий чернетковий документ на основі цього запису.",
+                downloadGeneratedDocumentsTooltip:
+                  "Завантажити згенеровані документи для цієї чернетки.",
                 pleaseSelectLanguage: "Будь ласка, виберіть мову",
                 selectOrSearchLanguageHint:
                   "Виберіть або знайдіть мову, щоб створити відповідний документ.",

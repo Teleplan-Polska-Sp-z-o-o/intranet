@@ -26,7 +26,7 @@ export class CreatorDrafts1734436418444 implements MigrationInterface {
           },
           {
             name: "stepper",
-            type: "json",
+            type: "jsonb",
             isNullable: false,
           },
           {
@@ -65,6 +65,6 @@ export class CreatorDrafts1734436418444 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable("draft", true);
+    await queryRunner.dropTable("document_creator_draft", true);
   }
 }

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue";
+// import { ref } from "vue";
 
-const show = ref<boolean>(false);
+// const show = ref<boolean>(false);
 </script>
 
 <template>
-  <v-card class="bg-surface-2 rounded-xl mb-5 ma-1">
+  <!-- <v-card class="bg-surface-2 rounded-xl mb-5 ma-1">
     <v-img class="mx-auto" max-height="400" src="../../../../documents/linkCard.png"></v-img>
 
     <v-card-title> {{ $t("tools.matrix.tabs.documents.creator.link.title") }} </v-card-title>
@@ -18,7 +18,7 @@ const show = ref<boolean>(false);
       <v-btn
         color="primary"
         :text="$t('tools.matrix.tabs.documents.creator.link.button')"
-        :to="`/tool/matrix/browse/documents/creator/dashboard`"
+        :to="`/tool/tcd/dashboard`"
         class="rounded-xl"
       ></v-btn>
 
@@ -36,5 +36,5 @@ const show = ref<boolean>(false);
         </v-card-text>
       </div>
     </v-expand-transition>
-  </v-card>
+  </v-card> -->
 </template>

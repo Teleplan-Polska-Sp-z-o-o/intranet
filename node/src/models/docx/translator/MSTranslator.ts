@@ -334,25 +334,26 @@ export class MSTranslatorLoaded extends MSTranslatorBase implements IMSTranslato
   };
 
   /**
-   * Translates the loaded content into the target language.
+   * Translates the loaded content into the specified target language using Microsoft Translator API.
+   * If translation fails, original content is returned.
    *
    * Docs: {@link https://learn.microsoft.com/en-us/azure/ai-services/translator/reference/v3-0-translate Microsoft Docs}
    */
   async translate(targetLanguage: string): Promise<string[]> {
     try {
-      // Ensure `this.loaded` is an array of strings
+      // Normalize loaded content to an array of strings
       const load = Array.isArray(this.loaded) ? this.loaded : [this.loaded];
 
-      // Count total characters used in translation request
+      // Calculate total characters to be translated
       const totalCharactersUsed = load.reduce((sum, text) => sum + text.length, 0);
 
+      // If 'original' language selected, return unmodified content
       if (targetLanguage === "original") return load;
-      // if ((await this.detectLanguage()) === targetLanguage) return load;
 
-      // Prepare the request body
+      // Construct request body for the Translator API
       const requestBody = load.map((text) => ({ Text: text }));
 
-      // Send translation request
+      // Perform translation API request
       const response = await this.httpClient.post(`/${this.endpoints.TRANSLATE}`, requestBody, {
         params: {
           "api-version": this.version,
@@ -361,18 +362,23 @@ export class MSTranslatorLoaded extends MSTranslatorBase implements IMSTranslato
         },
       });
 
-      // ✅ Log successful translation usage
+      // Log usage statistics for this translation call
       await this.logTranslationUsage(totalCharactersUsed, false, null);
 
-      // Extract translated texts
-      const translatedTexts = response.data.map((item: any) => item.translations[0].text);
+      // Extract translated text from response
+      const translatedTexts: string[] = response.data.map(
+        (item: { translations: { text: string }[] }) => item.translations[0].text
+      );
 
-      // Return a single string if input was a string, otherwise return an array
       return translatedTexts;
     } catch (error) {
       console.error("Translation API Request Failed:", error?.response?.data || error);
+
+      // Log failure with 0 characters and error message
       await this.logTranslationUsage(0, true, error?.message || "Unknown translation error");
-      return Array.isArray(this.loaded) ? this.loaded : [this.loaded]; // Return original text(s) on error
+
+      // Fallback: return original content in case of failure
+      return Array.isArray(this.loaded) ? this.loaded : [this.loaded];
     }
   }
 }

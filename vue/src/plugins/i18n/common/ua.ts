@@ -46,6 +46,7 @@ const uaC = {
           safety: "Безпека",
           analytic: "Аналітика",
           warehouse: "Склад",
+          tcd: "TransCreateDocs",
         },
       },
       pages: {
@@ -97,9 +98,13 @@ const uaC = {
             title: "Аналітика",
             text: "Надає аналіз даних для підтримки прийняття рішень.",
           },
-          warehouse: {
-            title: "Склад",
-            text: "Забезпечує ефективне управління запасами",
+          // warehouse: {
+          //   title: "Склад",
+          //   text: "Забезпечує ефективне управління запасами",
+          // },
+          tcd: {
+            title: "TransCreateDocs",
+            text: "Створюйте та перекладайте документи.",
           },
         },
         settings: {

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import stringify from "safe-stable-stringify";
 import { RouteLocationNormalizedLoaded } from "vue-router";
 import moment from "moment-timezone";
+import { IUser } from "../../../../../../../../interfaces/user/UserTypes";
 
 export namespace DocumentCreatorStepper {
   export namespace Header {
@@ -65,34 +66,13 @@ export namespace DocumentCreatorStepper {
 
       // Getter for 'created'
       public get created(): Date {
-        // const date = this._created;
-
-        // const day = String(date.getDate()).padStart(2, "0"); // Ensure two digits
-        // const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is zero-based
-        // const year = date.getFullYear();
-
-        // `${month}/${day}/${year}`;
-
-        const getCreated = moment(this._created)
-          .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
-          .toDate();
+        const getCreated = moment(this._created).tz(getTimezone()).toDate();
 
         return getCreated;
       }
 
       // Setter for 'created' (Ensures it is always stored in the correct TZ)
       public set created(value: string) {
-        // if (typeof value === "string") {
-        //   this._created = moment
-        //     .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
-        //     .toDate();
-        // }
-        // else {
-        //   this._created = moment(value)
-        //     .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
-        //     .toISOString();
-        // }
-
         this._created = moment
           .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
           .toISOString();
@@ -105,9 +85,7 @@ export namespace DocumentCreatorStepper {
             ? !isNaN(new Date(this._lastUpdate).getTime())
             : false;
         if (lu) {
-          const getLastUpdate = moment(this._lastUpdate)
-            .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
-            .toDate();
+          const getLastUpdate = moment(this._lastUpdate).tz(getTimezone()).toDate();
           return getLastUpdate;
         } else return null;
       }
@@ -119,18 +97,7 @@ export namespace DocumentCreatorStepper {
           return;
         }
 
-        // if (typeof value === "string") {
-        //   this._lastUpdate = moment
-        //     .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
-        //     .toDate();
-        // } else {
-        //   this._lastUpdate = moment(value)
-        //     .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
-        //     .toDate();
-        // }
-        this._lastUpdate = moment
-          .tz(value, Intl.DateTimeFormat().resolvedOptions().timeZone)
-          .toISOString();
+        this._lastUpdate = moment.tz(value, getTimezone()).toISOString();
       }
     }
 
@@ -138,15 +105,22 @@ export namespace DocumentCreatorStepper {
       title: string;
       documentTemplate: string;
       logosTemplate: string[];
-      id: string;
+      _id: string;
       _revision: string;
     }
     export class Before implements IBefore {
       public title: string;
       public documentTemplate: string;
       public logosTemplate: string[];
-      public id: string;
+      public _id: string;
       public _revision: string;
+
+      get id(): string {
+        return this._id;
+      }
+      set id(value: string) {
+        this._id = value.trim();
+      }
 
       get revision(): number {
         return parseInt(this._revision.replace("R", ""), 10);
@@ -160,7 +134,7 @@ export namespace DocumentCreatorStepper {
         this.title = data?.title ?? "";
         this.documentTemplate = data?.documentTemplate ?? "";
         this.logosTemplate = data?.logosTemplate ?? [];
-        this.id = data?.id ?? "";
+        this._id = data?._id ?? "";
         this._revision = data?._revision ?? "R01";
       }
     }
@@ -204,6 +178,27 @@ export namespace DocumentCreatorStepper {
     }[];
   }
 
+  // export enum EStepperStatus {
+  //   DRAFT = 0,
+  //   RELEASED = 1,
+  //   FOR_RELEASE = 2,
+  //   LATEST_RELEASE = 3,
+  // }
+  export enum EStepperStatus {
+    DRAFT = 0,
+    FOR_RELEASE = 1,
+    RELEASED = 2,
+    ARCHIVED = 3,
+  }
+
+  export interface IStatusHistory {
+    id: number;
+    status: EStepperStatus;
+    changedAt: string;
+    changedBy: IUser;
+    comment: string;
+  }
+
   export interface IStepperProperties {
     uuid: string;
     tz: string;
@@ -213,6 +208,9 @@ export namespace DocumentCreatorStepper {
     _documentIdRevision: string;
     header: Header.IStepperHeader;
     body: Body.IStepperBody;
+    _status: EStepperStatus;
+    _statusHistory: IStatusHistory[];
+    fileNames: string[];
   }
 
   export type IStepper = IStepperProperties & {
@@ -251,6 +249,20 @@ export namespace DocumentCreatorStepper {
     save(name: string, route?: RouteLocationNormalizedLoaded): Promise<any>;
   };
 
+  function getTimezone() {
+    try {
+      if (moment && moment.tz) {
+        return moment.tz.guess(); // Detects timezone like "Europe/Warsaw"
+      }
+    } catch (e) {
+      console.error("Moment.js is not available:", e);
+    }
+
+    // Fallbacks
+    let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return timeZone && timeZone.includes("/") ? timeZone : "UTC";
+  }
+
   export class InstructionStepper implements IStepper {
     readonly uuid: string;
     readonly tz: string;
@@ -258,6 +270,9 @@ export namespace DocumentCreatorStepper {
     _name: string;
     _documentTitle: string;
     _documentIdRevision: string;
+    _status: EStepperStatus;
+    _statusHistory: IStatusHistory[];
+    fileNames: string[];
 
     get name(): string {
       return this._name;
@@ -272,23 +287,20 @@ export namespace DocumentCreatorStepper {
 
     constructor(
       stepper?: IStepperProperties
-      //   {
-      //   body: Body.IStepperBody;
-      //   header: Header.IStepperHeader;
-      //   uuid: string;
-      //   tz: string;
-      //   _name: string;
-      //   type: string;
-      //   _documentTitle: string;
-      //   _documentIdRevision: string;
+      // options?: {
+      //   stepper: IStepperProperties
+      //   basedOnReleased:
       // }
     ) {
       if (!stepper) {
         this.uuid = uuidv4();
-        this.tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        this.tz = getTimezone();
         this._name = "";
         this._documentTitle = "";
         this._documentIdRevision = "";
+        this._status = EStepperStatus.DRAFT;
+        this._statusHistory = [];
+        this.fileNames = [];
 
         const newInfo = new Body.Info(this.tz);
         const newBefore = new Body.Before();
@@ -320,14 +332,31 @@ export namespace DocumentCreatorStepper {
           currentStep: 1,
         };
       } else {
-        this.uuid = stepper.uuid;
-        this.tz = stepper.tz;
-        this._name = stepper._name;
-
-        // additions
-        this._documentTitle = stepper._documentTitle ?? "";
-        if (!this.type) this.type = EStepperType.INSTRUCTION;
-        this._documentIdRevision = stepper._documentIdRevision ?? "";
+        switch (stepper._status) {
+          case EStepperStatus.DRAFT:
+          case EStepperStatus.FOR_RELEASE:
+            this.uuid = stepper.uuid;
+            this.tz = stepper.tz;
+            this._name = stepper._name;
+            this._documentTitle = stepper._documentTitle ?? "";
+            this.type = EStepperType.INSTRUCTION;
+            this._documentIdRevision = stepper._documentIdRevision ?? "";
+            this._status = stepper._status;
+            this._statusHistory = stepper._statusHistory;
+            this.fileNames = [];
+            break;
+          case EStepperStatus.RELEASED:
+          case EStepperStatus.ARCHIVED:
+            this.uuid = uuidv4();
+            this.tz = getTimezone();
+            this._name = "";
+            this._documentTitle = stepper._documentTitle;
+            this._documentIdRevision = "";
+            this._status = EStepperStatus.DRAFT;
+            this._statusHistory = [];
+            this.fileNames = [];
+            break;
+        }
 
         stepper.body.windows[1].model = new Body.Info(this.tz, stepper.body.windows[1].model);
         stepper.body.windows[2].model = new Body.Before(stepper.body.windows[2].model);
@@ -445,7 +474,7 @@ export namespace DocumentCreatorStepper {
       const beforeModel = this.getWindow(2).model;
       this._documentTitle = beforeModel.title;
       this._documentIdRevision =
-        beforeModel.id && beforeModel.revision ? `${beforeModel.id}-${beforeModel.revision}` : "";
+        beforeModel.id && beforeModel.revision ? `${beforeModel._id}-${beforeModel._revision}` : "";
 
       const steps: DocumentCreatorStepper.Header.TStepKey[] = [1, 2, 3];
       for (const step of steps) {
@@ -474,20 +503,7 @@ export namespace DocumentCreatorStepper {
   }
 
   export class StepperFactory {
-    static createStepper(
-      type: EStepperType,
-      stepperData?: IStepperProperties
-      // {
-      //   body: DocumentCreatorStepper.Body.IStepperBody;
-      //   header: DocumentCreatorStepper.Header.IStepperHeader;
-      //   uuid: string;
-      //   tz: string;
-      //   _name: string;
-      //   type: string;
-      //   _documentTitle: string;
-      //   _documentIdRevision: string;
-      // }
-    ): IStepper {
+    static createStepper(type: EStepperType, stepperData?: IStepperProperties): IStepper {
       switch (type) {
         case EStepperType.INSTRUCTION:
           return new InstructionStepper(stepperData);

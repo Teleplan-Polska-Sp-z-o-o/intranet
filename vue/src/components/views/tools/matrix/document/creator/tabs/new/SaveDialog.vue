@@ -1,13 +1,21 @@
 <script setup lang="ts">
-import { ref, unref } from "vue";
+import { onMounted, ref, unref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useStepperStore } from "../../../../../../../../stores/documents/creator/useStepperStore";
+import {
+  EStatus,
+  useStepperStore,
+} from "../../../../../../../../stores/documents/creator/useStepperStore";
+import { DocumentCreatorManager } from "../../../../../../../../models/document/creator/CreatorManager";
+import { useI18n } from "vue-i18n";
 
 const store = useStepperStore();
-
+const { t } = useI18n();
 const name = ref<string>(store.stepper!.name || "");
 const dialog = ref<boolean>(false);
 
+const manager = new DocumentCreatorManager();
+const isValid = ref<boolean>(false);
+const isValidText = ref<string>("");
 // watch(dialog, (nd) => {
 //   if (nd) console.log("store.stepper", store.stepper);
 // });
@@ -18,6 +26,7 @@ const route = useRoute();
 // const route: RouteLocationNormalizedLoadedGeneric = useRoute();
 
 const loading = ref<"secondary" | false>(false);
+
 const save = async () => {
   try {
     loading.value = "secondary";
@@ -35,9 +44,31 @@ const save = async () => {
     //   //   router,
     //   // },
     // });
-    router.push({ path: `/tool/matrix/browse/documents/creator/new` });
+    router.push({ path: `/tool/tcd/browse/new` });
   }
 };
+
+onMounted(() => {
+  (async () => {
+    const modelBefore = store.stepper?.body.windows[2].model;
+    if (modelBefore) {
+      const { _id, _revision } = modelBefore;
+      if (
+        (_id && _revision && store.status.enum === EStatus.NEW) ||
+        store.status.enum === EStatus.NEW_BASED
+      ) {
+        isValid.value = await manager.checkRevision(_id, _revision);
+
+        if (isValid.value === false) {
+          isValidText.value = t(
+            `tools.matrix.tabs.documents.creator.createNew.stepper.actions.saveDialog.revisionInvalid`,
+            { id: _id }
+          );
+        }
+      } else isValid.value = true;
+    } else isValid.value = false;
+  })();
+});
 </script>
 
 <template>
@@ -62,6 +93,8 @@ const save = async () => {
         :loading="loading"
       >
         <v-card-text>
+          <v-alert v-if="!isValid" class="mb-6" :text="isValidText" border="start" type="warning">
+          </v-alert>
           <v-text-field
             v-model="name"
             label="Draft Name"
@@ -69,7 +102,6 @@ const save = async () => {
             hint="The name will be used for identification and easier searching."
             prepend-icon="mdi-text-short"
           ></v-text-field>
-          <div></div>
         </v-card-text>
         <v-card-actions>
           <v-card-actions :class="'px-4'">
@@ -83,7 +115,7 @@ const save = async () => {
             />
             <v-btn
               @click="save()"
-              :disabled="!name.trim()"
+              :disabled="!name.trim() || isValid === false"
               class="bg-primary text-on-primary mr-4 rounded-xl"
               :text="$t('tools.common.save')"
             />

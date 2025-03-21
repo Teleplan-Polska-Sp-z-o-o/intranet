@@ -4,6 +4,7 @@ const DOCX_TEMPLATES_FOLDER = "docx_document_templates";
 const ANALYTIC_DOCUMENTS_FOLDER = "analytic_documents";
 const DC_DOCUMENTS_FOLDER = "dc_documents";
 const DOCUMENTS_FOLDER = "documents";
+const CREATOR_DOCUMENTS_FOLDER = "creator_documents";
 const QUIZZES_FOLDER = "quizzes";
 
 export {
@@ -14,4 +15,5 @@ export {
   QUIZZES_FOLDER,
   ANALYTIC_DOCUMENTS_FOLDER,
   DOCX_TEMPLATES_FOLDER,
+  CREATOR_DOCUMENTS_FOLDER,
 };

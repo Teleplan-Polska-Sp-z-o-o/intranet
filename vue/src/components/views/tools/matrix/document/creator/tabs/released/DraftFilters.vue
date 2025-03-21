@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { BaseFilter, FilterInputType, FilterKey } from "./DraftFiltersTypes";
 import { useDraftsStore } from "../../../../../../../../stores/documents/drafts/useDraftsStore";
 import { computed } from "vue";
@@ -7,7 +7,6 @@ const tBase = "tools.matrix.tabs.documents.creator.drafts";
 
 const store = useDraftsStore();
 
-// Function that returns a computed property based on the given filter
 const useUniqueUsers = (filter: BaseFilter<FilterKey>) => {
   return computed(() => {
     return Array.from(
@@ -62,7 +61,6 @@ const uniqueTzs = computed(() => {
   </v-card-title>
 
   <v-card-text>
-    <!-- style="width: calc(100% - 2 * (4 /* <- number from mx-<number> */ * 4px))" mx-4 -->
     <v-sheet border="tertiary md" class="rounded-lg">
       <v-expansion-panels elevation="0" multiple :disabled="true">
         <v-expansion-panel class="bg-surface-2" elevation="0">
@@ -75,7 +73,6 @@ const uniqueTzs = computed(() => {
           <v-expansion-panel-text>
             <v-list bg-color="surface-2">
               <template v-for="filter in store.draftsSearch.filters" :key="filter.options.key">
-                <!-- DATE -->
                 <template v-if="filter.options.inputType === FilterInputType.DATE">
                   <div class="text-caption">{{ filter.messages.title }}</div>
                   <v-row no-gutters>
@@ -97,7 +94,6 @@ const uniqueTzs = computed(() => {
                     </v-col>
                   </v-row>
                 </template>
-                <!-- SELECT -->
                 <template v-if="filter.options.inputType === FilterInputType.SELECT">
                   <div class="text-caption">{{ filter.messages.title }}</div>
                   <v-row no-gutters>
@@ -125,34 +121,9 @@ const uniqueTzs = computed(() => {
                     </v-col>
                   </v-row>
                 </template>
-                <!-- SWITCH -->
                 <template v-else-if="filter.options.inputType === FilterInputType.SWITCH">
                   <div class="text-caption">{{ filter.messages.title }}</div>
                   <v-row no-gutters>
-                    <!-- <v-col :cols="filter.options.hasSideInput === true ? 6 : 12">
-                      <v-list-item
-                        density="compact"
-                        class="d-flex justify-center align-center h-100"
-                      >
-                        <template v-slot:prepend>
-                          <v-list-item-action start>
-                            <v-switch
-                              :model-value="filter.mainInput.value"
-                              :indeterminate="filter.mainInput.indeterminate"
-                              @change="() => filter.toggle()"
-                              color="secondary"
-                              class="ms-1"
-                              hide-details
-                            >
-                            </v-switch>
-                          </v-list-item-action>
-                        </template>
-
-                        <v-list-item-subtitle>
-                          {{ filter.messages.subtitle }}
-                        </v-list-item-subtitle>
-                      </v-list-item>
-                    </v-col> -->
                     <v-col v-if="filter.options.hasSideInput === true" cols="12">
                       <v-list-item density="compact" class="h-100">
                         <v-autocomplete
@@ -190,7 +161,6 @@ const uniqueTzs = computed(() => {
                     </v-col>
                   </v-row>
                 </template>
-                <!-- ELSE -->
                 <template v-else></template>
               </template>
             </v-list>
@@ -199,4 +169,4 @@ const uniqueTzs = computed(() => {
       </v-expansion-panels>
     </v-sheet>
   </v-card-text>
-</template>
+</template> -->

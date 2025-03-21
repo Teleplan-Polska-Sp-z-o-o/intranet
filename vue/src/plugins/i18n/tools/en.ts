@@ -128,17 +128,18 @@ const enT = {
               title: {
                 create: "You're about to start a new Draft",
                 update: "Updating the Draft titled '{name}'",
-                drafts:
-                  "This is where you can manage your drafts — search, edit, delete and generate DOCX documents",
+                // drafts:
+                //   "This is where you can manage your drafts — search, edit, delete and generate DOCX documents",
+                basedOn: "Creating a new Draft based on Document '{name}'",
               },
               tabs: {
                 dashboard: "Dashboard",
                 new: "Create",
-                drafts: "Drafts",
+                released: "Released",
               },
             },
             dashboard: {
-              usage: "Character Usage Overview",
+              usage: "Character Usage Overview (Microsoft Translator)",
               FreeCharacterUsageChart: {
                 labels: {
                   used: "Used Characters",
@@ -167,6 +168,8 @@ const enT = {
                   saveDialog: {
                     title: "Confirmation",
                     text: "Are you sure you want to save this draft?",
+                    revisionInvalid:
+                      "A draft with ID '{id}' already has the same or a higher revision. Please increase the revision number before saving.",
                   },
                 },
                 info: {
@@ -235,12 +238,42 @@ const enT = {
                 "Choosing the language as 'Original' will skip translation and generate the document as it is.",
               recordId: "Record Id",
               draftName: "Draft Name",
+              myDrafts: "My Drafts",
+              manage: "Document Control",
+              releasedDrafts: "Released Drafts",
+              archivedDrafts: "Archived Drafts",
+              changeOfDraftStatusTooltip: "Change the record status.",
+              changeOfDraftStatusConfirmationTitle: "Confirm Status Change",
+              changeOfDraftStatusConfirmationText:
+                "Are you sure you want to change the draft status to 'For Release'? This action cannot be undone, except by a Document Controller.",
+              download: {
+                selectFilesTitle: "Download Available Files",
+                selectFilesLabel: "Select files to download",
+                selectFilesHint: "Choose one or more files associated with this document.",
+              },
+              draftStatus: {
+                title: "Draft Status",
+                chip: {
+                  draftOption: "Draft",
+                  forReleaseOption: "For Release",
+                  releasedOption: "Released",
+                  archived: "Archived",
+                  unknown: "Unknown",
+                },
+                targetDraftStatus: {
+                  label: "Select Status",
+                },
+                targetDraftStatusComment: {
+                  label: "Comment",
+                },
+              },
               documentTitle: "Document Title",
               documentIdRev: "Document Id-Rev",
               created: "Created",
               lastUpdate: "Last Update",
               actions: "Actions",
-              deleteConfirmation: "Are you sure you want to delete this item?",
+              deleteConfirmationTextTitle: "Confirm Deletion",
+              deleteConfirmationText: "Are you sure you want to delete this item?",
               cancel: "Cancel",
               ok: "OK",
               selectDocumentLanguage: "Select Document Language",
@@ -249,6 +282,8 @@ const enT = {
               editRecordTooltip: "Edit this record.",
               removeRecordTooltip: "Remove this record.",
               generateDocumentTooltip: "Generate Document based on this record.",
+              newBasedOnRecordTooltip: "Create a new draft based on this record.",
+              downloadGeneratedDocumentsTooltip: "Download generated documents for this draft.",
               pleaseSelectLanguage: "Please select a language",
               selectOrSearchLanguageHint:
                 "Select or search for a language to generate the document accordingly.",

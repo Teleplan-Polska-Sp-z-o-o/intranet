@@ -46,6 +46,7 @@ const plC = {
           safety: "Bezpieczeństwo",
           analytic: "Analityka",
           warehouse: "Magazyn",
+          tcd: "TransCreateDocs",
         },
       },
       pages: {
@@ -97,9 +98,13 @@ const plC = {
             title: "Analityka",
             text: "Dostarcza analizę danych, aby wspierać podejmowanie decyzji.",
           },
-          warehouse: {
-            title: "Magazyn",
-            text: "Zapewnia efektywne zarządzanie zapasami",
+          // warehouse: {
+          //   title: "Magazyn",
+          //   text: "Zapewnia efektywne zarządzanie zapasami",
+          // },
+          tcd: {
+            title: "TransCreateDocs",
+            text: "Twórz i tłumacz dokumenty.",
           },
         },
         settings: {

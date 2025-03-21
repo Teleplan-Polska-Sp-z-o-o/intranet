@@ -8,13 +8,13 @@ class DocumentCreatorUsageManager {
 
   public GetTotalUsage = async (): Promise<number> => {
     const response = await jwtAxios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.GetTotalUsage}`
+      `${nodeConfig.production_origin}:${nodeConfig.port}${Endpoints.GetTotalUsage}`
     );
     return response.data.totalCharactersUsed;
   };
   public GetUsageLogs = async (): Promise<IMSTranslatorUsage[]> => {
     const response = await jwtAxios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.GetUsageLogs}`
+      `${nodeConfig.production_origin}:${nodeConfig.port}${Endpoints.GetUsageLogs}`
     );
     return response.data.retrieved;
   };

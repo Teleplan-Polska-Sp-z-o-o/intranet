@@ -207,11 +207,11 @@ export class InstructionTemplateValues {
       title: title || "",
       document_id_rev: id && _revision ? `${id}-${_revision}` : "",
       product: product || "",
-      owner: (typeof owner === "string" ? owner : owner.name) || "",
+      owner: typeof owner === "string" ? owner : owner?.name || "",
       last_update: moment(_lastUpdate).isValid()
         ? moment.tz(_lastUpdate, this.stepper.tz).format("DD-MMM-YYYY")
         : "- - -",
-      author: (typeof author === "string" ? author : author.name) || "",
+      author: typeof author === "string" ? author : author?.name || "",
       created: moment(_created).isValid()
         ? moment.tz(_created, this.stepper.tz).format("DD-MMM-YYYY")
         : "- - -",

@@ -10,7 +10,7 @@ import {
   removeDocument,
   toggleQuickAccess,
 } from "../controllers/document/documentController";
-import { DOCUMENTS_FOLDER, UPLOADS_PATH } from "../config/routeConstants";
+import { CREATOR_DOCUMENTS_FOLDER, DOCUMENTS_FOLDER, UPLOADS_PATH } from "../config/routeConstants";
 import * as path from "path";
 import {
   postDraft,
@@ -18,6 +18,9 @@ import {
   putDraft,
   deleteDraft,
   generateDraft,
+  changeStatusOfDraft,
+  checkRevision,
+  downloadFiles,
 } from "../controllers/document/creatorController";
 import {
   getTotalUsage,
@@ -43,11 +46,14 @@ router.get("/by/:number", getDocumentsByNumber);
 router.get("/by/:uuid/:langs", getDocumentByUuidAndLangs);
 router.get("/by/:folderStructure/:type/:reduce/:confidentiality/:quickAccess", getDocuments);
 
-router.post("/creator/new/post", creatorUpload.any(), postDraft);
+router.get("/creator/check-revision/:docId/:revision", checkRevision);
 router.put("/creator/new/put/:id", creatorUpload.any(), putDraft);
-router.get("/creator/get", getDrafts);
+router.put("/creator/change-status/:id/:status", creatorUpload.any(), changeStatusOfDraft);
 router.delete("/creator/delete/:id", deleteDraft);
+router.post("/creator/get", upload.any(), getDrafts);
+router.post("/creator/new/post", creatorUpload.any(), postDraft);
 router.post("/creator/generate/:id/:language", generateDraft);
+router.post("/creator/download-files/:id", upload.any(), downloadFiles);
 
 router.get("/creator/ms-translator-usage/getUsageLogs", getUsageLogs);
 router.get("/creator/ms-translator-usage/getTotalUsage", getTotalUsage);

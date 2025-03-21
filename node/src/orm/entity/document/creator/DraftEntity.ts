@@ -13,8 +13,8 @@ export class Draft extends AbstractBaseOrmEntityWithUser {
   @Column({ type: "varchar", nullable: false })
   name: string;
 
-  @Column({ type: "json", nullable: false })
-  stepper: any;
+  @Column({ type: "jsonb", nullable: false })
+  stepper: TStepper;
 
   constructor() {
     super();
@@ -23,7 +23,8 @@ export class Draft extends AbstractBaseOrmEntityWithUser {
   build(stepper: TStepper): Draft {
     this.uuid = stepper.uuid;
     this.name = stepper._name;
-    this.stepper = JSON.stringify(stepper);
+    // this.stepper = JSON.stringify(stepper);
+    this.stepper = stepper;
 
     return this;
   }

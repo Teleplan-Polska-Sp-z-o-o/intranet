@@ -3,11 +3,11 @@ import { computed, ref } from "vue";
 import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router";
 import { ToolTab } from "../../../../../../interfaces/common/ToolTabTypes";
 import CreateNew from "./tabs/new/CreateNew.vue";
-import Drafts from "./tabs/drafts/Drafts.vue";
+import Released from "./tabs/released/ReleasedTable.vue";
 import Dashboard from "./tabs/dashboard/Dashboard.vue";
 import { useStepperStore } from "../../../../../../stores/documents/creator/useStepperStore";
 import { useI18n } from "vue-i18n";
-// import { DocumentCreatorStepper } from "./tabs/new/StepperTypes";
+import Archived from "./tabs/released/ArchivedTable.vue";
 
 const showAsMobile = ref<boolean>(true);
 const smallScreen = ref<boolean>(window.innerWidth < 960);
@@ -33,8 +33,8 @@ const tabs: ToolTab[] = [
   },
   {
     id: "3",
-    name: "drafts",
-    icon: "mdi-progress-pencil",
+    name: "released",
+    icon: "mdi-file-document-check-outline",
     meta: {
       group: "matrix",
       subgroup: "documents",
@@ -57,12 +57,18 @@ const title = computed(() => {
       return t(`tools.matrix.tabs.documents.creator.mainView.title.update`, {
         name: store.stepper!.name,
       });
+    } else if (!route.params.id && store.stepper !== null) {
+      return t(`tools.matrix.tabs.documents.creator.mainView.title.basedOn`, {
+        name: store.stepper!.name,
+      });
     } else {
       return t(`tools.matrix.tabs.documents.creator.mainView.title.create`);
     }
-  } else if (functionality.value === "drafts") {
-    return t(`tools.matrix.tabs.documents.creator.mainView.title.drafts`);
-  } else return;
+  }
+  // else if (functionality.value === "drafts") {
+  //   return t(`tools.matrix.tabs.documents.creator.mainView.title.drafts`);
+  // }
+  else return;
 });
 
 const push = (tabName: string) => {
@@ -135,8 +141,19 @@ const push = (tabName: string) => {
                 <v-window-item value="new">
                   <create-new></create-new>
                 </v-window-item>
-                <v-window-item value="drafts">
-                  <drafts></drafts>
+                <v-window-item value="released">
+                  <v-container fluid>
+                    <v-row no-gutters class="mb-8">
+                      <v-col :cols="12">
+                        <released></released>
+                      </v-col>
+                    </v-row>
+                    <v-row no-gutters>
+                      <v-col :cols="12">
+                        <archived></archived>
+                      </v-col>
+                    </v-row>
+                  </v-container>
                 </v-window-item>
               </v-window>
             </v-col>

@@ -6,11 +6,11 @@ import DocumentView from "../../views/documents/DocumentView.vue";
 import AdminView from "../../views/tools/AdminView.vue";
 import AnalyticView from "../../views/tools/analytic/AnalyticView.vue";
 import ChangeView from "../../views/tools/ChangeView.vue";
-import WarehouseView from "../../views/tools/warehouse/WarehouseView.vue";
+// import WarehouseView from "../../views/tools/warehouse/WarehouseView.vue";
 
 import { RouteLocationNormalized } from "vue-router";
 
-import MainCreatorView from "../../components/views/tools/matrix/document/creator/MainCreatorView.vue";
+import TransCreateDocsView from "../../views/tools/TransCreateDocsView.vue";
 
 // documents: ["instructions", "visuals", "msd", "assistant"],
 //       change: ["pcr", "pcn"],
@@ -101,36 +101,36 @@ export const toolRoutes = {
         },
       ],
     },
-    {
-      path: "matrix/browse/:tab/creator",
-      name: "matrixCreator",
-      component: MainCreatorView,
-      meta: {
-        toolName: "matrix",
-        breadcrumbs: {
-          include: true,
-          parent: "tool.matrix",
-          name: "browse",
-          path: "/tool/matrix/browse/documents",
-        },
-      },
-      children: [
-        {
-          path: ":functionality/:id?",
-          name: "matrixCreatorFunctionality",
-          component: MainCreatorView,
-          meta: {
-            toolName: "matrix",
-            breadcrumbs: {
-              include: true,
-              parent: "tool.matrix",
-              name: "creator",
-              path: "",
-            },
-          },
-        },
-      ],
-    },
+    // {
+    //   path: "matrix/browse/:tab/creator",
+    //   name: "matrixCreator",
+    //   component: MainCreatorView,
+    //   meta: {
+    //     toolName: "matrix",
+    //     breadcrumbs: {
+    //       include: true,
+    //       parent: "tool.matrix",
+    //       name: "browse",
+    //       path: "/tool/matrix/browse/documents",
+    //     },
+    //   },
+    //   children: [
+    //     {
+    //       path: ":functionality/:id?",
+    //       name: "matrixCreatorFunctionality",
+    //       component: MainCreatorView,
+    //       meta: {
+    //         toolName: "matrix",
+    //         breadcrumbs: {
+    //           include: true,
+    //           parent: "tool.matrix",
+    //           name: "creator",
+    //           path: "",
+    //         },
+    //       },
+    //     },
+    //   ],
+    // },
     {
       path: "matrix",
       name: "matrix",
@@ -254,26 +254,53 @@ export const toolRoutes = {
         },
       ],
     },
+    // {
+    //   path: "warehouse",
+    //   name: "warehouse",
+    //   component: WarehouseView,
+    //   meta: {
+    //     toolName: "warehouse",
+    //     breadcrumbs: {
+    //       include: true,
+    //       parent: "tool",
+    //       name: "warehouse",
+    //       path: "",
+    //     },
+    //   },
+    //   children: [
+    //     {
+    //       path: "browse/:program/:cat?/:sub?",
+    //       name: "browseWarehouse",
+    //       component: WarehouseView,
+    //       meta: {
+    //         toolName: "warehouse",
+    //         breadcrumbs: {
+    //           include: false,
+    //         },
+    //       },
+    //     },
+    //   ],
+    // },
     {
-      path: "warehouse",
-      name: "warehouse",
-      component: WarehouseView,
+      path: "tcd",
+      name: "TransCreateDocs",
+      component: TransCreateDocsView,
       meta: {
-        toolName: "warehouse",
+        toolName: "tcd",
         breadcrumbs: {
           include: true,
           parent: "tool",
-          name: "warehouse",
+          name: "tcd",
           path: "",
         },
       },
       children: [
         {
-          path: "browse/:program/:cat?/:sub?",
-          name: "browseWarehouse",
-          component: WarehouseView,
+          path: "browse/:functionality/:id?",
+          name: "browseTransCreateDocs",
+          component: TransCreateDocsView,
           meta: {
-            toolName: "warehouse",
+            toolName: "tcd",
             breadcrumbs: {
               include: false,
             },

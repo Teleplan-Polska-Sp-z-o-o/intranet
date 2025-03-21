@@ -5,6 +5,7 @@ import { nodeConfig } from "../../../config/env";
 import { useAlertStore } from "../../../stores/alertStore";
 import { ResponseStatus } from "../../common/ResponseStatus";
 import { IDraftEntity } from "../../../interfaces/document/creator/IDraftEntity";
+import { DocumentCreatorStepper } from "../../../components/views/tools/matrix/document/creator/tabs/new/StepperTypes";
 
 enum EMSErrorCodes {
   INVALID_API_KEY = "INVALID_API_KEY_TYPE",
@@ -93,9 +94,10 @@ class DocumentCreatorManager {
     }
   };
 
-  public get = async (): Promise<IDraftEntity[]> => {
-    const response = await jwtAxios.get(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.GetDrafts}`
+  public get = async (data: FormData): Promise<IDraftEntity[]> => {
+    const response = await jwtAxios.post(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.GetDrafts}`,
+      data
     );
     return response.data.retrieved;
   };
@@ -110,6 +112,70 @@ class DocumentCreatorManager {
     return;
   };
 
+  public changeStatusOfDraft = async (
+    id: number,
+    targetDraftStatus: DocumentCreatorStepper.EStepperStatus,
+    data: FormData,
+    status: boolean = false
+  ): Promise<void> => {
+    const response = await jwtAxios.put(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeStatusOfDraft}/${id}/${targetDraftStatus}`,
+      data
+    );
+    this.alert(response, status);
+
+    return;
+  };
+
+  public downloadGeneratedDocuments = async (
+    id: number,
+    data: FormData,
+    status: boolean = false
+  ): Promise<void> => {
+    const response = await jwtAxios.post(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DownloadGeneratedDocuments}/${id}`,
+      data,
+      {
+        responseType: "blob",
+      }
+    );
+    const blob = new Blob([response.data], { type: "application/zip" });
+
+    // Generate a temporary download link
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    document.body.appendChild(link);
+    link.click();
+
+    // Cleanup
+    document.body.removeChild(link);
+    URL.revokeObjectURL(downloadUrl);
+
+    this.alert(response, status);
+  };
+
+  public checkRevision = async (docId: string, revision: string): Promise<boolean> => {
+    const response: AxiosResponse<{
+      isValid: boolean;
+      statusMessage: string;
+    }> = await jwtAxios.get(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.CheckDraftRevision}/${docId}/${revision}`
+    );
+    return response.data.isValid;
+  };
+
+  // public addFiles = async (docId: string, revision: string): Promise<boolean> => {
+  //   const response: AxiosResponse<{
+  //     isValid: boolean;
+  //     statusMessage: string;
+  //   }> = await jwtAxios.get(
+  //     `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.CheckDraftRevision}/${docId}/${revision}`
+  //   );
+  //   console.log("checkRevision", response.data);
+  //   return response.data.isValid;
+  // };
+
   public delete = async (id: number, status: boolean = false): Promise<void> => {
     const response = await jwtAxios.delete(
       `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DeleteDrafts}/${id}`
@@ -122,8 +188,10 @@ class DocumentCreatorManager {
   public generate = async (
     id: number,
     language: string,
-    status: boolean = false
-  ): Promise<void> => {
+    status: boolean = false,
+    returnFile: boolean = false,
+    fileName: string = "GeneratedDocument"
+  ): Promise<void | File> => {
     try {
       const response: AxiosResponse<{
         generated: string;
@@ -147,10 +215,19 @@ class DocumentCreatorManager {
         type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // MIME type for .docx
       });
 
+      const file = new File([blob], `${fileName}_${language}.docx`, {
+        type: blob.type,
+      });
+
+      if (returnFile) {
+        // Return File object to caller
+        return file;
+      }
+
       // Create a temporary download link
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `GeneratedDocument.docx`; // Filename for the downloaded document
+      link.download = `${fileName}_${language}.docx`; // Filename for the downloaded document
       document.body.appendChild(link);
       link.click();
 

@@ -109,17 +109,18 @@ const plT = {
           title: {
             create: "Zaraz rozpoczniesz nowy szkic",
             update: "Aktualizujesz szkic zatytułowany '{name}'",
-            drafts:
-              "Tutaj możesz zarządzać swoimi wersjami roboczymi — wyszukiwać, edytować, usuwać i generować dokumenty DOCX.",
+            // drafts:
+            //   "Tutaj możesz zarządzać swoimi wersjami roboczymi — wyszukiwać, edytować, usuwać i generować dokumenty DOCX.",
+            basedOn: "Tworzenie nowej wersji roboczej na podstawie Dokumentu '{name}'",
           },
           tabs: {
             dashboard: "Panel główny",
             new: "Utwórz",
-            drafts: "Szkice",
+            released: "Wydane",
           },
         },
         dashboard: {
-          usage: "Przegląd użycia znaków",
+          usage: "Przegląd użycia znaków (Microsoft Translator)",
           FreeCharacterUsageChart: {
             labels: {
               used: "Zużyte znaki",
@@ -148,6 +149,8 @@ const plT = {
               saveDialog: {
                 title: "Potwierdzenie",
                 text: "Czy na pewno chcesz zapisać ten szkic?",
+                revisionInvalid:
+                  "Szkic o identyfikatorze '{id}' ma już taką samą lub wyższą wersję. Zwiększ numer wersji przed zapisaniem.",
               },
             },
             info: {
@@ -216,12 +219,42 @@ const plT = {
             "Wybór języka jako 'Oryginalny' pominie tłumaczenie i wygeneruje dokument w jego pierwotnej formie.",
           recordId: "Identyfikator rekordu",
           draftName: "Nazwa szkicu",
+          myDrafts: "Moje szkice",
+          manage: "Zarządzanie dokumentami",
+          releasedDrafts: "Wydane wersje robocze",
+          archivedDrafts: "Zarchiwizowane wersje robocze",
+          changeOfDraftStatusTooltip: "Zmień status rekordu.",
+          changeOfDraftStatusConfirmationTitle: "Potwierdź zmianę statusu",
+          changeOfDraftStatusConfirmationText:
+            "Czy na pewno chcesz zmienić status wersji roboczej na 'Do wydania'? Tej operacji nie można cofnąć, z wyjątkiem Kontrolera Dokumentów.",
+          download: {
+            selectFilesTitle: "Pobierz dostępne pliki",
+            selectFilesLabel: "Wybierz pliki do pobrania",
+            selectFilesHint: "Wybierz jeden lub więcej plików powiązanych z tym dokumentem.",
+          },
+          draftStatus: {
+            title: "Status szkicu",
+            chip: {
+              draftOption: "Szkic",
+              forReleaseOption: "Do wydania",
+              releasedOption: "Wydany",
+              archived: "Zarchiwizowany",
+              unknown: "Nieznany",
+            },
+            targetDraftStatus: {
+              label: "Wybierz status",
+            },
+            targetDraftStatusComment: {
+              label: "Komentarz",
+            },
+          },
           documentTitle: "Tytuł dokumentu",
           documentIdRev: "Identyfikator dokumentu - Rewizja",
           created: "Utworzono",
           lastUpdate: "Ostatnia aktualizacja",
           actions: "Akcje",
-          deleteConfirmation: "Czy na pewno chcesz usunąć ten element?",
+          deleteConfirmationTextTitle: "Potwierdź usunięcie",
+          deleteConfirmationText: "Czy na pewno chcesz usunąć ten element?",
           cancel: "Anuluj",
           ok: "OK",
           selectDocumentLanguage: "Wybierz język dokumentu",
@@ -230,6 +263,9 @@ const plT = {
           editRecordTooltip: "Edytuj ten rekord.",
           removeRecordTooltip: "Usuń ten rekord.",
           generateDocumentTooltip: "Wygeneruj dokument na podstawie tego rekordu.",
+          newBasedOnRecordTooltip: "Utwórz nową wersję roboczą na podstawie tego rekordu.",
+          downloadGeneratedDocumentsTooltip:
+            "Pobierz wygenerowane dokumenty dla tej wersji roboczej.",
           pleaseSelectLanguage: "Proszę wybrać język",
           selectOrSearchLanguageHint:
             "Wybierz lub wyszukaj język, aby wygenerować dokument odpowiednio.",

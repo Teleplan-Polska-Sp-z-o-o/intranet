@@ -98,15 +98,26 @@ const tools: Tool[] = [
       baseHref: "/tool/analytic/browse/",
     },
   },
+  // {
+  //   id: 9,
+  //   name: "warehouse",
+  //   href: "",
+  //   icon: "warehouse",
+  //   image: "../tools/warehouse.png",
+  //   meta: {
+  //     group: "analytic",
+  //     baseHref: "/tool/warehouse/browse/",
+  //   },
+  // },
   {
-    id: 9,
-    name: "warehouse",
+    id: 10,
+    name: "tcd",
     href: "",
-    icon: "warehouse",
-    image: "../tools/warehouse.png",
+    icon: "file-word",
+    image: "../tools/tcd.png",
     meta: {
-      group: "analytic",
-      baseHref: "/tool/warehouse/browse/",
+      group: "tcd",
+      baseHref: "/tool/tcd/browse/",
     },
   },
 ];

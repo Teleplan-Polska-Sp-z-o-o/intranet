@@ -24,7 +24,8 @@ type TPermissionChangeSubgroup = "pcr" | "pcn" | "dcr" | "dcn";
 type TPermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type TPermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
 type TPermissionAnalyticSubgroup = "sky" | "lenovo" | "ingenico" | "liberty" | "dell";
-type TPermissionWarehouseSubgroup = "wip";
+// type TPermissionWarehouseSubgroup = "wip";
+type TPermissionTCDSubgroup = "dashboard" | "new" | "released";
 // type TPermissionSafetySubgroup = "manage-acknowledgment" | "document-acknowledged";
 
 type TPermissionSubgroup =
@@ -33,7 +34,8 @@ type TPermissionSubgroup =
   | TPermissionMatrixSubgroup
   | TPermissionAdminSubgroup
   | TPermissionAnalyticSubgroup
-  | TPermissionWarehouseSubgroup;
+  // | TPermissionWarehouseSubgroup
+  | TPermissionTCDSubgroup;
 // | TPermissionSafetySubgroup;
 
 type TPermissionSubgroupArray =
@@ -42,7 +44,8 @@ type TPermissionSubgroupArray =
   | Array<TPermissionMatrixSubgroup>
   | Array<TPermissionAdminSubgroup>
   | Array<TPermissionAnalyticSubgroup>
-  | Array<TPermissionWarehouseSubgroup>;
+  // | Array<TPermissionWarehouseSubgroup>
+  | Array<TPermissionTCDSubgroup>;
 // | Array<TPermissionSafetySubgroup>;
 
 interface UserSubgroup {
@@ -50,7 +53,14 @@ interface UserSubgroup {
   name: TPermissionSubgroup;
 }
 
-type TPermissionGroup = "documents" | "change" | "matrix" | "admin" | "analytic" | "warehouse";
+type TPermissionGroup =
+  | "documents"
+  | "change"
+  | "matrix"
+  | "admin"
+  | "analytic"
+  // | "warehouse"
+  | "tcd";
 // | "safety";
 
 interface UserGroup {
@@ -68,7 +78,8 @@ interface IPermissionGroups {
   matrix: Array<TPermissionMatrixSubgroup>;
   admin: Array<TPermissionAdminSubgroup>;
   analytic: Array<TPermissionAnalyticSubgroup>;
-  warehouse: Array<TPermissionWarehouseSubgroup>;
+  // warehouse: Array<TPermissionWarehouseSubgroup>;
+  tcd: Array<TPermissionTCDSubgroup>;
   // safety: Array<TPermissionSafetySubgroup>;
 }
 
@@ -80,7 +91,8 @@ class StaticGroups {
       matrix: ["departments", "documents", "competences"],
       admin: ["user-info", "user-permissions", "news"],
       analytic: ["sky", "lenovo", "ingenico", "liberty", "dell"],
-      warehouse: ["wip"],
+      // warehouse: ["wip"],
+      tcd: ["dashboard", "new", "released"],
       // safety: ["manage-acknowledgment", "document-acknowledged"],
     };
   }

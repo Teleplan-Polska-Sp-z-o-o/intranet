@@ -22,9 +22,9 @@ export const useAlertStore = defineStore("alert", () => {
   /**
    * Processes the response status and updates the alert state.
    * @param {ResponseStatus | string} status - The response status or message.
-   * @param {boolean} [persist=false] - Whether the alert should persist.
+   * @param {boolean} [persist] - Whether the alert should persist.
    */
-  const process = (status: ResponseStatus | string, persist: boolean = false): void => {
+  const process = (status: ResponseStatus | string, persist?: boolean): void => {
     try {
       alertRef.value.display = false;
 
@@ -48,8 +48,8 @@ export const useAlertStore = defineStore("alert", () => {
         alertRef.value.color = "info";
       }
 
+      if (persist) alertRef.value.timeout = -1;
       alertRef.value.display = true;
-      alertRef.value.timeout = persist ? -1 : 6000;
     } catch (error) {
       console.error(
         `alertStore at process: ${error instanceof Error ? error.message : String(error)}`

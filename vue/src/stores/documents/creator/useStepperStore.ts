@@ -6,6 +6,7 @@ import { Router } from "vue-router";
 export type FSetStepper = (options: {
   type: DocumentCreatorStepper.EStepperType;
   stepper?: DocumentCreatorStepper.IStepper;
+  basedOn?: boolean;
   navigation?: {
     router: Router;
     path: string;
@@ -16,24 +17,30 @@ export enum EStatus {
   NULL,
   EDIT,
   NEW,
+  NEW_BASED,
 }
 
 export interface Status {
   enum: EStatus;
+  previous_enum: EStatus | null;
   tick: number;
 }
 
 export const useStepperStore = defineStore("document-creator-stepper", () => {
+  const DOCUMENT_CONTROLLERS = ["anna.gandziarowska", "roma.kuberska", "maciej.zablocki"];
+
   const stepper = ref<DocumentCreatorStepper.IStepper | null>(null);
 
   const status = ref<Status>({
     enum: EStatus.NULL,
+    previous_enum: null,
     tick: 0,
   });
 
   const setStatus = (newStatus: EStatus) => {
     status.value = {
       enum: newStatus,
+      previous_enum: status.value.enum,
       tick: unref(status).tick++,
     };
   };
@@ -47,7 +54,8 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
       if (instantiated) {
         flags.instantiated = !!instantiated;
         stepper.value = instantiated;
-        setStatus(EStatus.EDIT);
+        if (options.basedOn) setStatus(EStatus.NEW_BASED);
+        else setStatus(EStatus.EDIT);
       }
     }
 
@@ -60,7 +68,7 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
       if (options.stepper && !flags.instantiated) return;
 
       options.navigation.router.push({
-        path: options.navigation.path, // || `/tool/matrix/browse/documents/creator/new`,
+        path: options.navigation.path,
       });
     }
   };
@@ -71,6 +79,7 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
   };
 
   return {
+    DOCUMENT_CONTROLLERS,
     stepper,
     status,
     setStepper,

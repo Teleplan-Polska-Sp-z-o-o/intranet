@@ -172,7 +172,6 @@ const rules = {
         ? !!v.trim() || t(`${tBase}.validationRules.documentTemplate`)
         : t(`${tBase}.validationRules.documentTemplate`),
   ],
-  // logosTemplate: [(v: ITemplate) => !!v || "Logos Template is required"],
 };
 </script>
 
