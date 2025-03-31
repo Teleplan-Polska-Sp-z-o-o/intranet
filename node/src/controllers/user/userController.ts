@@ -176,7 +176,7 @@ const userAuth = async (req: Request, res: Response) => {
       });
     });
   } catch (err) {
-    console.error(`Error authenticating user: ${JSON.stringify(req.body)}, error: ${err}`);
+    console.error(`Error authenticating user, error: ${err}`);
     if (err.name === "InvalidCredentialsError") {
       return res.status(401).json({
         message: "Invalid username or password.",

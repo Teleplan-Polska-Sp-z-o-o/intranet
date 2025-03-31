@@ -27,7 +27,7 @@ export interface Status {
 }
 
 export const useStepperStore = defineStore("document-creator-stepper", () => {
-  const DOCUMENT_CONTROLLERS = ["anna.gandziarowska", "roma.kuberska", "maciej.zablocki"];
+  const DOCUMENT_CONTROLLERS = ["anna.gandziarowska", "roma.kuberska"];
 
   const stepper = ref<DocumentCreatorStepper.IStepper | null>(null);
 

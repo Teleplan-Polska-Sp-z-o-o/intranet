@@ -6,7 +6,7 @@ const CharacterLimit = Extension.create({
 
   addOptions() {
     return {
-      limit: 450,
+      limit: 1000,
     };
   },
 

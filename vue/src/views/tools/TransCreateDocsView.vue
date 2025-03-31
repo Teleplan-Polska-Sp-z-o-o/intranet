@@ -5,7 +5,7 @@ import { ToolTab } from "../../interfaces/common/ToolTabTypes";
 import Dashboard from "../../components/views/tools/matrix/document/creator/tabs/dashboard/Dashboard.vue";
 import CreateNew from "../../components/views/tools/matrix/document/creator/tabs/new/CreateNew.vue";
 import Released from "../../components/views/tools/matrix/document/creator/tabs/released/Released.vue";
-import { useStepperStore } from "../../stores/documents/creator/useStepperStore";
+import { EStatus, useStepperStore } from "../../stores/documents/creator/useStepperStore";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
@@ -66,11 +66,15 @@ const functionality = computed(() => route.params.functionality);
 
 const title = computed(() => {
   if (functionality.value === "new") {
-    if (!!route.params.id && store.stepper !== null) {
+    if (!!route.params.id && store.stepper !== null && store.status.enum === EStatus.EDIT) {
       return t(`tools.matrix.tabs.documents.creator.mainView.title.update`, {
         name: store.stepper!.name,
       });
-    } else if (!route.params.id && store.stepper !== null) {
+    } else if (
+      !!!route.params.id &&
+      store.stepper !== null &&
+      store.status.enum === EStatus.NEW_BASED
+    ) {
       return t(`tools.matrix.tabs.documents.creator.mainView.title.basedOn`, {
         name: `${store.stepper!.body.windows[2].model._id}-${
           store.stepper!.body.windows[2].model._revision

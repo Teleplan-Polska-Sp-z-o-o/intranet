@@ -186,7 +186,7 @@ const storeUploadedFiles = async (
       const destinationPath = path.join(destinationFolder, file.originalname);
       await writeFile(destinationPath, file.buffer);
       draft.stepper.fileNames.push(file.originalname);
-      console.log("draft.stepper.fileNames", draft.stepper.fileNames);
+      // console.log("draft.stepper.fileNames", draft.stepper.fileNames);
     }
   } catch (err) {
     console.error("Error storing uploaded files:", err);
@@ -208,9 +208,9 @@ const moveFileBetweenFolders = async (fileNames: string[]): Promise<void> => {
       const oldPath = path.join(sourceFolder, fileName);
       const newPath = path.join(destinationFolder, fileName);
 
-      console.log("oldPath, newPath", oldPath, newPath);
+      // console.log("oldPath, newPath", oldPath, newPath);
       await rename(oldPath, newPath); // Move file
-      console.log("rename done");
+      // console.log("rename done");
     }
   } catch (err) {
     throw err;

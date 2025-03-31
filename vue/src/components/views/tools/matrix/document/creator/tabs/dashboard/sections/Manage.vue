@@ -93,7 +93,7 @@ const loadTable = async () => {
     loadingTable.value = "primary";
 
     const formData: FormData = new FormData();
-    formData.append("createdByMe", JSON.stringify(true));
+    formData.append("createdByMe", JSON.stringify(false));
 
     formData.append(
       "ofStepperStatus",
