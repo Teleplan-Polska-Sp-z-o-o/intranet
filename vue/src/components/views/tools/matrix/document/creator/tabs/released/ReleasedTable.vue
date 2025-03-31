@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onUnmounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import { useI18n } from "vue-i18n";
@@ -14,10 +14,14 @@ import { tableDate } from "../helpers/tableDate";
 import { tableStatus } from "../helpers/tableStatus";
 import { useDocumentGenerateUploadStore } from "../../../../../../../../stores/documents/useDocumentUploadStore";
 import UploadGeneratedDocuments from "../dashboard/sections/UploadGeneratedDocuments.vue";
+import { useUserStore } from "../../../../../../../../stores/userStore";
 
 const router = useRouter();
 const route = useRoute();
 const manager = new DocumentCreatorManager();
+const userStore = useUserStore();
+
+const isUserEligible = ref<boolean>(false);
 
 const uuid = uuidv4();
 const draftsStore = useDraftsStore();
@@ -221,6 +225,16 @@ watch(
   { immediate: true, deep: true }
 );
 
+onMounted(() => {
+  (async () => {
+    const user = userStore.info();
+    if (!user) {
+      return;
+    } else {
+      isUserEligible.value = stepperStore.DOCUMENT_CONTROLLERS.includes(user.username);
+    }
+  })();
+});
 onUnmounted(() => {
   draftsStore.removeController(uuid);
 });
@@ -340,7 +354,7 @@ onUnmounted(() => {
                 />
               </template>
             </v-tooltip>
-            <v-tooltip :text="t(`${tBase}.updateUploadedFilesTooltip`)">
+            <v-tooltip v-if="isUserEligible" :text="t(`${tBase}.updateUploadedFilesTooltip`)">
               <template v-slot:activator="{ props: tooltip }">
                 <v-btn
                   icon="mdi-auto-upload"

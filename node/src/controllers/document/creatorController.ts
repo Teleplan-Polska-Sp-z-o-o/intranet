@@ -532,14 +532,16 @@ const generateDraft = async (
       });
     });
   } catch (error) {
-    if (error.statusMessage === TransCreateDocsResponseMessage.TEMPLATE_NOT_FOUND) {
+    if (error.message === TransCreateDocsResponseMessage.TEMPLATE_NOT_FOUND) {
+      console.error("Error generating document: ", error);
       return res.status(404).json({
         message: "The requested document template was not found.",
-        statusMessage: error.statusMessage,
+        statusMessage: error.message,
       });
     }
 
     if (error instanceof MSTranslatorError) {
+      console.error("Error generating document: ", error);
       return res.status(500).json(error.toJSON());
     }
 
