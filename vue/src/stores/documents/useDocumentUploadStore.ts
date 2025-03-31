@@ -67,7 +67,11 @@ export const useDocumentGenerateUploadStore = defineStore("document-generate-upl
         unref(processing).update({ doneCount: ++unref(processing).doneCount });
       }
     }
-    unref(processing).update({ inProgress: false });
+
+    // unref(processing).update({ inProgress: false });
+    setTimeout(() => {
+      unref(processing).update({ inProgress: false });
+    }, 1000);
   };
 
   return {

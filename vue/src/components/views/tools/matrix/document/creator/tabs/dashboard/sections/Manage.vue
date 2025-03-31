@@ -379,7 +379,7 @@ onUnmounted(() => {
                   color="primary"
                   v-bind="tooltip"
                   @click="openLanguageDialog(item as IDraftEntity)"
-                  icon="mdi-file-download-outline"
+                  icon="mdi-auto-download"
                   class="ma-2"
                 />
               </template>

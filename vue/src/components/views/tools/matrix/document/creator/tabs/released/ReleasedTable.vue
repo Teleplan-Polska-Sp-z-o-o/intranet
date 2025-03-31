@@ -12,6 +12,8 @@ import { v4 as uuidv4 } from "uuid";
 import { deepSafeParse } from "../helpers/deepSaveParse";
 import { tableDate } from "../helpers/tableDate";
 import { tableStatus } from "../helpers/tableStatus";
+import { useDocumentGenerateUploadStore } from "../../../../../../../../stores/documents/useDocumentUploadStore";
+import UploadGeneratedDocuments from "../dashboard/sections/UploadGeneratedDocuments.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -22,6 +24,8 @@ const draftsStore = useDraftsStore();
 draftsStore.addController(uuid);
 
 const stepperStore = useStepperStore();
+
+const uploadStore = useDocumentGenerateUploadStore();
 
 const { t } = useI18n();
 const tBase = "tools.matrix.tabs.documents.creator.drafts";
@@ -158,6 +162,45 @@ const loadTable = async () => {
   }
 };
 
+const dialogUpdateFilesOfDraft = ref<boolean>(false);
+const openUpdateFilesOfDraftDialog = (item: IDraftEntity) => {
+  openedItem.value = item;
+  dialogUpdateFilesOfDraft.value = true;
+};
+const closeUpdateFilesOfDraftDialog = () => {
+  openedItem.value = null;
+  dialogUpdateFilesOfDraft.value = false;
+};
+const updateFilesOfDraftConfirm = async () => {
+  try {
+    loading.value = "secondary";
+    if (openedItem.value) {
+      await uploadStore.process(openedItem.value.id, openedItem.value.stepper._documentIdRevision);
+
+      const formData: FormData = new FormData();
+
+      uploadStore.filesToUpload.forEach((fileObj) => {
+        // Example file name: testId-R02_en.docx
+        const fileName = `${openedItem.value!.stepper._documentIdRevision}_${
+          fileObj.language
+        }.docx`;
+        formData.append("files", fileObj.file, fileName);
+      });
+      uploadStore.reset();
+
+      await manager.updateFilesOfDraft(openedItem.value.id, formData, true);
+
+      draftsStore.controller[uuid].drafts = await loadTable();
+    }
+  } catch (error) {
+    throw error;
+  } finally {
+    loading.value = false;
+    closeUpdateFilesOfDraftDialog();
+    draftsStore.triggerSignal(uuid);
+  }
+};
+
 watch(
   () => draftsStore.signal,
   async (signal) => {
@@ -184,6 +227,35 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <v-dialog v-model="dialogUpdateFilesOfDraft" max-width="500px">
+    <v-card class="rounded-xl elevation-2" :loading="loading ? 'secondary' : false">
+      <v-card-title class="text-h5">{{
+        t(`${tBase}.changeOfDraftStatusConfirmationTitle`)
+      }}</v-card-title>
+      <v-card-text>
+        <upload-generated-documents
+          :omitFileNames="openedItem?.stepper.fileNames"
+          class="mb-6"
+        ></upload-generated-documents>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="error" variant="text" @click="closeUpdateFilesOfDraftDialog">{{
+          t(`${tBase}.cancel`)
+        }}</v-btn>
+        <v-btn
+          color="primary"
+          variant="tonal"
+          @click="updateFilesOfDraftConfirm"
+          :disabled="!openedItem"
+          >{{ t(`${tBase}.ok`) }}</v-btn
+        >
+        <v-spacer></v-spacer>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
   <v-dialog v-model="dialogDownload" max-width="500px">
     <v-card class="rounded-xl elevation-2" :loading="loading ? 'secondary' : false">
       <v-card-title class="text-h5">{{ t(`${tBase}.download.selectFilesTitle`) }}</v-card-title>
@@ -263,9 +335,23 @@ onUnmounted(() => {
                   color="primary"
                   v-bind="tooltip"
                   @click="openDownloadDialog(item as IDraftEntity)"
-                  icon="mdi-file-download-outline"
+                  icon="mdi-auto-download"
                   class="ma-2"
                 />
+              </template>
+            </v-tooltip>
+            <v-tooltip :text="t(`${tBase}.updateUploadedFilesTooltip`)">
+              <template v-slot:activator="{ props: tooltip }">
+                <v-btn
+                  icon="mdi-auto-upload"
+                  variant="tonal"
+                  color="primary"
+                  class="ma-2 mr-0"
+                  v-bind="tooltip"
+                  @click="openUpdateFilesOfDraftDialog(item as IDraftEntity)"
+                />
+                <v-badge color="primary" icon="mdi-shield-crown" style="margin-left: -2px">
+                </v-badge>
               </template>
             </v-tooltip>
           </template>

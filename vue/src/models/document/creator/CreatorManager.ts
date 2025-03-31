@@ -127,6 +127,20 @@ class DocumentCreatorManager {
     return;
   };
 
+  public updateFilesOfDraft = async (
+    id: number,
+    data: FormData,
+    status: boolean = false
+  ): Promise<void> => {
+    const response = await jwtAxios.put(
+      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.UpdateFilesOfDraft}/${id}`,
+      data
+    );
+    this.alert(response, status);
+
+    return;
+  };
+
   public downloadGeneratedDocuments = async (
     id: number,
     data: FormData,

@@ -283,6 +283,9 @@ const enT = {
               removeRecordTooltip: "Remove this record.",
               generateDocumentTooltip: "Generate Document based on this record.",
               newBasedOnRecordTooltip: "Create a new draft based on this record.",
+              updateUploadedFilesTooltip: "Update the files associated with this record",
+              uploadGeneratedMessage:
+                "The generated documents will be saved and linked to this record.",
               downloadGeneratedDocumentsTooltip: "Download generated documents for this draft.",
               pleaseSelectLanguage: "Please select a language",
               selectOrSearchLanguageHint:

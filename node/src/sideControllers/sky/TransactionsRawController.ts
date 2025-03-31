@@ -1,9 +1,129 @@
 import { Request, Response } from "express";
 import { HttpResponseMessage } from "../../enums/response";
 import { RawTransaction } from "../../orm/sideEntity/postgres/RawTransactionsEntity";
-import { SideDataSources } from "../../config/SideDataSources";
+import { postgresPoolOptions, SideDataSources } from "../../config/SideDataSources";
 import { ProdTitanTestRawTransaction } from "../../orm/sideEntity/postgres/ProdTitanTestRawTransactionsEntity";
 import { ReptTitanTestRawTransaction } from "../../orm/sideEntity/postgres/ReptTitanTestRawTransactionsEntity";
+import { Pool, PoolClient } from "pg";
+
+export const manuallySKYByVariant = async (variant: "cosmetic" | "packing" | "ooba") => {
+  let workCenterCondition = "";
+
+  switch (variant) {
+    case "cosmetic":
+      workCenterCondition = `AND h.workcenter_no = 'A1070'`;
+      break;
+    case "packing":
+      workCenterCondition = `AND h.next_work_center_no = 'A1200'`;
+      break;
+    case "ooba":
+      workCenterCondition = `AND h.workcenter_no = 'OOBA'`;
+      break;
+  }
+
+  const query = `
+    SELECT
+      h.TRANS_ID AS transaction_id,
+      h.site AS contract,
+      h.order_no AS order_no,
+      h.user_name AS emp_name,
+      h.part_no,
+      so.serial_begin AS serial_no,
+      h.workcenter_no AS work_center_no,
+      h.next_work_center_no AS next_work_center_no,
+      h.action_date AS datedtz
+    FROM info_emrept02.tp_hvt_so_op_hist h
+    JOIN ifsapp_emrept02.shop_ord so
+      ON so.order_no = h.order_no
+      AND so.release_no = '*'
+      AND so.sequence_no = '*'
+    WHERE h.transaction = 'OP FEED'
+      AND h.reversed_flag_db = 'N'
+      AND h.site IN ('12196', '12195', '12176')
+      ${workCenterCondition}
+      AND h.action_date >= TO_DATE('2025-01-01 06:00:00','YYYY-MM-DD HH24:MI:SS')
+      AND h.action_date <  TO_DATE('2025-02-01 06:00:00','YYYY-MM-DD HH24:MI:SS');
+  `;
+
+  const pool: {
+    client: PoolClient | undefined;
+  } = {
+    client: undefined,
+  };
+  //
+  try {
+    pool.client = await new Pool(postgresPoolOptions).connect();
+    console.time("query");
+    const result = await pool.client.query(query);
+    console.timeEnd("query");
+
+    console.log("Query completed:", result.rowCount);
+
+    return {
+      raw: result.rows,
+      message: `Query executed successfully for variant: ${variant}`,
+      statusMessage: "GET_SUCCESS",
+    };
+  } catch (err) {
+    pool.client.release();
+    console.error("Query failed:", err);
+    throw err;
+  } finally {
+    pool.client.release();
+  }
+};
+
+export const manuallySkyTest = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const body = req.body;
+
+    const startOfDay = new Date(JSON.parse(body.startOfDay));
+    const endOfDay = new Date(JSON.parse(body.endOfDay));
+
+    startOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+
+    const reptRawTransactionsRepo = SideDataSources.postgres.getRepository(
+      ReptTitanTestRawTransaction
+    );
+
+    const today = new Date();
+    today.setHours(6, 0, 0, 0); // Align with your system start time
+
+    const reptTransactions = await reptRawTransactionsRepo
+      .createQueryBuilder("ial")
+      .where("ial.test_date BETWEEN :startOfDay AND :endOfDay", {
+        startOfDay,
+        endOfDay,
+      })
+      .andWhere("UPPER(ial.test_name) IN (:...testNames)", {
+        testNames: [
+          "EUROMODEM::OPERATORSCAN->OPERATORBARCODE",
+          "SKYMODEM::OPERATORSCAN->OPERATORBARCODE",
+          "SKYQ::OPERATORSCAN->OPERATORBARCODE",
+          "SKYQ::OPERATORSCAN->OPERATORSCAN",
+          "SKYMODEM::OPERATORSCAN->OPERATORSCAN",
+          "EUROMODEM::OPERATORSCAN->OPERATORSCAN",
+        ].map((name) => name.toUpperCase()),
+      })
+      .orderBy("ial.test_date", "ASC")
+      .getMany();
+
+    return res.status(200).json({
+      raw: reptTransactions,
+      message: "Enhanced RawTransactions retrieved successfully",
+      statusMessage: HttpResponseMessage.GET_SUCCESS,
+    });
+  } catch (error) {
+    console.error("Error retrieving Enhanced RawTransactions: ", error);
+    return res.status(500).json({
+      raw: [],
+      message: "Unknown error occurred. Failed to retrieve Enhanced RawTransactions.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
 
 const getRawSkyPackingTransactions = async (req: Request, res: Response): Promise<Response> => {
   try {

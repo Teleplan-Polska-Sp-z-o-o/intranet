@@ -281,6 +281,9 @@ const uaT = {
                 editRecordTooltip: "Редагувати цей запис.",
                 removeRecordTooltip: "Видалити цей запис.",
                 generateDocumentTooltip: "Створити документ на основі цього запису.",
+                updateUploadedFilesTooltip: "Оновити файли, пов’язані з цим записом",
+                uploadGeneratedMessage:
+                  "Згенеровані документи буде збережено та пов’язано з цим записом.",
                 newBasedOnRecordTooltip:
                   "Створити новий чернетковий документ на основі цього запису.",
                 downloadGeneratedDocumentsTooltip:
