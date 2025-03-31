@@ -1,5 +1,6 @@
 import { EfficiencyModels as LibertyModels } from "./liberty/Models";
 import { EfficiencyModels as SkyModels } from "./sky/Models";
+import { EfficiencyModels as SkyModelsForTest } from "./sky/Models_test";
 import { EfficiencyModels as LenovoModels } from "./lenovo/Models";
 import { EfficiencyModels as LenovoModelsForRepair } from "./lenovo/Models_repair";
 import { EfficiencyModels as IngenicoModels } from "./ingenico/Models";
@@ -50,6 +51,7 @@ export class EfficiencyBuilderHandler<P extends EfficiencyMonthlyTypes.Postgres.
       case "liberty":
         return EfficiencyBuilderHandler.builders.liberty(this.category);
       case "sky":
+        if (this.category === "test") return SkyModelsForTest.EfficiencyBuilder;
         return EfficiencyBuilderHandler.builders.sky;
       case "lenovo":
         if (this.category === "repair") return LenovoModelsForRepair.EfficiencyBuilder;

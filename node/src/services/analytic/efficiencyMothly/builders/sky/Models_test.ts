@@ -118,7 +118,8 @@ export namespace EfficiencyModels {
       const employeeWorkedQuarters: Record<string, Set<string>> = {};
 
       transactions.forEach((transaction, index) => {
-        const { emp_name, part_no, datedtz } = transaction;
+        // const { emp_name, part_no, datedtz } = transaction;
+        const { emp_hrid, part_no, test_date } = transaction;
         // const modelData = this.modelsCache.get(part_no);
         const modelData = this.models.getAverage(part_no);
 
@@ -126,17 +127,22 @@ export namespace EfficiencyModels {
 
         // const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
         const processingTimePerUnit = modelData;
-        const transactionDate = this.extractTransactionDate(datedtz);
-        const transactionQuarter = this.getTransactionQuarter(datedtz); // now it's quarterly
-        const shift = this.getShift(datedtz);
+        const transactionDate = this.extractTransactionDate(test_date as Date);
+        const transactionQuarter = this.getTransactionQuarter(test_date as Date); // now it's quarterly
+        const shift = this.getShift(test_date as Date);
 
-        this.initializeEmployeeData(employeeDataMap, employeeWorkedQuarters, emp_name, shift);
+        this.initializeEmployeeData(
+          employeeDataMap,
+          employeeWorkedQuarters,
+          emp_hrid as string,
+          shift
+        );
 
         // Determine if it's the last iteration
         const isLastIteration = index === transactions.length - 1;
 
         this.update(
-          emp_name,
+          emp_hrid as string,
           transactionDate,
           transactionQuarter,
           processingTimePerUnit,
@@ -145,7 +151,7 @@ export namespace EfficiencyModels {
           //
           employeeDataMap,
           employeeWorkedQuarters,
-          datedtz,
+          test_date as Date,
           isLastIteration
         );
       });
@@ -202,8 +208,10 @@ export namespace EfficiencyModels {
         `${transactionDate}-${this.getTransactionQuarter(datedtz)}`
       );
 
+      const processingTimeInMinutes = processingTimePerUnit / 60;
+
       // processing_time
-      employeeDataMap[emp_name].processing_time += processingTimePerUnit;
+      employeeDataMap[emp_name].processing_time += processingTimeInMinutes;
       // processed_units
       employeeDataMap[emp_name].processed_units += 1;
 
@@ -216,14 +224,15 @@ export namespace EfficiencyModels {
       if (!quarterlyChart[transactionQuarter]) {
         quarterlyChart[transactionQuarter] = new TimePeriodMetrics();
       }
-      quarterlyChart[transactionQuarter].update(processingTimePerUnit);
+
+      quarterlyChart[transactionQuarter].update(processingTimeInMinutes);
 
       /// DAILY CHART
       const dailyChart: Record<string, TimePeriodMetrics> = employeeDataMap[emp_name].dailyChart;
       if (!dailyChart[transactionDate]) {
         dailyChart[transactionDate] = new TimePeriodMetrics();
       }
-      dailyChart[transactionDate].update(processingTimePerUnit);
+      dailyChart[transactionDate].update(processingTimeInMinutes);
 
       if (isLastIteration) {
         this.calculateEmployeesBase(employeeDataMap, employeeWorkedQuarters);

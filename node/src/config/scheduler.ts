@@ -11,6 +11,7 @@ import path from "path";
 import { EfficiencyMonthlyService } from "../services/analytic/efficiencyMothly/EfficiencyMonthlyService";
 import {
   getRawOobaTransactions,
+  getRawSkyTestTransactions2,
   manuallySKYByVariant,
   manuallySkyTest,
 } from "../sideControllers/sky/TransactionsRawController";
@@ -73,13 +74,13 @@ const mountScheduledTasks = () => {
   scheduler.scheduleTask(
     "0 6 1 * *", // Cron expression for 6:00 AM on the 1st of each month
     async () => {
-      try {
-        // Iterate over the transactionFunctionMapping object
-        for (const [program, categories] of Object.entries(transactionFunctionMapping)) {
-          for (const [category, _transactionFunction] of Object.entries(categories)) {
-            // Initialize and process using the EfficiencyMonthlyService
+      // try {
+      // Iterate over the transactionFunctionMapping object
+      for (const [program, categories] of Object.entries(transactionFunctionMapping)) {
+        for (const [category, _transactionFunction] of Object.entries(categories)) {
+          // Initialize and process using the EfficiencyMonthlyService
+          try {
             const handler = new EfficiencyMonthlyService.PostgresHandler(program, category);
-
             // Process the transactions
             await handler.getRawTransactions_1();
             await handler.getAnalyticFiles_2_1();
@@ -88,13 +89,13 @@ const mountScheduledTasks = () => {
             await handler.createExcelBaseEfficiencyReport_4_1();
             await handler.createExcelBaseEfficiencyReport_4_2();
             handler.sendMails_5();
+          } catch (error) {
+            console.error(
+              `Error processing monthly reports at MonthlyEfficiencyReport scheduled task:`,
+              error
+            );
           }
         }
-      } catch (error) {
-        console.error(
-          `Error processing monthly reports at MonthlyEfficiencyReport scheduled task:`,
-          error
-        );
       }
     },
     "MonthlyEfficiencyReport" // Task name
@@ -107,67 +108,30 @@ const mountOneTimeTasks = () => {
   const oneTimeScheduler = new OneTimeScheduler();
 
   // Schedule a one-time task to run after 5 seconds
-  // oneTimeScheduler.scheduleTask(
-  //   0,
-  //   () => {
-  //     new FileService.FileWatcherService(
-  //       "sky",
-  //       "packing",
-  //       "drive",
-  //       "planning",
-  //       "auto-plan-update",
-  //       path.join(TPPL03S005_PATH, "resources/operations/sky/shift/plan/daily")
-  //     );
-  //   },
-  //   "WatchModelAnalyticFiles"
-  // );
-
-  // Schedule a one-time task to run after 5 seconds
   oneTimeScheduler.scheduleTask(
     0,
     async () => {
-      try {
-        // console.log("manual");
-        // console.log((await manuallySKYByVariant("ooba")).raw.at(0));
-        // console.log("norm");
-        // const handler = new EfficiencyMonthlyService.PostgresHandler("sky", "ooba");
-        // console.log((await handler.getRawTransactions_1()).raw.at(0));
-        //Iterate over the transactionFunctionMapping object
-        // for (const [program, categories] of Object.entries({
-        //   sky: {
-        //     packing: async () => manuallySKYByVariant("packing"),
-        //     cosmetic: async () => manuallySKYByVariant("cosmetic"),
-        //     ooba: async () => manuallySKYByVariant("ooba"),
-        //     // test: manuallySkyTest,
-        //   },
-        // })) {
-        //   for (const [category, transactionFunction] of Object.entries(categories)) {
-        //     // Initialize and process using the EfficiencyMonthlyService
-        //     console.log("1");
-        //     const handler = new EfficiencyMonthlyService.PostgresHandler(program, category);
-        //     console.log("2");
-        //     // Process the transactions
-        //     await handler.getRawTransactions_1(transactionFunction);
-        //     console.log("3");
-        //     await handler.getAnalyticFiles_2_1();
-        //     console.log("4");
-        //     handler.getJsObjects_2_2();
-        //     console.log("5");
-        //     handler.getProcessedData_3();
-        //     console.log("6");
-        //     await handler.createExcelBaseEfficiencyReport_4_1();
-        //     console.log("7");
-        //     // await handler.createExcelBaseEfficiencyReport_4_2();
-        //     handler.sendMails_5(["maciej.zablocki@reconext.com"]);
-        //     console.log("8");
-        //   }
-        // }
-      } catch (error) {
-        console.error(
-          `Error processing monthly reports at MonthlyEfficiencyReport scheduled task:`,
-          error
-        );
-      }
+      // for (const [program, categories] of Object.entries(transactionFunctionMapping)) {
+      //   for (const [category, _transactionFunction] of Object.entries(categories)) {
+      //     // Initialize and process using the EfficiencyMonthlyService
+      //     try {
+      //       const handler = new EfficiencyMonthlyService.PostgresHandler(program, category);
+      //       // Process the transactions
+      //       await handler.getRawTransactions_1();
+      //       await handler.getAnalyticFiles_2_1();
+      //       handler.getJsObjects_2_2();
+      //       handler.getProcessedData_3();
+      //       await handler.createExcelBaseEfficiencyReport_4_1();
+      //       await handler.createExcelBaseEfficiencyReport_4_2();
+      //       handler.sendMails_5(["maciej.zablocki@reconext.com"]);
+      //     } catch (error) {
+      //       console.error(
+      //         `Error processing monthly reports at MonthlyEfficiencyReport scheduled task:`,
+      //         error
+      //       );
+      //     }
+      //   }
+      // }
     },
     "MonthlyEfficiencyReportOneTime"
   );

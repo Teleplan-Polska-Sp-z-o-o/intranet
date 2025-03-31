@@ -113,6 +113,7 @@ export namespace EfficiencyMonthlyService {
         );
         return;
       }
+
       const modelsJsObjsParsed = JSON.parse(this.models.at(modelsLength - 1).jsObjectJson);
       this.modelsJsObjs = modelsJsObjsParsed[Object.keys(modelsJsObjsParsed)[0]];
 
@@ -276,7 +277,7 @@ export namespace EfficiencyMonthlyService {
 
     sendMails_5(custom?: string[]) {
       const recipients =
-        custom !== undefined && custom.length > 0
+        Array.isArray(custom) && custom.length > 0
           ? custom
           : this.reportsJsObjs
               .filter(
