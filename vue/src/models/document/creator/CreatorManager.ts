@@ -103,13 +103,20 @@ class DocumentCreatorManager {
   };
 
   public put = async (id: number, data: FormData, status: boolean = false): Promise<void> => {
-    const response = await jwtAxios.put(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.PutDrafts}/${id}`,
-      data
-    );
-    this.alert(response, status);
+    try {
+      const response = await jwtAxios.put(
+        `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.PutDrafts}/${id}`,
+        data
+      );
+      this.alert(response, status);
 
-    return;
+      return;
+    } catch (error: any) {
+      const response = error.response || null;
+      this.alert(response, status);
+
+      return;
+    }
   };
 
   public changeStatusOfDraft = async (
@@ -118,13 +125,41 @@ class DocumentCreatorManager {
     data: FormData,
     status: boolean = false
   ): Promise<void> => {
-    const response = await jwtAxios.put(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeStatusOfDraft}/${id}/${targetDraftStatus}`,
-      data
-    );
-    this.alert(response, status);
+    try {
+      const response = await jwtAxios.put(
+        `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.ChangeStatusOfDraft}/${id}/${targetDraftStatus}`,
+        data
+      );
+      this.alert(response, status);
 
-    return;
+      return;
+    } catch (error: any) {
+      const response = error.response || null;
+      this.alert(response, status);
+
+      return;
+    }
+  };
+
+  public updateFilesOfDraft = async (
+    id: number,
+    data: FormData,
+    status: boolean = false
+  ): Promise<void> => {
+    try {
+      const response = await jwtAxios.put(
+        `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.UpdateFilesOfDraft}/${id}`,
+        data
+      );
+      this.alert(response, status);
+
+      return;
+    } catch (error: any) {
+      const response = error.response || null;
+      this.alert(response, status);
+
+      return;
+    }
   };
 
   public downloadGeneratedDocuments = async (
@@ -132,27 +167,34 @@ class DocumentCreatorManager {
     data: FormData,
     status: boolean = false
   ): Promise<void> => {
-    const response = await jwtAxios.post(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DownloadGeneratedDocuments}/${id}`,
-      data,
-      {
-        responseType: "blob",
-      }
-    );
-    const blob = new Blob([response.data], { type: "application/zip" });
+    try {
+      const response = await jwtAxios.post(
+        `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DownloadGeneratedDocuments}/${id}`,
+        data,
+        {
+          responseType: "blob",
+        }
+      );
+      const blob = new Blob([response.data], { type: "application/zip" });
 
-    // Generate a temporary download link
-    const downloadUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    document.body.appendChild(link);
-    link.click();
+      // Generate a temporary download link
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      document.body.appendChild(link);
+      link.click();
 
-    // Cleanup
-    document.body.removeChild(link);
-    URL.revokeObjectURL(downloadUrl);
+      // Cleanup
+      document.body.removeChild(link);
+      URL.revokeObjectURL(downloadUrl);
 
-    this.alert(response, status);
+      this.alert(response, status);
+    } catch (error: any) {
+      const response = error.response || null;
+      this.alert(response, status);
+
+      return;
+    }
   };
 
   public checkRevision = async (docId: string, revision: string): Promise<boolean> => {
@@ -177,12 +219,19 @@ class DocumentCreatorManager {
   // };
 
   public delete = async (id: number, status: boolean = false): Promise<void> => {
-    const response = await jwtAxios.delete(
-      `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DeleteDrafts}/${id}`
-    );
-    this.alert(response, status);
+    try {
+      const response = await jwtAxios.delete(
+        `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.DeleteDrafts}/${id}`
+      );
+      this.alert(response, status);
 
-    return;
+      return;
+    } catch (error: any) {
+      const response = error.response || null;
+      this.alert(response, status);
+
+      return;
+    }
   };
 
   public generate = async (
@@ -238,6 +287,7 @@ class DocumentCreatorManager {
       return;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response && status) {
+        console.log(error.response.data.statusMessage);
         useAlertStore().process(
           new ResponseStatus({
             code: error.response.status,

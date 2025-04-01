@@ -22,7 +22,7 @@ export namespace EfficiencyMonthlyService {
     private category: EfficiencyMonthlyTypes.Postgres.Category<P>;
 
     // 1 - raw transactions properties
-    private raw: EfficiencyMonthlyTypes.Postgres.ITransactionsRecord[];
+    public raw: EfficiencyMonthlyTypes.Postgres.ITransactionsRecord[];
 
     // 2. models, reports
     private models: AnalyticFile[];
@@ -45,10 +45,13 @@ export namespace EfficiencyMonthlyService {
     }
 
     // 1
-    async getRawTransactions_1(): Promise<this> {
+    async getRawTransactions_1(customF?: Function): Promise<this> {
       try {
         const response: EfficiencyMonthlyTypes.Postgres.ITransactionsRecord[] =
-          await new RawTransactionFactory<P>(this.program, this.category).retrieve();
+          customF !== undefined
+            ? (await customF()).raw
+            : await new RawTransactionFactory<P>(this.program, this.category).retrieve();
+
         this.raw = response;
         return this;
       } catch (error) {
@@ -110,6 +113,7 @@ export namespace EfficiencyMonthlyService {
         );
         return;
       }
+
       const modelsJsObjsParsed = JSON.parse(this.models.at(modelsLength - 1).jsObjectJson);
       this.modelsJsObjs = modelsJsObjsParsed[Object.keys(modelsJsObjsParsed)[0]];
 
@@ -271,36 +275,39 @@ export namespace EfficiencyMonthlyService {
       return this;
     }
 
-    sendMails_5() {
-      const recipients = this.reportsJsObjs
-        .filter(
-          (rec) =>
-            rec.CONTENT_CODES.split(",")
-              .map((code: string) => code.trim()) // Trim each element
-              .includes("EFF-MONTHLY") // Check if the array includes the desired value
-        )
-        .map((rec) => {
-          const mail = rec.MAIL;
+    sendMails_5(custom?: string[]) {
+      const recipients =
+        Array.isArray(custom) && custom.length > 0
+          ? custom
+          : this.reportsJsObjs
+              .filter(
+                (rec) =>
+                  rec.CONTENT_CODES.split(",")
+                    .map((code: string) => code.trim()) // Trim each element
+                    .includes("EFF-MONTHLY") // Check if the array includes the desired value
+              )
+              .map((rec) => {
+                const mail = rec.MAIL;
 
-          // Check if mail is not null or undefined
-          if (mail) {
-            // Check if mail is an object (hyperlink format) or a plain string
-            if (typeof mail === "object" && mail.hyperlink) {
-              // If it's a hyperlink object, check for mailto: prefix and return the trimmed email
-              if (mail.hyperlink.startsWith("mailto:")) {
-                return mail.hyperlink.replace("mailto:", "").trim(); // Strip 'mailto:' prefix and trim
-              }
-              return mail.hyperlink.trim(); // Return the trimmed hyperlink if it's not a mailto link
-            } else {
-              // If it's a plain string, return it as is and trim it
-              return (mail as string).trim();
-            }
-          }
+                // Check if mail is not null or undefined
+                if (mail) {
+                  // Check if mail is an object (hyperlink format) or a plain string
+                  if (typeof mail === "object" && mail.hyperlink) {
+                    // If it's a hyperlink object, check for mailto: prefix and return the trimmed email
+                    if (mail.hyperlink.startsWith("mailto:")) {
+                      return mail.hyperlink.replace("mailto:", "").trim(); // Strip 'mailto:' prefix and trim
+                    }
+                    return mail.hyperlink.trim(); // Return the trimmed hyperlink if it's not a mailto link
+                  } else {
+                    // If it's a plain string, return it as is and trim it
+                    return (mail as string).trim();
+                  }
+                }
 
-          // Return null or a fallback value if mail is null or undefined
-          return null;
-        })
-        .filter(Boolean);
+                // Return null or a fallback value if mail is null or undefined
+                return null;
+              })
+              .filter(Boolean);
 
       const attachment_1: IEmailAttachment = {
         filename: this.sendAs_1,

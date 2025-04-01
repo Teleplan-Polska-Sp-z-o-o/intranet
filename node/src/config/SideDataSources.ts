@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import * as dotenv from "dotenv";
+import { Pool } from "pg";
 
 dotenv.config({ path: "./../.env" });
 
@@ -31,3 +32,16 @@ export namespace SideDataSources {
   export const postgres: DataSource = new DataSource(sidePostgresOptions);
   export const mssql: DataSource = new DataSource(sideMsSqlOptions);
 }
+
+/**
+ * const postgresPool: Pool = new Pool(postgresPoolOptions);
+ */
+export const postgresPoolOptions = {
+  host: process.env.SIDE_POSTGRES_HOST,
+  port: parseInt(process.env.SIDE_POSTGRES_PORT),
+  user: process.env.SIDE_POSTGRES_USER,
+  password: process.env.SIDE_POSTGRES_PASSWORD,
+  database: process.env.SIDE_POSTGRES_DB,
+  max: 10, // max connections
+  idleTimeoutMillis: 30000,
+};

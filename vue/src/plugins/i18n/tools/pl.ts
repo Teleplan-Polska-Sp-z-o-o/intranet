@@ -263,6 +263,9 @@ const plT = {
           editRecordTooltip: "Edytuj ten rekord.",
           removeRecordTooltip: "Usuń ten rekord.",
           generateDocumentTooltip: "Wygeneruj dokument na podstawie tego rekordu.",
+          updateUploadedFilesTooltip: "Zaktualizuj pliki powiązane z tym rekordem",
+          uploadGeneratedMessage:
+            "Wygenerowane dokumenty zostaną zapisane i powiązane z tym rekordem.",
           newBasedOnRecordTooltip: "Utwórz nową wersję roboczą na podstawie tego rekordu.",
           downloadGeneratedDocumentsTooltip:
             "Pobierz wygenerowane dokumenty dla tej wersji roboczej.",

@@ -21,6 +21,7 @@ import {
   changeStatusOfDraft,
   checkRevision,
   downloadFiles,
+  changeUploadedFiles,
 } from "../controllers/document/creatorController";
 import {
   getTotalUsage,
@@ -49,6 +50,7 @@ router.get("/by/:folderStructure/:type/:reduce/:confidentiality/:quickAccess", g
 router.get("/creator/check-revision/:docId/:revision", checkRevision);
 router.put("/creator/new/put/:id", creatorUpload.any(), putDraft);
 router.put("/creator/change-status/:id/:status", creatorUpload.any(), changeStatusOfDraft);
+router.put("/creator/change-uploaded-files/:id", creatorUpload.any(), changeUploadedFiles);
 router.delete("/creator/delete/:id", deleteDraft);
 router.post("/creator/get", upload.any(), getDrafts);
 router.post("/creator/new/post", creatorUpload.any(), postDraft);

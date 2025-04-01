@@ -47,13 +47,13 @@ class DOCXGenerator {
     this.templateDir = path.join(UPLOADS_PATH, DOCX_TEMPLATES_FOLDER);
     // Verify the template exists
     this.templatePath = path.join(this.templateDir, this.templateName);
-    if (!fs.existsSync(this.templatePath)) {
-      throw new Error(TransCreateDocsResponseMessage.TEMPLATE_NOT_FOUND);
-    }
   }
 
   // Load the template based on format
   loadTemplate() {
+    if (!fs.existsSync(this.templatePath)) {
+      throw new Error(TransCreateDocsResponseMessage.TEMPLATE_NOT_FOUND);
+    }
     return fs.readFileSync(this.templatePath, "binary");
   }
 
@@ -151,7 +151,8 @@ class DOCXGenerator {
         return zip.generate({ type: "nodebuffer" });
       });
     } catch (error) {
-      console.error("Error generating document:", error);
+      // console.error("Error generating document:", error);
+      throw error;
     }
   }
 }

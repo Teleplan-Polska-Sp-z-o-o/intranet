@@ -18,6 +18,9 @@ import { ENotificationAction } from "../../interfaces/user/notification/ENotific
 import { User } from "../../orm/entity/user/UserEntity";
 import archiver from "archiver";
 import { readFile } from "fs/promises";
+import { IEmailAttachment } from "../../interfaces/Email/IEmailAttachment";
+import { Mailer } from "../../models/docx/mail/Mailer";
+import { EEmailVariant } from "../../models/docx/mail/Options";
 
 const postDraft = async (req: Request, res: Response) => {
   const body = req.body;
@@ -27,18 +30,6 @@ const postDraft = async (req: Request, res: Response) => {
 
     await dataSource.transaction(async (transactionalEntityManager) => {
       const repo: Repository<Draft> = transactionalEntityManager.getRepository(Draft);
-      // Check if a draft with the same name already exists
-      // const existingByName = await repo.findOne({
-      //   where: { name: stepper._name },
-      // });
-
-      // if (existingByName) {
-      //   return res.status(400).json({
-      //     hold: body.stepper,
-      //     message: `A draft with the name "${stepper._name}" already exists.`,
-      //     statusMessage: HttpResponseMessage.DRAFT_DUPLICATE_NAME,
-      //   });
-      // }
 
       // Check if a draft with the same UUID already exists
       const existingByUuid = await repo.findOne({
@@ -163,7 +154,7 @@ const storeUploadedFiles = async (
   draft: Draft,
   files: File[] | undefined,
   status: EStepperStatus
-): Promise<void> => {
+): Promise<IEmailAttachment[]> => {
   if (!files || files.length === 0) return;
 
   let folder = "";
@@ -179,15 +170,27 @@ const storeUploadedFiles = async (
   const destinationFolder = path.join(UPLOADS_PATH, CREATOR_DOCUMENTS_FOLDER, folder);
 
   try {
+    const attachments: IEmailAttachment[] = [];
     // Ensure folder exists
     await mkdir(destinationFolder, { recursive: true });
 
     for (const file of files) {
       const destinationPath = path.join(destinationFolder, file.originalname);
       await writeFile(destinationPath, file.buffer);
-      draft.stepper.fileNames.push(file.originalname);
-      // console.log("draft.stepper.fileNames", draft.stepper.fileNames);
+
+      // Only add to fileNames if not already present
+      if (!draft.stepper.fileNames.includes(file.originalname)) {
+        draft.stepper.fileNames.push(file.originalname);
+      }
+
+      attachments.push({
+        filename: file.originalname,
+        content: file.buffer,
+        contentType: file.mimetype,
+      });
     }
+
+    return attachments;
   } catch (err) {
     console.error("Error storing uploaded files:", err);
     throw err;
@@ -217,6 +220,40 @@ const moveFileBetweenFolders = async (fileNames: string[]): Promise<void> => {
   }
 };
 
+const changeUploadedFiles = async (req: Request<{ id: number }>, res: Response) => {
+  try {
+    const { id } = req.params;
+    const files = req.files;
+
+    await dataSource.transaction(async (transactionalEntityManager) => {
+      const repo: Repository<Draft> = transactionalEntityManager.getRepository(Draft);
+      const draft: Draft = await repo.findOne({ where: { id } });
+
+      if (!draft) {
+        return res.status(404).json({
+          message: `Draft not found`,
+          statusMessage: HttpResponseMessage.PUT_ERROR,
+        });
+      }
+
+      await storeUploadedFiles(draft, files, draft.stepper._status);
+
+      await repo.save(draft);
+
+      return res.status(200).json({
+        message: `Update of Draft files successfully`,
+        statusMessage: HttpResponseMessage.PUT_SUCCESS,
+      });
+    });
+  } catch (error) {
+    console.error("Error changing files of draft: ", error);
+    return res.status(500).json({
+      message: `Unknown error occurred. Failed to change draft files.`,
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
 const changeStatusOfDraft = async (
   req: Request<{ id: number; status: EStepperStatus }>,
   res: Response
@@ -237,13 +274,12 @@ const changeStatusOfDraft = async (
       });
 
       const repo: Repository<Draft> = transactionalEntityManager.getRepository(Draft);
-
       const draft: Draft = await repo.findOne({ where: { id } });
 
       if (!draft) {
         return res.status(404).json({
           message: `Draft not found`,
-          statusMessage: HttpResponseMessage.DELETE_ERROR,
+          statusMessage: HttpResponseMessage.PUT_ERROR,
         });
       }
 
@@ -277,7 +313,7 @@ const changeStatusOfDraft = async (
             .setSubtitle("A draft has been submitted for release and awaits your approval.")
             .setLink("/tool/transCreateDocs/browse/dashboard")
             .build();
-          saveNotification(userNotification);
+          await saveNotification(userNotification);
 
           break;
         case EStepperStatus.RELEASED:
@@ -286,7 +322,11 @@ const changeStatusOfDraft = async (
             new StatusHistory(nextHistoryId, EStepperStatus.RELEASED, issuer, comment)
           );
 
-          storeUploadedFiles(draft, files, EStepperStatus.RELEASED);
+          const attachments: IEmailAttachment[] = await storeUploadedFiles(
+            draft,
+            files,
+            EStepperStatus.RELEASED
+          );
 
           const previousReleasedDraft = await transactionalEntityManager
             .getRepository(Draft)
@@ -309,6 +349,10 @@ const changeStatusOfDraft = async (
             await repo.save(previousReleasedDraft);
           }
 
+          // if (attachments.length === draft.stepper.fileNames.length) {
+          //   new Mailer().send(EEmailVariant.RELEASE, attachments);
+          // }
+
           break;
       }
 
@@ -322,7 +366,7 @@ const changeStatusOfDraft = async (
   } catch (error) {
     console.error("Error changing status of draft: ", error);
     return res.status(500).json({
-      message: `Unknown error occurred. Failed to remove draft.`,
+      message: `Unknown error occurred. Failed to change status of draft.`,
       statusMessage: HttpResponseMessage.UNKNOWN,
     });
   }
@@ -488,14 +532,16 @@ const generateDraft = async (
       });
     });
   } catch (error) {
-    if (error.statusMessage === TransCreateDocsResponseMessage.TEMPLATE_NOT_FOUND) {
+    if (error.message === TransCreateDocsResponseMessage.TEMPLATE_NOT_FOUND) {
+      console.error("Error generating document: ", error);
       return res.status(404).json({
         message: "The requested document template was not found.",
-        statusMessage: error.statusMessage,
+        statusMessage: error.message,
       });
     }
 
     if (error instanceof MSTranslatorError) {
+      console.error("Error generating document: ", error);
       return res.status(500).json(error.toJSON());
     }
 
@@ -545,6 +591,7 @@ export {
   postDraft,
   putDraft,
   getDrafts,
+  changeUploadedFiles,
   changeStatusOfDraft,
   downloadFiles,
   deleteDraft,

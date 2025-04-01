@@ -21,13 +21,13 @@ enum Endpoints {
   Competence = "/api/competence",
 
   /// creator
-
   AddDraft = "/api/document/creator/new/post",
   PutDrafts = "/api/document/creator/new/put", // /:id
   GetDrafts = "/api/document/creator/get",
   DeleteDrafts = "/api/document/creator/delete", // /:id
   GenerateDrafts = "/api/document/creator/generate", // /:id/:language
   ChangeStatusOfDraft = "/api/document/creator/change-status", // /:id/:status
+  UpdateFilesOfDraft = "/api/document/creator/change-uploaded-files", // /:id
   CheckDraftRevision = "/api/document/creator/check-revision", // /:docId/:revision
   GetUsageLogs = "/api/document/creator/ms-translator-usage/getUsageLogs",
   GetTotalUsage = "/api/document/creator/ms-translator-usage/getTotalUsage",
