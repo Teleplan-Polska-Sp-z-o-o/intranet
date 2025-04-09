@@ -41,6 +41,7 @@ export namespace EfficiencyTypes {
   // Processed result per employee
   export interface IProcessedEmployee {
     id: string;
+    transaction_ids: number[];
     shift: 1 | 2 | 3;
     emp_name: string;
     worked_quarters: number;

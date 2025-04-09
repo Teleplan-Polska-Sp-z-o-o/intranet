@@ -6,6 +6,8 @@ import { EfficiencyModels as LenovoModelsForRepair } from "./lenovo/Models_repai
 import { EfficiencyModels as IngenicoModels } from "./ingenico/Models";
 import { RawTransactions } from "./Types";
 import { EfficiencyMonthlyTypes } from "../Types";
+import { SkyEfficiencyBuilder } from "../Models/Builder";
+import { TouchTimeUnit } from "../Models/models/TouchTime";
 
 interface IEfficiencyBuilder {
   getProcessedData(): any;
@@ -14,7 +16,8 @@ interface IEfficiencyBuilder {
 type EfficiencyBuilderConstructor = new (
   rawTransactions: RawTransactions.TTransactions,
   models: any,
-  ttKey: any
+  ttKey: any,
+  touchTimeUnit?: TouchTimeUnit
 ) => IEfficiencyBuilder;
 
 export class EfficiencyBuilderHandler<P extends EfficiencyMonthlyTypes.Postgres.Program> {
@@ -42,7 +45,8 @@ export class EfficiencyBuilderHandler<P extends EfficiencyMonthlyTypes.Postgres.
     this.builderInstance = new builderClass(
       rawTransactions,
       models,
-      this.getTT(program, this.category)
+      this.getTT(program, this.category),
+      TouchTimeUnit.MINUTES
     );
   }
 
@@ -51,8 +55,9 @@ export class EfficiencyBuilderHandler<P extends EfficiencyMonthlyTypes.Postgres.
       case "liberty":
         return EfficiencyBuilderHandler.builders.liberty(this.category);
       case "sky":
-        if (this.category === "test") return SkyModelsForTest.EfficiencyBuilder;
-        return EfficiencyBuilderHandler.builders.sky;
+        // if (this.category === "test") return SkyModelsForTest.EfficiencyBuilder;
+        // return EfficiencyBuilderHandler.builders.sky;
+        return SkyEfficiencyBuilder as any;
       case "lenovo":
         if (this.category === "repair") return LenovoModelsForRepair.EfficiencyBuilder;
         return EfficiencyBuilderHandler.builders.lenovo;

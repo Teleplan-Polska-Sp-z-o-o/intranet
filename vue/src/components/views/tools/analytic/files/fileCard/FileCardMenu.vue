@@ -177,7 +177,7 @@ const fileMenu: Record<string, FileCardTypes.FileMenuItem> = {
             submenu
           >
             <v-card max-width="300px">
-              <v-card-text>
+              <v-card-text class="overflow-y-auto" style="max-height: 300px">
                 <v-list lines="one" density="compact">
                   <v-list-item v-text="`File Type: ${fileEntity.fileType}`" />
                   <v-list-item>

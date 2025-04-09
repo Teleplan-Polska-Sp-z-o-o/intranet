@@ -1,11 +1,11 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { computed, onMounted, ref, toRefs, unref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { AnalyticFileManager } from "../../../../../../../models/analytic/AnalyticFileManager";
 import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
 import { AnalyticFileTypes } from "../../../files/Types";
 import { PackedTypes } from "./Types";
-import { AnalyticRaw } from "../../transactions/Types";
+import { AnalyticRaw } from "../../common/transactions/Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
 import Download from "../../common/download/Download.vue";
 import PackedWorker from "./packedWorker.ts?worker";
@@ -381,4 +381,4 @@ const formatColorOfTargetPercent = (item: PackedTypes.ITablePackedRow, model?: s
 .v-table .v-table__wrapper > table > tbody > tr > th:not(:last-child) {
   border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
-</style>
+</style> -->

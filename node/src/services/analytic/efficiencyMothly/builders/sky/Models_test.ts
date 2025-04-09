@@ -1,6 +1,7 @@
 import moment from "moment";
 import "moment-timezone";
 import { EfficiencyTypes } from "./Types";
+import { NRecords } from "../../Models/RecordTypes";
 import { RawTransactions } from "../Types";
 
 export namespace EfficiencyModels {
@@ -20,16 +21,6 @@ export namespace EfficiencyModels {
       this.processed_units += 1;
     }
 
-    // Add flexibility to calculateEfficiency for both day and quarter
-    // calculateEfficiency(
-    //   workedQuarters: number | undefined = undefined,
-    //   minutesPerPeriod: number = 15
-    // ) {
-    //   const totalWorkingTime = workedQuarters
-    //     ? workedQuarters * minutesPerPeriod
-    //     : minutesPerPeriod;
-    //   this.efficiency = totalWorkingTime > 0 ? (this.processing_time / totalWorkingTime) * 100 : 0;
-    // }
     calculateEfficiency(workedQuarters: number | undefined = undefined) {
       const totalWorkingTime = (workedQuarters ?? 1) * 15; // Ensure minutes
       this.efficiency = totalWorkingTime > 0 ? (this.processing_time / totalWorkingTime) * 100 : 0;
@@ -45,7 +36,7 @@ export namespace EfficiencyModels {
   > {
     cache: Map<string, T> = new Map();
     ttKey: keyof T;
-    getAverage(part_no: string): number | undefined {
+    getTT(part_no: string): number | undefined {
       const value = this.cache.get(part_no);
       if (!value) {
         switch (this.ttKey) {
@@ -87,49 +78,52 @@ export namespace EfficiencyModels {
       | EfficiencyTypes.TOobaModelObj
       | EfficiencyTypes.TTestModelObj
   > {
-    // private modelsCache: Map<string, T> = new Map(); // Cache for model data
-    private models: Models<T>;
-    private processedEmployees: EfficiencyTypes.IProcessedEmployees = []; // Processed data
-    // private ttModelsKey: keyof T;
+    private models: Models<T>; // models.cache models.ttKey
+    private processedEmployees: EfficiencyTypes.IProcessedEmployee[] = []; // Processed data
+
     constructor(
-      rawTransactions: RawTransactions.TTransactions,
+      rawTransactions: RawTransactions.ITransactionsRecord[], // NRecords.RawRecords.TRecords
       modelsObj: T[],
       ttModelsKey: keyof T
     ) {
-      // this.buildModelsCache(modelsObj);
       this.models = new Models(modelsObj, ttModelsKey);
-      // this.ttModelsKey = ttModelsKey;
-      this.processTransactions(rawTransactions);
+      const { employeeDataMap, employeeWorkedQuarters } = this.processTransactions(rawTransactions);
+
+      this.calculateEmployeesBase(employeeDataMap, employeeWorkedQuarters);
+      this.calculateEmployeesQuarterly(employeeDataMap);
+      this.calculateEmployeesDaily(employeeDataMap, employeeWorkedQuarters);
+
+      Object.values(employeeDataMap).forEach((employee) => {
+        this.calculateWeightedAverages(employee);
+        this.setMostWorkedShift(employee, employeeWorkedQuarters);
+      });
     }
 
-    // --- Preprocess modelsObj to build cache ---
-    // private buildModelsCache(modelsObj: T[]) {
-    //   modelsObj.forEach((model) => {
-    //     const { IFS_PART_NO } = model;
-    //     if (IFS_PART_NO) {
-    //       this.modelsCache.set(IFS_PART_NO, model);
-    //     }
-    //   });
-    // }
-
     // --- Main method to process the raw transactions ---
-    private processTransactions(transactions: RawTransactions.TTransactions) {
+    private processTransactions(transactions: RawTransactions.ITransactionsRecord[]) {
       const employeeDataMap: Record<string, EfficiencyTypes.IProcessedEmployee> = {};
       const employeeWorkedQuarters: Record<string, Set<string>> = {};
 
-      transactions.forEach((transaction, index) => {
+      transactions.forEach((transaction) => {
         // const { emp_name, part_no, datedtz } = transaction;
-        const { emp_hrid, part_no, test_date } = transaction;
+        const { transaction_id, emp_hrid, part_no, test_date } = transaction;
+
+        // Skip transactions without emp_name
+        if (!emp_hrid) {
+          // console.warn(`Skipping transaction with missing emp_name at index ${index}`);
+          return;
+        }
         // const modelData = this.modelsCache.get(part_no);
-        const modelData = this.models.getAverage(part_no);
+        const modelData = this.models.getTT(part_no);
 
         if (!modelData) return;
 
         // const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
         const processingTimePerUnit = modelData;
-        const transactionDate = this.extractTransactionDate(test_date as Date);
-        const transactionQuarter = this.getTransactionQuarter(test_date as Date); // now it's quarterly
-        const shift = this.getShift(test_date as Date);
+        const transactionDate = this.extractTransactionDate(test_date);
+        const transactionQuarter = this.getTransactionQuarter(test_date); // now it's quarterly
+
+        const shift = this.getShift(test_date);
 
         this.initializeEmployeeData(
           employeeDataMap,
@@ -139,22 +133,26 @@ export namespace EfficiencyModels {
         );
 
         // Determine if it's the last iteration
-        const isLastIteration = index === transactions.length - 1;
+        // const isLastIteration = index === transactions.length - 1;
 
         this.update(
+          transaction_id,
           emp_hrid as string,
           transactionDate,
           transactionQuarter,
           processingTimePerUnit,
-          //
           part_no,
-          //
           employeeDataMap,
-          employeeWorkedQuarters,
-          test_date as Date,
-          isLastIteration
+          employeeWorkedQuarters
+          // test_date,
+          // isLastIteration
         );
       });
+
+      return {
+        employeeDataMap,
+        employeeWorkedQuarters,
+      };
     }
 
     // --- Initialize employee data structures ---
@@ -167,6 +165,7 @@ export namespace EfficiencyModels {
       if (!employeeDataMap[emp_name]) {
         employeeDataMap[emp_name] = {
           id: `${emp_name}-${shift}`,
+          transaction_ids: [],
           shift: shift,
           emp_name: emp_name,
           worked_quarters: 0,
@@ -191,6 +190,7 @@ export namespace EfficiencyModels {
 
     // --- Update employee charts and processing time ---
     private update(
+      transaction_id: number,
       emp_name: string,
       transactionDate: string,
       transactionQuarter: string,
@@ -199,14 +199,13 @@ export namespace EfficiencyModels {
       part_no: string,
       //
       employeeDataMap: Record<string, EfficiencyTypes.IProcessedEmployee>,
-      employeeWorkedQuarters: Record<string, Set<string>>,
-      datedtz: Date,
-      isLastIteration: boolean
+      employeeWorkedQuarters: Record<string, Set<string>>
+      // isLastIteration: boolean
     ) {
+      employeeDataMap[emp_name].transaction_ids.push(transaction_id);
+
       // worked_quarters
-      employeeWorkedQuarters[emp_name].add(
-        `${transactionDate}-${this.getTransactionQuarter(datedtz)}`
-      );
+      employeeWorkedQuarters[emp_name].add(`${transactionDate}-${transactionQuarter}`);
 
       const processingTimeInMinutes = processingTimePerUnit / 60;
 
@@ -234,16 +233,16 @@ export namespace EfficiencyModels {
       }
       dailyChart[transactionDate].update(processingTimeInMinutes);
 
-      if (isLastIteration) {
-        this.calculateEmployeesBase(employeeDataMap, employeeWorkedQuarters);
-        this.calculateEmployeesQuarterly(employeeDataMap);
-        this.calculateEmployeesDaily(employeeDataMap, employeeWorkedQuarters);
+      // if (isLastIteration) {
+      //   this.calculateEmployeesBase(employeeDataMap, employeeWorkedQuarters);
+      //   this.calculateEmployeesQuarterly(employeeDataMap);
+      //   this.calculateEmployeesDaily(employeeDataMap, employeeWorkedQuarters);
 
-        // Calculate weighted averages for each employee
-        Object.values(employeeDataMap).forEach((employee) => {
-          this.calculateWeightedAverages(employee);
-        });
-      }
+      //   // Calculate weighted averages for each employee
+      //   Object.values(employeeDataMap).forEach((employee) => {
+      //     this.calculateWeightedAverages(employee);
+      //   });
+      // }
     }
 
     // --- Update estimated target values ---
@@ -313,15 +312,17 @@ export namespace EfficiencyModels {
       // Iterate over each unique model (part_no)
       for (const part_no in units) {
         // const modelData = this.modelsCache.get(part_no);
-        const modelData = this.models.getAverage(part_no);
+        const modelData = this.models.getTT(part_no);
         if (!modelData) continue;
 
         // const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
         const processingTimePerUnit = modelData;
+        const processingTimeInMinutes = processingTimePerUnit / 60;
+
         const unitsCount = units[part_no];
 
         // Add the processing time for all units of this model
-        totalProcessingTime += processingTimePerUnit * unitsCount;
+        totalProcessingTime += processingTimeInMinutes * unitsCount;
         totalUnits += unitsCount; // Add the number of units for this model
       }
 
@@ -375,30 +376,28 @@ export namespace EfficiencyModels {
     }
 
     // Extract date in YYYY-MM-DD format using moment
-    private extractTransactionDate(datedtz: Date): string {
-      return moment(datedtz).format("YYYY-MM-DD");
+    private extractTransactionDate(dated: string | Date | number): string {
+      return moment(dated).format("YYYY-MM-DD");
     }
 
     // Identify the quarter of a transaction using moment
-    private getTransactionQuarter(datedtz: Date): string {
-      const date = moment(datedtz);
+    private getTransactionQuarter(dated: string | Date | number): string {
+      const date = moment(dated);
       const startMinute = date.minute();
-      let quarterStart;
 
-      if (startMinute < 15) {
-        quarterStart = "00";
-      } else if (startMinute < 30) {
-        quarterStart = "15";
-      } else if (startMinute < 45) {
-        quarterStart = "30";
-      } else {
-        quarterStart = "45";
+      function getQuarterStart(minute: number): "00" | "15" | "30" | "45" {
+        if (minute < 15) return "00";
+        if (minute < 30) return "15";
+        if (minute < 45) return "30";
+        if (minute <= 60) return "45";
+
+        throw new Error("Invalid minute value");
       }
 
+      const quarterStart = getQuarterStart(startMinute);
+
       // Calculate the start time of the quarter
-      const quarterStartTime = moment(datedtz)
-        .startOf("hour")
-        .add(parseInt(quarterStart), "minutes");
+      const quarterStartTime = moment(dated).startOf("hour").add(parseInt(quarterStart), "minutes");
 
       // Calculate the end time of the quarter, which is 15 minutes after the start time
       const quarterEndTime = quarterStartTime.clone().add(15, "minutes");
@@ -411,15 +410,42 @@ export namespace EfficiencyModels {
     }
 
     // Get employee shift based on time of transaction using moment
-    private getShift(datedtz: Date): 1 | 2 | 3 {
-      const hour = moment(datedtz).hour();
+    private getShift(dated: string | Date | number): 1 | 2 | 3 {
+      const hour = moment(dated).hour();
       if (hour >= 6 && hour < 14) return 1;
       if (hour >= 14 && hour < 22) return 2;
-      return 3;
+      if (hour >= 22 || hour < 6) return 3;
+    }
+
+    private setMostWorkedShift(
+      employee: EfficiencyTypes.IProcessedEmployee,
+      workedTimeUnits: Record<string, Set<string>>
+    ): void {
+      const shiftCounts = { 1: 0, 2: 0, 3: 0 };
+
+      for (const timeUnit of workedTimeUnits[employee.emp_name]) {
+        const date = timeUnit.slice(0, 10); // "2025-04-04"
+        const timeInfo = timeUnit.slice(11); // "22:15-22:30" or "22:00" or "22:00-22:30"
+
+        if (!timeInfo) continue;
+
+        const startTime = timeInfo.includes("-") ? timeInfo.split("-")[0] : timeInfo;
+        const dateTime = `${date}T${startTime}`;
+        const shift = this.getShift(dateTime);
+
+        shiftCounts[shift]++;
+      }
+
+      const entries = (Object.entries(shiftCounts) as [string, number][]).map(
+        ([key, value]) => [parseInt(key, 10) as 1 | 2 | 3, value] as [1 | 2 | 3, number]
+      );
+      entries.sort((a, b) => b[1] - a[1]);
+
+      employee.shift = entries[0][0];
     }
 
     // Expose the processed employees data
-    public getProcessedData(): EfficiencyTypes.IProcessedEmployees {
+    public getProcessedData(): EfficiencyTypes.IProcessedEmployee[] {
       return this.processedEmployees.map((emp: EfficiencyTypes.IProcessedEmployee) => {
         return {
           ...emp,

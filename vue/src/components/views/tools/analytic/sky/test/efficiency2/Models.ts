@@ -16,20 +16,10 @@ export namespace EfficiencyModels {
     }
 
     update(processingTimePerUnit: number) {
-      // const processingTimeInMinutes = processingTimePerUnit / 60; // Convert seconds to minutes
       this.processing_time += processingTimePerUnit;
       this.processed_units += 1;
     }
 
-    // calculateEfficiency(
-    //   workedQuarters: number | undefined = undefined,
-    //   minutesPerQuarter: number = 15
-    // ) {
-    //   const totalWorkingTime = workedQuarters
-    //     ? workedQuarters * minutesPerQuarter
-    //     : minutesPerQuarter;
-    //   this.efficiency = totalWorkingTime > 0 ? (this.processing_time / totalWorkingTime) * 100 : 0;
-    // }
     calculateEfficiency(workedQuarters: number | undefined = undefined) {
       const totalWorkingTime = (workedQuarters ?? 1) * 15; // Ensure minutes
       this.efficiency = totalWorkingTime > 0 ? (this.processing_time / totalWorkingTime) * 100 : 0;

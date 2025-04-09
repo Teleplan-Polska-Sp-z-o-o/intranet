@@ -89,7 +89,7 @@ export namespace EfficiencyModels {
   > {
     // private modelsCache: Map<string, T> = new Map(); // Cache for model data
     private models: Models<T>;
-    private processedEmployees: EfficiencyTypes.IProcessedEmployees = []; // Processed data
+    private processedEmployees: EfficiencyTypes.IProcessedEmployee[] = []; // Processed data
     // private ttModelsKey: keyof T;
     constructor(
       rawTransactions: RawTransactions.TTransactions,
@@ -118,7 +118,7 @@ export namespace EfficiencyModels {
       const employeeWorkedQuarters: Record<string, Set<string>> = {};
 
       transactions.forEach((transaction, index) => {
-        const { emp_name, part_no, datedtz } = transaction;
+        const { transaction_id, emp_name, part_no, dated } = transaction;
         // const modelData = this.modelsCache.get(part_no);
         const modelData = this.models.getAverage(part_no);
 
@@ -126,9 +126,9 @@ export namespace EfficiencyModels {
 
         // const processingTimePerUnit = Number(modelData[this.ttModelsKey]);
         const processingTimePerUnit = modelData;
-        const transactionDate = this.extractTransactionDate(datedtz);
-        const transactionQuarter = this.getTransactionQuarter(datedtz); // now it's quarterly
-        const shift = this.getShift(datedtz);
+        const transactionDate = this.extractTransactionDate(dated);
+        const transactionQuarter = this.getTransactionQuarter(dated); // now it's quarterly
+        const shift = this.getShift(dated);
 
         this.initializeEmployeeData(employeeDataMap, employeeWorkedQuarters, emp_name, shift);
 
@@ -136,6 +136,7 @@ export namespace EfficiencyModels {
         const isLastIteration = index === transactions.length - 1;
 
         this.update(
+          transaction_id,
           emp_name,
           transactionDate,
           transactionQuarter,
@@ -145,7 +146,7 @@ export namespace EfficiencyModels {
           //
           employeeDataMap,
           employeeWorkedQuarters,
-          datedtz,
+          dated,
           isLastIteration
         );
       });
@@ -161,12 +162,12 @@ export namespace EfficiencyModels {
       if (!employeeDataMap[emp_name]) {
         employeeDataMap[emp_name] = {
           id: `${emp_name}-${shift}`,
+          transaction_ids: [],
           shift: shift,
           emp_name: emp_name,
           worked_quarters: 0,
           processing_time: 0,
           processed_units: 0,
-          //
           estimated_target: {
             units: {},
             units_per_worked_quarters: 0,
@@ -174,7 +175,6 @@ export namespace EfficiencyModels {
             units_per_hr: 0,
             units_per_8hrs: 0,
           },
-          //
           efficiency: 0,
           dailyChart: {},
           quarterlyChart: {},
@@ -185,6 +185,7 @@ export namespace EfficiencyModels {
 
     // --- Update employee charts and processing time ---
     private update(
+      transaction_id: number,
       emp_name: string,
       transactionDate: string,
       transactionQuarter: string,
@@ -194,12 +195,13 @@ export namespace EfficiencyModels {
       //
       employeeDataMap: Record<string, EfficiencyTypes.IProcessedEmployee>,
       employeeWorkedQuarters: Record<string, Set<string>>,
-      datedtz: Date,
+      dated: string | Date | number,
       isLastIteration: boolean
     ) {
+      employeeDataMap[emp_name].transaction_ids.push(transaction_id);
       // worked_quarters
       employeeWorkedQuarters[emp_name].add(
-        `${transactionDate}-${this.getTransactionQuarter(datedtz)}`
+        `${transactionDate}-${this.getTransactionQuarter(dated)}`
       );
 
       // processing_time
@@ -366,13 +368,13 @@ export namespace EfficiencyModels {
     }
 
     // Extract date in YYYY-MM-DD format using moment
-    private extractTransactionDate(datedtz: Date): string {
-      return moment(datedtz).format("YYYY-MM-DD");
+    private extractTransactionDate(dated: string | Date | number): string {
+      return moment(dated).format("YYYY-MM-DD");
     }
 
     // Identify the quarter of a transaction using moment
-    private getTransactionQuarter(datedtz: Date): string {
-      const date = moment(datedtz);
+    private getTransactionQuarter(dated: string | Date | number): string {
+      const date = moment(dated);
       const startMinute = date.minute();
       let quarterStart;
 
@@ -387,9 +389,7 @@ export namespace EfficiencyModels {
       }
 
       // Calculate the start time of the quarter
-      const quarterStartTime = moment(datedtz)
-        .startOf("hour")
-        .add(parseInt(quarterStart), "minutes");
+      const quarterStartTime = moment(dated).startOf("hour").add(parseInt(quarterStart), "minutes");
 
       // Calculate the end time of the quarter, which is 15 minutes after the start time
       const quarterEndTime = quarterStartTime.clone().add(15, "minutes");
@@ -402,15 +402,15 @@ export namespace EfficiencyModels {
     }
 
     // Get employee shift based on time of transaction using moment
-    private getShift(datedtz: Date): 1 | 2 | 3 {
-      const hour = moment(datedtz).hour();
+    private getShift(dated: string | Date | number): 1 | 2 | 3 {
+      const hour = moment(dated).hour();
       if (hour >= 6 && hour < 14) return 1;
       if (hour >= 14 && hour < 22) return 2;
       return 3;
     }
 
     // Expose the processed employees data
-    public getProcessedData(): EfficiencyTypes.IProcessedEmployees {
+    public getProcessedData(): EfficiencyTypes.IProcessedEmployee[] {
       return this.processedEmployees.map((emp: EfficiencyTypes.IProcessedEmployee) => {
         return {
           ...emp,

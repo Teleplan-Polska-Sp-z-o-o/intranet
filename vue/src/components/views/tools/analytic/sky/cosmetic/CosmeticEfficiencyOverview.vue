@@ -1,99 +1,49 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, toRefs, unref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { AnalyticFileManager } from "../../../../../../../models/analytic/AnalyticFileManager";
-import { AnalyticFileHelper } from "../../../files/drive/AnalyticFileHelper";
-import { AnalyticFileTypes } from "../../../files/Types";
-import { AnalyticRaw } from "../../transactions/Types";
-import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
-//
-import { EfficiencyTypes } from "../../common/efficiency/Types";
-import EmployeeDailyEfficiencyChart from "../../common/efficiency/EmployeeDailyEfficiencyChart.vue";
-import EmployeeQuarterlyEfficiencyChart from "../../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
-import EfficiencyWorker from "../../common/efficiency/EfficiencyWorker?worker";
-import Download from "../../common/download/Download.vue";
-import { DataTableHeader } from "../../common/download/DataTableHeader";
+import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
+import { computed, ref, toRefs, unref, watch } from "vue";
+import { EfficiencyTypes } from "../common/efficiency/Types";
+import { AnalyticRaw, IRawAndProcessedEmployees } from "../common/transactions/Types";
+import { DataTableHeader } from "../../files/download/DataTableHeader";
+// import EmployeeDailyEfficiencyChart from "../common/efficiency/EmployeeDailyEfficiencyChart.vue";
+// import EmployeeQuarterlyEfficiencyChart from "../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
+import EmployeeDailyEfficiencyChart from "../../common/charts/EmployeeDailyEfficiencyChart.vue";
+import EmployeeQuarterlyEfficiencyChart from "../../common/charts/EmployeeQuarterlyEfficiencyChart.vue";
+import Download from "../../files/download/Download.vue";
+import { shouldDisplayAsDailyChart } from "../../common/helpers/time";
 
 const route = useRoute();
-const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
 const analyticRawTransactionsStore = useAnalyticRawTableStore();
 
 const props = defineProps<{
   rawIdentification: string;
+  ttKey?: string;
+  title?: string;
 }>();
 
-const { rawIdentification } = toRefs(props);
+const { title, rawIdentification } = toRefs(props);
 
-// required items
-// models
-const modelsObj = ref<EfficiencyTypes.IModelsObj>([]);
-// packed
-const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
-
-// table items
-
-const items = ref<EfficiencyTypes.IProcessedEmployees>([]);
+const items = ref<EfficiencyTypes.IProcessedEmployee[]>([]);
 const expanded = ref<string[]>([]);
 const loading = ref<false | "primary-container">("primary-container");
-const worker = new EfficiencyWorker();
 
 /**
  * Loading current transactions
  */
 watch(
   () => unref(analyticRawTransactionsStore.getItemsData(unref(rawIdentification))),
-  async (newRawTransactions: AnalyticRaw.TTransactions) => {
-    rawTransactions.value = newRawTransactions;
+  async (newRawTransactions: IRawAndProcessedEmployees) => {
+    // rawTransactions.value = newRawTransactions.raw;
+    items.value = newRawTransactions.processed;
 
-    if (!unref(modelsObj) && !unref(modelsObj).at(0)) return;
-
-    function hasTTCosmProperty(
-      model: EfficiencyTypes.IModelObj
-    ): model is EfficiencyTypes.TCosmModelObj {
-      return "TT_COSM" in model;
-    }
-
-    const cosmModelsObj = unref(modelsObj).filter(
-      hasTTCosmProperty
-    ) as EfficiencyTypes.TCosmModelObj[];
-
-    if (cosmModelsObj.length === 0) {
-      throw new Error("No models found with the 'TT_COSM' property");
-    }
-
-    // const builder = new EfficiencyModels.EfficiencyBuilder<EfficiencyTypes.TCosmModelObj>(
-    //   rawTransactions.value,
-    //   cosmModelsObj,
-    //   "TT_COSM"
-    // );
-    // items.value = builder.getProcessedData();
-
-    // if (items.value) loading.value = false;
-
-    // Serialize data before sending it to the worker
-    const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
-    const serializedModelsObj = JSON.stringify(unref(modelsObj));
-
-    // Post the data to the worker, including the model type
-    worker.postMessage({
-      rawTransactions: serializedRawTransactions,
-      modelsObj: serializedModelsObj,
-      modelType: "TCosmModelObj", // Send the model type (e.g., "TCosmModelObj")
-    });
+    loading.value = false;
+    // console.log("EfficiencyBuilder", items.value);
   },
   { deep: true }
 );
 
-// Handle messages from the worker
-worker.addEventListener("message", (event) => {
-  const { processedData } = event.data;
-  items.value = processedData;
-
-  if (items.value) loading.value = false;
-  // console.log("EfficiencyBuilder", items.value);
-});
-
 const isItTodaysDataOnly = ref<boolean>(true);
+
 /**
  * pre form data change
  */
@@ -180,33 +130,6 @@ const headers = computed<object[]>(() => {
   ];
 });
 
-const load = async () => {
-  // Route params
-  const progName = route.params.program as string;
-  const catName = route.params.cat as string;
-
-  const requiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
-    await analyticFileManager.getByProgAndCatAndSub(progName, catName, "drive");
-  const consideredRequiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
-    AnalyticFileHelper.addConsideredProperty(requiredFiles);
-
-  try {
-    const modelsParsed = JSON.parse(
-      consideredRequiredFiles.find((file) => file.considered && file.fileType === "models")
-        ?.jsObjectJson!
-    );
-    modelsObj.value = modelsParsed[Object.keys(modelsParsed)[0]];
-
-    // get targets for efficiency
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-onMounted(async () => {
-  await load();
-});
-
 // format
 const formatShiftGroup = (shift: 1 | 2 | 3 | 4) => {
   if (shift === 4) return "Summary";
@@ -234,7 +157,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
     <v-card-title class="d-flex align-center">
-      Employee Cosmetic Efficiency Overview
+      {{ title ?? "Employee Cosmetic Efficiency Overview" }}
       <v-spacer></v-spacer>
       <download
         :headers="downloadHeaders"
@@ -252,6 +175,12 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
         {
           key: 'shift',
           order: 'asc',
+        },
+      ]"
+      :sort-by="[
+        {
+          key: 'efficiency',
+          order: 'desc',
         },
       ]"
       multi-sort
@@ -280,8 +209,8 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
       </template>
       <template v-slot:expanded-row="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
         <tr>
-          <td :colspan="headers.length">
-            <template v-if="Object.keys(item.dailyChart).length > 1">
+          <td :colspan="headers.length" class="pa-0">
+            <template v-if="shouldDisplayAsDailyChart(item)">
               <employee-daily-efficiency-chart
                 :chart="item.dailyChart"
               ></employee-daily-efficiency-chart>
@@ -289,6 +218,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
             <template v-else>
               <employee-quarterly-efficiency-chart
                 :chart="item.quarterlyChart"
+                :shift="item.shift"
               ></employee-quarterly-efficiency-chart>
             </template>
           </td>

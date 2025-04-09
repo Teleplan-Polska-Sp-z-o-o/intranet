@@ -1,5 +1,3 @@
-import { EfficiencyModels } from "./Models";
-
 export namespace EfficiencyTypes {
   interface IBaseModelObj {
     [key: string]: string;
@@ -37,6 +35,7 @@ export namespace EfficiencyTypes {
   // Processed result per employee
   export interface IProcessedEmployee {
     id: string;
+    transaction_ids: number[];
     shift: 1 | 2 | 3;
     emp_name: string;
     worked_quarters: number;
@@ -52,8 +51,8 @@ export namespace EfficiencyTypes {
     };
     //
     efficiency: number;
-    dailyChart: Record<string, EfficiencyModels.TimePeriodMetrics>;
-    quarterlyChart: Record<string, EfficiencyModels.TimePeriodMetrics>;
+    dailyChart: Record<string, ITimePeriodMetrics>;
+    quarterlyChart: Record<string, ITimePeriodMetrics>;
   }
 
   export type IProcessedEmployees = IProcessedEmployee[];

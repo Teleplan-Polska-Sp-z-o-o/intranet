@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
-import { AnalyticRaw } from "./Types";
+import { AnalyticRaw, IRawAndProcessedEmployees } from "./Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawLibertyTableStore";
-import { TimeHelper } from "../../../../../../../models/common/TimeHelper";
+// import { TimeHelper } from "../../../../../../../models/common/TimeHelper";
+import moment from "moment";
+import "moment-timezone";
 import { TransactionsHelper } from "./TransactionsHelper";
 import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
 import { useRoute } from "vue-router";
@@ -38,7 +40,7 @@ const headers: any = [
     key: "next_work_center_no",
     value: "next_work_center_no",
   },
-  { title: "Date", align: "start", key: "datedtz", value: "datedtz" },
+  { title: "Date", align: "start", key: "dated", value: "dated" },
 ];
 
 const searchTerm = ref<string>(""); // search input
@@ -49,9 +51,9 @@ const searchBy = [
   "part_no",
   "work_center_no",
   "next_work_center_no",
-  "datedtz",
+  "dated",
 ];
-const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "datedtz", order: "asc" }];
+const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "dated", order: "asc" }];
 
 const loadingVersion = ref<number>(0);
 const loading = ref<false | "primary-container">(false);
@@ -59,15 +61,15 @@ let every = ref<number>(1); // Start with 1-minute intervals
 // Set threshold for task to be considered heavy (e.g., 10 seconds)
 const TASK_THRESHOLD = 10000;
 
-const items = ref<AnalyticRaw.TTransactions>([]);
-const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
+const items = ref<IRawAndProcessedEmployees>({ raw: [], processed: [] });
+const filteredItems = computed<IRawAndProcessedEmployees>(() => {
   try {
     const data = unref(items);
     const searchTermLowered = unref(searchTerm).toLocaleLowerCase();
-    const filtered = ref<AnalyticRaw.TTransactions>([]);
+    const filtered = ref<IRawAndProcessedEmployees>({ raw: [], processed: [] });
 
     if (searchTerm.value) {
-      filtered.value = data.filter((item: AnalyticRaw.ITransactionsRow) => {
+      filtered.value.raw = data.raw.filter((item: AnalyticRaw.ITransactionsRow) => {
         for (const key of searchBy) {
           const valueFromColumnOfKey = JSON.stringify(item[key])?.toLocaleLowerCase();
           if (valueFromColumnOfKey && valueFromColumnOfKey.includes(searchTermLowered)) {
@@ -76,6 +78,14 @@ const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
         }
         return false;
       });
+
+      // Get a set of matching transaction_ids from filtered raw
+      const validTransactionIds = new Set(filtered.value.raw.map((item) => item.transaction_id));
+
+      // Filter PROCESSED based on whether any of its transaction_ids exist in raw
+      filtered.value.processed = data.processed.filter((p) =>
+        p.transaction_ids.some((id) => validTransactionIds.has(id))
+      );
     } else {
       filtered.value = data;
     }
@@ -134,8 +144,8 @@ const load = async (interrupt: boolean = true) => {
 
     // Create a new AbortController for the new request
     abortController.value = new AbortController();
-    const arm = new AnalyticRawManager<AnalyticRaw.TTransactions>(unref(program), unref(group));
-    const formData = arm.createFormData(preFormData);
+    const arm = new AnalyticRawManager<IRawAndProcessedEmployees>(unref(program), unref(group));
+    const formData = arm.createFormData(preFormData, true);
 
     const startTime = performance.now();
     const res = await arm.get(formData, abortController.value.signal);
@@ -243,8 +253,8 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
 
       <download
         :headers="downloadHeaders"
-        :items="filteredItems"
-        base-save-as="SKY Raw Transactions"
+        :items="filteredItems.raw"
+        base-save-as="Liberty Raw Transactions"
       ></download>
     </v-card-title>
 
@@ -255,7 +265,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
 
     <v-data-table
       v-model:search="searchTerm"
-      :items="filteredItems"
+      :items="filteredItems.raw"
       :loading="loading"
       :headers="headers"
       :sort-by="sortBy"
@@ -268,8 +278,9 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
       ]"
       class="bg-surface-2"
     >
-      <template v-slot:item.datedtz="{ item }: { item: AnalyticRaw.ITransactionsRow }">
-        {{ TimeHelper.removeTimezone(TimeHelper.convertToLocalTime(item.datedtz)) }}
+      <template v-slot:item.dated="{ item }: { item: AnalyticRaw.ITransactionsRow }">
+        <!-- {{ TimeHelper.removeTimezone(TimeHelper.convertToLocalTime(item.dated)) }} -->
+        {{ moment.utc(item.dated).format("YYYY-MM-DD HH:mm:ss") }}
       </template>
     </v-data-table>
   </v-card>

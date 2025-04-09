@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
 import { AnalyticRaw } from "./Types";
 import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore2";
@@ -430,4 +430,4 @@ const downloadHeaders = (unref(headers) as DataTableHeader[]).filter((col: DataT
       </template>
     </v-data-table>
   </v-card>
-</template>
+</template> -->

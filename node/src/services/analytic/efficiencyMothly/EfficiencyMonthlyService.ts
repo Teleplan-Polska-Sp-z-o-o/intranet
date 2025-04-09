@@ -15,6 +15,7 @@ import { serverConfig } from "../../../config/server";
 import { EmailHandler } from "../../../models/common/Email/EmailHandler";
 import { EmailOptions } from "../../../models/common/Email/options/EmailOptions";
 import { reportsTemplate } from "../../../models/common/Email/templates/reportsTemplate";
+import { RawTransaction } from "../../../orm/sideEntity/postgres/RawTransactionsEntity";
 
 export namespace EfficiencyMonthlyService {
   export class PostgresHandler<P extends EfficiencyMonthlyTypes.Postgres.Program> {
@@ -135,6 +136,10 @@ export namespace EfficiencyMonthlyService {
         builder.getProcessedData() as EfficiencyMonthlyTypes.Postgres.IProcessedEmployeeUniversal[];
 
       return this;
+    }
+
+    getTable() {
+      return this.table;
     }
 
     async createExcelBaseEfficiencyReport_4_1(): Promise<this> {

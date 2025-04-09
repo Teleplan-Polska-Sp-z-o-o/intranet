@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
-import { AnalyticRaw } from "./Types";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
-import { TimeHelper } from "../../../../../../models/common/TimeHelper";
+import { AnalyticRaw, IRawAndProcessedEmployees } from "./Types";
+import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
+// import { TimeHelper } from "../../../../../../models/common/TimeHelper";
+import moment from "moment";
+import "moment-timezone";
 import { TransactionsHelper } from "./TransactionsHelper";
 import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
 import { useRoute } from "vue-router";
-import { useAlertStore } from "../../../../../../stores/alertStore";
-import Download from "../common/download/Download.vue";
-import { DataTableHeader } from "../common/download/DataTableHeader";
-import { AnalyticRawManager } from "../../../../../../models/analytic/AnalyticRawManager";
+import { useAlertStore } from "../../../../../../../stores/alertStore";
+// import Download from "../../common/download/Download.vue";
+import Download from "../../../files/download/Download.vue";
+import { DataTableHeader } from "../../../files/download/DataTableHeader";
+import { AnalyticRawManager } from "../../../../../../../models/analytic/AnalyticRawManager";
 import axios from "axios";
-import { TimerManager } from "../common/debug/Timers";
 
 const props = defineProps<{
   program: AnalyticRaw.TPrograms;
@@ -25,42 +27,73 @@ const store = useAnalyticRawTableStore();
 const route = useRoute();
 const abortController = ref<AbortController | null>(null);
 
-const headers: any = computed(() => {
-  const colsToManage = {
-    serial: { title: "Serial No", align: "start", key: "serial_no", value: "serial_no" },
-    emp: { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
-    box: { title: "Box Id", align: "start", key: "box_id", value: "box_id" },
-    host: { title: "Hostname", align: "start", key: "hostname", value: "hostname" },
-  };
-  const injectedColumns =
-    unref(group) === "test" ? Object.values(colsToManage) : [colsToManage.emp];
-  return [
-    { title: "Contract", align: "start", key: "contract", value: "contract" },
-    { title: "Order No", align: "start", key: "order_no", value: "order_no" },
-    // { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
-    ...injectedColumns,
-    { title: "Part No", align: "start", key: "part_no", value: "part_no" },
-    {
-      title: "From Work Center No",
-      align: "start",
-      key: "work_center_no",
-      value: "work_center_no",
-    },
-    { title: "Date", align: "start", key: "datedtz", value: "datedtz" },
-  ];
+const standardHeaders: any = [
+  { title: "Contract", align: "start", key: "contract", value: "contract" },
+  { title: "Order No", align: "start", key: "order_no", value: "order_no" },
+  { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
+  { title: "Part No", align: "start", key: "part_no", value: "part_no" },
+  {
+    title: "From Work Center No",
+    align: "start",
+    key: "work_center_no",
+    value: "work_center_no",
+  },
+  {
+    title: "Next Work Center No",
+    align: "start",
+    key: "next_work_center_no",
+    value: "next_work_center_no",
+  },
+  { title: "Date", align: "start", key: "dated", value: "dated" },
+];
+const testHeaders: any = [
+  // { title: "Transaction ID", align: "start", key: "transaction_id", value: "transaction_id" },
+  { title: "Employee HR ID", align: "start", key: "emp_hrid", value: "emp_hrid" },
+  { title: "Part No", align: "start", key: "part_no", value: "part_no" },
+  { title: "Serial No", align: "start", key: "serial_no", value: "serial_no" },
+  { title: "Box ID", align: "start", key: "box_id", value: "box_id" },
+  { title: "Hostname", align: "start", key: "hostname", value: "hostname" },
+  { title: "Test Date", align: "start", key: "test_date", value: "test_date" },
+];
+
+const tableHeaders = computed(() => {
+  return unref(group) === "test" ? testHeaders : standardHeaders;
 });
 
 const searchTerm = ref<string>(""); // search input
-const searchBy = [
-  "contract",
-  "order_no",
-  "emp_name",
-  "part_no",
-  "work_center_no",
-  // "next_work_center_no",
-  "datedtz",
-];
-const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "datedtz", order: "asc" }];
+// const searchBy = [
+//   "contract",
+//   "order_no",
+//   "emp_name",
+//   "part_no",
+//   "work_center_no",
+//   // "next_work_center_no",
+//   "dated",
+// ];
+//
+
+const searchBy = computed(() => {
+  return group.value === "test"
+    ? ["emp_hrid", "part_no", "serial_no", "box_id", "hostname", "test_date"]
+    : [
+        "contract",
+        "order_no",
+        "emp_name",
+        "part_no",
+        "work_center_no",
+        "next_work_center_no",
+        "dated",
+      ];
+});
+// const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "dated", order: "asc" }];
+const sortBy: any = computed(() => {
+  return [
+    {
+      key: group.value === "test" ? "test_date" : "dated",
+      order: "asc",
+    },
+  ];
+});
 
 const loadingVersion = ref<number>(0);
 const loading = ref<false | "primary-container">(false);
@@ -68,16 +101,16 @@ let every = ref<number>(1); // Start with 1-minute intervals
 // Set threshold for task to be considered heavy (e.g., 10 seconds)
 const TASK_THRESHOLD = 10000;
 
-const items = ref<AnalyticRaw.TTransactions>([]);
-const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
+const items = ref<IRawAndProcessedEmployees>({ raw: [], processed: [] });
+const filteredItems = computed<IRawAndProcessedEmployees>(() => {
   try {
     const data = unref(items);
     const searchTermLowered = unref(searchTerm).toLocaleLowerCase();
-    const filtered = ref<AnalyticRaw.TTransactions>([]);
+    const filtered = ref<IRawAndProcessedEmployees>({ raw: [], processed: [] });
 
     if (searchTerm.value) {
-      filtered.value = data.filter((item: AnalyticRaw.ITransactionsRow) => {
-        for (const key of searchBy) {
+      filtered.value.raw = data.raw.filter((item: AnalyticRaw.ITransactionsRow) => {
+        for (const key of searchBy.value) {
           const valueFromColumnOfKey = JSON.stringify(item[key])?.toLocaleLowerCase();
           if (valueFromColumnOfKey && valueFromColumnOfKey.includes(searchTermLowered)) {
             return true;
@@ -85,11 +118,20 @@ const filteredItems = computed<AnalyticRaw.TTransactions>(() => {
         }
         return false;
       });
+
+      // Get a set of matching transaction_ids from filtered raw
+      const validTransactionIds = new Set(filtered.value.raw.map((item) => item.transaction_id));
+
+      // Filter PROCESSED based on whether any of its transaction_ids exist in raw
+      filtered.value.processed = data.processed.filter((p) =>
+        p.transaction_ids.some((id) => validTransactionIds.has(id))
+      );
     } else {
       filtered.value = data;
     }
 
     store.setItemsData(unref(identification), unref(filtered));
+
     return unref(filtered);
   } catch (error) {
     console.error(`Transactions Raw Table at filteredItems, ${error}`);
@@ -135,19 +177,13 @@ const load = async (interrupt: boolean = true) => {
       abortController.value.abort(); // Abort only if `interrupt` is true
     }
 
-    const tm = TimerManager.getInstance();
-    if (tm.isTimerRunning("raw")) {
-      tm.startTimer("raw");
-    }
-
     // Create a new AbortController for the new request
     abortController.value = new AbortController();
-    const arm = new AnalyticRawManager<AnalyticRaw.TTransactions>(unref(program), unref(group));
-    const formData = arm.createFormData(preFormData);
+    const arm = new AnalyticRawManager<IRawAndProcessedEmployees>(unref(program), unref(group));
+    const formData = arm.createFormData(preFormData, true);
 
     const startTime = performance.now();
     const res = await arm.get(formData, abortController.value.signal);
-
     const duration = performance.now() - startTime;
 
     // If the task is heavy, switch to a longer interval (5 minutes)
@@ -225,10 +261,12 @@ watch(
   }
 );
 
-const downloadHeaders = (unref(headers) as DataTableHeader[]).filter((col: DataTableHeader) => {
-  const keyBlackList = ["transaction_id"];
-  return !keyBlackList.includes(col.value);
-});
+const downloadHeaders = (unref(tableHeaders) as DataTableHeader[]).filter(
+  (col: DataTableHeader) => {
+    const keyBlackList = ["transaction_id"];
+    return !keyBlackList.includes(col.value);
+  }
+);
 </script>
 
 <template>
@@ -252,7 +290,7 @@ const downloadHeaders = (unref(headers) as DataTableHeader[]).filter((col: DataT
 
       <download
         :headers="downloadHeaders"
-        :items="filteredItems"
+        :items="filteredItems.raw"
         base-save-as="SKY Raw Transactions"
       ></download>
     </v-card-title>
@@ -264,9 +302,9 @@ const downloadHeaders = (unref(headers) as DataTableHeader[]).filter((col: DataT
 
     <v-data-table
       v-model:search="searchTerm"
-      :items="filteredItems"
+      :items="filteredItems.raw"
       :loading="loading"
-      :headers="headers"
+      :headers="tableHeaders"
       :sort-by="sortBy"
       multi-sort
       :items-per-page-options="[
@@ -277,8 +315,11 @@ const downloadHeaders = (unref(headers) as DataTableHeader[]).filter((col: DataT
       ]"
       class="bg-surface-2"
     >
-      <template v-slot:item.datedtz="{ item }: { item: AnalyticRaw.ITransactionsRow }">
-        {{ TimeHelper.removeTimezone(TimeHelper.convertToLocalTime(item.datedtz)) }}
+      <template v-if="group === 'test'" v-slot:item.test_date="{ item }">
+        {{ moment.utc(item.test_date).format("YYYY-MM-DD HH:mm:ss") }}
+      </template>
+      <template v-else v-slot:item.dated="{ item }">
+        {{ moment.utc(item.dated).format("YYYY-MM-DD HH:mm:ss") }}
       </template>
     </v-data-table>
   </v-card>

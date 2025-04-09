@@ -1,7 +1,7 @@
 import moment from "moment";
 import "moment-timezone";
 import { EfficiencyTypes } from "./Types";
-import { AnalyticRaw } from "../../transactions/Types";
+import { AnalyticRaw } from "../../common/transactions/Types";
 
 export namespace EfficiencyModels {
   export class TimePeriodMetrics implements EfficiencyTypes.ITimePeriodMetrics {

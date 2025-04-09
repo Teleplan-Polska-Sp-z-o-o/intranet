@@ -1,6 +1,7 @@
 import moment from "moment";
 import "moment-timezone";
 import { EfficiencyTypes } from "./Types_repair";
+import { NRecords } from "../../Models/RecordTypes";
 import { RawTransactions } from "../Types";
 
 export namespace EfficiencyModels {
@@ -32,7 +33,7 @@ export namespace EfficiencyModels {
     private ttModelsKey: keyof T;
 
     constructor(
-      rawTransactions: RawTransactions.TTransactions,
+      rawTransactions: RawTransactions.ITransactionsRecord[],
       modelsObj: T[],
       ttModelsKey: keyof T
     ) {
@@ -50,7 +51,7 @@ export namespace EfficiencyModels {
       });
     }
 
-    private processTransactions(transactions: RawTransactions.TTransactions) {
+    private processTransactions(transactions: RawTransactions.ITransactionsRecord[]) {
       const employeeDataMap: Record<string, EfficiencyTypes.IProcessedEmployee> = {};
       const employeeWorkedHours: Record<string, Set<string>> = {};
 

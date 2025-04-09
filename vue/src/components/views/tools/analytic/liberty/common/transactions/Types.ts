@@ -1,4 +1,5 @@
 import { CommonTypes } from "../../../../../../../interfaces/common/CommonTypes";
+import { EfficiencyTypes } from "../efficiency/Types";
 
 export namespace AnalyticRaw {
   export type TPrograms = "liberty";
@@ -27,7 +28,7 @@ export namespace AnalyticRaw {
     part_no: string;
     work_center_no: string;
     next_work_center_no: string;
-    datedtz: Date;
+    dated: Date;
   }
 
   export type TTransactions = ITransactionsRow[];
@@ -41,3 +42,8 @@ export namespace AnalyticRaw {
   };
   export type TTransactionsPackingRows = TTransactionsPackingRow[];
 }
+
+export type IRawAndProcessedEmployees = {
+  raw: AnalyticRaw.TTransactions;
+  processed: EfficiencyTypes.IProcessedEmployees;
+};

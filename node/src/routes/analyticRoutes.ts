@@ -4,7 +4,6 @@ import {
   getRawSkyPackingTransactions,
   getRawCosmeticTransactions,
   getRawOobaTransactions,
-  getRawSkyTestTransactions,
   getRawSkyTestTransactions2,
 } from "../sideControllers/sky/TransactionsRawController";
 import {
@@ -64,8 +63,8 @@ const decodeFormData = multer().none();
 router.post("/raw/sky/packing", decodeFormData, getRawSkyPackingTransactions);
 router.post("/raw/sky/cosmetic", decodeFormData, getRawCosmeticTransactions);
 router.post("/raw/sky/ooba", decodeFormData, getRawOobaTransactions);
-router.post("/raw/sky/test", decodeFormData, getRawSkyTestTransactions);
-router.post("/raw/sky/test-2", decodeFormData, getRawSkyTestTransactions2);
+// router.post("/raw/sky/test", decodeFormData, getRawSkyTestTransactions);
+router.post("/raw/sky/test", decodeFormData, getRawSkyTestTransactions2);
 
 // lenovo
 router.post("/raw/lenovo/repair", decodeFormData, getRawRepairTransactions);

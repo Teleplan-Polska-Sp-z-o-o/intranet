@@ -7,19 +7,19 @@ import { usePermissionStore } from "../../../stores/permissionStore";
 import FileDrive from "../../../components/views/tools/analytic/files/drive/FileDrive.vue";
 import Documentation from "../../../components/views/tools/analytic/Documentation.vue";
 // raws
-import TransactionsRawSkyDataTable from "../../../components/views/tools/analytic/sky/transactions/TransactionsRawSkyDataTable.vue";
-import TransactionsRawSkyDataTable2 from "../../../components/views/tools/analytic/sky/transactions2/TransactionsRawSkyDataTable.vue";
+import TransactionsRawSkyDataTable from "../../../components/views/tools/analytic/sky/common/transactions/TransactionsRawSkyDataTable.vue";
+// import TransactionsRawSkyDataTable2 from "../../../components/views/tools/analytic/sky/transactions2/TransactionsRawSkyDataTable.vue";
 import TransactionsRawLenovoDataTable from "../../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
 import TransactionsRawIngenicoDataTable from "../../../components/views/tools/analytic/ingenico/common/transactions/TransactionsRawIngenicoDataTable.vue";
 import TransactionsRawLibertyDataTable from "../../../components/views/tools/analytic/liberty/common/transactions/TransactionsRawLibertyDataTable.vue";
 import TransactionsRawDellDataTable from "../../../components/views/tools/analytic/dell/common/transactions/TransactionsRawDellDataTable.vue";
 
 // sky "../../.
-import SkyPackedUnitsOverview from "../../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
-import SkyPackingEfficiencyOverview from "../../../components/views/tools/analytic/sky/packing/efficiency/PackingEfficiencyOverview.vue";
-import SkyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/sky/cosmetic/efficiency/CosmeticEfficiencyOverview.vue";
-import SkyOobaEfficiencyOverview from "../../../components/views/tools/analytic/sky/ooba/efficiency/OobaEfficiencyOverview.vue";
-import SkyTestEfficiencyOverview2 from "../../../components/views/tools/analytic/sky/test/efficiency2/TestEfficiencyOverview.vue";
+// import SkyPackedUnitsOverview from "../../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
+import SkyPackingEfficiencyOverview from "../../../components/views/tools/analytic/sky/packing/PackingEfficiencyOverview.vue";
+import SkyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/sky/cosmetic/CosmeticEfficiencyOverview.vue";
+import SkyOobaEfficiencyOverview from "../../../components/views/tools/analytic/sky/ooba/OobaEfficiencyOverview.vue";
+import SkyTestEfficiencyOverview from "../../../components/views/tools/analytic/sky/test/TestEfficiencyOverview.vue";
 
 // lenovo
 import LenovoRepairEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
@@ -47,7 +47,7 @@ import LibertyDebugrepairEfficiencyOverview from "../../../components/views/tool
 import LibertyHighpotEfficiencyOverview from "../../../components/views/tools/analytic/liberty/highpot/HighpotEfficiencyOverview.vue";
 import LibertyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/liberty/cosmetic/CosmeticEfficiencyOverview.vue";
 import LibertyPackEfficiencyOverview from "../../../components/views/tools/analytic/liberty/pack/PackEfficiencyOverview.vue";
-import LibertyShipEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ship/ShipEfficiencyOverview.vue";
+// import LibertyShipEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ship/ShipEfficiencyOverview.vue";
 import LibertyOobaEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ooba/OobaEfficiencyOverview.vue";
 import { tabsObj } from "./tabsObj";
 
@@ -195,11 +195,11 @@ onMounted(async () => {
                       group="packing"
                       identification="sky-packing-overview"
                     ></transactions-raw-sky-data-table>
-                    <sky-packed-units-overview
+                    <!-- <sky-packed-units-overview
                       rawIdentification="sky-packing-overview"
                       class="mt-6"
                     >
-                    </sky-packed-units-overview>
+                    </sky-packed-units-overview> -->
                     <sky-packing-efficiency-overview
                       rawIdentification="sky-packing-overview"
                       class="mt-6"
@@ -258,16 +258,16 @@ onMounted(async () => {
                 </v-window-item>
                 <v-window-item value="sky-test-overview">
                   <template v-if="windowItem === 'sky-test-overview'">
-                    <transactions-raw-sky-data-table-2
+                    <transactions-raw-sky-data-table
                       program="sky"
                       group="test"
                       identification="sky-test-overview"
-                    ></transactions-raw-sky-data-table-2>
-                    <sky-test-efficiency-overview-2
+                    ></transactions-raw-sky-data-table>
+                    <sky-test-efficiency-overview
                       rawIdentification="sky-test-overview"
                       class="mt-6"
                     >
-                    </sky-test-efficiency-overview-2>
+                    </sky-test-efficiency-overview>
                   </template>
                 </v-window-item>
 
@@ -765,7 +765,7 @@ onMounted(async () => {
                 </v-window-item>
 
                 <!-- Liberty SHIP -->
-                <v-window-item value="liberty-ship-drive">
+                <!-- <v-window-item value="liberty-ship-drive">
                   <template v-if="windowItem === 'liberty-ship-drive'">
                     <file-drive
                       subtitle="Liberty Ship"
@@ -786,7 +786,7 @@ onMounted(async () => {
                       class="mt-6"
                     />
                   </template>
-                </v-window-item>
+                </v-window-item> -->
 
                 <!-- Liberty OOBA -->
                 <v-window-item value="liberty-ooba-drive">

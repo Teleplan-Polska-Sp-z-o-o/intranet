@@ -42,6 +42,7 @@ export namespace EfficiencyTypes {
   // Processed result per employee
   export interface IProcessedEmployee {
     id: string;
+    transaction_ids: number[];
     shift: 1 | 2 | 3;
     emp_name: string;
     worked_quarters: number;
@@ -60,6 +61,4 @@ export namespace EfficiencyTypes {
     dailyChart: Record<string, EfficiencyModels.TimePeriodMetrics>;
     quarterlyChart: Record<string, EfficiencyModels.TimePeriodMetrics>;
   }
-
-  export type IProcessedEmployees = IProcessedEmployee[];
 }

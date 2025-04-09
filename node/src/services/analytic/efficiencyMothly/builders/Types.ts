@@ -14,7 +14,7 @@ export namespace RawTransactions {
   export type TTransactions = ITransactionsRecord[];
 
   export interface ITransactionsDellBoseRecord {
-    [key: string]: any;
+    [key: string]: number | string | Date;
     id: number;
     contract: string;
     username: string;

@@ -1,41 +1,28 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { AnalyticRaw } from "../../components/views/tools/analytic/sky/transactions/Types";
+import {
+  AnalyticRaw,
+  IRawAndProcessedEmployees,
+} from "../../components/views/tools/analytic/sky/common/transactions/Types";
 
 export const useAnalyticRawTableStore = defineStore("analytic-raw-sky-table", () => {
-  // const loadMap = ref<Map<string, boolean>>(new Map());
-  // const isRawChanged = (id: string) => {
-  //   return computed(() => loadMap.value.get(id));
-  // };
-  // const loadRawItems = (id: string) => {
-  //   loadMap.value.set(id, true);
-  //   setTimeout(() => {
-  //     loadMap.value.set(id, false);
-  //   }, 0);
-  // };
-  const itemsMap = ref<Map<string, AnalyticRaw.TTransactions>>(new Map());
+  const itemsMap = ref<Map<string, IRawAndProcessedEmployees>>(new Map());
   const getItemsData = (id: string) => {
     return computed(() => {
       const items = itemsMap.value.get(id);
       if (items === undefined) {
-        console.warn(`itemsMap by key [${id}]: items evaluate to undefined. Returning [].`);
-        return [];
+        console.warn(
+          `itemsMap by key [${id}]: items evaluate to undefined. Returning { raw: [], processed: [] }.`
+        );
+        return { raw: [], processed: [] };
       }
       return items;
     });
   };
-  const setItemsData = (id: string, data: AnalyticRaw.TTransactions) => {
+  const setItemsData = (id: string, data: IRawAndProcessedEmployees) => {
+    console.log("sky data", data);
     itemsMap.value.set(id, data);
   };
-
-  // watch(
-  //   itemsMap,
-  //   (v) => {
-  //     console.log(v);
-  //   },
-  //   { deep: true }
-  // );
-
   const preFormDataMap = ref<Map<string, AnalyticRaw.IPreFormData>>(new Map());
   const getPreFormData = (id: string) => {
     return computed(() => preFormDataMap.value.get(id));

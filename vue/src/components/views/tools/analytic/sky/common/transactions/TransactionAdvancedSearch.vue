@@ -2,7 +2,8 @@
 import { computed, onMounted, ref, toRefs, unref } from "vue";
 import { AnalyticRaw } from "./Types";
 import { TransactionsHelper } from "./TransactionsHelper";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawSkyTableStore";
+import { getLast31Days } from "../../../common/helpers/time";
 
 // import { useI18n } from "vue-i18n";
 const store = useAnalyticRawTableStore();
@@ -87,6 +88,7 @@ onMounted(() => submit());
           ></v-autocomplete>
           <v-date-input
             v-model="dateRangeInput"
+            :allowed-dates="getLast31Days()"
             multiple="range"
             label="Date Range"
             variant="solo-filled"

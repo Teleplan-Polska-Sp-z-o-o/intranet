@@ -92,6 +92,7 @@ export namespace EfficiencyModels {
       if (!employeeDataMap[emp_name]) {
         employeeDataMap[emp_name] = {
           id: `${emp_name}-${shift}`,
+          transaction_ids: [],
           shift: shift,
           emp_name: emp_name,
           worked_quarters: 0,
@@ -222,6 +223,7 @@ export namespace EfficiencyModels {
     }
 
     private update(
+      transaction_id: number,
       emp_name: string,
       transactionDate: string,
       transactionQuarter: string,
@@ -233,6 +235,8 @@ export namespace EfficiencyModels {
       employeeWorkedQuarters: Record<string, Set<string>>
       // isLastIteration: boolean
     ) {
+      employeeDataMap[emp_name].transaction_ids.push(transaction_id);
+
       employeeWorkedQuarters[emp_name].add(`${transactionDate}-${transactionQuarter}`);
       employeeDataMap[emp_name].processing_time += processingTimeOfUnit;
       employeeDataMap[emp_name].processed_units += 1;
@@ -272,7 +276,7 @@ export namespace EfficiencyModels {
           transaction
           // index
         ) => {
-          const { emp_name, part_no, datedtz } = transaction;
+          const { transaction_id, emp_name, part_no, dated } = transaction;
           const processingTimeOfModel = { time: this.modelsCache.get(part_no) };
 
           if (!processingTimeOfModel.time) {
@@ -284,14 +288,15 @@ export namespace EfficiencyModels {
             return;
           }
 
-          const transactionDate = this.extractTransactionDate(datedtz);
-          const transactionHour = this.extractTransactionQuarter(datedtz);
-          const shift = this.extractShift(datedtz);
+          const transactionDate = this.extractTransactionDate(dated);
+          const transactionHour = this.extractTransactionQuarter(dated);
+          const shift = this.extractShift(dated);
 
           this.initializeEmployeeData(employeeDataMap, employeeWorkedQuarters, emp_name, shift);
 
           // const isLastIteration = index === transactions.length - 1;
           this.update(
+            transaction_id,
             emp_name,
             transactionDate,
             transactionHour,
@@ -314,11 +319,12 @@ export namespace EfficiencyModels {
 
     // HELPER FUNCTIONS
 
-    private extractTransactionDate(datedtz: Date): string {
-      return moment(datedtz).format("YYYY-MM-DD");
+    private extractTransactionDate(datedtz: string | Date | number): string {
+      const date = moment(datedtz).format("YYYY-MM-DD");
+      return date;
     }
 
-    private extractTransactionQuarter(datedtz: Date): string {
+    private extractTransactionQuarter(datedtz: string | Date | number): string {
       const date = moment(datedtz);
       const startMinute = date.minute();
       let quarterStart;
@@ -348,7 +354,7 @@ export namespace EfficiencyModels {
       return `${formattedStart}-${formattedEnd}`;
     }
 
-    private extractShift(datedtz: Date): 1 | 2 | 3 {
+    private extractShift(datedtz: string | Date | number): 1 | 2 | 3 {
       const hour = moment(datedtz).hour();
       if (hour >= 6 && hour < 14) return 1;
       if (hour >= 14 && hour < 22) return 2;
@@ -436,6 +442,7 @@ export namespace EfficiencyModels {
       if (!employeeDataMap[emp_name]) {
         employeeDataMap[emp_name] = {
           id: `${emp_name}-${shift}`,
+          transaction_ids: [],
           shift: shift,
           emp_name: emp_name,
           worked_quarters: 0,
@@ -655,6 +662,7 @@ export namespace EfficiencyModels {
     }
 
     private update(
+      transaction_id: number,
       emp_name: string,
       transactionDate: string,
       transactionQuarter: string,
@@ -666,6 +674,7 @@ export namespace EfficiencyModels {
       employeeWorkedQuarters: Record<string, Set<string>>
       // isLastIteration: boolean
     ) {
+      employeeDataMap[emp_name].transaction_ids.push(transaction_id);
       // employeeWorkedHours[emp_name].add(`${transactionDate}-${transactionHour}`);
       // worked_quarters
       employeeWorkedQuarters[emp_name].add(`${transactionDate}-${transactionQuarter}`);
@@ -783,7 +792,8 @@ export namespace EfficiencyModels {
           transaction
           //index
         ) => {
-          const { emp_name, order_no, revision, part_no, work_center_no, datedtz } = transaction;
+          const { transaction_id, emp_name, order_no, revision, part_no, work_center_no, dated } =
+            transaction;
 
           if (work_center_no === "A1070") {
             const processingTimeOfOrder = this.calcProcessingTime(
@@ -794,14 +804,15 @@ export namespace EfficiencyModels {
             );
             if (!processingTimeOfOrder) return;
 
-            const transactionDate = this.extractTransactionDate(datedtz);
-            const transactionQuarter = this.getTransactionQuarter(datedtz);
-            const shift = this.extractShift(datedtz);
+            const transactionDate = this.extractTransactionDate(dated);
+            const transactionQuarter = this.getTransactionQuarter(dated);
+            const shift = this.extractShift(dated);
 
             this.initializeEmployeeData(employeeDataMap, employeeWorkedQuarters, emp_name, shift);
 
             // const isLastIteration = index === transactions.length - 1;
             this.update(
+              transaction_id,
               emp_name,
               transactionDate,
               transactionQuarter,
@@ -822,12 +833,12 @@ export namespace EfficiencyModels {
 
     // HELPER FUNCTIONS
 
-    private extractTransactionDate(datedtz: Date): string {
-      return moment(datedtz).format("YYYY-MM-DD");
+    private extractTransactionDate(dated: string | Date | number): string {
+      return moment(dated).format("YYYY-MM-DD");
     }
 
-    private getTransactionQuarter(datedtz: Date): string {
-      const date = moment(datedtz);
+    private getTransactionQuarter(dated: string | Date | number): string {
+      const date = moment(dated);
       const startMinute = date.minute();
       let quarterStart;
 
@@ -842,9 +853,7 @@ export namespace EfficiencyModels {
       }
 
       // Calculate the start time of the quarter
-      const quarterStartTime = moment(datedtz)
-        .startOf("hour")
-        .add(parseInt(quarterStart), "minutes");
+      const quarterStartTime = moment(dated).startOf("hour").add(parseInt(quarterStart), "minutes");
 
       // Calculate the end time of the quarter, which is 15 minutes after the start time
       const quarterEndTime = quarterStartTime.clone().add(15, "minutes");
@@ -856,7 +865,7 @@ export namespace EfficiencyModels {
       return `${formattedStart}-${formattedEnd}`;
     }
 
-    private extractShift(datedtz: Date): 1 | 2 | 3 {
+    private extractShift(datedtz: string | Date | number): 1 | 2 | 3 {
       const hour = moment(datedtz).hour();
       if (hour >= 6 && hour < 14) return 1;
       if (hour >= 14 && hour < 22) return 2;
