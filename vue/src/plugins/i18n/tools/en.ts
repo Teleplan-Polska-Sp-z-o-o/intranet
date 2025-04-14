@@ -202,10 +202,12 @@ const enT = {
                 before: {
                   documentTitle: "Document Title",
                   documentTitleHint: "The title should be clear and concise.",
+                  documentTemplateChange: "Changing the template will clear the current content.",
                   documentTemplate: "Document Template",
                   documentTemplateHint:
                     "Choose a template for Front Page Logos or select 'Custom' to upload your own images.",
-                  documentTemplateItems: ["BYD-QA-TMP-0001_01"],
+                  glovesTemplate: "Gloves Template",
+                  glovesTemplateHint: "Choose a template for Gloves.",
                   logosTemplate: "Logos Template",
                   logosTemplateHint:
                     "Choose a template for Front Page Logos or select 'Custom' to upload your own image.",

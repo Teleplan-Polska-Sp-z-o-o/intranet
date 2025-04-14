@@ -4,6 +4,7 @@ import { useUserStore } from "../../../../../../../../stores/userStore";
 
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
+import { draftTemplates } from "./DraftTemplates";
 
 export namespace DraftTypes {
   interface IMeta {
@@ -95,11 +96,8 @@ export namespace DraftTypes {
       return this.body;
     }
     set tmpBody(value: string) {
-      const cleanValue = value.replace(/<([a-z][a-z0-9]*)\s*>\s*<\/\1>/gi, "").trim();
-      // console.log(cleanValue);
-      // this._tmpBody = cleanValue;
-      // this.updateIsSaved();
-      this.body = cleanValue;
+      // console.log("tmpBody", value);
+      this.body = value;
     }
     private updateIsSaved(): void {
       this._isSaved = this.title === this._tmpTitle && this.body === this._tmpBody;
@@ -327,6 +325,12 @@ export namespace DraftTypes {
     ): Segment;
   }
 
+  export enum EDraftTemplate {
+    BLANK = "BLANK",
+    "BYD-QA-TMP-0001_01" = "BYD-QA-TMP-0001_01",
+    "PRG-QA-TMP-2202-R04" = "PRG-QA-TMP-2202-R04",
+  }
+
   export class Draft implements IDraft, IDraftFunctions {
     uuid: string;
     // content: DraftContent = new DraftContent(this.uuid);
@@ -396,7 +400,7 @@ export namespace DraftTypes {
       return segment;
     }
 
-    constructor(draft?: IDraft) {
+    constructor(documentTemplate: EDraftTemplate, draft?: IDraft) {
       if (draft) {
         this.uuid = draft.uuid;
         this.segments = draft.segments;
@@ -413,60 +417,100 @@ export namespace DraftTypes {
         this.segments = [];
         this.meta = new DraftMeta();
 
-        const _1_ = this.addSegment();
-        _1_.content.title = "REQUIRED PPE";
-        _1_.content.tmpTitle = "REQUIRED PPE";
-        const firstSubSegment = _1_.addSubSegment();
-        firstSubSegment.content.title = "Individual PPE Distribution";
-        firstSubSegment.content.tmpTitle = "Individual PPE Distribution";
-        firstSubSegment.content.body =
-          "<p>We understand individual PPE as PPE that is issued by the leader individually to each operator against a signature.</p>";
-        firstSubSegment.content.tmpBody =
-          "<p>We understand individual PPE as PPE that is issued by the leader individually to each operator against a signature.</p>";
+        switch (documentTemplate) {
+          case EDraftTemplate["BYD-QA-TMP-0001_01"]:
+            {
+              const template = draftTemplates["BYD-QA-TMP-0001_01"];
 
-        const secondSubSegment = _1_.addSubSegment();
-        secondSubSegment.content.title = "Collective PPE Usage";
-        secondSubSegment.content.tmpTitle = "Collective PPE Usage";
-        secondSubSegment.content.body =
-          "<p>We understand collective PPE as a PPE that is still available at the station, for example a face shield, which we properly clean after use and put back in position, or it can be disposable aids such as nitrile gloves or ear plugs.</p>";
-        secondSubSegment.content.tmpBody =
-          "<p>We understand collective PPE as a PPE that is still available at the station, for example a face shield, which we properly clean after use and put back in position, or it can be disposable aids such as nitrile gloves or ear plugs.</p>";
+              const _1_ = this.addSegment();
+              _1_.content.title = template["1"].title;
+              _1_.content.tmpTitle = template["1"].title;
 
-        const thirdSubSegment = _1_.addSubSegment();
-        thirdSubSegment.content.title = "PPE Classification Table";
-        thirdSubSegment.content.tmpTitle = "PPE Classification Table";
-        thirdSubSegment.content.body =
-          '<table class="table-wrapper" style="min-width: 75px"><colgroup><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>PPE</strong></p></th><th colspan="1" rowspan="1"><p><strong>Mandatory / Recommended</strong></p></th><th colspan="1" rowspan="1"><p><strong>Individual / Collective</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table><p>Legend:</p><ul><li><p>Mandatory – Required at all times</p></li><li><p>Recommended – Suggested for safety</p></li><li><p>Individual – Worn by each person</p></li><li><p>Collective – Shared at workstations</p></li></ul>';
-        thirdSubSegment.content.tmpBody =
-          '<table class="table-wrapper" style="min-width: 75px"><colgroup><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>PPE</strong></p></th><th colspan="1" rowspan="1"><p><strong>Mandatory / Recommended</strong></p></th><th colspan="1" rowspan="1"><p><strong>Individual / Collective</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table><p>Legend:</p><ul><li><p>Mandatory – Required at all times</p></li><li><p>Recommended – Suggested for safety</p></li><li><p>Individual – Worn by each person</p></li><li><p>Collective – Shared at workstations</p></li></ul>';
+              const _1_1_ = _1_.addSubSegment();
+              _1_1_.content.body = template["1"].subSegments["1.1"].body;
+              _1_1_.content.tmpBody = template["1"].subSegments["1.1"].body;
 
-        const _2_ = this.addSegment();
-        _2_.content.title = "QUALITY CONTROL";
-        _2_.content.tmpTitle = "QUALITY CONTROL";
+              const _1_2_ = _1_.addSubSegment();
+              _1_2_.content.body = template["1"].subSegments["1.2"].body;
+              _1_2_.content.tmpBody = template["1"].subSegments["1.2"].body;
 
-        const _3_ = this.addSegment();
-        _3_.content.title = "WORK TOOLS AND ALLOWED CHEMICALS";
-        _3_.content.tmpTitle = "WORK TOOLS AND ALLOWED CHEMICALS";
-        _3_.content.body =
-          '<table class="table-wrapper" style="min-width: 50px"><colgroup><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>DESCRIPTION</strong></p></th><th colspan="1" rowspan="1"><p><strong>LINK, NOTE</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table>';
-        _3_.content.tmpBody =
-          '<table class="table-wrapper" style="min-width: 50px"><colgroup><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>DESCRIPTION</strong></p></th><th colspan="1" rowspan="1"><p><strong>LINK, NOTE</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table>';
+              const _2_ = this.addSegment();
+              _2_.content.title = template["2"].title;
+              _2_.content.tmpTitle = template["2"].title;
 
-        const _4_ = this.addSegment();
-        _4_.content.title = "WORK INSTRUCTIONS";
-        _4_.content.tmpTitle = "WORK INSTRUCTIONS";
+              const _3_ = this.addSegment();
+              _3_.content.title = template["3"].title;
+              _3_.content.tmpTitle = template["3"].title;
+              _3_.content.body = template["3"].body;
+              _3_.content.tmpBody = template["3"].body;
 
-        const _5_ = this.addSegment();
-        _5_.content.title = "VERIFY";
-        _5_.content.tmpTitle = "VERIFY";
+              const _4_ = this.addSegment();
+              _4_.content.title = template["4"].title;
+              _4_.content.tmpTitle = template["4"].title;
 
-        const _6_ = this.addSegment();
-        _6_.content.title = "CHANGE HISTORY";
-        _6_.content.tmpTitle = "CHANGE HISTORY";
-        _6_.content.body =
-          '<table class="table-wrapper notranslate" style="min-width: 125px"><colgroup><col><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>Revision</strong></p></th><th colspan="1" rowspan="1"><p><strong>Revision Date</strong></p></th><th colspan="1" rowspan="1"><p><strong>ECN# - Description of change</strong></p></th><th colspan="1" rowspan="1"><p><strong>Change Author</strong></p></th><th colspan="1" rowspan="1"><p><strong>Affected Pages</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table>';
-        _6_.content.tmpBody =
-          '<table class="table-wrapper notranslate" style="min-width: 125px"><colgroup><col><col><col><col><col></colgroup><tbody><tr><th colspan="1" rowspan="1"><p><strong>Revision</strong></p></th><th colspan="1" rowspan="1"><p><strong>Revision Date</strong></p></th><th colspan="1" rowspan="1"><p><strong>ECN# - Description of change</strong></p></th><th colspan="1" rowspan="1"><p><strong>Change Author</strong></p></th><th colspan="1" rowspan="1"><p><strong>Affected Pages</strong></p></th></tr><tr><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td><td colspan="1" rowspan="1"></td></tr></tbody></table>';
+              const _5_ = this.addSegment();
+              _5_.content.title = template["5"].title;
+              _5_.content.tmpTitle = template["5"].title;
+
+              const _6_ = this.addSegment();
+              _6_.content.title = template["6"].title;
+              _6_.content.tmpTitle = template["6"].title;
+              _6_.content.body = template["6"].body;
+              _6_.content.tmpBody = template["6"].body;
+            }
+            break;
+
+          case EDraftTemplate["PRG-QA-TMP-2202-R04"]:
+            {
+              const template = draftTemplates["PRG-QA-TMP-2202-R04"];
+              const _1_ = this.addSegment();
+              _1_.content.title = template["1"].title;
+              _1_.content.tmpTitle = template["1"].title;
+              const _1_1_ = _1_.addSubSegment();
+              _1_1_.content.body = template["1"].subSegments["1.1"].body;
+              _1_1_.content.tmpBody = template["1"].subSegments["1.1"].body;
+              const _1_2_ = _1_.addSubSegment();
+              _1_2_.content.body = template["1"].subSegments["1.2"].body;
+              _1_2_.content.tmpBody = template["1"].subSegments["1.2"].body;
+              const _1_3_ = _1_.addSubSegment();
+              _1_3_.content.body = template["1"].subSegments["1.3"].body;
+              _1_3_.content.tmpBody = template["1"].subSegments["1.3"].body;
+              const _1_4_ = _1_.addSubSegment();
+              _1_4_.content.body = template["1"].subSegments["1.4"].body;
+              _1_4_.content.tmpBody = template["1"].subSegments["1.4"].body;
+
+              const _2_ = this.addSegment();
+              _2_.content.title = template["2"].title;
+              _2_.content.tmpTitle = template["2"].title;
+              const _2_1_ = _2_.addSubSegment();
+              _2_1_.content.body = template["2"].subSegments["2.1"].body;
+              _2_1_.content.tmpBody = template["2"].subSegments["2.1"].body;
+
+              const _3_ = this.addSegment();
+              _3_.content.title = template["3"].title;
+              _3_.content.tmpTitle = template["3"].title;
+              _3_.content.body = template["3"].body;
+              _3_.content.tmpBody = template["3"].body;
+
+              const _4_ = this.addSegment();
+              _4_.content.title = template["4"].title;
+              _4_.content.tmpTitle = template["4"].title;
+
+              const _5_ = this.addSegment();
+              _5_.content.title = template["5"].title;
+              _5_.content.tmpTitle = template["5"].title;
+
+              const _6_ = this.addSegment();
+              _6_.content.title = template["6"].title;
+              _6_.content.tmpTitle = template["6"].title;
+              _6_.content.body = template["6"].body;
+              _6_.content.tmpBody = template["6"].body;
+            }
+            break;
+
+          default:
+            break;
+        }
       }
     }
   }

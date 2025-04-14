@@ -103,15 +103,17 @@ export namespace DocumentCreatorStepper {
 
     export interface IBefore {
       title: string;
-      documentTemplate: string;
+      documentTemplate: DraftTypes.EDraftTemplate;
       logosTemplate: string[];
+      glovesTemplate: string[];
       _id: string;
       _revision: string;
     }
     export class Before implements IBefore {
       public title: string;
-      public documentTemplate: string;
+      public documentTemplate: DraftTypes.EDraftTemplate;
       public logosTemplate: string[];
+      public glovesTemplate: string[];
       public _id: string;
       public _revision: string;
 
@@ -132,8 +134,15 @@ export namespace DocumentCreatorStepper {
 
       constructor(data?: IBefore) {
         this.title = data?.title ?? "";
-        this.documentTemplate = data?.documentTemplate ?? "";
+
+        const isItOldBlankString = (data?.documentTemplate as unknown) === "";
+        const template: DraftTypes.EDraftTemplate | undefined = data?.documentTemplate;
+        this.documentTemplate = isItOldBlankString
+          ? DraftTypes.EDraftTemplate["BYD-QA-TMP-0001_01"]
+          : template ?? DraftTypes.EDraftTemplate.BLANK;
+
         this.logosTemplate = data?.logosTemplate ?? [];
+        this.glovesTemplate = [];
         this._id = data?._id ?? "";
         this._revision = data?._revision ?? "R01";
       }
@@ -247,6 +256,8 @@ export namespace DocumentCreatorStepper {
     getWindow<T extends keyof Body.IWindows>(step: T): Body.IWindows[T];
     updateWindow<T extends keyof Body.IWindows>(step: T, data: Body.IWindows[T]): void;
     save(name: string, route?: RouteLocationNormalizedLoaded): Promise<any>;
+
+    changeContentTemplate(template: DraftTypes.EDraftTemplate): void;
   };
 
   function getTimezone() {
@@ -304,7 +315,7 @@ export namespace DocumentCreatorStepper {
 
         const newInfo = new Body.Info(this.tz);
         const newBefore = new Body.Before();
-        const newDraft = new DraftTypes.Draft();
+        const newDraft = new DraftTypes.Draft(DraftTypes.EDraftTemplate.BLANK);
 
         this.body = {
           windows: {
@@ -360,7 +371,10 @@ export namespace DocumentCreatorStepper {
 
         stepper.body.windows[1].model = new Body.Info(this.tz, stepper.body.windows[1].model);
         stepper.body.windows[2].model = new Body.Before(stepper.body.windows[2].model);
-        stepper.body.windows[3].model = new DraftTypes.Draft(stepper.body.windows[3].model);
+        stepper.body.windows[3].model = new DraftTypes.Draft(
+          stepper.body.windows[2].model.documentTemplate,
+          stepper.body.windows[3].model
+        );
 
         this.body = stepper.body;
         this.header = stepper.header;
@@ -499,6 +513,11 @@ export namespace DocumentCreatorStepper {
       } else {
         return new DocumentCreatorManager().post(formData, true);
       }
+    }
+
+    changeContentTemplate(template: DraftTypes.EDraftTemplate): void {
+      this.getWindow(2).model.documentTemplate = template;
+      this.getWindow(3).model = new DraftTypes.Draft(template);
     }
   }
 

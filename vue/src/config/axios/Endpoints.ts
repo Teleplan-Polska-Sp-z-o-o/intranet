@@ -32,6 +32,9 @@ enum Endpoints {
   GetUsageLogs = "/api/document/creator/ms-translator-usage/getUsageLogs",
   GetTotalUsage = "/api/document/creator/ms-translator-usage/getTotalUsage",
   DownloadGeneratedDocuments = "/api/document/creator/download-files", // /:id
+
+  DraftCache = "/api/document/creator/cache",
+
   // editor
   News = "/api/editor/news",
   Request = "/api/editor/request",

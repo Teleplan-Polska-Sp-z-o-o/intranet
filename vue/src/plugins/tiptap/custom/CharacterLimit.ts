@@ -1,6 +1,7 @@
 import { Extension } from "@tiptap/core";
-// import { useCreatorTipTapStore } from "../../../stores/documents/creator/useCreatorTipTapStore";
+import { PluginKey, Plugin } from "prosemirror-state";
 
+const characterLimitKey = new PluginKey("wholeWordSelection");
 const CharacterLimit = Extension.create({
   name: "characterLimit",
 
@@ -10,22 +11,39 @@ const CharacterLimit = Extension.create({
     };
   },
 
-  // onTransaction({ transaction }) {
-  //   const text = transaction.doc.textContent;
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: characterLimitKey,
+        filterTransaction: (transaction, state) => {
+          const textSize = state.doc.textContent.length;
+          const nextTextSize = transaction.doc.textContent.length;
 
-  //   // const tiptapStore = useCreatorTipTapStore();
-  //   // tiptapStore.updateLimit(this.options.limit);
-  //   // tiptapStore.updateCounts(text);
+          // Allow deletions or noop
+          if (nextTextSize <= textSize) {
+            return true;
+          }
 
-  //   if (text.length > this.options.limit)
-  //     this.editor.commands.setContent(text.substring(0, this.options.limit));
-  // },
-  onTransaction({ editor, transaction }) {
-    const text = transaction.doc.textContent;
-    if (text.length > this.options.limit) {
-      editor.commands.undo(); // Reverts the last action instead of truncating
-    }
+          // Allow if under limit
+          if (nextTextSize <= this.options.limit) {
+            return true;
+          }
+
+          // Block if adding and over limit
+          return false;
+        },
+      }),
+    ];
   },
+
+  // onTransaction({ editor, transaction }) {
+  //   const text = transaction.doc.textContent;
+  //   // console.log("text.length", text.length);
+  //   // console.log("text.length > this.options.limit", text.length > this.options.limit);
+  //   if (text.length > this.options.limit) {
+  //     editor.commands.undo(); // Reverts the last action instead of truncating
+  //   }
+  // },
 });
 
 export { CharacterLimit };

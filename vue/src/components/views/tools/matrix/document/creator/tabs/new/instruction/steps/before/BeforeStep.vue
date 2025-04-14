@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { nextTick, ref, unref, watch } from "vue";
-import {
-  CustomTemplate,
-  findOrCreateCustomTemplate,
-  imageTemplateOptions,
-  ITemplate,
-} from "./ImageTemplates";
+import { findOrCreateCustomTemplate, imageTemplateOptions } from "./ImageTemplates";
 import { components } from "../../../../../../../../../../../plugins/vuetify/components";
 import {
   EStatus,
   useStepperStore,
 } from "../../../../../../../../../../../stores/documents/creator/useStepperStore";
 import { useI18n } from "vue-i18n";
+import { CustomTemplate, ITemplate } from "./ImageTypes";
+import { DraftTypes } from "../../../DraftTypes";
+// import ChangeTemplateDialog from "./ChangeTemplateDialog.vue";
 
 const { t } = useI18n();
 const tBase = "tools.matrix.tabs.documents.creator.createNew.stepper.before";
@@ -51,6 +49,9 @@ const uploadedFiles = ref<{ filesTypeBase64: string[]; filesTypeFile: File[] }>(
   filesTypeBase64: [],
   filesTypeFile: [],
 });
+
+// const glovesTemplates = imageGloveOptions;
+// const selectedGlovesTemplate = ref<ITemplate | null>(null);
 
 watch(
   // [() => store.stepper, () => store.status],
@@ -106,6 +107,15 @@ watch(
   },
   { deep: true, immediate: true }
 );
+
+const selectedDocumentTemplate = ref<DraftTypes.EDraftTemplate>(
+  store.stepper!.getWindow(THIS_STEP).model.documentTemplate
+);
+
+watch(selectedDocumentTemplate, (template) => {
+  if (!template) return;
+  store.stepper!.changeContentTemplate(template);
+});
 
 // Handle file uploads
 const onFileUpload = async (newFile: File[]) => {
@@ -176,6 +186,10 @@ const rules = {
 </script>
 
 <template>
+  <!-- <change-template-dialog
+    :selected-template="selectedDocumentTemplate"
+    @closing="selectedDocumentTemplate ="
+  ></change-template-dialog> -->
   <v-form ref="formBefore" class="bg-surface-2">
     <v-text-field
       v-model="store.stepper!.getWindow(THIS_STEP).model.title"
@@ -187,16 +201,36 @@ const rules = {
       prepend-icon="mdi-text-short"
     ></v-text-field>
 
+    <v-alert
+      type="warning"
+      class="ms-10 mb-4"
+      :text="t(`${tBase}.documentTemplateChange`)"
+      border="start"
+    />
+
     <v-select
-      v-model="store.stepper!.getWindow(THIS_STEP).model.documentTemplate"
+      v-model="selectedDocumentTemplate"
       :rules="rules.documentTemplate"
-      :items="['BYD-QA-TMP-0001_01']"
+      :items="Object.values(DraftTypes.EDraftTemplate)"
       :label="t(`${tBase}.documentTemplate`)"
       prepend-icon="mdi-format-list-text"
       :hint="t(`${tBase}.documentTemplateHint`)"
       variant="solo-filled"
       persistent-hint
     ></v-select>
+
+    <!-- <v-select
+      v-if="store.stepper!.getWindow(THIS_STEP).model.documentTemplate === 'PRG-QA-TMP-2202-R04'"
+      v-model="selectedGlovesTemplate"
+      :items="glovesTemplates"
+      item-title="name"
+      return-object
+      :label="t(`${tBase}.glovesTemplate`)"
+      prepend-icon="mdi-image-multiple"
+      :hint="t(`${tBase}.glovesTemplateHint`)"
+      variant="solo-filled"
+      persistent-hint
+    ></v-select> -->
 
     <!-- :rules="rules.logosTemplate" -->
     <v-select

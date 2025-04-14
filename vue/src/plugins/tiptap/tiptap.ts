@@ -18,7 +18,7 @@ import {
   BulletList,
   OrderedList,
   Indent,
-  Image,
+  Image as TiptapImage,
   Table,
   Clear,
   History,
@@ -26,7 +26,8 @@ import {
 
 import { CharacterLimit } from "./custom/CharacterLimit";
 import { WholeWordSelection } from "./custom/WholeWordSelection";
-// import { SpellCheck } from "./custom/SpellCheck";
+
+import ImageResizeExtension from "./custom/image/ImageResizeExtension";
 
 const vuetifyProTipTap = createVuetifyProTipTap({
   lang: undefined,
@@ -35,11 +36,12 @@ const vuetifyProTipTap = createVuetifyProTipTap({
     VuetifyTiptap,
     VuetifyViewer,
   },
+
   extensions: [
     BaseKit.configure({
       bubble: {
         list: {
-          image: ["image", "image-aspect-ratio", "remove"],
+          image: ["image", "image-aspect-ratio", "imageResize", "remove"],
           text: ["bold", "italic", "underline", "strike", "divider", "color", "indent"],
         },
         defaultBubbleList: (editor) => {
@@ -56,7 +58,7 @@ const vuetifyProTipTap = createVuetifyProTipTap({
     BulletList,
     OrderedList,
     Indent,
-    Image.configure({
+    TiptapImage.configure({
       allowBase64: true,
       hiddenTabs: ["url"],
       upload(file: File) {
@@ -76,12 +78,12 @@ const vuetifyProTipTap = createVuetifyProTipTap({
         });
       },
     }),
+    ImageResizeExtension,
     Table.configure({ divider: true }),
     History.configure(),
     // customs
     CharacterLimit,
     WholeWordSelection,
-    // SpellCheck,
   ],
 });
 

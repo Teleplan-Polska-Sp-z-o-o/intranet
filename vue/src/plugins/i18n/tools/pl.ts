@@ -183,10 +183,13 @@ const plT = {
             before: {
               documentTitle: "Tytuł dokumentu",
               documentTitleHint: "Tytuł powinien być jasny i zwięzły.",
+              documentTemplateChange:
+                "Zmiana szablonu spowoduje wyczyszczenie bieżącej zawartości.",
               documentTemplate: "Szablon dokumentu",
               documentTemplateHint:
                 "Wybierz szablon dla logotypów na stronie tytułowej lub wybierz 'Niestandardowy', aby przesłać własne obrazy.",
-              documentTemplateItems: ["BYD-QA-TMP-0001_01"],
+              glovesTemplate: "Szablon Rękawic",
+              glovesTemplateHint: "Wybierz szablon dla rękawic.",
               logosTemplate: "Szablon logotypów",
               logosTemplateHint:
                 "Wybierz szablon dla logotypów na stronie tytułowej lub wybierz 'Niestandardowy', aby przesłać własny obraz.",

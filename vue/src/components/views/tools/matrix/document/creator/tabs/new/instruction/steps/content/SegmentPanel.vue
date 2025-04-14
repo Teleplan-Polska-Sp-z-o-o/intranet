@@ -12,17 +12,6 @@ const props = defineProps<{
 }>();
 
 const { segment } = toRefs(props);
-// const store = useCreatorTipTapStore();
-
-// const handleBodyUpdate = (newValue: string | object | undefined) => {
-//   if (typeof newValue !== "string") return;
-
-//   if (store.charactersCount > store.documentContentLimit) {
-//     return;
-//   }
-
-//   segment.value.content.tmpBody = newValue;
-// };
 </script>
 
 <template>

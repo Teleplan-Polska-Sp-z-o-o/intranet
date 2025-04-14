@@ -1,87 +1,183 @@
 {
-  "en": {
-    "key_instruction": "Instruction",
-    "key_document_id_rev": "Document ID-Revision",
-    "key_esd": "ESD",
-    "key_page": "Page",
-    "key_product": "Product",
-    "key_process_owner": "Process Owner",
-    "key_last_update": "Last Update",
-    "key_change_author": "Change Author",
-    "key_created": "Created",
-    "key_training_code": "Training Code",
-    "key_footer_text": "Printed version of this document is UNCONTROLLED. Only Reconext Intranet contains latest revision.",
+  "BYD-QA-TMP-0001_01": {
+    "en": {
+      "key_instruction": "Instruction",
+      "key_document_id_rev": "Document ID-Revision",
+      "key_esd": "ESD",
+      "key_page": "Page",
+      "key_product": "Product",
+      "key_process_owner": "Process Owner",
+      "key_last_update": "Last Update",
+      "key_change_author": "Change Author",
+      "key_created": "Created",
+      "key_training_code": "Training Code",
+      "key_footer_text": "Printed version of this document is UNCONTROLLED. Only Reconext Intranet contains latest revision.",
 
-    "segments": {
-      "1": { "title": "REQUIRED PPE" },
-      "2": { "title": "QUALITY CONTROL" },
-      "3": { "title": "WORK TOOLS AND ALLOWED CHEMICALS" },
-      "4": { "title": "WORK INSTRUCTIONS" },
-      "5": { "title": "VERIFY" },
-      "6": { "title": "CHANGE HISTORY" }
+      "segments": {
+        "1": { "title": "REQUIRED PPE" },
+        "2": { "title": "QUALITY CONTROL" },
+        "3": { "title": "WORK TOOLS AND ALLOWED CHEMICALS" },
+        "4": { "title": "WORK INSTRUCTIONS" },
+        "5": { "title": "VERIFY" },
+        "6": { "title": "CHANGE HISTORY" }
+      }
+    },
+    "pl": {
+      "key_instruction": "Instrukcja",
+      "key_document_id_rev": "ID dokumentu - Rewizja",
+      "key_esd": "ESD",
+      "key_page": "Strona",
+      "key_product": "Produkt",
+      "key_process_owner": "Właściciel procesu",
+      "key_last_update": "Ostatnia aktualizacja",
+      "key_change_author": "Autor zmiany",
+      "key_created": "Utworzono",
+      "key_training_code": "Kod szkoleniowy",
+      "key_footer_text": "Wersja drukowana tego dokumentu jest NIEKONTROLOWANA. Najnowsza wersja znajduje się w intranecie Reconext.",
+      "segments": {
+        "1": { "title": "WYMAGANE ŚOI" },
+        "2": { "title": "KONTROLA JAKOŚCI" },
+        "3": { "title": "NARZĘDZIA PRACY I DOZWOLONE CHEMIKALIA" },
+        "4": { "title": "INSTRUKCJA STANOWISKOWA" },
+        "5": { "title": "ZWERYFIKUJ" },
+        "6": { "title": "HISTORIA ZMIAN" }
+      }
+    },
+    "uk": {
+      "key_instruction": "Інструкція",
+      "key_document_id_rev": "ID документа - Редакція",
+      "key_esd": "ESD",
+      "key_page": "Сторінка",
+      "key_product": "Продукт",
+      "key_process_owner": "Власник процесу",
+      "key_last_update": "Останнє оновлення",
+      "key_change_author": "Автор змін",
+      "key_created": "Створено",
+      "key_training_code": "Код навчання",
+      "key_footer_text": "Друкована версія цього документа є НЕКОНТРОЛЬОВАНОЮ. Найновіша версія доступна в інтранеті Reconext.",
+      "segments": {
+        "1": { "title": "ВИМОГИ ДО ЗІЗ" },
+        "2": { "title": "КОНТРОЛЬ ЯКОСТІ" },
+        "3": { "title": "РОБОЧІ ІНСТРУМЕНТИ ТА ДОЗВОЛЕНІ ХІМІКАТИ" },
+        "4": { "title": "РОБОЧІ ІНСТРУКЦІЇ" },
+        "5": { "title": "ВЕРИФІКУЙ" },
+        "6": { "title": "ІСТОРІЯ ЗМІН" }
+      }
+    },
+    "cs": {
+      "key_instruction": "Instrukce",
+      "key_document_id_rev": "ID dokumentu - Revize",
+      "key_esd": "ESD",
+      "key_page": "Stránka",
+      "key_product": "Produkt",
+      "key_process_owner": "Majitel procesu",
+      "key_last_update": "Poslední aktualizace",
+      "key_change_author": "Autor změny",
+      "key_created": "Vytvořeno",
+      "key_training_code": "Tréninkový kód",
+      "key_footer_text": "Tisková verze tohoto dokumentu není KONTROLOVANÁ. Nejnovější verze je k dispozici v intranetu Reconext.",
+      "segments": {
+        "1": { "title": "POŽADOVANÉ OOPP" },
+        "2": { "title": "ŘÍZENÍ KVALITY" },
+        "3": { "title": "PRACOVNÍ POMŮCKY A POVOLENÉ CHEMIKÁLIE" },
+        "4": { "title": "PRACOVNÍ INSTRUKCE" },
+        "5": { "title": "VERIFIKUJ" },
+        "6": { "title": "HISTORIE ZMĚN" }
+      }
     }
   },
-  "pl": {
-    "key_instruction": "Instrukcja",
-    "key_document_id_rev": "ID dokumentu - Rewizja",
-    "key_esd": "ESD",
-    "key_page": "Strona",
-    "key_product": "Produkt",
-    "key_process_owner": "Właściciel procesu",
-    "key_last_update": "Ostatnia aktualizacja",
-    "key_change_author": "Autor zmiany",
-    "key_created": "Utworzono",
-    "key_training_code": "Kod szkoleniowy",
-    "key_footer_text": "Wersja drukowana tego dokumentu jest NIEKONTROLOWANA. Najnowsza wersja znajduje się w intranecie Reconext.",
-    "segments": {
-      "1": { "title": "WYMAGANE ŚOI" },
-      "2": { "title": "KONTROLA JAKOŚCI" },
-      "3": { "title": "NARZĘDZIA PRACY I DOZWOLONE CHEMIKALIA" },
-      "4": { "title": "INSTRUKCJA STANOWISKOWA" },
-      "5": { "title": "ZWERYFIKUJ" },
-      "6": { "title": "HISTORIA ZMIAN" }
-    }
-  },
-  "uk": {
-    "key_instruction": "Інструкція",
-    "key_document_id_rev": "ID документа - Редакція",
-    "key_esd": "ESD",
-    "key_page": "Сторінка",
-    "key_product": "Продукт",
-    "key_process_owner": "Власник процесу",
-    "key_last_update": "Останнє оновлення",
-    "key_change_author": "Автор змін",
-    "key_created": "Створено",
-    "key_training_code": "Код навчання",
-    "key_footer_text": "Друкована версія цього документа є НЕКОНТРОЛЬОВАНОЮ. Найновіша версія доступна в інтранеті Reconext.",
-    "segments": {
-      "1": { "title": "ВИМОГИ ДО ЗІЗ" },
-      "2": { "title": "КОНТРОЛЬ ЯКОСТІ" },
-      "3": { "title": "РОБОЧІ ІНСТРУМЕНТИ ТА ДОЗВОЛЕНІ ХІМІКАТИ" },
-      "4": { "title": "РОБОЧІ ІНСТРУКЦІЇ" },
-      "5": { "title": "ВЕРИФІКУЙ" },
-      "6": { "title": "ІСТОРІЯ ЗМІН" }
-    }
-  },
-  "cs": {
-    "key_instruction": "Instrukce",
-    "key_document_id_rev": "ID dokumentu - Revize",
-    "key_esd": "ESD",
-    "key_page": "Stránka",
-    "key_product": "Produkt",
-    "key_process_owner": "Majitel procesu",
-    "key_last_update": "Poslední aktualizace",
-    "key_change_author": "Autor změny",
-    "key_created": "Vytvořeno",
-    "key_training_code": "Tréninkový kód",
-    "key_footer_text": "Tisková verze tohoto dokumentu není KONTROLOVANÁ. Nejnovější verze je k dispozici v intranetu Reconext.",
-    "segments": {
-      "1": { "title": "POŽADOVANÉ OOPP" },
-      "2": { "title": "ŘÍZENÍ KVALITY" },
-      "3": { "title": "PRACOVNÍ POMŮCKY A POVOLENÉ CHEMIKÁLIE" },
-      "4": { "title": "PRACOVNÍ INSTRUKCE" },
-      "5": { "title": "VERIFIKUJ" },
-      "6": { "title": "HISTORIE ZMĚN" }
+  "PRG-QA-TMP-2202-R04": {
+    "en": {
+      "key_instruction": "Instruction",
+      "key_document_id_rev": "Document ID-Revision",
+      "key_esd": "ESD",
+      "key_page": "Page",
+      "key_product": "Product",
+      "key_process_owner": "Process Owner",
+      "key_last_update": "Last Update",
+      "key_change_author": "Change Author",
+      "key_created": "Created",
+      "key_training_code": "Training Code",
+      "key_footer_text": "Printed version of this document is UNCONTROLLED. Only Reconext  Prague Intranet [http://czintranet/] contains latest revision.",
+      "key_bottom_legend": "LEGEND: Blue – last changes in the document",
+      "key_end_of_document": "*** End of document ***",
+      "segments": {
+        "1": { "title": "REQUIRED PPE" },
+        "2": { "title": "QUALITY CONTROL" },
+        "3": { "title": "WORKING TOOLS, CLEANING TOOLS AND ALLOWED CHEMICALS" },
+        "4": { "title": "WORK INSTRUCTIONS" },
+        "5": { "title": "VERIFY" },
+        "6": { "title": "CHANGE HISTORY" }
+      }
+    },
+    "pl": {
+      "key_instruction": "Instrukcja",
+      "key_document_id_rev": "ID dokumentu - Rewizja",
+      "key_esd": "ESD",
+      "key_page": "Strona",
+      "key_product": "Produkt",
+      "key_process_owner": "Właściciel procesu",
+      "key_last_update": "Ostatnia aktualizacja",
+      "key_change_author": "Autor zmiany",
+      "key_created": "Utworzono",
+      "key_training_code": "Kod szkoleniowy",
+      "key_footer_text": "Wersja drukowana tego dokumentu jest NIEKONTROLOWANA. Tylko Intranet Reconext Praga [http://czintranet/] zawiera najnowszą wersję.",
+      "key_bottom_legend": "LEGENDA: Niebieski – ostatnie zmiany w dokumencie",
+      "key_end_of_document": "*** Koniec dokumentu ***",
+      "segments": {
+        "1": { "title": "WYMAGANE ŚOI" },
+        "2": { "title": "KONTROLA JAKOŚCI" },
+        "3": { "title": "NARZĘDZIA ROBOCZE, ŚRODKI CZYSTOŚCI ORAZ DOZWOLONE CHEMIKALIA" },
+        "4": { "title": "INSTRUKCJA STANOWISKOWA" },
+        "5": { "title": "ZWERYFIKUJ" },
+        "6": { "title": "HISTORIA ZMIAN" }
+      }
+    },
+    "uk": {
+      "key_instruction": "Інструкція",
+      "key_document_id_rev": "ID документа - Редакція",
+      "key_esd": "ESD",
+      "key_page": "Сторінка",
+      "key_product": "Продукт",
+      "key_process_owner": "Власник процесу",
+      "key_last_update": "Останнє оновлення",
+      "key_change_author": "Автор змін",
+      "key_created": "Створено",
+      "key_training_code": "Код навчання",
+      "key_footer_text": "Друкована версія цього документа є НЕКОНТРОЛЬОВАНОЮ. Лише Intranet Reconext Prague [http://czintranet/] містить останню версію.",
+      "key_bottom_legend": "ЛЕГЕНДА: Синій – останні зміни в документі",
+      "key_end_of_document": "*** Кінець документа ***",
+      "segments": {
+        "1": { "title": "ВИМОГИ ДО ЗІЗ" },
+        "2": { "title": "КОНТРОЛЬ ЯКОСТІ" },
+        "3": { "title": "РОБОЧІ ІНСТРУМЕНТИ, ЗАСОБИ ДЛЯ ПРИБИРАННЯ ТА ДОЗВОЛЕНІ ХІМІКАТИ" },
+        "4": { "title": "РОБОЧІ ІНСТРУКЦІЇ" },
+        "5": { "title": "ВЕРИФІКУЙ" },
+        "6": { "title": "ІСТОРІЯ ЗМІН" }
+      }
+    },
+    "cs": {
+      "key_instruction": "Instrukce",
+      "key_document_id_rev": "ID dokumentu - Revize",
+      "key_esd": "ESD",
+      "key_page": "Stránka",
+      "key_product": "Produkt",
+      "key_process_owner": "Majitel procesu",
+      "key_last_update": "Poslední aktualizace",
+      "key_change_author": "Autor změny",
+      "key_created": "Vytvořeno",
+      "key_training_code": "Tréninkový kód",
+      "key_footer_text": "Po vytisknutí se jedná o NEŘÍZENÝ DOKUMENT. Pouze Reconext Prague Intranet [http://czintranet/] obsahuje poslední verzi.",
+      "key_bottom_legend": "LEGENDA: Modře – poslední změny v dokumentu",
+      "key_end_of_document": "*** Konec dokumentu ***",
+      "segments": {
+        "1": { "title": "POŽADOVANÉ OOPP" },
+        "2": { "title": "ŘÍZENÍ KVALITY" },
+        "3": { "title": "PRACOVNÍ POMŮCKY, ČISTÍCÍ POMŮCKY A POVOLENÉ CHEMIKÁLIE" },
+        "4": { "title": "PRACOVNÍ INSTRUKCE" },
+        "5": { "title": "VERIFIKUJ" },
+        "6": { "title": "HISTORIE ZMĚN" }
+      }
     }
   }
 }

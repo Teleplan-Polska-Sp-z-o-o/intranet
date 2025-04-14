@@ -201,10 +201,12 @@ const uaT = {
                 before: {
                   documentTitle: "Назва документа",
                   documentTitleHint: "Назва має бути чіткою та лаконічною.",
+                  documentTemplateChange: "Зміна шаблону призведе до очищення поточного вмісту.",
                   documentTemplate: "Шаблон документа",
                   documentTemplateHint:
                     "Виберіть шаблон для логотипів на титульній сторінці або виберіть 'Нестандартний', щоб завантажити власні зображення.",
-                  documentTemplateItems: ["BYD-QA-TMP-0001_01"],
+                  glovesTemplate: "Шаблон Рукавичок",
+                  glovesTemplateHint: "Оберіть шаблон для рукавичок.",
                   logosTemplate: "Шаблон логотипів",
                   logosTemplateHint:
                     "Виберіть шаблон для логотипів на титульній сторінці або виберіть 'Нестандартний', щоб завантажити власне зображення.",

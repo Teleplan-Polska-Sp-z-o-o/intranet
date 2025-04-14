@@ -6,6 +6,7 @@ import { IUser, TPermissionGroup, TPermissionSubgroup } from "../../interfaces/u
 import { RouteGroup } from "../../models/common/router/RouteGroup.ts";
 import { RouterHelper } from "../../models/common/router/RouterHelper.ts";
 import { useWebsocketStore } from "../../stores/websocketStore.ts";
+import { useStepperStore } from "../../stores/documents/creator/useStepperStore.ts";
 
 // 3. Create the router instance and pass the `routes` option
 
@@ -38,6 +39,12 @@ const routeRequiredGroupAndSubgroup = (to: RouteLocationNormalized): RouteGroup 
 
 router.beforeEach(async (to, from, next) => {
   try {
+    const isLeavingTCD = !to.path.startsWith("/tool/tcd/browse/new");
+    if (isLeavingTCD) {
+      const stepperStore = useStepperStore();
+      if (stepperStore.flags.isAutoSaveStarted) stepperStore.stopAutoSave();
+    }
+
     if (to.meta.title) {
       const title = typeof to.meta.title === "function" ? to.meta.title(to) : to.meta.title;
       document.title = title as string;

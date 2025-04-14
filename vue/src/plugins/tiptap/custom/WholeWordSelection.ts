@@ -8,126 +8,175 @@ const WholeWordSelection = Extension.create({
 
   addOptions() {
     return {
-      lastSelection: null, // ✅ Store last selection range
-      isDragging: false, // ✅ Track if the user is dragging
-      isCellSelection: false, // ✅ Track if multiple table cells are selected
+      lastSelection: null,
+      isDragging: false,
+      isCellSelection: false,
     };
   },
 
   addProseMirrorPlugins() {
     return [
       new Plugin({
-        key: wholeWordSelectionKey, // ✅ Assign the unique key to avoid duplicates
+        key: wholeWordSelectionKey,
         props: {
           handleDOMEvents: {
-            // ✅ 1️⃣ Detect when the user starts dragging
-            mousedown: (_view, event) => {
+            mousedown: (view, event) => {
               this.options.isDragging = false;
-              // this.options.isCellSelection = false;
+              this.options.dragStartPos = view.posAtCoords({
+                left: event.clientX,
+                top: event.clientY,
+              });
+              return false;
+            },
 
-              // ✅ Ensure event.target exists before using it
-              if (event.target instanceof HTMLElement) {
-                event.target.addEventListener(
-                  "mousemove",
-                  () => {
-                    // function isProbablyCellSelection(selection: any): boolean {
-                    //   return (
-                    //     selection &&
-                    //     selection.ranges &&
-                    //     selection.ranges.length > 1 && // Multiple ranges suggest table selection
-                    //     selection.$anchorCell && // CellSelection has $anchorCell
-                    //     selection.$headCell && // CellSelection has $headCell
-                    //     typeof selection.isColSelection === "function" && // CellSelection has this method
-                    //     typeof selection.isRowSelection === "function"
-                    //   );
-                    // }
-                    // this.options.isCellSelection = isProbablyCellSelection(view.state.selection);
-
-                    this.options.isDragging = true;
-                  },
-                  { once: true }
-                );
+            mousemove: (view, event) => {
+              if (this.options.dragStartPos) {
+                const currentPos = view.posAtCoords({ left: event.clientX, top: event.clientY });
+                if (currentPos && currentPos.pos !== this.options.dragStartPos.pos) {
+                  this.options.isDragging = true;
+                }
               }
-
               return false;
             },
 
             mouseup: (view, event) => {
               const { state } = view;
               let { from, to } = state.selection;
-              const lastSelection = this.options.lastSelection;
+              const isInlineSelection = (selection: any) =>
+                selection.$from.parent.inlineContent && selection.$to.parent.inlineContent;
 
-              function isProbablyCellSelection(selection: any): boolean {
-                return (
-                  selection &&
-                  selection.ranges &&
-                  selection.ranges.length > 1 && // Multiple ranges suggest table selection
-                  selection.$anchorCell && // CellSelection has $anchorCell
-                  selection.$headCell && // CellSelection has $headCell
-                  typeof selection.isColSelection === "function" && // CellSelection has this method
-                  typeof selection.isRowSelection === "function"
-                );
+              const isCellSelection = (selection: any) =>
+                selection &&
+                selection.ranges &&
+                selection.ranges.length > 1 &&
+                selection.$anchorCell &&
+                selection.$headCell;
+
+              if (!isInlineSelection(state.selection)) {
+                return false;
               }
 
-              if (isProbablyCellSelection(view.state.selection)) {
-                return false; // Let Tiptap handle multi-cell selections
+              if (isCellSelection(state.selection)) {
+                return false;
               }
 
-              // ✅ 1️⃣ If clicking inside an existing selection, clear selection
-              if (lastSelection && from >= lastSelection.from && to <= lastSelection.to) {
-                this.options.lastSelection = null;
-                view.dispatch(state.tr.setSelection(TextSelection.create(state.doc, to)));
-                return true;
+              if (!this.options.isDragging && (event.detail === 1 || event.detail === 2)) {
+                return false;
+              }
+              // console.log(4);
+
+              const letterRegex = /\p{L}/u;
+              // const nonLetterRegex = /^[^\p{L}]+|[^\p{L}]+$/u;
+
+              // while (nonLetterRegex.test(state.doc.textBetween(from, to, " "))) {
+              //   // if (/^[^\p{L}]+/u.test(state.doc.textBetween(from, from + 1, " "))) from++;
+              //   // if (/[^\p{L}]+$/u.test(state.doc.textBetween(to - 1, to, " "))) to--;
+              //   if (/^[^\p{L}]+/u.test(state.doc.textBetween(from, from + 1, " "))) {
+              //     from++;
+              //     // console.log("incremented from", from);
+              //   }
+              //   if (/[^\p{L}]+$/u.test(state.doc.textBetween(to - 1, to, " "))) {
+              //     to--;
+              //     // console.log("decremented to", to);
+              //   }
+              // }
+
+              // while (from > 0 && letterRegex.test(state.doc.textBetween(from - 1, from, " "))) {
+              //   from--;
+              // }
+              while (from > 0) {
+                const char = state.doc.textBetween(from - 1, from, " ");
+                if (!letterRegex.test(char)) break;
+                from--;
               }
 
-              // ✅ If double-click, If dragging, expand to whole word
-              if (event.detail === 2 || this.options.isDragging) {
-                // Define regex: Selects letters but NOT spaces or punctuation
-                const letterRegex = /\p{L}/u;
-                const nonLetterRegex = /^[^\p{L}]+|[^\p{L}]+$/u; // ✅ Matches leading OR trailing non-letters
+              // while (
+              //   to < state.doc.content.size &&
+              //   letterRegex.test(state.doc.textBetween(to, to + 1, " "))
+              // ) {
+              //   to++;
+              // }
+              while (to < state.doc.content.size) {
+                const char = state.doc.textBetween(to, to + 1, " ");
+                if (!letterRegex.test(char)) break;
+                to++;
+              }
+              const newFrom = Math.max(0, Math.min(from, state.doc.content.size));
+              const newTo = Math.max(0, Math.min(to, state.doc.content.size));
 
-                // ✅ 2️⃣ If no selection, expand to whole word
-                while (nonLetterRegex.test(state.doc.textBetween(from, to, " "))) {
-                  if (/^[^\p{L}]+/u.test(state.doc.textBetween(from, from + 1, " "))) from++;
-                  if (/[^\p{L}]+$/u.test(state.doc.textBetween(to - 1, to, " "))) to--;
+              this.options.lastSelection = { from: newFrom, to: newTo };
+
+              // const transaction = state.tr.setSelection(TextSelection.create(state.doc, newFrom, newTo));
+              // view.focus();
+              // view.dispatch(transaction);
+
+              ///
+              // const domSelection = window.getSelection();
+              // const start = view.domAtPos(newFrom);
+              // const end = view.domAtPos(newTo);
+
+              // if (domSelection && start.node && end.node) {
+              //   const range = document.createRange();
+              //   range.setStart(start.node, start.offset);
+              //   range.setEnd(end.node, end.offset);
+              //   domSelection.removeAllRanges();
+              //   domSelection.addRange(range);
+              // }
+              ///
+              const transaction = state.tr.setSelection(
+                TextSelection.create(state.doc, newFrom, newTo)
+              );
+
+              view.focus();
+              view.dispatch(transaction);
+
+              function isValidPosition(node: Node, offset: number) {
+                if (!node) return false;
+                if (node.nodeType === Node.TEXT_NODE) {
+                  return offset <= (node.nodeValue?.length ?? 0);
                 }
-
-                // **Expand left side, but stop at spaces**
-                while (from > 0 && letterRegex.test(state.doc.textBetween(from - 1, from, " "))) {
-                  from--;
-                }
-
-                // **Expand right side, but stop at spaces**
-                while (
-                  to < state.doc.content.size &&
-                  letterRegex.test(state.doc.textBetween(to, to + 1, " "))
-                ) {
-                  to++;
-                }
-
-                // **Temporary Selection to Force UI Refresh**
-                const tempSelection = TextSelection.create(
-                  state.doc,
-                  from,
-                  Math.min(to + 1, state.doc.content.size)
-                );
-
-                // ✅ Store the new selection
-                this.options.lastSelection = { from, to };
-
-                // ✅ Apply the expanded selection
-                view.dispatch(state.tr.setSelection(tempSelection).scrollIntoView());
-
-                // **Reapply the Correct Selection**
-                setTimeout(() => {
-                  view.dispatch(state.tr.setSelection(TextSelection.create(state.doc, from, to)));
-                }, 0);
-
-                return true;
+                return offset <= node.childNodes.length;
               }
 
-              // ✅ Otherwise, just place the cursor naturally (single click)
-              return false;
+              function isOrderCorrect(start: Range, end: Range) {
+                const comparison = start.compareBoundaryPoints(Range.START_TO_START, end);
+                return comparison <= 0;
+              }
+
+              const domSelection = window.getSelection();
+              const start = view.domAtPos(newFrom);
+              const end = view.domAtPos(newTo);
+
+              if (
+                domSelection &&
+                start.node &&
+                end.node &&
+                isValidPosition(start.node, start.offset) &&
+                isValidPosition(end.node, end.offset)
+              ) {
+                try {
+                  const tempRange = document.createRange();
+                  tempRange.setStart(start.node, start.offset);
+                  tempRange.setEnd(end.node, end.offset);
+
+                  if (isOrderCorrect(tempRange, tempRange)) {
+                    domSelection.removeAllRanges();
+                    domSelection.addRange(tempRange);
+                  } else {
+                    console.warn("Skipped invalid order of range");
+                  }
+                } catch (e) {
+                  console.warn("Invalid range applied", e);
+                }
+              } else {
+                console.warn("Skipped DOM selection due to failed checks");
+              }
+              ///
+
+              this.options.isDragging = false;
+              this.options.dragStartPos = null;
+
+              return true;
             },
           },
         },

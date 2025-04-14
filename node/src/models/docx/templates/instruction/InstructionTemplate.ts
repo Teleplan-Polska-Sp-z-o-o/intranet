@@ -21,7 +21,16 @@ export class InstructionTemplateKeys {
   private findInSwitch(name: string) {
     switch (name) {
       case "BYD-QA-TMP-0001_01":
-        return InstructionTemplateKeysJSON[
+        return InstructionTemplateKeysJSON["BYD-QA-TMP-0001_01"][
+          this.targetLanguage === "original" ? "en" : this.targetLanguage
+        ];
+      case "PRG-QA-TMP-2202-R04":
+        // {#segments}
+        // {#isSub}{segmentIndex}. {title}{/isSub}{^isSub}{segmentIndex}. {title}{/isSub}{#body}
+        // {@body}
+        // {/body}{/segments}
+
+        return InstructionTemplateKeysJSON["PRG-QA-TMP-2202-R04"][
           this.targetLanguage === "original" ? "en" : this.targetLanguage
         ];
       default:
@@ -63,7 +72,11 @@ export class InstructionTemplateValues {
   private findInSwitch(name: string) {
     switch (name) {
       case "BYD-QA-TMP-0001_01":
-        return InstructionTemplateKeysJSON[
+        return InstructionTemplateKeysJSON["BYD-QA-TMP-0001_01"][
+          this.targetLanguage === "original" ? "en" : this.targetLanguage
+        ];
+      case "PRG-QA-TMP-2202-R04":
+        return InstructionTemplateKeysJSON["PRG-QA-TMP-2202-R04"][
           this.targetLanguage === "original" ? "en" : this.targetLanguage
         ];
       default:
@@ -97,29 +110,46 @@ export class InstructionTemplateValues {
         subSegments,
       } = segment;
 
-      // BODY
-      const processor = new ImagePlaceholderProcessor();
-      const translationBody = processor.replaceImagesWithPlaceholders(body);
-      const loadedTranslatorBody: MSTranslatorLoaded | null = await translator.load([
-        translationBody,
-      ]);
+      // console.log("body", body);
 
-      if (loadedTranslatorBody) {
-        const translatedLoad: string[] = await loadedTranslatorBody.translate(this.targetLanguage);
-        const translatedBody = processor.restoreImages(translatedLoad[0]);
-        converter.load(translatedBody);
-      } else converter.load(body);
-      const docxXml = converter.processElement(converter.$("body"), converter.$);
+      // const processor = new ImagePlaceholderProcessor();
+      // const translationBody = processor.replaceImagesWithPlaceholders(body);
+      // const loadedTranslatorBody: MSTranslatorLoaded | null = await translator.load([
+      //   translationBody,
+      // ]);
 
-      // TITLE
-      // Check if predefined translation exists in `this.keys.segments`
-      let processedTitle = title; // Default to original title
-      const index = segmentIndex.toString(); // Ensure it's a string
+      // if (loadedTranslatorBody) {
+      //   const translatedLoad: string[] = await loadedTranslatorBody.translate(this.targetLanguage);
+      //   const translatedBody = processor.restoreImages(translatedLoad[0]);
+      //   converter.load(translatedBody);
+      // } else converter.load(body);
+      // const docxXml = converter.processElement(converter.$("body"), converter.$);
 
-      if (this.keys?.segments && Object.prototype.hasOwnProperty.call(this.keys.segments, index)) {
-        processedTitle = this.keys.segments[index].title; // Use predefined translation
+      // let processedTitle = title;
+      // const index = segmentIndex.toString();
+
+      // if (this.keys?.segments && Object.prototype.hasOwnProperty.call(this.keys.segments, index)) {
+      //   processedTitle = this.keys.segments[index].title;
+      // } else {
+      //   const loadedTranslatorTitle: MSTranslatorLoaded | null = await translator.load([title]);
+      //   if (loadedTranslatorTitle) {
+      //     const translatedLoad: string[] = await loadedTranslatorTitle.translate(
+      //       this.targetLanguage
+      //     );
+      //     if (translatedLoad.length > 0 && translatedLoad[0]) {
+      //       processedTitle = translatedLoad[0];
+      //     }
+      //   }
+      // }
+      // const isSub = (segmentIndex: string): boolean => {
+      //   return segmentIndex.split(".").length > 1;
+      // };
+      const index = segmentIndex.toString();
+      let processedTitle = title;
+
+      if (this.keys?.segments && this.keys.segments[index]) {
+        processedTitle = this.keys.segments[index].title;
       } else {
-        // Perform translation if no predefined title exists
         const loadedTranslatorTitle: MSTranslatorLoaded | null = await translator.load([title]);
         if (loadedTranslatorTitle) {
           const translatedLoad: string[] = await loadedTranslatorTitle.translate(
@@ -130,23 +160,63 @@ export class InstructionTemplateValues {
           }
         }
       }
-      // let processedTitle = this.keys.segments title;
-      // const loadedTranslatorTitle: MSTranslatorLoaded | null = await translator.load([title]);
-      // if (loadedTranslatorTitle) {
-      //   const translatedLoad: string[] = await loadedTranslatorTitle.translate(this.targetLanguage);
-      //   processedTitle = translatedLoad[0];
-      //   if (translatedLoad.length > 0 && translatedLoad[0]) {
-      //     processedTitle = translatedLoad[0];
-      //   }
-      // }
 
       const isSub = (segmentIndex: string): boolean => {
         return segmentIndex.split(".").length > 1;
       };
 
+      const processor = new ImagePlaceholderProcessor();
+      const translationBody = processor.replaceImagesWithPlaceholders(body);
+      const loadedTranslatorBody: MSTranslatorLoaded | null = await translator.load([
+        translationBody,
+      ]);
+
+      const startsWithParagraph: boolean = body.startsWith("<p");
+      const skipTitleInjection: boolean =
+        startsWithParagraph && isSub(index) && !processedTitle.trim();
+
+      function injectIndexIntoBody(body: string, index: string): string {
+        const cleanBody = body.trim();
+
+        const formattedIndex = `<b>${index}.</b> `;
+
+        // If <p><span> exists, inject inside the span
+        if (/^<p[^>]*>\s*<span[^>]*>/.test(cleanBody)) {
+          return cleanBody.replace(/^<p([^>]*)>\s*<span([^>]*)>/, `<p$1><span$2>${formattedIndex}`);
+        }
+
+        // If only <p> exists, inject inside the <p>
+        return cleanBody.replace(/^<p([^>]*)>/, `<p$1>${formattedIndex}`);
+      }
+
+      // if (skipTitleInjection) {
+      //   translatedBody = injectIndexIntoBody(body, index);
+      // } else {
+      //   translatedBody = body;
+      // }
+      let translatedBody: string = "";
+      if (loadedTranslatorBody) {
+        const translatedLoad: string[] = await loadedTranslatorBody.translate(this.targetLanguage);
+        translatedBody = processor.restoreImages(translatedLoad[0]);
+
+        if (skipTitleInjection) {
+          translatedBody = injectIndexIntoBody(body, index);
+        }
+      }
+
+      converter.load(translatedBody);
+      const docxXml = converter.processElement(converter.$("body"), converter.$);
+      // contentArray.push({
+      //   segmentIndex,
+      //   isSub: isSub(segmentIndex.toString()),
+      //   title: processedTitle,
+      //   body: docxXml,
+      // });
+
       contentArray.push({
         segmentIndex,
-        isSub: isSub(segmentIndex.toString()),
+        isSub: isSub(index),
+        skipTitleInjection,
         title: processedTitle,
         body: docxXml,
       });

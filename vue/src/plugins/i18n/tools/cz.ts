@@ -166,7 +166,6 @@
 //                   documentTemplate: "Šablona dokumentu",
 //                   documentTemplateHint:
 //                     "Vyberte šablonu pro loga na titulní straně nebo zvolte 'Vlastní' pro nahrání vlastního obrázku.",
-//                   documentTemplateItems: ["BYD-QA-TMP-0001_01"],
 //                   logosTemplate: "Šablona log",
 //                   logosTemplateHint:
 //                     "Vyberte šablonu pro loga na titulní straně nebo zvolte 'Vlastní' pro nahrání vlastního obrázku.",
