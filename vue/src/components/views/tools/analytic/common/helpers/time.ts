@@ -1,4 +1,5 @@
 import moment from "moment";
+import { CommonAnalyticTypes } from "../types";
 
 const getLast31Days = (): string[] => {
   const dates: string[] = [];
@@ -11,10 +12,10 @@ const getLast31Days = (): string[] => {
   return dates.reverse(); // oldest to newest (optional)
 };
 
-function shouldDisplayAsDailyChart(item: any) {
+function shouldDisplayAsDailyChart(item: CommonAnalyticTypes.IProcessedEmployee) {
   const dailyChartDays = Object.keys(item.dailyChart).length;
 
-  if (item.shift === 3) {
+  if (item.employeeShift === 3) {
     return dailyChartDays > 2;
   }
 

@@ -64,6 +64,6 @@ const save = (isActive: Ref<boolean>) => {
         </template>
       </v-dialog>
     </template>
-    <span>Download the Results of the Analysis.</span>
+    <span>Download the Results.</span>
   </v-tooltip>
 </template>

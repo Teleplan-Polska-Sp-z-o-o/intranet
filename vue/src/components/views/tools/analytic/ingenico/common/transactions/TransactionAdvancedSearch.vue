@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRefs, unref } from "vue";
-import { AnalyticRaw } from "./Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawIngenicoTableStore";
+import { getLast31Days } from "../../../common/helpers/time";
+import { CommonAnalyticTypes } from "../../../common/types";
 
 // import { useI18n } from "vue-i18n";
 const store = useAnalyticRawTableStore();
@@ -47,8 +48,9 @@ const dateRangeComputed = computed(() => {
   };
 });
 
-const preFormData = computed<AnalyticRaw.IPreFormData>(() => {
+const preFormData = computed<CommonAnalyticTypes.IPreFormData>(() => {
   return {
+    contracts: ["12194"],
     startOfDay: unref(dateRangeComputed).startOfDay ?? new Date(),
     endOfDay: unref(dateRangeComputed).endOfDay ?? new Date(),
   };
@@ -73,6 +75,7 @@ onMounted(() => submit());
         <v-form @submit.prevent="submit">
           <v-date-input
             v-model="dateRangeInput"
+            :allowed-dates="getLast31Days()"
             multiple="range"
             label="Date Range"
             variant="solo-filled"

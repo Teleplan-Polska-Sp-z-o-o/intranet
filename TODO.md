@@ -42,6 +42,12 @@ Lenovo
 
 1. exclude packing and cleaning
 
+rejestracja - utworzenie shop ordera lub utworzenie service requestu - najpeirw tworzy sie service req potem shop order
+
+packing - moment zamkniecia shop orderu
+
+repair - next dodac '1HL%' '1B%'
+
 ## BUGS
 
 ## THINGS TO CONSIDER

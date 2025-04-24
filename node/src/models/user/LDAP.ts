@@ -12,7 +12,7 @@ class LDAP {
   private password: string;
 
   private DEFAULT_OPTIONS: SignOptions = {
-    expiresIn: "1h",
+    expiresIn: "8h",
   } as const;
 
   constructor(login?: ILogin) {

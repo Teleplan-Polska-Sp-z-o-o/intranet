@@ -18,10 +18,8 @@ import { ChartHelper } from "../../../../../../models/common/chartjs/ChartHelper
 import { ChartData } from "../../../../../../models/common/chartjs/ChartData";
 import { CommonAnalyticTypes } from "../types";
 
-// Register chart.js components for Bar chart
 Chart.register(LinearScale, BarElement, BarController, CategoryScale, Title, Tooltip, Legend);
 
-// Define props to take in the 'chart' property with daily or quarterly efficiency data
 const props = defineProps({
   chart: {
     type: Object as () => Record<string, CommonAnalyticTypes.ITimePeriodMetrics>,
@@ -29,23 +27,28 @@ const props = defineProps({
   },
 });
 
-// ChartHelper instance (assuming this is a utility class in your project)
 const chartHelper = new ChartHelper();
 
-// Format the chart data for use in the BarChart component
 const formattedChartData = computed(() => {
-  // Extract the time periods (keys) and sort them in ascending order
   const timePeriods = Object.keys(props.chart).sort((a, b) => moment(a).diff(moment(b)));
-  // Prepare data for each time period
+
   const labels: string[] = [];
   const efficiencyData: number[] = [];
   const processedUnitsData: number[] = [];
+  const rawProcessedUnitsPerPeriod: Record<string, CommonAnalyticTypes.IProcessedUnit>[] = [];
 
   timePeriods.forEach((timePeriod) => {
-    labels.push(timePeriod); // Use the time period as the label (e.g., "06:15-06:30")
+    labels.push(timePeriod);
     const periodData = props.chart[timePeriod];
-    efficiencyData.push(periodData.efficiency); // Efficiency for that period
-    processedUnitsData.push(periodData.processed_units); // Processed units for that period
+    efficiencyData.push(periodData.efficiencyPercentage);
+
+    const processedUnits = periodData.processedUnits;
+    const totalQuantity = Object.values(processedUnits).reduce(
+      (sum, unit) => sum + unit.quantity,
+      0
+    );
+    processedUnitsData.push(totalQuantity);
+    rawProcessedUnitsPerPeriod.push(processedUnits);
   });
 
   const excludeColors: string[] = [];
@@ -67,20 +70,18 @@ const formattedChartData = computed(() => {
   ];
 
   return {
-    labels, // Time periods as labels
+    labels,
     datasets,
     maxProcessedUnits: Math.max(...processedUnitsData),
+    rawProcessedUnitsPerPeriod,
   };
 });
 
-// Chart.js options for Bar chart with a secondary Y-axis for scaling
 const options = computed(() => {
   let maxY2 = formattedChartData.value.maxProcessedUnits;
   let maxY = Math.max(...formattedChartData.value.datasets[0].data);
-  // Function to round up to the nearest tens after adding 10
-  const roundUpToTens = (num: number) => Math.ceil((num + 10) / 10) * 10;
 
-  // Apply rounding function to both max values
+  const roundUpToTens = (num: number) => Math.ceil((num + 10) / 10) * 10;
   maxY2 = roundUpToTens(maxY2);
   maxY = roundUpToTens(maxY);
 
@@ -95,8 +96,8 @@ const options = computed(() => {
         },
       },
       y: {
-        beginAtZero: true, // Efficiency can start from 0
-        max: maxY, // Dynamically set the maximum for the efficiency axis
+        beginAtZero: true,
+        max: maxY,
         position: "left",
         title: {
           display: true,
@@ -105,11 +106,11 @@ const options = computed(() => {
       },
       y2: {
         beginAtZero: true,
-        position: "right", // Second Y-axis on the right side
+        position: "right",
         grid: {
-          drawOnChartArea: false, // Prevent grid lines from overlapping with Y1
+          drawOnChartArea: false,
         },
-        max: maxY2, // Set the maximum for the y2 axis based on the max processed units
+        max: maxY2,
         title: {
           display: true,
           text: "Processed Units",
@@ -118,13 +119,34 @@ const options = computed(() => {
     },
     plugins: {
       legend: {
-        display: true, // Show the legend
-        position: "bottom", // Position the legend at the bottom
+        display: true,
+        position: "bottom",
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context: any) {
+            const datasetLabel = context.dataset.label || "";
+            const dataIndex = context.dataIndex;
+
+            if (datasetLabel === "Processed Units") {
+              const rawData = formattedChartData.value.rawProcessedUnitsPerPeriod[dataIndex];
+              if (!rawData) return `${datasetLabel}: 0`;
+
+              const parts = Object.entries(rawData).map(
+                ([partNo, unit]) => `${partNo}: ${unit.quantity}`
+              );
+
+              return [`${datasetLabel}:`, ...parts];
+            }
+
+            return `${datasetLabel}: ${context.formattedValue}`;
+          },
+        },
       },
     },
     datasets: {
       bar: {
-        maxBarThickness: 30, // Max width for bars
+        maxBarThickness: 30,
         borderWidth: 1,
       },
     },

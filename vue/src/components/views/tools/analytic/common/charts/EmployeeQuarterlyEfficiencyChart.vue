@@ -87,8 +87,8 @@ const formattedChartData = computed(() => {
   orderedTimes.forEach(({ label }) => {
     labels.push(label); // Use the quarter as the label (e.g., "06:15-06:30")
     const quarterData = props.chart[label];
-    efficiencyData.push(quarterData.efficiency); // Efficiency for that quarter
-    processedUnitsData.push(quarterData.processed_units); // Processed units for that quarter
+    efficiencyData.push(quarterData.efficiencyPercentage); // Efficiency for that quarter
+    processedUnitsData.push(quarterData.processedCountOfUnits); // Processed units for that quarter
   });
 
   const excludeColors: string[] = [];

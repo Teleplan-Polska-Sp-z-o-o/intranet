@@ -82,7 +82,7 @@
                   </p>
                   <p class="ms-2">
                     <b>Reports:</b> These files are used for mailing purposes and currently support
-                    <code>EFF-MTH</code> or <code>PACK-HOURLY</code> as the CONTENT, focusing on
+                    <code>EFF-MONTHLY</code> or <code>EFF-WEEKLY</code> as the CONTENT, focusing on
                     efficiency metrics and monthly summaries.
                   </p>
                 </v-list-item-content>
@@ -94,7 +94,7 @@
                 (.xls, .xlsx) to avoid errors.
               </v-alert>
 
-              <v-list-item>
+              <!-- <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title
                     >Files that are monitored for any changes made, such as the modification date
@@ -102,7 +102,7 @@
                   </v-list-item-title>
                   <p class="ms-2"><b>auto-plan-update</b> required for planning of sky packing.</p>
                 </v-list-item-content>
-              </v-list-item>
+              </v-list-item> -->
             </v-list-item-content>
           </v-list-item>
 
@@ -132,16 +132,31 @@
                 </v-list-item-content>
               </v-list-item>
 
-              <p class="pb-4">
-                Below the data table, general analytic tables specific to the selected program and
-                group are displayed, offering deeper insights and analytics related to the filtered
-                transactions.
-              </p>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title
+                    >Below the data table, general analytic tables specific to the selected program
+                    and group are displayed, offering deeper insights and analytics related to the
+                    filtered transactions, like:
+                  </v-list-item-title>
+                  <p class="ms-2">
+                    <b>Efficiency:</b> This table summarizes operator performance based on filtered
+                    transactions. It includes metrics like worked time, processed units, estimated
+                    targets, and efficiency percentage. Key insights include how many units were
+                    processed versus expected, the target rate per hour or shift, and overall
+                    performance efficiency.
+                  </p>
+                  <p class="ms-2">
+                    Additionally, you'll find a list of missing or zero touch time values for a
+                    given model and specific TT column, as defined in the Models file.
+                  </p>
+                </v-list-item-content>
+              </v-list-item>
 
               <v-alert type="info" variant="tonal" border="start">
-                <strong>Important:</strong> Data is automatically refreshed behind the scenes once
-                every minute. The first load may take longer depending on the complexity of the data
-                being retrieved.
+                <strong>Important:</strong> Data is automatically refreshed in the background every
+                minute, but if the selected date range triggers heavier processing, the refresh
+                interval may extend dynamically to ensure stability.
               </v-alert>
             </v-list-item-content>
           </v-list-item>

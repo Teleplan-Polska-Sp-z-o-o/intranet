@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, toRefs, unref } from "vue";
-import { AnalyticRaw } from "./Types";
+import { AnalyticTypes } from "./Types";
 import { TransactionsHelper } from "./TransactionsHelper";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawLibertyTableStore";
 import { getLast31Days } from "../../../common/helpers/time";
+import { CommonAnalyticTypes } from "../../../common/types";
 
 // import { useI18n } from "vue-i18n";
 const store = useAnalyticRawTableStore();
 
 const props = defineProps<{
-  program: AnalyticRaw.TPrograms;
+  program: AnalyticTypes.TPrograms;
   identification: string;
 }>();
 
@@ -50,7 +51,7 @@ const dateRangeComputed = computed(() => {
   };
 });
 
-const preFormData = computed<AnalyticRaw.IPreFormData>(() => {
+const preFormData = computed<CommonAnalyticTypes.IPreFormData>(() => {
   return {
     contracts: unref(contractsInput),
     startOfDay: unref(dateRangeComputed).startOfDay ?? new Date(),

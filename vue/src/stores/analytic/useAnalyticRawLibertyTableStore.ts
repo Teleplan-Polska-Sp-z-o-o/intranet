@@ -1,12 +1,9 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import {
-  AnalyticRaw,
-  IRawAndProcessedEmployees,
-} from "../../components/views/tools/analytic/liberty/common/transactions/Types";
+import { CommonAnalyticTypes } from "../../components/views/tools/analytic/common/types";
 
 export const useAnalyticRawTableStore = defineStore("analytic-raw-liberty-table", () => {
-  const itemsMap = ref<Map<string, IRawAndProcessedEmployees>>(new Map());
+  const itemsMap = ref<Map<string, CommonAnalyticTypes.IAnalyticModelResponse>>(new Map());
   const getItemsData = (id: string) => {
     return computed(() => {
       const items = itemsMap.value.get(id);
@@ -14,19 +11,20 @@ export const useAnalyticRawTableStore = defineStore("analytic-raw-liberty-table"
         console.warn(
           `itemsMap by key [${id}]: items evaluate to undefined. Returning { raw: [], processed: [] }.`
         );
-        return { raw: [], processed: [] };
+        return { raw: [], processed: [], missingCache: [] };
       }
       return items;
     });
   };
-  const setItemsData = (id: string, data: IRawAndProcessedEmployees) => {
+  const setItemsData = (id: string, data: CommonAnalyticTypes.IAnalyticModelResponse) => {
+    console.log("liberty data", data);
     itemsMap.value.set(id, data);
   };
-  const preFormDataMap = ref<Map<string, AnalyticRaw.IPreFormData>>(new Map());
+  const preFormDataMap = ref<Map<string, CommonAnalyticTypes.IPreFormData>>(new Map());
   const getPreFormData = (id: string) => {
     return computed(() => preFormDataMap.value.get(id));
   };
-  const setPreFormData = (id: string, data: AnalyticRaw.IPreFormData) => {
+  const setPreFormData = (id: string, data: CommonAnalyticTypes.IPreFormData) => {
     preFormDataMap.value.set(id, data);
   };
 

@@ -9,10 +9,10 @@ import Documentation from "../../../components/views/tools/analytic/Documentatio
 // raws
 import TransactionsRawSkyDataTable from "../../../components/views/tools/analytic/sky/common/transactions/TransactionsRawSkyDataTable.vue";
 // import TransactionsRawSkyDataTable2 from "../../../components/views/tools/analytic/sky/transactions2/TransactionsRawSkyDataTable.vue";
-import TransactionsRawLenovoDataTable from "../../../components/views/tools/analytic/lenovo/transactions/TransactionsRawLenovoDataTable.vue";
+import TransactionsRawLenovoDataTable from "../../../components/views/tools/analytic/lenovo/common/transactions/TransactionsRawLenovoDataTable.vue";
 import TransactionsRawIngenicoDataTable from "../../../components/views/tools/analytic/ingenico/common/transactions/TransactionsRawIngenicoDataTable.vue";
 import TransactionsRawLibertyDataTable from "../../../components/views/tools/analytic/liberty/common/transactions/TransactionsRawLibertyDataTable.vue";
-import TransactionsRawDellDataTable from "../../../components/views/tools/analytic/dell/common/transactions/TransactionsRawDellDataTable.vue";
+// import TransactionsRawDellDataTable from "../../../components/views/tools/analytic/dell/common/transactions/TransactionsRawDellDataTable.vue";
 
 // sky "../../.
 // import SkyPackedUnitsOverview from "../../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
@@ -22,20 +22,20 @@ import SkyOobaEfficiencyOverview from "../../../components/views/tools/analytic/
 import SkyTestEfficiencyOverview from "../../../components/views/tools/analytic/sky/test/TestEfficiencyOverview.vue";
 
 // lenovo
-import LenovoRepairEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/repair/efficiency/RepairEfficiencyOverview.vue";
-import LenovoCleaningEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/cleaning/efficiency/CleaningEfficiencyOverview.vue";
-import LenovoFinalEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/final/efficiency/FinalEfficiencyOverview.vue";
-import LenovoRegistrationEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/registration/efficiency/RegistrationEfficiencyOverview.vue";
-import LenovoPackingEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/packing/efficiency/PackingEfficiencyOverview.vue";
+import LenovoRepairEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/repair/RepairEfficiencyOverview.vue";
+// import LenovoCleaningEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/cleaning/CleaningEfficiencyOverview.vue";
+import LenovoFinalEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/final/FinalEfficiencyOverview.vue";
+import LenovoRegistrationEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/registration/RegistrationEfficiencyOverview.vue";
+import LenovoPackingEfficiencyOverview from "../../../components/views/tools/analytic/lenovo/packing/PackingEfficiencyOverview.vue";
 
 // ingenico
 import VmiEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/vmi/VmiEfficiencyOverview.vue";
 import ScreeningEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/screening/ScreeningEfficiencyOverview.vue";
 import WintestEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/wintest/WintestEfficiencyOverview.vue";
 import FinaltestEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/finaltest/FinaltestEfficiencyOverview.vue";
-import ActivationEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/activation/ActivationEfficiencyOverview.vue";
-import CustomizationEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/customization/CustomizationEfficiencyOverview.vue";
-import KeyinjectionEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/keyinjection/KeyinjectionEfficiencyOverview.vue";
+// import ActivationEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/activation/ActivationEfficiencyOverview.vue";
+// import CustomizationEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/customization/CustomizationEfficiencyOverview.vue";
+// import KeyinjectionEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/keyinjection/KeyinjectionEfficiencyOverview.vue";
 import FgiEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/fgi/FgiEfficiencyOverview.vue";
 import Repair2EfficiencyOverview from "../../../components/views/tools/analytic/ingenico/repair/Repair2EfficiencyOverview.vue";
 import Repair3EfficiencyOverview from "../../../components/views/tools/analytic/ingenico/repair/Repair3EfficiencyOverview.vue";
@@ -47,12 +47,11 @@ import LibertyDebugrepairEfficiencyOverview from "../../../components/views/tool
 import LibertyHighpotEfficiencyOverview from "../../../components/views/tools/analytic/liberty/highpot/HighpotEfficiencyOverview.vue";
 import LibertyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/liberty/cosmetic/CosmeticEfficiencyOverview.vue";
 import LibertyPackEfficiencyOverview from "../../../components/views/tools/analytic/liberty/pack/PackEfficiencyOverview.vue";
-// import LibertyShipEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ship/ShipEfficiencyOverview.vue";
 import LibertyOobaEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ooba/OobaEfficiencyOverview.vue";
 import { tabsObj } from "./tabsObj";
 
 // Dell
-import DellEfficiencyOverview from "../../../components/views/tools/analytic/dell/common/efficiency/EfficiencyOverview.vue";
+// import DellEfficiencyOverview from "../../../components/views/tools/analytic/dell/common/efficiency/EfficiencyOverview.vue";
 
 const smallScreen = ref<boolean>(window.innerWidth < 960);
 const router = useRouter();
@@ -60,7 +59,7 @@ const route = useRoute();
 
 const tabs: ToolTab[] = tabsObj;
 
-const dellTab = tabs.filter((tab: ToolTab) => tab.name === "dell");
+// const dellTab = tabs.filter((tab: ToolTab) => tab.name === "dell");
 
 const filteredToolTabs = ref<ToolTab[]>([]);
 const toggled = ref<string[]>([]);
@@ -297,7 +296,7 @@ onMounted(async () => {
                 </v-window-item>
 
                 <!-- CLEANING -->
-                <v-window-item value="lenovo-cleaning-drive">
+                <!-- <v-window-item value="lenovo-cleaning-drive">
                   <template v-if="windowItem === 'lenovo-cleaning-drive'">
                     <file-drive
                       subtitle="Lenovo Cleaning"
@@ -318,7 +317,7 @@ onMounted(async () => {
                     >
                     </lenovo-cleaning-efficiency-overview>
                   </template>
-                </v-window-item>
+                </v-window-item> -->
                 <!-- REGISTRATION -->
                 <v-window-item value="lenovo-registration-drive">
                   <template v-if="windowItem === 'lenovo-registration-drive'">
@@ -484,7 +483,7 @@ onMounted(async () => {
                 </v-window-item>
 
                 <!-- Activation Group -->
-                <v-window-item value="ingenico-activation-drive">
+                <!-- <v-window-item value="ingenico-activation-drive">
                   <template v-if="windowItem === 'ingenico-activation-drive'">
                     <file-drive
                       subtitle="Ingenico Activation"
@@ -504,10 +503,10 @@ onMounted(async () => {
                       class="mt-6"
                     ></activation-efficiency-overview>
                   </template>
-                </v-window-item>
+                </v-window-item> -->
 
                 <!-- Customization Group -->
-                <v-window-item value="ingenico-customization-drive">
+                <!-- <v-window-item value="ingenico-customization-drive">
                   <template v-if="windowItem === 'ingenico-customization-drive'">
                     <file-drive
                       subtitle="Ingenico Customization"
@@ -527,10 +526,10 @@ onMounted(async () => {
                       class="mt-6"
                     ></customization-efficiency-overview>
                   </template>
-                </v-window-item>
+                </v-window-item> -->
 
                 <!-- Key Injection Group -->
-                <v-window-item value="ingenico-keyinjection-drive">
+                <!-- <v-window-item value="ingenico-keyinjection-drive">
                   <template v-if="windowItem === 'ingenico-keyinjection-drive'">
                     <file-drive
                       subtitle="Ingenico Key Injection"
@@ -550,7 +549,7 @@ onMounted(async () => {
                       class="mt-6"
                     ></keyinjection-efficiency-overview>
                   </template>
-                </v-window-item>
+                </v-window-item> -->
 
                 <!-- FGI Group -->
                 <v-window-item value="ingenico-fgi-drive">
@@ -813,7 +812,7 @@ onMounted(async () => {
                 </v-window-item>
 
                 <!-- DELL -->
-                <v-window-item
+                <!-- <v-window-item
                   v-for="subTab in dellTab.at(0)!.children!"
                   :key="subTab.id"
                   :value="`dell-${subTab.name}-drive`"
@@ -843,7 +842,7 @@ onMounted(async () => {
                       class="mt-6"
                     ></dell-efficiency-overview>
                   </template>
-                </v-window-item>
+                </v-window-item> -->
               </v-window>
             </v-col>
           </v-row>

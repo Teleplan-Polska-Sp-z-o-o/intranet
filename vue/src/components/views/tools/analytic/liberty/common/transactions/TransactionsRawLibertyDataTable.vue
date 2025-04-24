@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
-import { AnalyticRaw, IRawAndProcessedEmployees } from "./Types";
+import { AnalyticTypes } from "./Types";
 import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawLibertyTableStore";
-// import { TimeHelper } from "../../../../../../../models/common/TimeHelper";
 import moment from "moment";
 import "moment-timezone";
 import { TransactionsHelper } from "./TransactionsHelper";
@@ -10,14 +9,15 @@ import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
 import { useRoute } from "vue-router";
 import { useAlertStore } from "../../../../../../../stores/alertStore";
 import Download from "../../../files/download/Download.vue";
-import { DataTableHeader } from "../../../files/download/DataTableHeader";
 import { AnalyticRawManager } from "../../../../../../../models/analytic/AnalyticRawManager";
 import axios from "axios";
-import { TimerManager } from "../../../debug/Timers";
+import { transactionsTableHeaders } from "../../../common/tableHeaders/rawTransactionsHeaders";
+import { CommonAnalyticTypes } from "../../../common/types";
+import { DataTableHeader } from "../../../files/download/DataTableHeader";
 
 const props = defineProps<{
-  program: AnalyticRaw.TPrograms;
-  group: AnalyticRaw.TGroups;
+  program: AnalyticTypes.TPrograms;
+  group: AnalyticTypes.TGroups;
   identification: string;
 }>();
 
@@ -27,23 +27,7 @@ const store = useAnalyticRawTableStore();
 const route = useRoute();
 const abortController = ref<AbortController | null>(null);
 
-const headers: any = [
-  // { title: "Transaction ID", align: "start", key: "transaction_id" },
-  { title: "Contract", align: "start", key: "contract", value: "contract" },
-  { title: "Order No", align: "start", key: "order_no", value: "order_no" },
-  { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
-  { title: "Part No", align: "start", key: "part_no", value: "part_no" },
-  { title: "From Work Center No", align: "start", key: "work_center_no", value: "work_center_no" },
-  {
-    title: "Next Work Center No",
-    align: "start",
-    key: "next_work_center_no",
-    value: "next_work_center_no",
-  },
-  { title: "Date", align: "start", key: "dated", value: "dated" },
-];
-
-const searchTerm = ref<string>(""); // search input
+const searchTerm = ref<string>("");
 const searchBy = [
   "contract",
   "order_no",
@@ -61,15 +45,23 @@ let every = ref<number>(1); // Start with 1-minute intervals
 // Set threshold for task to be considered heavy (e.g., 10 seconds)
 const TASK_THRESHOLD = 10000;
 
-const items = ref<IRawAndProcessedEmployees>({ raw: [], processed: [] });
-const filteredItems = computed<IRawAndProcessedEmployees>(() => {
+const items = ref<CommonAnalyticTypes.IAnalyticModelResponse>({
+  raw: [],
+  processed: [],
+  missingCache: [],
+});
+const filteredItems = computed<CommonAnalyticTypes.IAnalyticModelResponse>(() => {
   try {
     const data = unref(items);
     const searchTermLowered = unref(searchTerm).toLocaleLowerCase();
-    const filtered = ref<IRawAndProcessedEmployees>({ raw: [], processed: [] });
+    const filtered = ref<CommonAnalyticTypes.IAnalyticModelResponse>({
+      raw: [],
+      processed: [],
+      missingCache: [],
+    });
 
     if (searchTerm.value) {
-      filtered.value.raw = data.raw.filter((item: AnalyticRaw.ITransactionsRow) => {
+      filtered.value.raw = data.raw.filter((item: CommonAnalyticTypes.IRawTransaction) => {
         for (const key of searchBy) {
           const valueFromColumnOfKey = JSON.stringify(item[key])?.toLocaleLowerCase();
           if (valueFromColumnOfKey && valueFromColumnOfKey.includes(searchTermLowered)) {
@@ -78,18 +70,18 @@ const filteredItems = computed<IRawAndProcessedEmployees>(() => {
         }
         return false;
       });
-
       // Get a set of matching transaction_ids from filtered raw
-      const validTransactionIds = new Set(filtered.value.raw.map((item) => item.transaction_id));
+      const validTransactionIds = new Set(
+        filtered.value.raw.map((item) => String(item.transaction_id))
+      );
 
       // Filter PROCESSED based on whether any of its transaction_ids exist in raw
       filtered.value.processed = data.processed.filter((p) =>
-        p.transaction_ids.some((id) => validTransactionIds.has(id))
+        p.measuredRecordIds.some((id) => validTransactionIds.has(id))
       );
     } else {
       filtered.value = data;
     }
-
     store.setItemsData(unref(identification), unref(filtered));
 
     return unref(filtered);
@@ -100,7 +92,7 @@ const filteredItems = computed<IRawAndProcessedEmployees>(() => {
 });
 
 const stopInterval = ref<(() => void) | null>(null);
-const handleInterval = (preForm: AnalyticRaw.IPreFormData | undefined, every: number) => {
+const handleInterval = (preForm: CommonAnalyticTypes.IPreFormData | undefined, every: number) => {
   if (preForm) {
     const si = unref(stopInterval);
 
@@ -137,14 +129,12 @@ const load = async (interrupt: boolean = true) => {
       abortController.value.abort(); // Abort only if `interrupt` is true
     }
 
-    const tm = TimerManager.getInstance();
-    if (tm.isTimerRunning("raw")) {
-      tm.startTimer("raw");
-    }
-
     // Create a new AbortController for the new request
     abortController.value = new AbortController();
-    const arm = new AnalyticRawManager<IRawAndProcessedEmployees>(unref(program), unref(group));
+    const arm = new AnalyticRawManager<CommonAnalyticTypes.IAnalyticModelResponse>(
+      unref(program),
+      unref(group)
+    );
     const formData = arm.createFormData(preFormData, true);
 
     const startTime = performance.now();
@@ -181,7 +171,7 @@ const load = async (interrupt: boolean = true) => {
     loading.value = false;
   } catch (error) {
     if (axios.isCancel(error)) {
-      console.log("Transactions Raw Table at load, previous request aborted");
+      console.warn("Transactions Raw Table at load, previous request aborted");
     } else {
       console.error(`Transactions Raw Table at load, ${error}`);
     }
@@ -225,11 +215,6 @@ watch(
     }
   }
 );
-
-const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHeader) => {
-  const keyBlackList = ["transaction_id"];
-  return !keyBlackList.includes(col.value);
-});
 </script>
 
 <template>
@@ -252,7 +237,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
       ></v-text-field>
 
       <download
-        :headers="downloadHeaders"
+        :headers="(transactionsTableHeaders as DataTableHeader[])"
         :items="filteredItems.raw"
         base-save-as="Liberty Raw Transactions"
       ></download>
@@ -267,7 +252,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
       v-model:search="searchTerm"
       :items="filteredItems.raw"
       :loading="loading"
-      :headers="headers"
+      :headers="transactionsTableHeaders"
       :sort-by="sortBy"
       multi-sort
       :items-per-page-options="[
@@ -278,8 +263,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
       ]"
       class="bg-surface-2"
     >
-      <template v-slot:item.dated="{ item }: { item: AnalyticRaw.ITransactionsRow }">
-        <!-- {{ TimeHelper.removeTimezone(TimeHelper.convertToLocalTime(item.dated)) }} -->
+      <template v-slot:item.dated="{ item }: { item: CommonAnalyticTypes.IRawTransaction }">
         {{ moment.utc(item.dated).format("YYYY-MM-DD HH:mm:ss") }}
       </template>
     </v-data-table>
