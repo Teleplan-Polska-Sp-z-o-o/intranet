@@ -22,12 +22,14 @@ class AnalyticRawManager<T> {
   //   return formData;
   // };
 
-  public createFormData = (preFormData: Record<string, any>) => {
+  public createFormData = (preFormData: Record<string, any>, getProcessed?: boolean) => {
     const formData = new FormData();
 
     Object.keys(preFormData).forEach((key) => {
       formData.append(key, JSON.stringify(preFormData[key]));
     });
+
+    if (getProcessed) formData.append("getProcessed", JSON.stringify(true));
 
     return formData;
   };
@@ -60,7 +62,7 @@ class AnalyticRawManager<T> {
         })
       );
     }
-    return response.data.raw ?? [];
+    return response.data ?? [];
   };
 
   /**

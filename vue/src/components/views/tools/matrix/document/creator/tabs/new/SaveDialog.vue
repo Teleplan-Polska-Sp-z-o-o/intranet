@@ -60,10 +60,9 @@ onMounted(() => {
         isValid.value = await manager.checkRevision(_id, _revision);
 
         if (isValid.value === false) {
-          isValidText.value = t(
-            `tools.matrix.tabs.documents.creator.createNew.stepper.actions.saveDialog.revisionInvalid`,
-            { id: _id }
-          );
+          isValidText.value = t(`tools.tcd.createNew.stepper.actions.saveDialog.revisionInvalid`, {
+            id: _id,
+          });
         }
       } else isValid.value = true;
     } else isValid.value = false;
@@ -80,16 +79,14 @@ onMounted(() => {
         color="primary"
         :variant="!store.stepper!.nextable ? 'flat' : 'tonal'"
         class="rounded-xl"
-        >{{ $t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.save`) }}</v-btn
+        >{{ $t(`tools.tcd.createNew.stepper.actions.save`) }}</v-btn
       >
     </template>
 
     <template v-slot:default="{ isActive }">
       <v-card
-        :title="
-          $t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.saveDialog.title`)
-        "
-        :text="$t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.saveDialog.text`)"
+        :title="$t(`tools.tcd.createNew.stepper.actions.saveDialog.title`)"
+        :text="$t(`tools.tcd.createNew.stepper.actions.saveDialog.text`)"
         :loading="loading"
       >
         <v-card-text>

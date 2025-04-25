@@ -89,9 +89,7 @@ const store = useStepperStore();
               variant="text"
               class="rounded-xl"
               :disabled="!store.stepper!.prevable"
-              >{{
-                $t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.previous`)
-              }}</v-btn
+              >{{ $t(`tools.tcd.createNew.stepper.actions.previous`) }}</v-btn
             >
             <v-spacer></v-spacer>
             <v-btn
@@ -100,7 +98,7 @@ const store = useStepperStore();
               color="secondary"
               variant="text"
               class="rounded-xl"
-              >{{ $t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.next`) }}</v-btn
+              >{{ $t(`tools.tcd.createNew.stepper.actions.next`) }}</v-btn
             >
             <save-dialog v-else></save-dialog>
           </v-card-actions>

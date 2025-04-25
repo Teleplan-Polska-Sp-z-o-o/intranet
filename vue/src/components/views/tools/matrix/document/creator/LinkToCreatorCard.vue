@@ -8,16 +8,16 @@
   <!-- <v-card class="bg-surface-2 rounded-xl mb-5 ma-1">
     <v-img class="mx-auto" max-height="400" src="../../../../documents/linkCard.png"></v-img>
 
-    <v-card-title> {{ $t("tools.matrix.tabs.documents.creator.link.title") }} </v-card-title>
+    <v-card-title> {{ $t("tools.tcd.link.title") }} </v-card-title>
 
     <v-card-subtitle>
-      {{ $t("tools.matrix.tabs.documents.creator.link.subtitle") }}
+      {{ $t("tools.tcd.link.subtitle") }}
     </v-card-subtitle>
 
     <v-card-actions>
       <v-btn
         color="primary"
-        :text="$t('tools.matrix.tabs.documents.creator.link.button')"
+        :text="$t('tools.tcd.link.button')"
         :to="`/tool/tcd/dashboard`"
         class="rounded-xl"
       ></v-btn>
@@ -32,7 +32,7 @@
         <v-divider></v-divider>
 
         <v-card-text>
-          {{ $t("tools.matrix.tabs.documents.creator.link.text") }}
+          {{ $t("tools.tcd.link.text") }}
         </v-card-text>
       </div>
     </v-expand-transition>

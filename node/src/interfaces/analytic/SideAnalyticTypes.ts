@@ -7,7 +7,7 @@ export namespace SideAnalyticTypes {
     part_no: string;
     work_center_no: string;
     next_work_center_no: string;
-    datedtz: Date;
+    dated: Date;
   }
 
   export type RawTransactions = RawTransaction[];

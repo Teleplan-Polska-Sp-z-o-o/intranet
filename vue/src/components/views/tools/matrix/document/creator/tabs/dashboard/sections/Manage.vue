@@ -20,7 +20,7 @@ import UploadGeneratedDocuments from "./UploadGeneratedDocuments.vue";
 import { useDocumentGenerateUploadStore } from "../../../../../../../../../stores/documents/useDocumentUploadStore";
 
 const { t } = useI18n();
-const tBase = "tools.matrix.tabs.documents.creator.drafts";
+const tBase = "tools.tcd.drafts";
 
 const route = useRoute();
 const manager = new DocumentCreatorManager();

@@ -9,7 +9,7 @@ import { useI18n } from "vue-i18n";
 Chart.register(ArcElement, Tooltip, Legend, Title, DoughnutController);
 
 const { t } = useI18n();
-const tBase = "tools.matrix.tabs.documents.creator.dashboard.FreeCharacterUsageChart";
+const tBase = "tools.tcd.dashboard.FreeCharacterUsageChart";
 
 // Define Props: Accepts "usedCharacters" as a number
 const props = defineProps({

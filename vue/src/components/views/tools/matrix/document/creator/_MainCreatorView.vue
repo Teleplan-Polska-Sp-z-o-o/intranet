@@ -54,19 +54,19 @@ const functionality = computed(() => route.params.functionality);
 const title = computed(() => {
   if (functionality.value === "new") {
     if (!!route.params.id && store.stepper !== null) {
-      return t(`tools.matrix.tabs.documents.creator.mainView.title.update`, {
+      return t(`tools.tcd.mainView.title.update`, {
         name: store.stepper!.name,
       });
     } else if (!route.params.id && store.stepper !== null) {
-      return t(`tools.matrix.tabs.documents.creator.mainView.title.basedOn`, {
+      return t(`tools.tcd.mainView.title.basedOn`, {
         name: store.stepper!.name,
       });
     } else {
-      return t(`tools.matrix.tabs.documents.creator.mainView.title.create`);
+      return t(`tools.tcd.mainView.title.create`);
     }
   }
   // else if (functionality.value === "drafts") {
-  //   return t(`tools.matrix.tabs.documents.creator.mainView.title.drafts`);
+  //   return t(`tools.tcd.mainView.title.drafts`);
   // }
   else return;
 });
@@ -111,11 +111,7 @@ const push = (tabName: string) => {
                     @click="() => push(tab.name)"
                   >
                     <v-icon size="28">{{ tab.icon }}</v-icon>
-                    {{
-                      smallScreen
-                        ? ""
-                        : $t(`tools.matrix.tabs.documents.creator.mainView.tabs.${tab.name}`)
-                    }}
+                    {{ smallScreen ? "" : $t(`tools.tcd.mainView.tabs.${tab.name}`) }}
                   </v-tab>
                 </v-tabs>
               </v-card>

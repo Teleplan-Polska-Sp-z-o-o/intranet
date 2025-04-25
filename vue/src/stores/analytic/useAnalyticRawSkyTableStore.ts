@@ -1,46 +1,29 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { AnalyticRaw } from "../../components/views/tools/analytic/sky/transactions/Types";
+import { CommonAnalyticTypes } from "../../components/views/tools/analytic/common/types";
 
 export const useAnalyticRawTableStore = defineStore("analytic-raw-sky-table", () => {
-  // const loadMap = ref<Map<string, boolean>>(new Map());
-  // const isRawChanged = (id: string) => {
-  //   return computed(() => loadMap.value.get(id));
-  // };
-  // const loadRawItems = (id: string) => {
-  //   loadMap.value.set(id, true);
-  //   setTimeout(() => {
-  //     loadMap.value.set(id, false);
-  //   }, 0);
-  // };
-  const itemsMap = ref<Map<string, AnalyticRaw.TTransactions>>(new Map());
+  const itemsMap = ref<Map<string, CommonAnalyticTypes.IAnalyticModelResponse>>(new Map());
   const getItemsData = (id: string) => {
     return computed(() => {
       const items = itemsMap.value.get(id);
       if (items === undefined) {
-        console.warn(`itemsMap by key [${id}]: items evaluate to undefined. Returning [].`);
-        return [];
+        console.warn(
+          `itemsMap by key [${id}]: items evaluate to undefined. Returning { raw: [], processed: [] }.`
+        );
+        return { raw: [], processed: [], missingCache: [] };
       }
       return items;
     });
   };
-  const setItemsData = (id: string, data: AnalyticRaw.TTransactions) => {
+  const setItemsData = (id: string, data: CommonAnalyticTypes.IAnalyticModelResponse) => {
     itemsMap.value.set(id, data);
   };
-
-  // watch(
-  //   itemsMap,
-  //   (v) => {
-  //     console.log(v);
-  //   },
-  //   { deep: true }
-  // );
-
-  const preFormDataMap = ref<Map<string, AnalyticRaw.IPreFormData>>(new Map());
+  const preFormDataMap = ref<Map<string, CommonAnalyticTypes.IPreFormData>>(new Map());
   const getPreFormData = (id: string) => {
     return computed(() => preFormDataMap.value.get(id));
   };
-  const setPreFormData = (id: string, data: AnalyticRaw.IPreFormData) => {
+  const setPreFormData = (id: string, data: CommonAnalyticTypes.IPreFormData) => {
     preFormDataMap.value.set(id, data);
   };
 

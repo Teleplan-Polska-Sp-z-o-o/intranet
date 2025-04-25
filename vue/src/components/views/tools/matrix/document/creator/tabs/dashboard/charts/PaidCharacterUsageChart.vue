@@ -18,7 +18,7 @@ import { useI18n } from "vue-i18n";
 Chart.register(BarElement, Tooltip, Legend, Title, LinearScale, CategoryScale, BarController);
 
 const { t } = useI18n();
-const tBase = "tools.matrix.tabs.documents.creator.dashboard.PaidCharacterUsageChart";
+const tBase = "tools.tcd.dashboard.PaidCharacterUsageChart";
 
 // Define Props: Accepts "usedCharacters" as a number
 const props = defineProps({

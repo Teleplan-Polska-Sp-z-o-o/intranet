@@ -1,7 +1,7 @@
 import { useI18n } from "vue-i18n";
 import { IUser } from "../../../../../../../../interfaces/user/UserTypes";
 
-const tBase = "tools.matrix.tabs.documents.creator.drafts";
+const tBase = "tools.tcd.drafts";
 
 export enum FilterInputType {
   SWITCH,

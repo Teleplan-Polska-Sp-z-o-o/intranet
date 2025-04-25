@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const stepperStore = useStepperStore();
 const { t } = useI18n();
-// const tBase = "tools.matrix.tabs.documents.creator.drafts";
+// const tBase = "tools.tcd.drafts";
 
 function timelineDate(utcDate: string) {
   const tz = deepSafeParse<IDraftEntity>(props.item).stepper.tz;

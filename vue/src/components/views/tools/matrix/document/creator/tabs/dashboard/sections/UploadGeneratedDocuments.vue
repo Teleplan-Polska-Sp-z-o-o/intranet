@@ -6,7 +6,7 @@ import { useDocumentGenerateUploadStore } from "../../../../../../../../../store
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-const tBase = "tools.matrix.tabs.documents.creator.drafts";
+const tBase = "tools.tcd.drafts";
 
 // t(`${tBase}.generateDocumentTooltip`);
 // t(`${tBase}.uploadGeneratedMessage`);

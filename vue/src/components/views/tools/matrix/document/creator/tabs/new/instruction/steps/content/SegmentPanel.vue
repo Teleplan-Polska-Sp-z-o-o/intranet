@@ -5,7 +5,7 @@ import { DraftTypes } from "../../../DraftTypes";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-const tBase = "tools.matrix.tabs.documents.creator.createNew.stepper.content";
+const tBase = "tools.tcd.createNew.stepper.content";
 
 const props = defineProps<{
   segment: DraftTypes.Segment;

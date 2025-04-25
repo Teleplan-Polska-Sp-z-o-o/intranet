@@ -139,26 +139,26 @@ export const tabsObj = [
           },
         ],
       },
-      {
-        id: "2-3",
-        title: "Cleaning",
-        name: "cleaning",
-        icon: undefined,
-        children: [
-          {
-            id: "2-3-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "2-3-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
+      // {
+      //   id: "2-3",
+      //   title: "Cleaning",
+      //   name: "cleaning",
+      //   icon: undefined,
+      //   children: [
+      //     {
+      //       id: "2-3-1",
+      //       title: "Drive",
+      //       name: "drive",
+      //       icon: "mdi-folder-file-outline",
+      //     },
+      //     {
+      //       id: "2-3-2",
+      //       title: "Overview",
+      //       name: "overview",
+      //       icon: "mdi-chart-box-multiple-outline",
+      //     },
+      //   ],
+      // },
       {
         id: "2-4",
         title: "Final Test",
@@ -290,66 +290,66 @@ export const tabsObj = [
           },
         ],
       },
-      {
-        id: "3-5",
-        title: "Activation",
-        name: "activation",
-        icon: undefined,
-        children: [
-          {
-            id: "3-5-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "3-5-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "3-6",
-        title: "Customization",
-        name: "customization",
-        icon: undefined,
-        children: [
-          {
-            id: "3-6-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "3-6-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "3-7",
-        title: "Key Injection",
-        name: "keyinjection",
-        icon: undefined,
-        children: [
-          {
-            id: "3-7-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "3-7-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
+      // {
+      //   id: "3-5",
+      //   title: "Activation",
+      //   name: "activation",
+      //   icon: undefined,
+      //   children: [
+      //     {
+      //       id: "3-5-1",
+      //       title: "Drive",
+      //       name: "drive",
+      //       icon: "mdi-folder-file-outline",
+      //     },
+      //     {
+      //       id: "3-5-2",
+      //       title: "Overview",
+      //       name: "overview",
+      //       icon: "mdi-chart-box-multiple-outline",
+      //     },
+      //   ],
+      // },
+      // {
+      //   id: "3-6",
+      //   title: "Customization",
+      //   name: "customization",
+      //   icon: undefined,
+      //   children: [
+      //     {
+      //       id: "3-6-1",
+      //       title: "Drive",
+      //       name: "drive",
+      //       icon: "mdi-folder-file-outline",
+      //     },
+      //     {
+      //       id: "3-6-2",
+      //       title: "Overview",
+      //       name: "overview",
+      //       icon: "mdi-chart-box-multiple-outline",
+      //     },
+      //   ],
+      // },
+      // {
+      //   id: "3-7",
+      //   title: "Key Injection",
+      //   name: "keyinjection",
+      //   icon: undefined,
+      //   children: [
+      //     {
+      //       id: "3-7-1",
+      //       title: "Drive",
+      //       name: "drive",
+      //       icon: "mdi-folder-file-outline",
+      //     },
+      //     {
+      //       id: "3-7-2",
+      //       title: "Overview",
+      //       name: "overview",
+      //       icon: "mdi-chart-box-multiple-outline",
+      //     },
+      //   ],
+      // },
       {
         id: "3-8",
         title: "FGI",
@@ -541,26 +541,26 @@ export const tabsObj = [
           },
         ],
       },
-      {
-        id: "4-7",
-        title: "SHIP",
-        name: "ship",
-        icon: undefined,
-        children: [
-          {
-            id: "4-7-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "4-7-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
+      // {
+      //   id: "4-7",
+      //   title: "SHIP",
+      //   name: "ship",
+      //   icon: undefined,
+      //   children: [
+      //     {
+      //       id: "4-7-1",
+      //       title: "Drive",
+      //       name: "drive",
+      //       icon: "mdi-folder-file-outline",
+      //     },
+      //     {
+      //       id: "4-7-2",
+      //       title: "Overview",
+      //       name: "overview",
+      //       icon: "mdi-chart-box-multiple-outline",
+      //     },
+      //   ],
+      // },
       {
         id: "4-8",
         title: "OOBA",
@@ -583,295 +583,295 @@ export const tabsObj = [
       },
     ],
   },
-  {
-    id: "5",
-    name: "dell",
-    icon: undefined,
-    meta: {
-      group: "analytic",
-      subgroup: "dell",
-    },
-    children: [
-      {
-        id: "5-1",
-        title: "VMI",
-        name: "vmi",
-        icon: undefined,
-        children: [
-          {
-            id: "5-1-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-1-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-2",
-        title: "WFFA",
-        name: "wffa",
-        icon: undefined,
-        children: [
-          {
-            id: "5-2-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-2-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-3",
-        title: "PACK",
-        name: "pack",
-        icon: undefined,
-        children: [
-          {
-            id: "5-3-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-3-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-4",
-        title: "FINAL TEST",
-        name: "finaltest",
-        icon: undefined,
-        children: [
-          {
-            id: "5-4-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-4-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-5",
-        title: "ECO CHECK",
-        name: "ecocheck",
-        icon: undefined,
-        children: [
-          {
-            id: "5-5-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-5-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-6",
-        title: "FCH",
-        name: "fch",
-        icon: undefined,
-        children: [
-          {
-            id: "5-6-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-6-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-7",
-        title: "REPAIR L1 L2",
-        name: "repairl1l2",
-        icon: undefined,
-        children: [
-          {
-            id: "5-7-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-7-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-8",
-        title: "SCREENING",
-        name: "screening",
-        icon: undefined,
-        children: [
-          {
-            id: "5-8-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-8-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-9",
-        title: "ECO WORKS",
-        name: "ecoworks",
-        icon: undefined,
-        children: [
-          {
-            id: "5-9-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-9-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-10",
-        title: "OBA",
-        name: "oba",
-        icon: undefined,
-        children: [
-          {
-            id: "5-10-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-10-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-11",
-        title: "REPAIR L3",
-        name: "repairl3",
-        icon: undefined,
-        children: [
-          {
-            id: "5-11-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-11-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-12",
-        title: "Scrap",
-        name: "scrap",
-        icon: undefined,
-        children: [
-          {
-            id: "5-12-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-12-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-13",
-        title: "Hold",
-        name: "hold",
-        icon: undefined,
-        children: [
-          {
-            id: "5-13-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-13-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-      {
-        id: "5-14",
-        title: "SHIP",
-        name: "ship",
-        icon: undefined,
-        children: [
-          {
-            id: "5-14-1",
-            title: "Drive",
-            name: "drive",
-            icon: "mdi-folder-file-outline",
-          },
-          {
-            id: "5-14-2",
-            title: "Overview",
-            name: "overview",
-            icon: "mdi-chart-box-multiple-outline",
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   id: "5",
+  //   name: "dell",
+  //   icon: undefined,
+  //   meta: {
+  //     group: "analytic",
+  //     subgroup: "dell",
+  //   },
+  //   children: [
+  //     {
+  //       id: "5-1",
+  //       title: "VMI",
+  //       name: "vmi",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-1-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-1-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-2",
+  //       title: "WFFA",
+  //       name: "wffa",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-2-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-2-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-3",
+  //       title: "PACK",
+  //       name: "pack",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-3-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-3-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-4",
+  //       title: "FINAL TEST",
+  //       name: "finaltest",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-4-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-4-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-5",
+  //       title: "ECO CHECK",
+  //       name: "ecocheck",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-5-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-5-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-6",
+  //       title: "FCH",
+  //       name: "fch",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-6-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-6-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-7",
+  //       title: "REPAIR L1 L2",
+  //       name: "repairl1l2",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-7-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-7-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-8",
+  //       title: "SCREENING",
+  //       name: "screening",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-8-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-8-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-9",
+  //       title: "ECO WORKS",
+  //       name: "ecoworks",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-9-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-9-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-10",
+  //       title: "OBA",
+  //       name: "oba",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-10-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-10-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-11",
+  //       title: "REPAIR L3",
+  //       name: "repairl3",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-11-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-11-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-12",
+  //       title: "Scrap",
+  //       name: "scrap",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-12-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-12-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-13",
+  //       title: "Hold",
+  //       name: "hold",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-13-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-13-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "5-14",
+  //       title: "SHIP",
+  //       name: "ship",
+  //       icon: undefined,
+  //       children: [
+  //         {
+  //           id: "5-14-1",
+  //           title: "Drive",
+  //           name: "drive",
+  //           icon: "mdi-folder-file-outline",
+  //         },
+  //         {
+  //           id: "5-14-2",
+  //           title: "Overview",
+  //           name: "overview",
+  //           icon: "mdi-chart-box-multiple-outline",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
 ];

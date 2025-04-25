@@ -1,7 +1,7 @@
 import { IDraftEntity } from "../../../../../../../../interfaces/document/creator/IDraftEntity";
 import { DocumentCreatorStepper } from "../new/StepperTypes";
 import { deepSafeParse } from "./deepSaveParse";
-const tBase = "tools.matrix.tabs.documents.creator.drafts";
+const tBase = "tools.tcd.drafts";
 
 function tableStatus(
   item: IDraftEntity | DocumentCreatorStepper.EStepperStatus,

@@ -14,7 +14,7 @@ import {
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-const tBase = "tools.matrix.tabs.documents.creator.createNew.stepper.info";
+const tBase = "tools.tcd.createNew.stepper.info";
 
 const THIS_STEP = 1;
 const store = useStepperStore();

@@ -1,89 +1,47 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawIngenicoTableStore";
-import { computed, ref, toRefs, unref, watch } from "vue";
-import { EfficiencyTypes } from "../common/efficiency/Types";
-import { AnalyticRaw } from "../common/transactions/Types";
-import EfficiencyWorker from "../common/efficiency/EfficiencyWorker?worker";
-import { DataTableHeader } from "../../files/download/DataTableHeader";
-import EmployeeDailyEfficiencyChart from "../common/efficiency/EmployeeDailyEfficiencyChart.vue";
-import EmployeeQuarterlyEfficiencyChart from "../common/efficiency/EmployeeQuarterlyEfficiencyChart.vue";
-import { AnalyticFileManager } from "../../../../../../models/analytic/AnalyticFileManager";
-import { AnalyticFileTypes } from "../../files/Types";
-import { AnalyticFileHelper } from "../../files/drive/AnalyticFileHelper";
+import { ref, toRefs, unref, watch } from "vue";
+import EmployeeDailyEfficiencyChart from "../../common/charts/EmployeeDailyEfficiencyChart.vue";
+import EmployeeShiftEfficiencyChart from "../../common/charts/EmployeeShiftEfficiencyChart.vue";
+import Download from "../../files/download/Download.vue";
+import { shouldDisplayAsDailyChart } from "../../common/helpers/time";
+import {
+  overviewTableHeaders,
+  overviewTableDownloadHeaders,
+} from "../../common/tableHeaders/efficiencyOverviewHeaders";
+import { CommonAnalyticTypes } from "../../common/types";
+import MissingCacheTable from "../../common/cache/MissingCacheTable.vue";
 
 const route = useRoute();
 const analyticRawTransactionsStore = useAnalyticRawTableStore();
 
 const props = defineProps<{
   rawIdentification: string;
+  ttKey?: string;
   title?: string;
 }>();
 
 const { title, rawIdentification } = toRefs(props);
 
-const rawTransactions = ref<AnalyticRaw.TTransactions>([]);
-
-const items = ref<EfficiencyTypes.IProcessedEmployee[]>([]);
+const items = ref<CommonAnalyticTypes.IProcessedEmployee[]>([]);
+const missingCacheItems = ref<CommonAnalyticTypes.IMissingCache[]>([]);
 const expanded = ref<string[]>([]);
 const loading = ref<false | "primary-container">("primary-container");
-const worker = new EfficiencyWorker();
-
-const analyticFileManager: AnalyticFileManager = new AnalyticFileManager();
-const modelsMatrix = ref<EfficiencyTypes.IModelMatrix[]>([]);
-const loadMatrix = async () => {
-  const progName = route.params.program as string;
-  const catName = route.params.cat as string;
-
-  const requiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
-    await analyticFileManager.getByProgAndCatAndSub(progName, catName, "drive");
-  const consideredRequiredFiles: AnalyticFileTypes.IAnalyticFileEntity[] =
-    AnalyticFileHelper.addConsideredProperty(requiredFiles);
-
-  const modelsParsed = JSON.parse(
-    consideredRequiredFiles.find((file) => file.considered && file.fileType === "models")
-      ?.jsObjectJson!
-  );
-  modelsMatrix.value = modelsParsed[Object.keys(modelsParsed)[0]];
-};
 
 /**
  * Loading current transactions
  */
 watch(
   () => unref(analyticRawTransactionsStore.getItemsData(unref(rawIdentification))),
-  async (newRawTransactions: AnalyticRaw.TTransactions) => {
-    rawTransactions.value = newRawTransactions;
-
-    // const program = route.params.program as string;
-    // const models = (await new AnalyticInventoryCharacteristicManager(
-    //   program
-    // ).get()) as EfficiencyTypes.IInventoryCharacteristic[];
-
-    // if (!models.length) return;
-
-    if (!unref(modelsMatrix).length) await loadMatrix();
-    if (!unref(modelsMatrix).length) return;
-
-    const serializedRawTransactions = JSON.stringify(unref(rawTransactions));
-    const serializedModels = JSON.stringify(unref(modelsMatrix));
-
-    worker.postMessage({
-      rawTransactions: serializedRawTransactions,
-      models: serializedModels,
-    });
+  async (newRawTransactions: CommonAnalyticTypes.IAnalyticModelResponse) => {
+    // rawTransactions.value = newRawTransactions.raw;
+    items.value = newRawTransactions.processed;
+    missingCacheItems.value = newRawTransactions.missingCache;
+    loading.value = false;
   },
   { deep: true }
 );
-
-// Handle messages from the worker
-worker.addEventListener("message", (event) => {
-  const { processedData } = event.data;
-  items.value = processedData;
-
-  if (items.value) loading.value = false;
-  console.log("EfficiencyBuilder", items.value);
-});
 
 const isItTodaysDataOnly = ref<boolean>(true);
 /**
@@ -91,7 +49,7 @@ const isItTodaysDataOnly = ref<boolean>(true);
  */
 watch(
   () => unref(analyticRawTransactionsStore.getPreFormData(unref(rawIdentification))),
-  async (preForm: AnalyticRaw.IPreFormData | undefined) => {
+  async (preForm: CommonAnalyticTypes.IPreFormData | undefined) => {
     if (preForm) {
       const today = new Date();
 
@@ -121,72 +79,6 @@ watch(
   }
 );
 
-// headers
-const headers = computed<object[]>(() => {
-  return [
-    { title: "Shift", align: "center", key: "data-table-group", value: "shift", minWidth: 99.59 },
-    { title: "Employee Name", align: "start", key: "emp_name", value: "emp_name" },
-    {
-      title: "Worked Time (hrs)",
-      align: "start",
-      key: "worked_hours",
-      value: "worked_hours",
-    },
-    {
-      title: "Estimated Processing Time (hrs)",
-      align: "start",
-      key: "processing_time",
-      value: "processing_time",
-    },
-    {
-      title: "Units Processed",
-      align: "start",
-      key: "processed_units",
-      value: "processed_units",
-    },
-    {
-      title: "Estimated Units Processed Per Worked Time",
-      align: "start",
-      key: "units_per_worked_quarters",
-      value: "estimated_target.units_per_worked_quarters",
-    },
-    {
-      title: "Difference Between Processed and Estimated",
-      align: "start",
-      key: "difference_units_worked_time",
-      value: "estimated_target.difference_units_worked_time",
-    },
-    {
-      title: "Target Per Hour",
-      align: "start",
-      key: "estimated_units_per_hr",
-      value: "estimated_target.units_per_hr",
-    },
-    {
-      title: "Target Per Shift (7.5 hrs)",
-      align: "start",
-      key: "estimated_units_per_8hrs",
-      value: "estimated_target.units_per_8hrs",
-    },
-    { title: "Efficiency (%)", align: "start", key: "efficiency", value: "efficiency" },
-  ];
-});
-
-// const load = async () => {
-//   try {
-//     const program = route.params.program as string;
-//     models.value = (await new AnalyticInventoryCharacteristicManager(
-//       program
-//     ).get()) as EfficiencyTypes.IInventoryCharacteristic[];
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-// onMounted(async () => {
-//   await load();
-// });
-
 // format
 const formatShiftGroup = (shift: 1 | 2 | 3 | 4) => {
   if (shift === 4) return "Summary";
@@ -204,11 +96,6 @@ const formatColorForEfficiency = (efficiency: number): string => {
     return "red"; // Far from target
   }
 };
-
-const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTableHeader) => {
-  const keyBlackList = ["id", "quarterlyChart", "dailyChart"];
-  return !keyBlackList.includes(col.value);
-});
 </script>
 
 <template>
@@ -217,7 +104,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
       {{ title ?? "Employee FGI Efficiency Overview" }}
       <v-spacer></v-spacer>
       <download
-        :headers="downloadHeaders"
+        :headers="overviewTableDownloadHeaders"
         :items="items"
         base-save-as="Employee Efficiency"
       ></download>
@@ -226,11 +113,17 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
       :items="items"
       item-value="id"
       :loading="loading"
-      :headers="headers"
+      :headers="overviewTableHeaders"
       :group-by="[
         {
-          key: 'shift',
+          key: 'employeeShift',
           order: 'asc',
+        },
+      ]"
+      :sort-by="[
+        {
+          key: 'efficiencyPercentage',
+          order: 'desc',
         },
       ]"
       multi-sort
@@ -240,7 +133,7 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
     >
       <template v-slot:group-header="{ item, toggleGroup, isGroupOpen }">
         <tr>
-          <td :colspan="headers.length">
+          <td :colspan="overviewTableHeaders.length">
             <v-btn
               :icon="isGroupOpen(item) ? '$expand' : '$next'"
               size="small"
@@ -252,31 +145,36 @@ const downloadHeaders = (headers.value as DataTableHeader[]).filter((col: DataTa
         </tr>
       </template>
 
-      <template v-slot:item.efficiency="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
-        <v-chip :color="formatColorForEfficiency(item.efficiency)">
-          {{ item.efficiency }}
+      <template
+        v-slot:item.efficiencyPercentage="{
+          item,
+        }: {
+          item: CommonAnalyticTypes.IProcessedEmployee,
+        }"
+      >
+        <v-chip :color="formatColorForEfficiency(item.efficiencyPercentage)">
+          {{ item.efficiencyPercentage }}
         </v-chip>
       </template>
-      <template v-slot:expanded-row="{ item }: { item: EfficiencyTypes.IProcessedEmployee }">
+      <template v-slot:expanded-row="{ item }: { item: CommonAnalyticTypes.IProcessedEmployee }">
         <tr>
-          <td :colspan="headers.length" class="pa-0">
-            <template v-if="Object.keys(item.dailyChart).length > 1">
+          <td :colspan="overviewTableHeaders.length" class="pa-0">
+            <template v-if="shouldDisplayAsDailyChart(item)">
               <employee-daily-efficiency-chart
                 :chart="item.dailyChart"
               ></employee-daily-efficiency-chart>
             </template>
             <template v-else>
-              <!-- <employee-hourly-efficiency-chart
-                :chart="item.hourlyChart"
-              ></employee-hourly-efficiency-chart> -->
-              <employee-quarterly-efficiency-chart
-                :chart="item.quarterlyChart"
-              ></employee-quarterly-efficiency-chart>
+              <employee-shift-efficiency-chart
+                :chart="item.shiftChart"
+                :shift="item.employeeShift"
+              ></employee-shift-efficiency-chart>
             </template>
           </td>
         </tr>
       </template>
     </v-data-table>
+    <missing-cache-table :items="missingCacheItems"></missing-cache-table>
   </v-card>
 </template>
 

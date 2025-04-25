@@ -205,7 +205,7 @@ const handleMenuClick = async (actionId: number, color: string | undefined) => {
       <!-- file title (normalized) -->
       <template v-slot:title>
         {{ fileEntity.normalizedFileName }}
-        <v-chip color="primary" label v-if="fileEntity.considered">
+        <!-- <v-chip color="primary" label v-if="fileEntity.considered">
           <span class="d-inline-block text-truncate">Considered</span>
           <v-tooltip location="top">
             <template v-slot:activator="{ props: tooltip }">
@@ -216,7 +216,7 @@ const handleMenuClick = async (actionId: number, color: string | undefined) => {
               analysis.</span
             >
           </v-tooltip>
-        </v-chip>
+        </v-chip> -->
       </template>
 
       <!-- file actions -->
@@ -255,6 +255,21 @@ const handleMenuClick = async (actionId: number, color: string | undefined) => {
       </template>
 
       <v-card-text id="e1b3566c-2021-4947-95ef-c1dfac30aaf4">
+        <v-tooltip location="top">
+          <template v-slot:activator="{ props: tooltip }">
+            <v-badge
+              v-if="fileEntity.considered"
+              v-bind="tooltip"
+              color="success"
+              content="Considered"
+            >
+            </v-badge>
+          </template>
+          <span>
+            This file is the most recent within its file type and will be considered for data
+            analysis.
+          </span>
+        </v-tooltip>
         <file-card-simple-view-table :excel-preview="excelPreview"></file-card-simple-view-table>
       </v-card-text>
 

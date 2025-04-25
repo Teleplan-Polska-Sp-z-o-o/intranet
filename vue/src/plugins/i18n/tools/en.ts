@@ -96,6 +96,226 @@ const enT = {
         },
       },
     },
+    tcd: {
+      link: {
+        title: "Online Document Creator",
+        subtitle: "Simplify, create, and share",
+        text: "Say goodbye to uploading document files. Our online document creator offers an intuitive, user-friendly interface that ensures a consistent experience every time. Perfect for creating professional documents quickly and efficiently, it’s the modern solution for seamless collaboration and productivity.",
+        button: "Open Tool",
+      },
+      mainView: {
+        title: {
+          create: "You're about to start a new Draft",
+          update: "Updating the Draft titled '{name}'",
+          // drafts:
+          //   "This is where you can manage your drafts — search, edit, delete and generate DOCX documents",
+          basedOn: "Creating a new Draft based on Document '{name}'",
+        },
+        tabs: {
+          dashboard: "Dashboard",
+          new: "Create",
+          released: "Released",
+        },
+      },
+      dashboard: {
+        usage: "Character Usage Overview (Microsoft Translator)",
+        FreeCharacterUsageChart: {
+          labels: {
+            used: "Used Characters",
+            remaining: "Remaining Free Characters",
+          },
+          title: {
+            text: "Free Character Usage & Remaining Quota",
+          },
+        },
+        PaidCharacterUsageChart: {
+          labels: {
+            used: "Paid Characters Used",
+            cost: "Total Cost (USD)",
+          },
+          title: {
+            text: "Paid Character Usage & Cost",
+          },
+        },
+      },
+      createNew: {
+        stepper: {
+          actions: {
+            previous: "Previous",
+            next: "Next",
+            save: "Save",
+            saveDialog: {
+              title: "Confirmation",
+              text: "Are you sure you want to save this draft?",
+              revisionInvalid:
+                "A draft with ID '{id}' already has the same or a higher revision. Please increase the revision number before saving.",
+            },
+          },
+          info: {
+            product: "Product",
+            productHint: "Enter the name of the commodity or item.",
+            owner: "Owner",
+            ownerHint: "Specify the person responsible for the process.",
+            lastUpdate: "Last Update",
+            lastUpdateHint: "The date when this document was last updated.",
+            author: "Author",
+            authorHint: "The individual who made the last change.",
+            created: "Created",
+            createdHint: "The date this document was initially created.",
+            trainingCodes: "Training Codes",
+            trainingCodesHint: "Select codes for related training competencies.",
+            esd: "ESD",
+            esdHint: "Select the ESD (Electrostatic Discharge) or choose N/A if not applicable.",
+            // Added validation rules
+            validationRules: {
+              product: "Product must be specified.",
+              owner: "Owner must be specified and should be a valid name.",
+              author: "Author must be specified and should be a valid name.",
+            },
+
+            // Added ESD options
+            esdOptionESD: "Electrostatic Discharge (ESD)",
+            esdOptionNA: "Not Applicable (N/A)",
+          },
+          before: {
+            documentTitle: "Document Title",
+            documentTitleHint: "The title should be clear and concise.",
+            documentTemplateChange: "Changing the template will clear the current content.",
+            documentTemplate: "Document Template",
+            documentTemplateHint:
+              "Choose a template for Front Page Logos or select 'Custom' to upload your own images.",
+            glovesTemplate: "Gloves Template",
+            glovesTemplateHint: "Choose a template for Gloves.",
+            logosTemplate: "Logos Template",
+            logosTemplateHint:
+              "Choose a template for Front Page Logos or select 'Custom' to upload your own image.",
+            uploadImageLabel: "Upload image",
+            uploadImageHint: "Drop your file here or click to upload",
+            documentId: "Document Id",
+            documentRevision: "Document Revision",
+            documentRevisionPrefix: "R",
+            documentRevisionPrefixSingleDigit: "R0",
+            validationRules: {
+              title: "Title is required",
+              documentTemplate: "Document Template is required",
+            },
+          },
+          content: {
+            segmentBody: "Segment Body",
+            addButton: "Add",
+            segmentTitle: "Segment Title",
+            segmentTitleHint: "Edit the segment title.",
+            insertBefore: "Insert Before",
+            insertAfter: "Insert After",
+            remove: "Remove",
+            untitledSegment: "Untitled Segment",
+          },
+        },
+      },
+      drafts: {
+        original: "Original",
+        originalAlert:
+          "Choosing the language as 'Original' will skip translation and generate the document as it is.",
+        recordId: "Record Id",
+        draftName: "Draft Name",
+        myDrafts: "My Drafts",
+        manage: "Document Control",
+        releasedDrafts: "Released Drafts",
+        archivedDrafts: "Archived Drafts",
+        changeOfDraftStatusTooltip: "Change the record status.",
+        changeOfDraftStatusConfirmationTitle: "Confirm Status Change",
+        changeOfDraftStatusConfirmationText:
+          "Are you sure you want to change the draft status to 'For Release'? This action cannot be undone, except by a Document Controller.",
+        download: {
+          selectFilesTitle: "Download Available Files",
+          selectFilesLabel: "Select files to download",
+          selectFilesHint: "Choose one or more files associated with this document.",
+        },
+        draftStatus: {
+          title: "Draft Status",
+          chip: {
+            draftOption: "Draft",
+            forReleaseOption: "For Release",
+            releasedOption: "Released",
+            archived: "Archived",
+            unknown: "Unknown",
+          },
+          targetDraftStatus: {
+            label: "Select Status",
+          },
+          targetDraftStatusComment: {
+            label: "Comment",
+          },
+        },
+        documentTitle: "Document Title",
+        documentIdRev: "Document Id-Rev",
+        created: "Created",
+        lastUpdate: "Last Update",
+        actions: "Actions",
+        deleteConfirmationTextTitle: "Confirm Deletion",
+        deleteConfirmationText: "Are you sure you want to delete this item?",
+        cancel: "Cancel",
+        ok: "OK",
+        selectDocumentLanguage: "Select Document Language",
+        documentLanguage: "Document Language",
+        search: "Search",
+        editRecordTooltip: "Edit this record.",
+        removeRecordTooltip: "Remove this record.",
+        generateDocumentTooltip: "Generate Document based on this record.",
+        newBasedOnRecordTooltip: "Create a new draft based on this record.",
+        updateUploadedFilesTooltip: "Update the files associated with this record",
+        uploadGeneratedMessage: "The generated documents will be saved and linked to this record.",
+        downloadGeneratedDocumentsTooltip: "Download generated documents for this draft.",
+        pleaseSelectLanguage: "Please select a language",
+        selectOrSearchLanguageHint:
+          "Select or search for a language to generate the document accordingly.",
+        filters: {
+          reset: "Remove Filters",
+          locator: {
+            label: "Filter drafts by the time zone of their creation.",
+            messages: {
+              title: "Location",
+            },
+          },
+          creator: {
+            sideLabel: "Type to filter drafts by username.",
+            messages: {
+              title: "Creator",
+              subtitle: "Toggle to filter drafts by creator.",
+              subtitleMap: {
+                true: "Showing only drafts created by me.",
+                false: "Excluding drafts created by me.",
+                null: "Toggle to filter drafts by creator.",
+              },
+            },
+          },
+          editor: {
+            sideLabel: "Type to filter drafts by username.",
+            messages: {
+              title: "Editor",
+              subtitle: "Toggle to filter drafts by editor.",
+              subtitleMap: {
+                true: "Showing only drafts edited by me.",
+                false: "Excluding drafts edited by me.",
+                null: "Toggle to filter drafts by editor.",
+              },
+            },
+          },
+          created: {
+            label: "Filter drafts by their creation date range.",
+            messages: {
+              title: "Created",
+            },
+          },
+          updated: {
+            label: "Filter drafts by their last updated date range.",
+            messages: {
+              title: "Updated",
+            },
+          },
+        },
+      },
+    },
     matrix: {
       name: "Matrix",
       tabs: {
@@ -117,228 +337,6 @@ const enT = {
         },
         documents: {
           name: "DOCUMENTS",
-          creator: {
-            link: {
-              title: "Online Document Creator",
-              subtitle: "Simplify, create, and share",
-              text: "Say goodbye to uploading document files. Our online document creator offers an intuitive, user-friendly interface that ensures a consistent experience every time. Perfect for creating professional documents quickly and efficiently, it’s the modern solution for seamless collaboration and productivity.",
-              button: "Open Tool",
-            },
-            mainView: {
-              title: {
-                create: "You're about to start a new Draft",
-                update: "Updating the Draft titled '{name}'",
-                // drafts:
-                //   "This is where you can manage your drafts — search, edit, delete and generate DOCX documents",
-                basedOn: "Creating a new Draft based on Document '{name}'",
-              },
-              tabs: {
-                dashboard: "Dashboard",
-                new: "Create",
-                released: "Released",
-              },
-            },
-            dashboard: {
-              usage: "Character Usage Overview (Microsoft Translator)",
-              FreeCharacterUsageChart: {
-                labels: {
-                  used: "Used Characters",
-                  remaining: "Remaining Free Characters",
-                },
-                title: {
-                  text: "Free Character Usage & Remaining Quota",
-                },
-              },
-              PaidCharacterUsageChart: {
-                labels: {
-                  used: "Paid Characters Used",
-                  cost: "Total Cost (USD)",
-                },
-                title: {
-                  text: "Paid Character Usage & Cost",
-                },
-              },
-            },
-            createNew: {
-              stepper: {
-                actions: {
-                  previous: "Previous",
-                  next: "Next",
-                  save: "Save",
-                  saveDialog: {
-                    title: "Confirmation",
-                    text: "Are you sure you want to save this draft?",
-                    revisionInvalid:
-                      "A draft with ID '{id}' already has the same or a higher revision. Please increase the revision number before saving.",
-                  },
-                },
-                info: {
-                  product: "Product",
-                  productHint: "Enter the name of the commodity or item.",
-                  owner: "Owner",
-                  ownerHint: "Specify the person responsible for the process.",
-                  lastUpdate: "Last Update",
-                  lastUpdateHint: "The date when this document was last updated.",
-                  author: "Author",
-                  authorHint: "The individual who made the last change.",
-                  created: "Created",
-                  createdHint: "The date this document was initially created.",
-                  trainingCodes: "Training Codes",
-                  trainingCodesHint: "Select codes for related training competencies.",
-                  esd: "ESD",
-                  esdHint:
-                    "Select the ESD (Electrostatic Discharge) or choose N/A if not applicable.",
-                  // Added validation rules
-                  validationRules: {
-                    product: "Product must be specified.",
-                    owner: "Owner must be specified and should be a valid name.",
-                    author: "Author must be specified and should be a valid name.",
-                  },
-
-                  // Added ESD options
-                  esdOptionESD: "Electrostatic Discharge (ESD)",
-                  esdOptionNA: "Not Applicable (N/A)",
-                },
-                before: {
-                  documentTitle: "Document Title",
-                  documentTitleHint: "The title should be clear and concise.",
-                  documentTemplateChange: "Changing the template will clear the current content.",
-                  documentTemplate: "Document Template",
-                  documentTemplateHint:
-                    "Choose a template for Front Page Logos or select 'Custom' to upload your own images.",
-                  glovesTemplate: "Gloves Template",
-                  glovesTemplateHint: "Choose a template for Gloves.",
-                  logosTemplate: "Logos Template",
-                  logosTemplateHint:
-                    "Choose a template for Front Page Logos or select 'Custom' to upload your own image.",
-                  uploadImageLabel: "Upload image",
-                  uploadImageHint: "Drop your file here or click to upload",
-                  documentId: "Document Id",
-                  documentRevision: "Document Revision",
-                  documentRevisionPrefix: "R",
-                  documentRevisionPrefixSingleDigit: "R0",
-                  validationRules: {
-                    title: "Title is required",
-                    documentTemplate: "Document Template is required",
-                  },
-                },
-                content: {
-                  segmentBody: "Segment Body",
-                  addButton: "Add",
-                  segmentTitle: "Segment Title",
-                  segmentTitleHint: "Edit the segment title.",
-                  insertBefore: "Insert Before",
-                  insertAfter: "Insert After",
-                  remove: "Remove",
-                  untitledSegment: "Untitled Segment",
-                },
-              },
-            },
-            drafts: {
-              original: "Original",
-              originalAlert:
-                "Choosing the language as 'Original' will skip translation and generate the document as it is.",
-              recordId: "Record Id",
-              draftName: "Draft Name",
-              myDrafts: "My Drafts",
-              manage: "Document Control",
-              releasedDrafts: "Released Drafts",
-              archivedDrafts: "Archived Drafts",
-              changeOfDraftStatusTooltip: "Change the record status.",
-              changeOfDraftStatusConfirmationTitle: "Confirm Status Change",
-              changeOfDraftStatusConfirmationText:
-                "Are you sure you want to change the draft status to 'For Release'? This action cannot be undone, except by a Document Controller.",
-              download: {
-                selectFilesTitle: "Download Available Files",
-                selectFilesLabel: "Select files to download",
-                selectFilesHint: "Choose one or more files associated with this document.",
-              },
-              draftStatus: {
-                title: "Draft Status",
-                chip: {
-                  draftOption: "Draft",
-                  forReleaseOption: "For Release",
-                  releasedOption: "Released",
-                  archived: "Archived",
-                  unknown: "Unknown",
-                },
-                targetDraftStatus: {
-                  label: "Select Status",
-                },
-                targetDraftStatusComment: {
-                  label: "Comment",
-                },
-              },
-              documentTitle: "Document Title",
-              documentIdRev: "Document Id-Rev",
-              created: "Created",
-              lastUpdate: "Last Update",
-              actions: "Actions",
-              deleteConfirmationTextTitle: "Confirm Deletion",
-              deleteConfirmationText: "Are you sure you want to delete this item?",
-              cancel: "Cancel",
-              ok: "OK",
-              selectDocumentLanguage: "Select Document Language",
-              documentLanguage: "Document Language",
-              search: "Search",
-              editRecordTooltip: "Edit this record.",
-              removeRecordTooltip: "Remove this record.",
-              generateDocumentTooltip: "Generate Document based on this record.",
-              newBasedOnRecordTooltip: "Create a new draft based on this record.",
-              updateUploadedFilesTooltip: "Update the files associated with this record",
-              uploadGeneratedMessage:
-                "The generated documents will be saved and linked to this record.",
-              downloadGeneratedDocumentsTooltip: "Download generated documents for this draft.",
-              pleaseSelectLanguage: "Please select a language",
-              selectOrSearchLanguageHint:
-                "Select or search for a language to generate the document accordingly.",
-              filters: {
-                reset: "Remove Filters",
-                locator: {
-                  label: "Filter drafts by the time zone of their creation.",
-                  messages: {
-                    title: "Location",
-                  },
-                },
-                creator: {
-                  sideLabel: "Type to filter drafts by username.",
-                  messages: {
-                    title: "Creator",
-                    subtitle: "Toggle to filter drafts by creator.",
-                    subtitleMap: {
-                      true: "Showing only drafts created by me.",
-                      false: "Excluding drafts created by me.",
-                      null: "Toggle to filter drafts by creator.",
-                    },
-                  },
-                },
-                editor: {
-                  sideLabel: "Type to filter drafts by username.",
-                  messages: {
-                    title: "Editor",
-                    subtitle: "Toggle to filter drafts by editor.",
-                    subtitleMap: {
-                      true: "Showing only drafts edited by me.",
-                      false: "Excluding drafts edited by me.",
-                      null: "Toggle to filter drafts by editor.",
-                    },
-                  },
-                },
-                created: {
-                  label: "Filter drafts by their creation date range.",
-                  messages: {
-                    title: "Created",
-                  },
-                },
-                updated: {
-                  label: "Filter drafts by their last updated date range.",
-                  messages: {
-                    title: "Updated",
-                  },
-                },
-              },
-            },
-          },
           table: {
             toolbar: "Documents",
             header: {

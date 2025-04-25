@@ -7,7 +7,7 @@ import { useStepperStore } from "../../../../../../../../../../../stores/documen
 const store = useStepperStore();
 
 // const { t } = useI18n();
-const title = ""; // t(`tools.matrix.tabs.documents.creator.createNew.stepper.actions.saveDialog.title`)
+const title = ""; // t(`tools.tcd.createNew.stepper.actions.saveDialog.title`)
 const text = "";
 
 const props = defineProps<{

@@ -3,7 +3,7 @@ import { BaseFilter, FilterInputType, FilterKey } from "./DraftFiltersTypes";
 import { useDraftsStore } from "../../../../../../../../stores/documents/drafts/useDraftsStore";
 import { computed } from "vue";
 
-const tBase = "tools.matrix.tabs.documents.creator.drafts";
+const tBase = "tools.tcd.drafts";
 
 const store = useDraftsStore();
 

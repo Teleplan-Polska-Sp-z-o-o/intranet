@@ -1,21 +1,8 @@
-import { Not } from "typeorm";
-import { OneTimeScheduler, CronScheduler } from "../models/common/Scheduler";
-import { DocumentChange } from "../orm/entity/change/documents/DocumentChangeEntity";
-import { dataSource } from "./dataSource";
-import { User } from "../orm/entity/user/UserEntity";
-import { EDCNotificationVariant } from "../interfaces/user/notification/ENotificationVariant";
-import { PackedService } from "../services/analytic/PackedService";
-import { FileService } from "../services/analytic/files/FileService";
-import { TPPL03S005_PATH } from "./routeConstants";
-import path from "path";
-import { EfficiencyMonthlyService } from "../services/analytic/efficiencyMothly/EfficiencyMonthlyService";
-import {
-  getRawOobaTransactions,
-  getRawSkyTestTransactions2,
-  manuallySKYByVariant,
-  manuallySkyTest,
-} from "../sideControllers/sky/TransactionsRawController";
-import { transactionFunctionMapping } from "../services/analytic/efficiencyMothly/RawTransactionHandler";
+import { CronScheduler, OneTimeScheduler } from "../models/common/Scheduler";
+import { EfficiencyService } from "../services/analytic/efficiency/EfficiencyService";
+import { getMonthlyRange, getWeeklyRange } from "../services/analytic/efficiency/TimeRangeHelper";
+import { handlers } from "../services/transactions/sideControllers/RawTransactionService";
+import { GenericTypes } from "../services/transactions/sideControllers/Types";
 
 const mountScheduledTasks = () => {
   const scheduler = new CronScheduler();
@@ -71,107 +58,198 @@ const mountScheduledTasks = () => {
   //   "PackedReportEveryHour"
   // );
 
+  // scheduler.scheduleTask(
+  //   "0 4 1 * *", // Cron expression for 6:00 AM on the 1st of each month
+  //   async () => {
+  //     // try {
+  //     // Iterate over the transactionFunctionMapping object
+  //     for (const [program, categories] of Object.entries(transactionFunctionMapping)) {
+  //       for (const [category, _transactionFunction] of Object.entries(categories)) {
+  //         // Initialize and process using the EfficiencyMonthlyService
+  //         try {
+  //           const handler = new EfficiencyService.PostgresHandler(program, category);
+  //           // Process the transactions
+  //           await handler.getRawTransactions_1();
+  //           await handler.getAnalyticFiles_2_1();
+  //           handler.getJsObjects_2_2();
+  //           handler.getProcessedData_3();
+  //           await handler.createExcelBaseEfficiencyReport_4_1();
+  //           await handler.createExcelBaseEfficiencyReport_4_2();
+  //           handler.sendMails_5();
+  //         } catch (error) {
+  //           console.error(
+  //             `Error processing monthly reports at MonthlyEfficiencyReport scheduled task:`,
+  //             error
+  //           );
+  //         }
+  //       }
+  //     }
+  //   },
+  //   "MonthlyEfficiencyReport" // Task name
+  // );
+
   scheduler.scheduleTask(
-    "0 4 1 * *", // Cron expression for 6:00 AM on the 1st of each month
+    "0 4 * * 1", // 06:00 local time every Monday (04:00 UTC)
     async () => {
-      // try {
-      // Iterate over the transactionFunctionMapping object
-      for (const [program, categories] of Object.entries(transactionFunctionMapping)) {
-        for (const [category, _transactionFunction] of Object.entries(categories)) {
-          // Initialize and process using the EfficiencyMonthlyService
-          try {
-            const handler = new EfficiencyMonthlyService.PostgresHandler(program, category);
-            // Process the transactions
-            await handler.getRawTransactions_1();
+      try {
+        const weeklyRange = getWeeklyRange();
+        for (const [programKey, categories] of Object.entries(handlers)) {
+          const program = programKey as GenericTypes.Program;
+          for (const [categoryKey] of Object.entries(categories) as [
+            keyof GenericTypes.ProgramCategoryTransaction[typeof program],
+            any
+          ][]) {
+            const category = categoryKey;
+            const opts: GenericTypes.RawOptions<typeof program, typeof category> = {
+              startOfDay: weeklyRange.start,
+              endOfDay: weeklyRange.end,
+              contracts: GenericTypes.programContracts[program],
+              fromCategory: category,
+            };
+            const handler = new EfficiencyService.PostgresHandler(program, category);
+            await handler.getRawTransactions_1(opts);
             await handler.getAnalyticFiles_2_1();
             handler.getJsObjects_2_2();
             handler.getProcessedData_3();
             await handler.createExcelBaseEfficiencyReport_4_1();
-            await handler.createExcelBaseEfficiencyReport_4_2();
-            handler.sendMails_5();
-          } catch (error) {
-            console.error(
-              `Error processing monthly reports at MonthlyEfficiencyReport scheduled task:`,
-              error
-            );
+            handler.sendMails_5("EFF-WEEKLY");
           }
         }
+      } catch (error) {
+        console.error(`Error in WeeklyEfficiencyReport:`, error);
       }
     },
-    "MonthlyEfficiencyReport" // Task name
+    "WeeklyEfficiencyReport"
   );
+  scheduler.scheduleTask(
+    "0 4 1 * *", // 06:00 local time on the 1st of each month (04:00 UTC)
+    async () => {
+      try {
+        const monthlyRange = getMonthlyRange();
+        for (const [programKey, categories] of Object.entries(handlers)) {
+          const program = programKey as GenericTypes.Program;
+          for (const [categoryKey] of Object.entries(categories) as [
+            keyof GenericTypes.ProgramCategoryTransaction[typeof program],
+            any
+          ][]) {
+            const category = categoryKey;
+            const opts: GenericTypes.RawOptions<typeof program, typeof category> = {
+              startOfDay: monthlyRange.start,
+              endOfDay: monthlyRange.end,
+              contracts: GenericTypes.programContracts[program],
+              fromCategory: category,
+            };
+            const handler = new EfficiencyService.PostgresHandler(program, category);
+            await handler.getRawTransactions_1(opts);
+            await handler.getAnalyticFiles_2_1();
+            handler.getJsObjects_2_2();
+            handler.getProcessedData_3();
+            await handler.createExcelBaseEfficiencyReport_4_1();
+            handler.sendMails_5("EFF-MONTHLY");
+          }
+        }
+      } catch (error) {
+        console.error(`Error in MonthlyEfficiencyReport:`, error);
+      }
+    },
+    "MonthlyEfficiencyReport"
+  );
+  // !!!
+  // scheduler.scheduleTask(
+  //   "18 12 * * *", // At 14:14 every day
+  //   async () => {
+  //     console.log("🕒");
+  //     // i log at 2025-04-24 14:18:00 🕒
+  //   },
+  //   "LogAt14_14"
+  // );
 
   scheduler.startAllTasks();
 };
 
 const mountOneTimeTasks = () => {
-  const oneTimeScheduler = new OneTimeScheduler();
-
+  // const oneTimeScheduler = new OneTimeScheduler();
   // Schedule a one-time task to run after 5 seconds
   // oneTimeScheduler.scheduleTask(
   //   0,
   //   async () => {
-  // const tfm: Record<string, Record<string, Function>> = {
-  //   sky: {
-  //     // packing: getRawSkyPackingTransactions,
-  //     // cosmetic: getRawCosmeticTransactions,
-  //     // ooba: getRawOobaTransactions,
-  //     test: getRawSkyTestTransactions2,
-  //   },
-  //   // lenovo: {
-  //   //   registration: getRawRegistrationTransactions,
-  //   //   cleaning: getRawCleaningTransactions,
-  //   //   final: getRawFinalTestTransactions,
-  //   //   packing: getRawLenovoPackingTransactions,
-  //   //   repair: getRawRepairTransactions,
-  //   // },
-  //   // ingenico: {
-  //   //   vmi: getVmiTransactions,
-  //   //   screening: getScreeningTransactions,
-  //   //   wintest: getWinTestTransactions,
-  //   //   finaltest: getFinalTestTransactions,
-  //   //   activation: getActivationTransactions,
-  //   //   customization: getCustomizationTransactions,
-  //   //   keyinjection: getKeyInjectionTransactions,
-  //   //   fgi: getFgiTransactions,
-  //   //   repair2: getRepair2Transactions,
-  //   //   repair3: getRepair3Transactions,
-  //   // },
-  //   // liberty: {
-  //   //   vmi: getRawVmiTransactions,
-  //   //   test: getRawTestTransactions,
-  //   //   debugrepair: getRawDebugRepairTransactions,
-  //   //   cosmetic: getRawCosmTransactions,
-  //   //   highpot: getRawHighPotTransactions,
-  //   //   pack: getRawPackTransactions,
-  //   //   ship: getRawShipTransactions,
-  //   //   ooba: getRawOobaTransactions,
-  //   // },
-  // };
-  // for (const [program, categories] of Object.entries(tfm)) {
-  //   for (const [category, _transactionFunction] of Object.entries(categories)) {
-  //     // Initialize and process using the EfficiencyMonthlyService
   //     try {
-  //       const handler = new EfficiencyMonthlyService.PostgresHandler(program, category);
-  //       // Process the transactions
-  //       await handler.getRawTransactions_1();
-  //       await handler.getAnalyticFiles_2_1();
-  //       handler.getJsObjects_2_2();
-  //       handler.getProcessedData_3();
-  //       await handler.createExcelBaseEfficiencyReport_4_1();
-  //       await handler.createExcelBaseEfficiencyReport_4_2();
-  //       handler.sendMails_5(["maciej.zablocki@reconext.com"]);
-  //     } catch (error) {
-  //       console.error(
-  //         `Error processing monthly reports at MonthlyEfficiencyReport scheduled task:`,
-  //         error
-  //       );
-  //     }
+  // const weeklyRange = getWeeklyRange();
+  // weeklyRange { start:      2025-04-17T06:00:00.000Z, end: 2025-04-24T06:00:00.000Z }
+  // meWeeklyPackingDateRange: 2025-04-17T06:00:00.000Z       2025-04-25T06:00:00.000Z
+  // const monthlyRange = getMonthlyRange();
+  // monthlyRange { start:      2025-03-24T06:00:00.000Z, end: 2025-04-24T06:00:00.000Z }
+  // myMonthlyPackingDateRange: 2025-03-24T06:00:00.000Z       2025-04-25T06:00:00.000Z
+  // for (const [programKey, categories] of Object.entries(handlers)) {
+  //   const program = programKey as GenericTypes.Program;
+  //   for (const [categoryKey] of Object.entries(categories) as [
+  //     keyof GenericTypes.ProgramCategoryTransaction[typeof program],
+  //     any
+  //   ][]) {
+  //     const category = categoryKey;
+  //     const opts: GenericTypes.RawOptions<typeof program, typeof category> = {
+  //       startOfDay: weeklyRange.start,
+  //       endOfDay: weeklyRange.end,
+  //       contracts: GenericTypes.programContracts[program],
+  //       fromCategory: category,
+  //     };
+  //     const handler = new EfficiencyService.PostgresHandler(program, category);
+  //     await handler.getRawTransactions_1(opts);
+  //     await handler.getAnalyticFiles_2_1();
+  //     handler.getJsObjects_2_2();
+  //     handler.getProcessedData_3();
+  //     await handler.createExcelBaseEfficiencyReport_4_1();
+  //     handler.sendMails_5(undefined, ["maciej.zablocki@reconext.com"]);
   //   }
   // }
-  // },
-  // "MonthlyEfficiencyReportOneTime"
+  //     } catch (error) {
+  //       console.error(`Error in WeeklyEfficiencyReport:`, error);
+  //     }
+  //   },
+  //   "WeeklyEfficiencyReportOneTime"
   // );
 };
+
+// const mountOneTimeTasks = () => {
+//   const oneTimeScheduler = new OneTimeScheduler();
+//   oneTimeScheduler.scheduleTask(
+//     0,
+//     async () => {
+//       // const monthlyRange = getMonthlyRange();
+//       try {
+//         const weeklyRange = getWeeklyRange();
+//         console.log("weeklyRange", weeklyRange);
+//         // for (const [programKey, categories] of Object.entries(handlers)) {
+//         //   const program = programKey as GenericTypes.Program;
+//         //   for (const [categoryKey] of Object.entries(categories) as [
+//         //     keyof GenericTypes.ProgramCategoryTransaction[typeof program],
+//         //     any
+//         //   ][]) {
+//         //     const category = categoryKey;
+
+//         //     const opts: GenericTypes.RawOptions<typeof program, typeof category> = {
+//         //       startOfDay: weeklyRange.start,
+//         //       endOfDay: weeklyRange.end,
+//         //       contracts: GenericTypes.programContracts[program],
+//         //       fromCategory: category,
+//         //     };
+
+//         //     const handler = new EfficiencyService.PostgresHandler(program, category);
+
+//         //     await handler.getRawTransactions_1(opts);
+//         //     await handler.getAnalyticFiles_2_1();
+//         //     handler.getJsObjects_2_2();
+//         //     handler.getProcessedData_3();
+//         //     await handler.createExcelBaseEfficiencyReport_4_1();
+//         //     handler.sendMails_5(undefined, ["maciej.zablocki@reconext.com"]);
+//         //   }
+//         // }
+//       } catch (error) {
+//         console.error(`Error in WeeklyEfficiencyReport:`, error);
+//       }
+//     },
+//     "WeeklyEfficiencyReportOneTime"
+//   );
+// };
 
 export { mountScheduledTasks, mountOneTimeTasks };

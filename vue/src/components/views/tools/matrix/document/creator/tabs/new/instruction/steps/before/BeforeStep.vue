@@ -12,7 +12,7 @@ import { DraftTypes } from "../../../DraftTypes";
 // import ChangeTemplateDialog from "./ChangeTemplateDialog.vue";
 
 const { t } = useI18n();
-const tBase = "tools.matrix.tabs.documents.creator.createNew.stepper.before";
+const tBase = "tools.tcd.createNew.stepper.before";
 
 const THIS_STEP = 2;
 const store = useStepperStore();

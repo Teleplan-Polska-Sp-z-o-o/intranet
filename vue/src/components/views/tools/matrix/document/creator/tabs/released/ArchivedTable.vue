@@ -24,7 +24,7 @@ draftsStore.addController(uuid);
 // const stepperStore = useStepperStore();
 
 const { t } = useI18n();
-const tBase = "tools.matrix.tabs.documents.creator.drafts";
+const tBase = "tools.tcd.drafts";
 
 const headers = computed<object[]>(() => {
   return [

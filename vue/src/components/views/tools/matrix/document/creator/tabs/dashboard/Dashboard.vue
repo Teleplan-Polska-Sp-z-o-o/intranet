@@ -12,7 +12,7 @@ import { useUserStore } from "../../../../../../../../stores/userStore";
 const msTotalUsage = ref<number>(0);
 
 const { t } = useI18n();
-const tBase = "tools.matrix.tabs.documents.creator.dashboard";
+const tBase = "tools.tcd.dashboard";
 
 const isUserEligible = ref<boolean>(false);
 const stepperStore = useStepperStore();

@@ -96,232 +96,232 @@ const plT = {
         },
       },
     },
-    matrix: {
-      name: "Macierz",
-      creator: {
-        link: {
-          title: "Kreator Dokumentów Online",
-          subtitle: "Uprość, twórz i udostępniaj",
-          text: "Pożegnaj się z przesyłaniem plików dokumentów. Nasz kreator dokumentów online oferuje intuicyjny, przyjazny dla użytkownika interfejs, który zapewnia spójne doświadczenie za każdym razem. Idealny do szybkiego i efektywnego tworzenia profesjonalnych dokumentów, to nowoczesne rozwiązanie dla płynnej współpracy i produktywności.",
-          button: "Otwórz Narzędzie",
+    tcd: {
+      link: {
+        title: "Kreator Dokumentów Online",
+        subtitle: "Uprość, twórz i udostępniaj",
+        text: "Pożegnaj się z przesyłaniem plików dokumentów. Nasz kreator dokumentów online oferuje intuicyjny, przyjazny dla użytkownika interfejs, który zapewnia spójne doświadczenie za każdym razem. Idealny do szybkiego i efektywnego tworzenia profesjonalnych dokumentów, to nowoczesne rozwiązanie dla płynnej współpracy i produktywności.",
+        button: "Otwórz Narzędzie",
+      },
+      mainView: {
+        title: {
+          create: "Zaraz rozpoczniesz nowy szkic",
+          update: "Aktualizujesz szkic zatytułowany '{name}'",
+          // drafts:
+          //   "Tutaj możesz zarządzać swoimi wersjami roboczymi — wyszukiwać, edytować, usuwać i generować dokumenty DOCX.",
+          basedOn: "Tworzenie nowej wersji roboczej na podstawie Dokumentu '{name}'",
         },
-        mainView: {
+        tabs: {
+          dashboard: "Panel główny",
+          new: "Utwórz",
+          released: "Wydane",
+        },
+      },
+      dashboard: {
+        usage: "Przegląd użycia znaków (Microsoft Translator)",
+        FreeCharacterUsageChart: {
+          labels: {
+            used: "Zużyte znaki",
+            remaining: "Pozostałe darmowe znaki",
+          },
           title: {
-            create: "Zaraz rozpoczniesz nowy szkic",
-            update: "Aktualizujesz szkic zatytułowany '{name}'",
-            // drafts:
-            //   "Tutaj możesz zarządzać swoimi wersjami roboczymi — wyszukiwać, edytować, usuwać i generować dokumenty DOCX.",
-            basedOn: "Tworzenie nowej wersji roboczej na podstawie Dokumentu '{name}'",
-          },
-          tabs: {
-            dashboard: "Panel główny",
-            new: "Utwórz",
-            released: "Wydane",
+            text: "Użycie darmowych znaków i pozostały limit",
           },
         },
-        dashboard: {
-          usage: "Przegląd użycia znaków (Microsoft Translator)",
-          FreeCharacterUsageChart: {
-            labels: {
-              used: "Zużyte znaki",
-              remaining: "Pozostałe darmowe znaki",
-            },
-            title: {
-              text: "Użycie darmowych znaków i pozostały limit",
-            },
+        PaidCharacterUsageChart: {
+          labels: {
+            used: "Wykorzystane płatne znaki",
+            remaining: "Całkowity koszt (USD)",
           },
-          PaidCharacterUsageChart: {
-            labels: {
-              used: "Wykorzystane płatne znaki",
-              remaining: "Całkowity koszt (USD)",
-            },
-            title: {
-              text: "Użycie płatnych znaków i koszt",
-            },
+          title: {
+            text: "Użycie płatnych znaków i koszt",
           },
         },
-        createNew: {
-          stepper: {
-            actions: {
-              previous: "Poprzedni",
-              next: "Następny",
-              save: "Zapisz",
-              saveDialog: {
-                title: "Potwierdzenie",
-                text: "Czy na pewno chcesz zapisać ten szkic?",
-                revisionInvalid:
-                  "Szkic o identyfikatorze '{id}' ma już taką samą lub wyższą wersję. Zwiększ numer wersji przed zapisaniem.",
-              },
+      },
+      createNew: {
+        stepper: {
+          actions: {
+            previous: "Poprzedni",
+            next: "Następny",
+            save: "Zapisz",
+            saveDialog: {
+              title: "Potwierdzenie",
+              text: "Czy na pewno chcesz zapisać ten szkic?",
+              revisionInvalid:
+                "Szkic o identyfikatorze '{id}' ma już taką samą lub wyższą wersję. Zwiększ numer wersji przed zapisaniem.",
             },
-            info: {
-              product: "Produkt",
-              productHint: "Wprowadź nazwę towaru lub przedmiotu.",
-              owner: "Właściciel",
-              ownerHint: "Określ osobę odpowiedzialną za proces.",
-              lastUpdate: "Ostatnia aktualizacja",
-              lastUpdateHint: "Data ostatniej aktualizacji tego dokumentu.",
-              author: "Autor",
-              authorHint: "Osoba, która dokonała ostatniej zmiany.",
-              created: "Utworzono",
-              createdHint: "Data pierwotnego utworzenia tego dokumentu.",
-              trainingCodes: "Kody szkoleniowe",
-              trainingCodesHint: "Wybierz kody dla powiązanych kompetencji szkoleniowych.",
-              esd: "ESD",
-              esdHint:
-                "Wybierz kategorię ESD (Elektrostatyczne Rozładowanie) lub wybierz N/A, jeśli nie dotyczy.",
-              // Dodane zasady walidacji
-              validationRules: {
-                owner:
-                  "Właściciel musi być określony i powinien być poprawnym imieniem i nazwiskiem.",
-                author: "Autor musi być określony i powinien być poprawnym imieniem i nazwiskiem.",
-              },
+          },
+          info: {
+            product: "Produkt",
+            productHint: "Wprowadź nazwę towaru lub przedmiotu.",
+            owner: "Właściciel",
+            ownerHint: "Określ osobę odpowiedzialną za proces.",
+            lastUpdate: "Ostatnia aktualizacja",
+            lastUpdateHint: "Data ostatniej aktualizacji tego dokumentu.",
+            author: "Autor",
+            authorHint: "Osoba, która dokonała ostatniej zmiany.",
+            created: "Utworzono",
+            createdHint: "Data pierwotnego utworzenia tego dokumentu.",
+            trainingCodes: "Kody szkoleniowe",
+            trainingCodesHint: "Wybierz kody dla powiązanych kompetencji szkoleniowych.",
+            esd: "ESD",
+            esdHint:
+              "Wybierz kategorię ESD (Elektrostatyczne Rozładowanie) lub wybierz N/A, jeśli nie dotyczy.",
+            // Dodane zasady walidacji
+            validationRules: {
+              owner:
+                "Właściciel musi być określony i powinien być poprawnym imieniem i nazwiskiem.",
+              author: "Autor musi być określony i powinien być poprawnym imieniem i nazwiskiem.",
+            },
 
-              // Dodane opcje ESD
-              esdOptionESD: "Kategoria wyładowań elektrostatycznych (ESD)",
-              esdOptionNA: "Nie dotyczy (N/A)",
+            // Dodane opcje ESD
+            esdOptionESD: "Kategoria wyładowań elektrostatycznych (ESD)",
+            esdOptionNA: "Nie dotyczy (N/A)",
+          },
+          before: {
+            documentTitle: "Tytuł dokumentu",
+            documentTitleHint: "Tytuł powinien być jasny i zwięzły.",
+            documentTemplateChange: "Zmiana szablonu spowoduje wyczyszczenie bieżącej zawartości.",
+            documentTemplate: "Szablon dokumentu",
+            documentTemplateHint:
+              "Wybierz szablon dla logotypów na stronie tytułowej lub wybierz 'Niestandardowy', aby przesłać własne obrazy.",
+            glovesTemplate: "Szablon Rękawic",
+            glovesTemplateHint: "Wybierz szablon dla rękawic.",
+            logosTemplate: "Szablon logotypów",
+            logosTemplateHint:
+              "Wybierz szablon dla logotypów na stronie tytułowej lub wybierz 'Niestandardowy', aby przesłać własny obraz.",
+            uploadImageLabel: "Prześlij obraz",
+            uploadImageHint: "Upuść plik tutaj lub kliknij, aby przesłać",
+            documentId: "Identyfikator dokumentu",
+            documentRevision: "Rewizja dokumentu",
+            documentRevisionPrefix: "R",
+            documentRevisionPrefixSingleDigit: "R0",
+            validationRules: {
+              title: "Tytuł jest wymagany",
+              documentTemplate: "Szablon dokumentu jest wymagany",
             },
-            before: {
-              documentTitle: "Tytuł dokumentu",
-              documentTitleHint: "Tytuł powinien być jasny i zwięzły.",
-              documentTemplateChange:
-                "Zmiana szablonu spowoduje wyczyszczenie bieżącej zawartości.",
-              documentTemplate: "Szablon dokumentu",
-              documentTemplateHint:
-                "Wybierz szablon dla logotypów na stronie tytułowej lub wybierz 'Niestandardowy', aby przesłać własne obrazy.",
-              glovesTemplate: "Szablon Rękawic",
-              glovesTemplateHint: "Wybierz szablon dla rękawic.",
-              logosTemplate: "Szablon logotypów",
-              logosTemplateHint:
-                "Wybierz szablon dla logotypów na stronie tytułowej lub wybierz 'Niestandardowy', aby przesłać własny obraz.",
-              uploadImageLabel: "Prześlij obraz",
-              uploadImageHint: "Upuść plik tutaj lub kliknij, aby przesłać",
-              documentId: "Identyfikator dokumentu",
-              documentRevision: "Rewizja dokumentu",
-              documentRevisionPrefix: "R",
-              documentRevisionPrefixSingleDigit: "R0",
-              validationRules: {
-                title: "Tytuł jest wymagany",
-                documentTemplate: "Szablon dokumentu jest wymagany",
-              },
-            },
-            content: {
-              segmentBody: "Treść segmentu",
-              addButton: "Dodaj",
-              segmentTitle: "Tytuł segmentu",
-              segmentTitleHint: "Edytuj tytuł segmentu.",
-              insertBefore: "Wstaw przed",
-              insertAfter: "Wstaw po",
-              remove: "Usuń",
-              untitledSegment: "Segment bez tytułu",
-            },
+          },
+          content: {
+            segmentBody: "Treść segmentu",
+            addButton: "Dodaj",
+            segmentTitle: "Tytuł segmentu",
+            segmentTitleHint: "Edytuj tytuł segmentu.",
+            insertBefore: "Wstaw przed",
+            insertAfter: "Wstaw po",
+            remove: "Usuń",
+            untitledSegment: "Segment bez tytułu",
           },
         },
-        drafts: {
-          original: "Oryginalny",
-          originalAlert:
-            "Wybór języka jako 'Oryginalny' pominie tłumaczenie i wygeneruje dokument w jego pierwotnej formie.",
-          recordId: "Identyfikator rekordu",
-          draftName: "Nazwa szkicu",
-          myDrafts: "Moje szkice",
-          manage: "Zarządzanie dokumentami",
-          releasedDrafts: "Wydane wersje robocze",
-          archivedDrafts: "Zarchiwizowane wersje robocze",
-          changeOfDraftStatusTooltip: "Zmień status rekordu.",
-          changeOfDraftStatusConfirmationTitle: "Potwierdź zmianę statusu",
-          changeOfDraftStatusConfirmationText:
-            "Czy na pewno chcesz zmienić status wersji roboczej na 'Do wydania'? Tej operacji nie można cofnąć, z wyjątkiem Kontrolera Dokumentów.",
-          download: {
-            selectFilesTitle: "Pobierz dostępne pliki",
-            selectFilesLabel: "Wybierz pliki do pobrania",
-            selectFilesHint: "Wybierz jeden lub więcej plików powiązanych z tym dokumentem.",
+      },
+      drafts: {
+        original: "Oryginalny",
+        originalAlert:
+          "Wybór języka jako 'Oryginalny' pominie tłumaczenie i wygeneruje dokument w jego pierwotnej formie.",
+        recordId: "Identyfikator rekordu",
+        draftName: "Nazwa szkicu",
+        myDrafts: "Moje szkice",
+        manage: "Zarządzanie dokumentami",
+        releasedDrafts: "Wydane wersje robocze",
+        archivedDrafts: "Zarchiwizowane wersje robocze",
+        changeOfDraftStatusTooltip: "Zmień status rekordu.",
+        changeOfDraftStatusConfirmationTitle: "Potwierdź zmianę statusu",
+        changeOfDraftStatusConfirmationText:
+          "Czy na pewno chcesz zmienić status wersji roboczej na 'Do wydania'? Tej operacji nie można cofnąć, z wyjątkiem Kontrolera Dokumentów.",
+        download: {
+          selectFilesTitle: "Pobierz dostępne pliki",
+          selectFilesLabel: "Wybierz pliki do pobrania",
+          selectFilesHint: "Wybierz jeden lub więcej plików powiązanych z tym dokumentem.",
+        },
+        draftStatus: {
+          title: "Status szkicu",
+          chip: {
+            draftOption: "Szkic",
+            forReleaseOption: "Do wydania",
+            releasedOption: "Wydany",
+            archived: "Zarchiwizowany",
+            unknown: "Nieznany",
           },
-          draftStatus: {
-            title: "Status szkicu",
-            chip: {
-              draftOption: "Szkic",
-              forReleaseOption: "Do wydania",
-              releasedOption: "Wydany",
-              archived: "Zarchiwizowany",
-              unknown: "Nieznany",
-            },
-            targetDraftStatus: {
-              label: "Wybierz status",
-            },
-            targetDraftStatusComment: {
-              label: "Komentarz",
+          targetDraftStatus: {
+            label: "Wybierz status",
+          },
+          targetDraftStatusComment: {
+            label: "Komentarz",
+          },
+        },
+        documentTitle: "Tytuł dokumentu",
+        documentIdRev: "Identyfikator dokumentu - Rewizja",
+        created: "Utworzono",
+        lastUpdate: "Ostatnia aktualizacja",
+        actions: "Akcje",
+        deleteConfirmationTextTitle: "Potwierdź usunięcie",
+        deleteConfirmationText: "Czy na pewno chcesz usunąć ten element?",
+        cancel: "Anuluj",
+        ok: "OK",
+        selectDocumentLanguage: "Wybierz język dokumentu",
+        documentLanguage: "Język dokumentu",
+        search: "Szukaj",
+        editRecordTooltip: "Edytuj ten rekord.",
+        removeRecordTooltip: "Usuń ten rekord.",
+        generateDocumentTooltip: "Wygeneruj dokument na podstawie tego rekordu.",
+        updateUploadedFilesTooltip: "Zaktualizuj pliki powiązane z tym rekordem",
+        uploadGeneratedMessage:
+          "Wygenerowane dokumenty zostaną zapisane i powiązane z tym rekordem.",
+        newBasedOnRecordTooltip: "Utwórz nową wersję roboczą na podstawie tego rekordu.",
+        downloadGeneratedDocumentsTooltip:
+          "Pobierz wygenerowane dokumenty dla tej wersji roboczej.",
+        pleaseSelectLanguage: "Proszę wybrać język",
+        selectOrSearchLanguageHint:
+          "Wybierz lub wyszukaj język, aby wygenerować dokument odpowiednio.",
+        filters: {
+          reset: "Usuń filtry",
+          locator: {
+            label: "Filtruj wersje robocze według strefy czasowej ich utworzenia.",
+            messages: {
+              title: "Lokalizacja",
             },
           },
-          documentTitle: "Tytuł dokumentu",
-          documentIdRev: "Identyfikator dokumentu - Rewizja",
-          created: "Utworzono",
-          lastUpdate: "Ostatnia aktualizacja",
-          actions: "Akcje",
-          deleteConfirmationTextTitle: "Potwierdź usunięcie",
-          deleteConfirmationText: "Czy na pewno chcesz usunąć ten element?",
-          cancel: "Anuluj",
-          ok: "OK",
-          selectDocumentLanguage: "Wybierz język dokumentu",
-          documentLanguage: "Język dokumentu",
-          search: "Szukaj",
-          editRecordTooltip: "Edytuj ten rekord.",
-          removeRecordTooltip: "Usuń ten rekord.",
-          generateDocumentTooltip: "Wygeneruj dokument na podstawie tego rekordu.",
-          updateUploadedFilesTooltip: "Zaktualizuj pliki powiązane z tym rekordem",
-          uploadGeneratedMessage:
-            "Wygenerowane dokumenty zostaną zapisane i powiązane z tym rekordem.",
-          newBasedOnRecordTooltip: "Utwórz nową wersję roboczą na podstawie tego rekordu.",
-          downloadGeneratedDocumentsTooltip:
-            "Pobierz wygenerowane dokumenty dla tej wersji roboczej.",
-          pleaseSelectLanguage: "Proszę wybrać język",
-          selectOrSearchLanguageHint:
-            "Wybierz lub wyszukaj język, aby wygenerować dokument odpowiednio.",
-          filters: {
-            reset: "Usuń filtry",
-            locator: {
-              label: "Filtruj wersje robocze według strefy czasowej ich utworzenia.",
-              messages: {
-                title: "Lokalizacja",
+          creator: {
+            sideLabel: "Wpisz nazwę użytkownika, aby filtrować wersje robocze.",
+            messages: {
+              title: "Twórca",
+              subtitle: "Przełącz, aby filtrować wersje robocze według twórcy.",
+              subtitleMap: {
+                true: "Wyświetlanie tylko wersji roboczych utworzonych przeze mnie.",
+                false: "Wykluczanie wersji roboczych utworzonych przeze mnie.",
+                null: "Przełącz, aby filtrować wersje robocze według twórcy.",
               },
             },
-            creator: {
-              sideLabel: "Wpisz nazwę użytkownika, aby filtrować wersje robocze.",
-              messages: {
-                title: "Twórca",
-                subtitle: "Przełącz, aby filtrować wersje robocze według twórcy.",
-                subtitleMap: {
-                  true: "Wyświetlanie tylko wersji roboczych utworzonych przeze mnie.",
-                  false: "Wykluczanie wersji roboczych utworzonych przeze mnie.",
-                  null: "Przełącz, aby filtrować wersje robocze według twórcy.",
-                },
+          },
+          editor: {
+            sideLabel: "Wpisz nazwę użytkownika, aby filtrować wersje robocze.",
+            messages: {
+              title: "Edytor",
+              subtitle: "Przełącz, aby filtrować wersje robocze według edytora.",
+              subtitleMap: {
+                true: "Wyświetlanie tylko wersji roboczych edytowanych przeze mnie.",
+                false: "Wykluczanie wersji roboczych edytowanych przeze mnie.",
+                null: "Przełącz, aby filtrować wersje robocze według edytora.",
               },
             },
-            editor: {
-              sideLabel: "Wpisz nazwę użytkownika, aby filtrować wersje robocze.",
-              messages: {
-                title: "Edytor",
-                subtitle: "Przełącz, aby filtrować wersje robocze według edytora.",
-                subtitleMap: {
-                  true: "Wyświetlanie tylko wersji roboczych edytowanych przeze mnie.",
-                  false: "Wykluczanie wersji roboczych edytowanych przeze mnie.",
-                  null: "Przełącz, aby filtrować wersje robocze według edytora.",
-                },
-              },
+          },
+          created: {
+            label: "Filtruj wersje robocze według zakresu dat ich utworzenia.",
+            messages: {
+              title: "Utworzono",
             },
-            created: {
-              label: "Filtruj wersje robocze według zakresu dat ich utworzenia.",
-              messages: {
-                title: "Utworzono",
-              },
-            },
-            updated: {
-              label: "Filtruj wersje robocze według zakresu dat ich ostatniej aktualizacji.",
-              messages: {
-                title: "Zaktualizowano",
-              },
+          },
+          updated: {
+            label: "Filtruj wersje robocze według zakresu dat ich ostatniej aktualizacji.",
+            messages: {
+              title: "Zaktualizowano",
             },
           },
         },
       },
+    },
+    matrix: {
+      name: "Macierz",
+
       tabs: {
         departments: {
           name: "DZIAŁY",

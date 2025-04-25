@@ -25,5 +25,5 @@ export class RawTransaction implements SideAnalyticTypes.RawTransaction {
   next_work_center_no: string;
 
   @Column({ type: "timestamptz" }) // PostgreSQL specific type for timezone-aware timestamps
-  datedtz: Date;
+  dated: Date;
 }

@@ -5,11 +5,10 @@ import {
   getRawCosmeticTransactions,
   getRawOobaTransactions,
   getRawSkyTestTransactions,
-  getRawSkyTestTransactions2,
 } from "../sideControllers/sky/TransactionsRawController";
 import {
   getRawRegistrationTransactions,
-  getRawCleaningTransactions,
+  // getRawCleaningTransactions,
   getRawFinalTestTransactions,
   getRawLenovoPackingTransactions,
   getRawRepairTransactions,
@@ -20,9 +19,9 @@ import {
   getScreeningTransactions,
   getWinTestTransactions,
   getFinalTestTransactions,
-  getActivationTransactions,
-  getCustomizationTransactions,
-  getKeyInjectionTransactions,
+  // getActivationTransactions,
+  // getCustomizationTransactions,
+  // getKeyInjectionTransactions,
   getFgiTransactions,
   getRepair2Transactions,
   getRepair3Transactions,
@@ -33,7 +32,7 @@ import {
   getRawDebugRepairTransactions,
   getRawHighPotTransactions,
   getRawPackTransactions,
-  getRawShipTransactions,
+  // getRawShipTransactions,
   getRawTestTransactions,
   getRawVmiTransactions,
 } from "../sideControllers/liberty/TransactionsRawController";
@@ -64,13 +63,13 @@ const decodeFormData = multer().none();
 router.post("/raw/sky/packing", decodeFormData, getRawSkyPackingTransactions);
 router.post("/raw/sky/cosmetic", decodeFormData, getRawCosmeticTransactions);
 router.post("/raw/sky/ooba", decodeFormData, getRawOobaTransactions);
+// router.post("/raw/sky/test", decodeFormData, getRawSkyTestTransactions);
 router.post("/raw/sky/test", decodeFormData, getRawSkyTestTransactions);
-router.post("/raw/sky/test-2", decodeFormData, getRawSkyTestTransactions2);
 
 // lenovo
 router.post("/raw/lenovo/repair", decodeFormData, getRawRepairTransactions);
 router.post("/raw/lenovo/registration", decodeFormData, getRawRegistrationTransactions);
-router.post("/raw/lenovo/cleaning", decodeFormData, getRawCleaningTransactions);
+// router.post("/raw/lenovo/cleaning", decodeFormData, getRawCleaningTransactions);
 router.post("/raw/lenovo/final", decodeFormData, getRawFinalTestTransactions);
 router.post("/raw/lenovo/packing", decodeFormData, getRawLenovoPackingTransactions);
 
@@ -79,9 +78,9 @@ router.post("/raw/ingenico/vmi", decodeFormData, getVmiTransactions);
 router.post("/raw/ingenico/screening", decodeFormData, getScreeningTransactions);
 router.post("/raw/ingenico/wintest", decodeFormData, getWinTestTransactions);
 router.post("/raw/ingenico/finaltest", decodeFormData, getFinalTestTransactions);
-router.post("/raw/ingenico/activation", decodeFormData, getActivationTransactions);
-router.post("/raw/ingenico/customization", decodeFormData, getCustomizationTransactions);
-router.post("/raw/ingenico/keyinjection", decodeFormData, getKeyInjectionTransactions);
+// router.post("/raw/ingenico/activation", decodeFormData, getActivationTransactions);
+// router.post("/raw/ingenico/customization", decodeFormData, getCustomizationTransactions);
+// router.post("/raw/ingenico/keyinjection", decodeFormData, getKeyInjectionTransactions);
 router.post("/raw/ingenico/fgi", decodeFormData, getFgiTransactions);
 router.post("/raw/ingenico/repair2", decodeFormData, getRepair2Transactions);
 router.post("/raw/ingenico/repair3", decodeFormData, getRepair3Transactions);
@@ -92,7 +91,7 @@ router.post("/raw/liberty/debugrepair", decodeFormData, getRawDebugRepairTransac
 router.post("/raw/liberty/cosmetic", decodeFormData, getRawCosmTransactions);
 router.post("/raw/liberty/highpot", decodeFormData, getRawHighPotTransactions);
 router.post("/raw/liberty/pack", decodeFormData, getRawPackTransactions);
-router.post("/raw/liberty/ship", decodeFormData, getRawShipTransactions);
+// router.post("/raw/liberty/ship", decodeFormData, getRawShipTransactions);
 router.post("/raw/liberty/ooba", decodeFormData, getRawOobaTransactions);
 
 router.post("/raw/dell/vmi", decodeFormData, getDellVmiTransactions);
