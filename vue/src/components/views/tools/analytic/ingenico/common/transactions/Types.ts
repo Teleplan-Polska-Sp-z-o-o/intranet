@@ -12,7 +12,8 @@ export namespace AnalyticTypes {
     | "keyinjection"
     | "fgi"
     | "repair2"
-    | "repair3";
+    | "repair3"
+    | "oba";
   export type TManager = CommonTypes.Api.GetManager &
     CommonTypes.Api.CreateFormDataManager & { program: TPrograms };
   // export interface IPreFormData {

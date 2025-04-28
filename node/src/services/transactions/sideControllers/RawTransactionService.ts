@@ -34,6 +34,7 @@ export const handlers: {
     repair2: IngenicoTypes.RawTransactionQueryHandler.getRepair2Transactions,
     repair3: IngenicoTypes.RawTransactionQueryHandler.getRepair3Transactions,
     fgi: IngenicoTypes.RawTransactionQueryHandler.getFgiTransactions,
+    oba: IngenicoTypes.RawTransactionQueryHandler.getObaTransactions,
   },
   [GenericTypes.Program.Liberty]: {
     vmi: LibertyTypes.RawTransactionQueryHandler.getVmiTransactions,

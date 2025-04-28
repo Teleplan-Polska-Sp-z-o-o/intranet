@@ -25,6 +25,7 @@ import {
   getFgiTransactions,
   getRepair2Transactions,
   getRepair3Transactions,
+  getObaTransactions,
 } from "../sideControllers/ingenico/TransactionsRawController";
 import { getIngenicoModels } from "../sideControllers/ingenico/ModelsController";
 import {
@@ -85,6 +86,7 @@ router.post("/raw/ingenico/finaltest", decodeFormData, getFinalTestTransactions)
 router.post("/raw/ingenico/fgi", decodeFormData, getFgiTransactions);
 router.post("/raw/ingenico/repair2", decodeFormData, getRepair2Transactions);
 router.post("/raw/ingenico/repair3", decodeFormData, getRepair3Transactions);
+router.post("/raw/ingenico/oba", decodeFormData, getObaTransactions);
 
 router.post("/raw/liberty/vmi", decodeFormData, getRawVmiTransactions);
 router.post("/raw/liberty/test", decodeFormData, getRawTestTransactions);

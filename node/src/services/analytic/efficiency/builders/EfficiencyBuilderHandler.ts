@@ -83,6 +83,7 @@ export class EfficiencyBuilderHandler<
         fgi: "TT",
         repair2: "TT",
         repair3: "TT",
+        oba: "TT",
       },
       bose: {
         combined: "TT",

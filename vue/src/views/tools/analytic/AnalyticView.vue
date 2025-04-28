@@ -54,6 +54,7 @@ import LibertyOobaEfficiencyOverview from "../../../components/views/tools/analy
 import BoseCombinedEfficiencyOverview from "../../../components/views/tools/analytic/bose/combined/CombinedEfficiencyOverview.vue";
 
 import { tabsObj } from "./tabsObj";
+import ObaEfficiencyOverview from "../../../components/views/tools/analytic/ingenico/oba/ObaEfficiencyOverview.vue";
 
 // Dell
 // import DellEfficiencyOverview from "../../../components/views/tools/analytic/dell/common/efficiency/EfficiencyOverview.vue";
@@ -622,6 +623,29 @@ onMounted(async () => {
                       raw-identification="ingenico-repair3-overview"
                       class="mt-6"
                     ></repair-3-efficiency-overview>
+                  </template>
+                </v-window-item>
+
+                <!-- OBA Group -->
+                <v-window-item value="ingenico-oba-drive">
+                  <template v-if="windowItem === 'ingenico-oba-drive'">
+                    <file-drive
+                      subtitle="Ingenico OBA"
+                      identification="ingenico-oba-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="ingenico-oba-overview">
+                  <template v-if="windowItem === 'ingenico-oba-overview'">
+                    <transactions-raw-ingenico-data-table
+                      program="ingenico"
+                      group="oba"
+                      identification="ingenico-oba-overview"
+                    ></transactions-raw-ingenico-data-table>
+                    <oba-efficiency-overview
+                      raw-identification="ingenico-oba-overview"
+                      class="mt-6"
+                    ></oba-efficiency-overview>
                   </template>
                 </v-window-item>
 

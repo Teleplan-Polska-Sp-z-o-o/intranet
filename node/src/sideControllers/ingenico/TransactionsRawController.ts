@@ -849,6 +849,65 @@ const getRepair3Transactions = async (req: Request, res: Response): Promise<Resp
   }
 };
 
+const getObaTransactions = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const {
+      contracts: contractsStringified,
+      startOfDay: start,
+      endOfDay: end,
+      getProcessed: getProcessedStringified,
+    } = req.body;
+    const contracts: GenericTypes.ProgramContracts[GenericTypes.Program.Ingenico] =
+      JSON.parse(contractsStringified);
+    const startOfDay: Date = new Date(JSON.parse(start));
+    const endOfDay: Date = new Date(JSON.parse(end));
+    startOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setHours(6, 0, 0, 0);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+    const getProcessed: boolean = getProcessedStringified === "true";
+
+    const transactions = {
+      raw: [],
+      processed: [],
+      missingCache: [],
+    };
+
+    const opts: GenericTypes.QueryOptions<GenericTypes.Program.Ingenico> = {
+      startOfDay,
+      endOfDay,
+      contracts,
+    };
+    transactions.raw = await IngenicoTypes.RawTransactionQueryHandler.getObaTransactions(opts);
+
+    if (getProcessed) {
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Ingenico, "oba");
+      handler.raw = transactions.raw;
+      await handler.getAnalyticFiles_2_1();
+      handler.getJsObjects_2_2();
+      handler.getProcessedData_3();
+      transactions.processed = handler.getProcessed();
+      transactions.missingCache = handler.getMissingCache();
+    }
+
+    return res.status(200).json({
+      raw: transactions.raw,
+      processed: transactions.processed,
+      missingCache: transactions.missingCache,
+      message: "OBA transactions retrieved successfully",
+      statusMessage: HttpResponseMessage.GET_SUCCESS,
+    });
+  } catch (error) {
+    console.error("Error retrieving OBA transactions:", error);
+    return res.status(500).json({
+      raw: [],
+      processed: [],
+      missingCache: [],
+      message: "Unknown error occurred. Failed to retrieve OBA transactions.",
+      statusMessage: HttpResponseMessage.UNKNOWN,
+    });
+  }
+};
+
 export {
   getVmiTransactions,
   getScreeningTransactions,
@@ -860,4 +919,5 @@ export {
   getFgiTransactions,
   getRepair2Transactions,
   getRepair3Transactions,
+  getObaTransactions,
 };

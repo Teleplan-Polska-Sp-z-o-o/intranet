@@ -26,7 +26,8 @@ export namespace GenericTypes {
       | "finaltest"
       | "fgi"
       | "repair2"
-      | "repair3";
+      | "repair3"
+      | "oba";
     [Program.Liberty]: "vmi" | "test" | "debugrepair" | "cosmetic" | "highpot" | "pack" | "ooba";
     [Program.Bose]: "combined";
   };
@@ -52,6 +53,7 @@ export namespace GenericTypes {
       fgi: RawTransaction;
       repair2: RawTransaction;
       repair3: RawTransaction;
+      oba: RawTransaction;
     };
     [Program.Liberty]: {
       vmi: RawTransaction;
@@ -421,6 +423,13 @@ export namespace IngenicoTypes {
         .andWhere("h.next_work_center_no IN (:...next)", {
           next: ["RDYA", "BER", "UNREP", "UNRFR"],
         })
+        .getMany();
+    }
+
+    static getObaTransactions(options: GenericTypes.QueryOptions<GenericTypes.Program.Ingenico>) {
+      return RawTransactionQueryHandler.base(options)
+        .andWhere("h.work_center_no = :workCenter", { workCenter: "AOBA" })
+        .andWhere("h.next_work_center_no = :nextWorkCenter", { nextWorkCenter: "RDYA" })
         .getMany();
     }
   }

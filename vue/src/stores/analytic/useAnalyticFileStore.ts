@@ -44,6 +44,7 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
       fgi: { drive: ["models", "reports", "miscellaneous"] },
       repair2: { drive: ["models", "reports", "miscellaneous"] },
       repair3: { drive: ["models", "reports", "miscellaneous"] },
+      oba: { drive: ["models", "reports", "miscellaneous"] },
     },
     liberty: {
       vmi: { drive: ["models", "reports", "miscellaneous"] },
@@ -172,6 +173,10 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
       reports: ["NAME", "SURNAME", "USERNAME", "MAIL", "CONTENT_CODES"],
     },
     "ingenico-repair3-drive": {
+      models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
+      reports: ["NAME", "SURNAME", "USERNAME", "MAIL", "CONTENT_CODES"],
+    },
+    "ingenico-oba-drive": {
       models: ["PART_NO", "WORKSTATION", "NEXT_WORKSTATION", "TT"],
       reports: ["NAME", "SURNAME", "USERNAME", "MAIL", "CONTENT_CODES"],
     },
