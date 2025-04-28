@@ -1,4 +1,11 @@
-import { GenericTypes, IngenicoTypes, LenovoTypes, LibertyTypes, SkyTypes } from "./Types";
+import {
+  BoseTypes,
+  GenericTypes,
+  IngenicoTypes,
+  LenovoTypes,
+  LibertyTypes,
+  SkyTypes,
+} from "./Types";
 
 export const handlers: {
   [P in GenericTypes.Program]?: {
@@ -36,6 +43,9 @@ export const handlers: {
     highpot: LibertyTypes.RawTransactionQueryHandler.getHighPotTransactions,
     pack: LibertyTypes.RawTransactionQueryHandler.getPackTransactions,
     ooba: LibertyTypes.RawTransactionQueryHandler.getOobaTransactions,
+  },
+  [GenericTypes.Program.Bose]: {
+    combined: BoseTypes.RawTransactionQueryHandler.getCombinedTransactions,
   },
 };
 

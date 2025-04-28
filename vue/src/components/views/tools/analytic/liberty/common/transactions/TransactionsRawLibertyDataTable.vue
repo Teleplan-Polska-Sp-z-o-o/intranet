@@ -45,16 +45,20 @@ let every = ref<number>(1); // Start with 1-minute intervals
 // Set threshold for task to be considered heavy (e.g., 10 seconds)
 const TASK_THRESHOLD = 10000;
 
-const items = ref<CommonAnalyticTypes.IAnalyticModelResponse>({
+const items = ref<CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>>({
   raw: [],
   processed: [],
   missingCache: [],
 });
-const filteredItems = computed<CommonAnalyticTypes.IAnalyticModelResponse>(() => {
+const filteredItems = computed<
+  CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>
+>(() => {
   try {
     const data = unref(items);
     const searchTermLowered = unref(searchTerm).toLocaleLowerCase();
-    const filtered = ref<CommonAnalyticTypes.IAnalyticModelResponse>({
+    const filtered = ref<
+      CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>
+    >({
       raw: [],
       processed: [],
       missingCache: [],
@@ -131,10 +135,9 @@ const load = async (interrupt: boolean = true) => {
 
     // Create a new AbortController for the new request
     abortController.value = new AbortController();
-    const arm = new AnalyticRawManager<CommonAnalyticTypes.IAnalyticModelResponse>(
-      unref(program),
-      unref(group)
-    );
+    const arm = new AnalyticRawManager<
+      CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>
+    >(unref(program), unref(group));
     const formData = arm.createFormData(preFormData, true);
 
     const startTime = performance.now();

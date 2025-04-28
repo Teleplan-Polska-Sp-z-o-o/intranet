@@ -53,6 +53,7 @@ import {
   getDellVmiTransactions,
   getDellWffaTransactions,
 } from "../sideControllers/dell/TransactionsRawController";
+import { getCombinedTransactions } from "../sideControllers/bose/TransactionsRawController";
 
 const router = express.Router();
 const decodeFormData = multer().none();
@@ -108,5 +109,7 @@ router.post("/raw/dell/repairl3", decodeFormData, getDellRepairL3Transactions);
 router.post("/raw/dell/scrap", decodeFormData, getDellScrapTransactions);
 router.post("/raw/dell/hold", decodeFormData, getDellHoldTransactions);
 router.post("/raw/dell/ship", decodeFormData, getDellShipTransactions);
+
+router.post("/raw/bose/combined", decodeFormData, getCombinedTransactions);
 
 export { router as analyticRoutes };

@@ -4,6 +4,7 @@ import { TouchTimeUnit } from "../Models/models/TouchTime";
 import { IngenicoEfficiencyBuilder } from "./ingenico/Builder";
 import { LenovoEfficiencyBuilder } from "./lenovo/Builder";
 import { GenericTypes } from "../../../transactions/sideControllers/Types";
+import { BoseEfficiencyBuilder } from "./bose/Builder";
 
 export class EfficiencyBuilderHandler<
   P extends GenericTypes.Program,
@@ -40,6 +41,8 @@ export class EfficiencyBuilderHandler<
         return LenovoEfficiencyBuilder;
       case "ingenico":
         return IngenicoEfficiencyBuilder;
+      case "bose":
+        return BoseEfficiencyBuilder;
       default:
         throw new Error(`No builder found for program: ${program}`);
     }
@@ -81,6 +84,9 @@ export class EfficiencyBuilderHandler<
         repair2: "TT",
         repair3: "TT",
       },
+      bose: {
+        combined: "TT",
+      },
     };
 
     return ttKeys[program][category];
@@ -89,6 +95,7 @@ export class EfficiencyBuilderHandler<
   private ttTimeUnit(program: P, category: C): TouchTimeUnit {
     if (program === "sky" && category === "test") return TouchTimeUnit.SECONDS;
     if (program === "ingenico") return TouchTimeUnit.SECONDS;
+    if (program === "bose") return TouchTimeUnit.SECONDS;
     else return TouchTimeUnit.MINUTES;
   }
 

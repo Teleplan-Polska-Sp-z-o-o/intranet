@@ -79,7 +79,7 @@ const getRawSkyPackingTransactions = async (req: Request, res: Response): Promis
     );
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Sky, "packing");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Sky, "packing");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -166,7 +166,7 @@ const getRawCosmeticTransactions = async (req: Request, res: Response): Promise<
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Sky, "cosmetic");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Sky, "cosmetic");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -253,7 +253,7 @@ const getRawOobaTransactions = async (req: Request, res: Response): Promise<Resp
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Sky, "ooba");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Sky, "ooba");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -437,7 +437,7 @@ const getRawSkyTestTransactions = async (req: Request, res: Response): Promise<R
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Sky, "test");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Sky, "test");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();

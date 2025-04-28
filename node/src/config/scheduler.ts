@@ -3,6 +3,7 @@ import { EfficiencyService } from "../services/analytic/efficiency/EfficiencySer
 import { getMonthlyRange, getWeeklyRange } from "../services/analytic/efficiency/TimeRangeHelper";
 import { handlers } from "../services/transactions/sideControllers/RawTransactionService";
 import { GenericTypes } from "../services/transactions/sideControllers/Types";
+import { serverConfig } from "./server";
 
 const mountScheduledTasks = () => {
   const scheduler = new CronScheduler();
@@ -67,7 +68,7 @@ const mountScheduledTasks = () => {
   //       for (const [category, _transactionFunction] of Object.entries(categories)) {
   //         // Initialize and process using the EfficiencyMonthlyService
   //         try {
-  //           const handler = new EfficiencyService.PostgresHandler(program, category);
+  //           const handler = new EfficiencyService.Handler(program, category);
   //           // Process the transactions
   //           await handler.getRawTransactions_1();
   //           await handler.getAnalyticFiles_2_1();
@@ -91,66 +92,68 @@ const mountScheduledTasks = () => {
   scheduler.scheduleTask(
     "0 4 * * 1", // 06:00 local time every Monday (04:00 UTC)
     async () => {
-      try {
-        const weeklyRange = getWeeklyRange();
-        for (const [programKey, categories] of Object.entries(handlers)) {
-          const program = programKey as GenericTypes.Program;
-          for (const [categoryKey] of Object.entries(categories) as [
-            keyof GenericTypes.ProgramCategoryTransaction[typeof program],
-            any
-          ][]) {
-            const category = categoryKey;
-            const opts: GenericTypes.RawOptions<typeof program, typeof category> = {
-              startOfDay: weeklyRange.start,
-              endOfDay: weeklyRange.end,
-              contracts: GenericTypes.programContracts[program],
-              fromCategory: category,
-            };
-            const handler = new EfficiencyService.PostgresHandler(program, category);
-            await handler.getRawTransactions_1(opts);
-            await handler.getAnalyticFiles_2_1();
-            handler.getJsObjects_2_2();
-            handler.getProcessedData_3();
-            await handler.createExcelBaseEfficiencyReport_4_1();
-            handler.sendMails_5("EFF-WEEKLY");
+      if (!serverConfig.test)
+        try {
+          const weeklyRange = getWeeklyRange();
+          for (const [programKey, categories] of Object.entries(handlers)) {
+            const program = programKey as GenericTypes.Program;
+            for (const [categoryKey] of Object.entries(categories) as [
+              keyof GenericTypes.ProgramCategoryTransaction[typeof program],
+              any
+            ][]) {
+              const category = categoryKey;
+              const opts: GenericTypes.RawOptions<typeof program, typeof category> = {
+                startOfDay: weeklyRange.start,
+                endOfDay: weeklyRange.end,
+                contracts: GenericTypes.programContracts[program],
+                fromCategory: category,
+              };
+              const handler = new EfficiencyService.Handler(program, category);
+              await handler.getRawTransactions_1(opts);
+              await handler.getAnalyticFiles_2_1();
+              handler.getJsObjects_2_2();
+              handler.getProcessedData_3();
+              await handler.createExcelBaseEfficiencyReport_4_1();
+              handler.sendMails_5("EFF-WEEKLY");
+            }
           }
+        } catch (error) {
+          console.error(`Error in WeeklyEfficiencyReport:`, error);
         }
-      } catch (error) {
-        console.error(`Error in WeeklyEfficiencyReport:`, error);
-      }
     },
     "WeeklyEfficiencyReport"
   );
   scheduler.scheduleTask(
     "0 4 1 * *", // 06:00 local time on the 1st of each month (04:00 UTC)
     async () => {
-      try {
-        const monthlyRange = getMonthlyRange();
-        for (const [programKey, categories] of Object.entries(handlers)) {
-          const program = programKey as GenericTypes.Program;
-          for (const [categoryKey] of Object.entries(categories) as [
-            keyof GenericTypes.ProgramCategoryTransaction[typeof program],
-            any
-          ][]) {
-            const category = categoryKey;
-            const opts: GenericTypes.RawOptions<typeof program, typeof category> = {
-              startOfDay: monthlyRange.start,
-              endOfDay: monthlyRange.end,
-              contracts: GenericTypes.programContracts[program],
-              fromCategory: category,
-            };
-            const handler = new EfficiencyService.PostgresHandler(program, category);
-            await handler.getRawTransactions_1(opts);
-            await handler.getAnalyticFiles_2_1();
-            handler.getJsObjects_2_2();
-            handler.getProcessedData_3();
-            await handler.createExcelBaseEfficiencyReport_4_1();
-            handler.sendMails_5("EFF-MONTHLY");
+      if (!serverConfig.test)
+        try {
+          const monthlyRange = getMonthlyRange();
+          for (const [programKey, categories] of Object.entries(handlers)) {
+            const program = programKey as GenericTypes.Program;
+            for (const [categoryKey] of Object.entries(categories) as [
+              keyof GenericTypes.ProgramCategoryTransaction[typeof program],
+              any
+            ][]) {
+              const category = categoryKey;
+              const opts: GenericTypes.RawOptions<typeof program, typeof category> = {
+                startOfDay: monthlyRange.start,
+                endOfDay: monthlyRange.end,
+                contracts: GenericTypes.programContracts[program],
+                fromCategory: category,
+              };
+              const handler = new EfficiencyService.Handler(program, category);
+              await handler.getRawTransactions_1(opts);
+              await handler.getAnalyticFiles_2_1();
+              handler.getJsObjects_2_2();
+              handler.getProcessedData_3();
+              await handler.createExcelBaseEfficiencyReport_4_1();
+              handler.sendMails_5("EFF-MONTHLY");
+            }
           }
+        } catch (error) {
+          console.error(`Error in MonthlyEfficiencyReport:`, error);
         }
-      } catch (error) {
-        console.error(`Error in MonthlyEfficiencyReport:`, error);
-      }
     },
     "MonthlyEfficiencyReport"
   );
@@ -193,7 +196,7 @@ const mountOneTimeTasks = () => {
   //       contracts: GenericTypes.programContracts[program],
   //       fromCategory: category,
   //     };
-  //     const handler = new EfficiencyService.PostgresHandler(program, category);
+  //     const handler = new EfficiencyService.Handler(program, category);
   //     await handler.getRawTransactions_1(opts);
   //     await handler.getAnalyticFiles_2_1();
   //     handler.getJsObjects_2_2();
@@ -234,7 +237,7 @@ const mountOneTimeTasks = () => {
 //         //       fromCategory: category,
 //         //     };
 
-//         //     const handler = new EfficiencyService.PostgresHandler(program, category);
+//         //     const handler = new EfficiencyService.Handler(program, category);
 
 //         //     await handler.getRawTransactions_1(opts);
 //         //     await handler.getAnalyticFiles_2_1();

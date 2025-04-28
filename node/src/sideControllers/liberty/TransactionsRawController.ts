@@ -90,7 +90,7 @@ const getRawVmiTransactions = async (req: Request, res: Response): Promise<Respo
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Liberty, "vmi");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Liberty, "vmi");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -176,7 +176,7 @@ const getRawTestTransactions = async (req: Request, res: Response): Promise<Resp
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Liberty, "test");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Liberty, "test");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -271,10 +271,7 @@ const getRawDebugRepairTransactions = async (req: Request, res: Response): Promi
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(
-        GenericTypes.Program.Liberty,
-        "debugrepair"
-      );
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Liberty, "debugrepair");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -368,10 +365,7 @@ const getRawCosmTransactions = async (req: Request, res: Response): Promise<Resp
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(
-        GenericTypes.Program.Liberty,
-        "cosmetic"
-      );
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Liberty, "cosmetic");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -464,10 +458,7 @@ const getRawHighPotTransactions = async (req: Request, res: Response): Promise<R
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(
-        GenericTypes.Program.Liberty,
-        "highpot"
-      );
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Liberty, "highpot");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -560,7 +551,7 @@ const getRawPackTransactions = async (req: Request, res: Response): Promise<Resp
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Liberty, "pack");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Liberty, "pack");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -626,7 +617,7 @@ const getRawPackTransactions = async (req: Request, res: Response): Promise<Resp
 //       .getMany();
 
 //     if (getProcessed) {
-//       const handler = new EfficiencyMonthlyService.PostgresHandler(GenericTypes.Program.Liberty, "ship");
+//       const handler = new EfficiencyMonthlyService.Handler(GenericTypes.Program.Liberty, "ship");
 //       handler.raw = transactions.raw as EfficiencyMonthlyTypes.Postgres.ITransactionsRecord[];
 //       await handler.getAnalyticFiles_2_1();
 //       handler.getJsObjects_2_2();
@@ -715,7 +706,7 @@ const getRawOobaTransactions = async (req: Request, res: Response): Promise<Resp
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Liberty, "ooba");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Liberty, "ooba");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();

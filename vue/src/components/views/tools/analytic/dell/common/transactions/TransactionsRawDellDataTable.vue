@@ -12,6 +12,7 @@ import { DataTableHeader } from "../../../files/download/DataTableHeader";
 import { AnalyticRawManager } from "../../../../../../../models/analytic/AnalyticRawManager";
 import axios from "axios";
 import { TimerManager } from "../../../debug/Timers";
+import { boseDellTransactionsTableHeaders } from "../../../common/tableHeaders/rawTransactionsHeaders";
 
 const props = defineProps<{
   program: AnalyticRaw.TPrograms;
@@ -25,32 +26,6 @@ const { program, group, identification } = toRefs(props);
 const store = useAnalyticRawTableStore();
 const route = useRoute();
 const abortController = ref<AbortController | null>(null);
-
-const headers: any = [
-  { title: "Id", align: "start", key: "id", value: "id" },
-  { title: "Contract", align: "start", key: "contract", value: "contract" },
-  { title: "Username", align: "start", key: "username", value: "username" },
-  { title: "Part No", align: "start", key: "partNo", value: "partNo" },
-  { title: "Serial No", align: "start", key: "serialNo", value: "serialNo" },
-  {
-    title: "Work Station Description",
-    align: "start",
-    key: "workStationDesc",
-    value: "workStationDesc",
-  },
-  {
-    title: "Next Work Station Description",
-    align: "start",
-    key: "nextWorkStationDesc",
-    value: "nextWorkStationDesc",
-  },
-  {
-    title: "Last Activity Date",
-    align: "start",
-    key: "lastActivityDate",
-    value: "lastActivityDate",
-  },
-];
 
 const searchTerm = ref<string>(""); // search input
 const searchBy = [
@@ -232,11 +207,6 @@ watch(
     }
   }
 );
-
-const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHeader) => {
-  const keyBlackList = ["id"];
-  return !keyBlackList.includes(col.value);
-});
 </script>
 
 <template>
@@ -259,7 +229,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
       ></v-text-field>
 
       <download
-        :headers="downloadHeaders"
+        :headers="(boseDellTransactionsTableHeaders as DataTableHeader[])"
         :items="filteredItems"
         base-save-as="Dell Raw Transactions"
       ></download>
@@ -274,7 +244,7 @@ const downloadHeaders = (headers as DataTableHeader[]).filter((col: DataTableHea
       v-model:search="searchTerm"
       :items="filteredItems"
       :loading="loading"
-      :headers="headers"
+      :headers="boseDellTransactionsTableHeaders"
       :sort-by="sortBy"
       multi-sort
       :items-per-page-options="[

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, toRefs, unref, watch } from "vue";
-import { AnalyticRaw } from "./Types";
-import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawLenovoTableStore";
+import { AnalyticTypes } from "./Types";
+import { useAnalyticRawTableStore } from "../../../../../../../stores/analytic/useAnalyticRawBoseTableStore";
 import moment from "moment";
 import "moment-timezone";
 import { TransactionsHelper } from "./TransactionsHelper";
@@ -9,15 +9,15 @@ import TransactionAdvancedSearch from "./TransactionAdvancedSearch.vue";
 import { useRoute } from "vue-router";
 import { useAlertStore } from "../../../../../../../stores/alertStore";
 import Download from "../../../files/download/Download.vue";
+import { DataTableHeader } from "../../../files/download/DataTableHeader";
 import { AnalyticRawManager } from "../../../../../../../models/analytic/AnalyticRawManager";
 import axios from "axios";
-import { transactionsTableHeaders } from "../../../common/tableHeaders/rawTransactionsHeaders";
 import { CommonAnalyticTypes } from "../../../common/types";
-import { DataTableHeader } from "../../../files/download/DataTableHeader";
+import { boseTransactionsTableHeaders } from "../../../common/tableHeaders/rawTransactionsHeaders";
 
 const props = defineProps<{
-  program: AnalyticRaw.TPrograms;
-  group: AnalyticRaw.TGroups;
+  program: AnalyticTypes.TPrograms;
+  group: AnalyticTypes.TGroups;
   identification: string;
 }>();
 
@@ -27,17 +27,21 @@ const store = useAnalyticRawTableStore();
 const route = useRoute();
 const abortController = ref<AbortController | null>(null);
 
-const searchTerm = ref<string>("");
+const searchTerm = ref<string>(""); // search input
 const searchBy = [
   "contract",
-  "order_no",
-  "emp_name",
-  "part_no",
-  "work_center_no",
-  "next_work_center_no",
-  "dated",
+  "username",
+  "partNo",
+  "serialNo",
+  // "workStationCode",
+  "workStationDesc",
+  // "nextWorkStationCode",
+  "nextWorkStationDesc",
+  "lastActivityDate",
 ];
-const sortBy: { key: string; order: "asc" | "desc" }[] = [{ key: "dated", order: "asc" }];
+const sortBy: { key: string; order: "asc" | "desc" }[] = [
+  { key: "lastActivityDate", order: "asc" },
+];
 
 const loadingVersion = ref<number>(0);
 const loading = ref<false | "primary-container">(false);
@@ -45,19 +49,21 @@ let every = ref<number>(1); // Start with 1-minute intervals
 // Set threshold for task to be considered heavy (e.g., 10 seconds)
 const TASK_THRESHOLD = 10000;
 
-const items = ref<CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>>({
+const items = ref<
+  CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawBoseTransaction>
+>({
   raw: [],
   processed: [],
   missingCache: [],
 });
 const filteredItems = computed<
-  CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>
+  CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawBoseTransaction>
 >(() => {
   try {
     const data = unref(items);
     const searchTermLowered = unref(searchTerm).toLocaleLowerCase();
     const filtered = ref<
-      CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>
+      CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawBoseTransaction>
     >({
       raw: [],
       processed: [],
@@ -65,7 +71,7 @@ const filteredItems = computed<
     });
 
     if (searchTerm.value) {
-      filtered.value.raw = data.raw.filter((item: CommonAnalyticTypes.IRawTransaction) => {
+      filtered.value.raw = data.raw.filter((item: CommonAnalyticTypes.IRawBoseTransaction) => {
         for (const key of searchBy) {
           const valueFromColumnOfKey = JSON.stringify(item[key])?.toLocaleLowerCase();
           if (valueFromColumnOfKey && valueFromColumnOfKey.includes(searchTermLowered)) {
@@ -136,7 +142,7 @@ const load = async (interrupt: boolean = true) => {
     // Create a new AbortController for the new request
     abortController.value = new AbortController();
     const arm = new AnalyticRawManager<
-      CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>
+      CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawBoseTransaction>
     >(unref(program), unref(group));
     const formData = arm.createFormData(preFormData, true);
 
@@ -203,6 +209,7 @@ watch(
 
     loadingVersion.value += 1;
     loading.value = "primary-container";
+    every.value = 1;
     await load();
   },
   { deep: true }
@@ -240,9 +247,9 @@ watch(
       ></v-text-field>
 
       <download
-        :headers="(transactionsTableHeaders as DataTableHeader[])"
+        :headers="(boseTransactionsTableHeaders as DataTableHeader[])"
         :items="filteredItems.raw"
-        base-save-as="Lenovo Raw Transactions"
+        base-save-as="Bose Raw Transactions"
       ></download>
     </v-card-title>
 
@@ -255,7 +262,7 @@ watch(
       v-model:search="searchTerm"
       :items="filteredItems.raw"
       :loading="loading"
-      :headers="transactionsTableHeaders"
+      :headers="boseTransactionsTableHeaders"
       :sort-by="sortBy"
       multi-sort
       :items-per-page-options="[
@@ -266,8 +273,10 @@ watch(
       ]"
       class="bg-surface-2"
     >
-      <template v-slot:item.dated="{ item }: { item: CommonAnalyticTypes.IRawTransaction }">
-        {{ moment.utc(item.dated).format("YYYY-MM-DD HH:mm:ss") }}
+      <template
+        v-slot:item.lastActivityDate="{ item }: { item: CommonAnalyticTypes.IRawBoseTransaction }"
+      >
+        {{ moment.utc(item.lastActivityDate).format("YYYY-MM-DD HH:mm:ss") }}
       </template>
     </v-data-table>
   </v-card>

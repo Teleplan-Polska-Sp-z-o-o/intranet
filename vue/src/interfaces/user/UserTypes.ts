@@ -23,7 +23,7 @@ type TPermissionDocumentsSubgroup = "all" | "quick" | "assistant";
 type TPermissionChangeSubgroup = "pcr" | "pcn" | "dcr" | "dcn";
 type TPermissionMatrixSubgroup = "departments" | "documents" | "competences";
 type TPermissionAdminSubgroup = "user-info" | "user-permissions" | "news";
-type TPermissionAnalyticSubgroup = "sky" | "lenovo" | "ingenico" | "liberty" | "dell";
+type TPermissionAnalyticSubgroup = "sky" | "lenovo" | "ingenico" | "liberty" | "dell" | "bose";
 // type TPermissionWarehouseSubgroup = "wip";
 type TPermissionTCDSubgroup = "dashboard" | "new" | "released";
 // type TPermissionSafetySubgroup = "manage-acknowledgment" | "document-acknowledged";
@@ -90,7 +90,7 @@ class StaticGroups {
       change: ["pcr", "pcn", "dcr", "dcn"],
       matrix: ["departments", "documents", "competences"],
       admin: ["user-info", "user-permissions", "news"],
-      analytic: ["sky", "lenovo", "ingenico", "liberty", "dell"],
+      analytic: ["sky", "lenovo", "ingenico", "liberty", "dell", "bose"],
       // warehouse: ["wip"],
       tcd: ["dashboard", "new", "released"],
       // safety: ["manage-acknowledgment", "document-acknowledged"],

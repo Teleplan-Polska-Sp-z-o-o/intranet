@@ -13,6 +13,7 @@ import TransactionsRawLenovoDataTable from "../../../components/views/tools/anal
 import TransactionsRawIngenicoDataTable from "../../../components/views/tools/analytic/ingenico/common/transactions/TransactionsRawIngenicoDataTable.vue";
 import TransactionsRawLibertyDataTable from "../../../components/views/tools/analytic/liberty/common/transactions/TransactionsRawLibertyDataTable.vue";
 // import TransactionsRawDellDataTable from "../../../components/views/tools/analytic/dell/common/transactions/TransactionsRawDellDataTable.vue";
+import TransactionsRawBoseDataTable from "../../../components/views/tools/analytic/bose/common/transactions/TransactionsRawBoseDataTable.vue";
 
 // sky "../../.
 // import SkyPackedUnitsOverview from "../../../components/views/tools/analytic/sky/packing/packed/PackedUnitsOverview.vue";
@@ -48,6 +49,10 @@ import LibertyHighpotEfficiencyOverview from "../../../components/views/tools/an
 import LibertyCosmeticEfficiencyOverview from "../../../components/views/tools/analytic/liberty/cosmetic/CosmeticEfficiencyOverview.vue";
 import LibertyPackEfficiencyOverview from "../../../components/views/tools/analytic/liberty/pack/PackEfficiencyOverview.vue";
 import LibertyOobaEfficiencyOverview from "../../../components/views/tools/analytic/liberty/ooba/OobaEfficiencyOverview.vue";
+
+// bose
+import BoseCombinedEfficiencyOverview from "../../../components/views/tools/analytic/bose/combined/CombinedEfficiencyOverview.vue";
+
 import { tabsObj } from "./tabsObj";
 
 // Dell
@@ -843,6 +848,29 @@ onMounted(async () => {
                     ></dell-efficiency-overview>
                   </template>
                 </v-window-item> -->
+
+                <v-window-item value="bose-combined-drive">
+                  <template v-if="windowItem === 'bose-combined-drive'">
+                    <file-drive
+                      subtitle="Bose Combined"
+                      identification="bose-combined-drive"
+                    ></file-drive>
+                  </template>
+                </v-window-item>
+                <v-window-item value="bose-combined-overview">
+                  <template v-if="windowItem === 'bose-combined-overview'">
+                    <transactions-raw-bose-data-table
+                      program="bose"
+                      group="combined"
+                      identification="bose-combined-overview"
+                    ></transactions-raw-bose-data-table>
+                    <bose-combined-efficiency-overview
+                      raw-identification="bose-combined-overview"
+                      ttKey="TT"
+                      class="mt-6"
+                    />
+                  </template>
+                </v-window-item>
               </v-window>
             </v-col>
           </v-row>

@@ -108,7 +108,7 @@ const getVmiTransactions = async (req: Request, res: Response): Promise<Response
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Ingenico, "vmi");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Ingenico, "vmi");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -194,10 +194,7 @@ const getScreeningTransactions = async (req: Request, res: Response): Promise<Re
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(
-        GenericTypes.Program.Ingenico,
-        "screening"
-      );
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Ingenico, "screening");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -281,10 +278,7 @@ const getWinTestTransactions = async (req: Request, res: Response): Promise<Resp
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(
-        GenericTypes.Program.Ingenico,
-        "wintest"
-      );
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Ingenico, "wintest");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -370,10 +364,7 @@ const getFinalTestTransactions = async (req: Request, res: Response): Promise<Re
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(
-        GenericTypes.Program.Ingenico,
-        "finaltest"
-      );
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Ingenico, "finaltest");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -648,7 +639,7 @@ const getFgiTransactions = async (req: Request, res: Response): Promise<Response
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Ingenico, "fgi");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Ingenico, "fgi");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -738,10 +729,7 @@ const getRepair2Transactions = async (req: Request, res: Response): Promise<Resp
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(
-        GenericTypes.Program.Ingenico,
-        "repair2"
-      );
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Ingenico, "repair2");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -833,10 +821,7 @@ const getRepair3Transactions = async (req: Request, res: Response): Promise<Resp
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(
-        GenericTypes.Program.Ingenico,
-        "repair3"
-      );
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Ingenico, "repair3");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();

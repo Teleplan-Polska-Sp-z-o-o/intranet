@@ -69,10 +69,7 @@ const getRawRegistrationTransactions = async (req: Request, res: Response): Prom
       .getMany();
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(
-        GenericTypes.Program.Lenovo,
-        "registration"
-      );
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Lenovo, "registration");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -214,7 +211,7 @@ const getRawFinalTestTransactions = async (req: Request, res: Response): Promise
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Lenovo, "final");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Lenovo, "final");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -300,7 +297,7 @@ const getRawLenovoPackingTransactions = async (req: Request, res: Response): Pro
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Lenovo, "packing");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Lenovo, "packing");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();
@@ -403,7 +400,7 @@ const getRawRepairTransactions = async (req: Request, res: Response): Promise<Re
     /// new ///
 
     if (getProcessed) {
-      const handler = new EfficiencyService.PostgresHandler(GenericTypes.Program.Lenovo, "repair");
+      const handler = new EfficiencyService.Handler(GenericTypes.Program.Lenovo, "repair");
       handler.raw = transactions.raw;
       await handler.getAnalyticFiles_2_1();
       handler.getJsObjects_2_2();

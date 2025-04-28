@@ -14,7 +14,19 @@ export namespace CommonAnalyticTypes {
     part_no: string;
     work_center_no: string;
     next_work_center_no: string;
-    datedtz: Date;
+    dated: Date;
+  }
+
+  export interface IRawBoseTransaction {
+    [key: string]: number | string | Date;
+    id: number;
+    username: string;
+    partNo: string;
+    serialNo: string;
+    workStationDesc: string;
+    lastActivityDate: Date;
+    processType: string;
+    family: string;
   }
 
   export interface IProcessedUnit {
@@ -58,9 +70,15 @@ export namespace CommonAnalyticTypes {
     touchTimeKey: string;
   }
 
-  export interface IAnalyticModelResponse {
-    raw: IRawTransaction[];
+  export interface IAnalyticModelResponse<Raw> {
+    raw: Raw[];
     processed: IProcessedEmployee[];
     missingCache: IMissingCache[];
   }
+
+  // export interface IBoseAnalyticModelResponse {
+  //   raw: IRawBoseTransaction[];
+  //   processed: IProcessedEmployee[];
+  //   missingCache: IMissingCache[];
+  // }
 }

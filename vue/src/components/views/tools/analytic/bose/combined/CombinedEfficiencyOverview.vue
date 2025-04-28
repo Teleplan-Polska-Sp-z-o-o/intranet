@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawIngenicoTableStore";
+import { useAnalyticRawTableStore } from "../../../../../../stores/analytic/useAnalyticRawBoseTableStore";
 import { ref, toRefs, unref, watch } from "vue";
 import EmployeeDailyEfficiencyChart from "../../common/charts/EmployeeDailyEfficiencyChart.vue";
 import EmployeeShiftEfficiencyChart from "../../common/charts/EmployeeShiftEfficiencyChart.vue";
@@ -35,14 +35,12 @@ const loading = ref<false | "primary-container">("primary-container");
 watch(
   () => unref(analyticRawTransactionsStore.getItemsData(unref(rawIdentification))),
   async (
-    newRawTransactions: CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>
+    newRawTransactions: CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawBoseTransaction>
   ) => {
     // rawTransactions.value = newRawTransactions.raw;
     items.value = newRawTransactions.processed;
     missingCacheItems.value = newRawTransactions.missingCache;
-
     loading.value = false;
-    // console.log("EfficiencyBuilder", items.value);
   },
   { deep: true }
 );
@@ -105,7 +103,7 @@ const formatColorForEfficiency = (efficiency: number): string => {
 <template>
   <v-card class="bg-surface-2 pa-4 ma-1 rounded-xl elevation-2">
     <v-card-title class="d-flex align-center">
-      {{ title ?? "Employee Screening Efficiency Overview" }}
+      {{ title ?? "Employee Combined Efficiency Overview" }}
       <v-spacer></v-spacer>
       <download
         :headers="overviewTableDownloadHeaders"

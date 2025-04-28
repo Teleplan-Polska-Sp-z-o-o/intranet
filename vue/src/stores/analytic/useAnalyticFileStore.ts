@@ -71,6 +71,9 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
       hold: { drive: ["models", "miscellaneous"] },
       ship: { drive: ["models", "miscellaneous"] },
     },
+    bose: {
+      combined: { drive: ["models", "reports", "miscellaneous"] },
+    },
   };
 
   const getFileTypes = (
@@ -256,6 +259,12 @@ export const useAnalyticFileStore = defineStore("analytic-file", () => {
     },
     "dell-ship-drive": {
       models: ["WORKSTATION_DESC", "TT"],
+    },
+
+    // Bose
+    "bose-combined-drive": {
+      models: ["WORK_CENTER", "PROCESS_TYPE", "FAMILY", "GROUP", "TT"],
+      reports: ["NAME", "SURNAME", "USERNAME", "MAIL", "CONTENT_CODES"],
     },
   };
 

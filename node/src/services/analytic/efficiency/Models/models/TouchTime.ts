@@ -139,6 +139,18 @@ export namespace Lenovo {
     | TPackingModelTTObj;
 }
 
+export namespace Bose {
+  export interface IBaseModelObj {
+    [key: string]: string;
+    WORK_CENTER: string;
+    PROCESS_TYPE: string;
+    FAMILY: string;
+    TT: string;
+  }
+
+  export type TTS = IBaseModelObj;
+}
+
 export enum TouchTimeUnit {
   MINUTES,
   SECONDS,

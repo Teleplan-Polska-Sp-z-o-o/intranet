@@ -4,6 +4,7 @@ import { SideDataSources } from "../../../config/SideDataSources";
 import { ReptTitanTestRawTransaction } from "../../../orm/sideEntity/postgres/ReptTitanTestRawTransactionsEntity";
 import { ProdTitanTestRawTransaction } from "../../../orm/sideEntity/postgres/ProdTitanTestRawTransactionsEntity";
 import { IProcessedEmployee } from "../../analytic/efficiency/Models/employee/EmployeeTypes";
+import { BoseRawTransaction } from "../../../orm/sideEntity/mssql/BoseRawTransactionEntity";
 
 export namespace GenericTypes {
   export enum Program {
@@ -11,6 +12,7 @@ export namespace GenericTypes {
     Liberty = "liberty",
     Ingenico = "ingenico",
     Lenovo = "lenovo",
+    Bose = "bose",
   }
 
   export type ProgramCategory = {
@@ -26,7 +28,9 @@ export namespace GenericTypes {
       | "repair2"
       | "repair3";
     [Program.Liberty]: "vmi" | "test" | "debugrepair" | "cosmetic" | "highpot" | "pack" | "ooba";
+    [Program.Bose]: "combined";
   };
+
   export type ProgramCategoryTransaction = {
     [Program.Sky]: {
       packing: RawTransaction;
@@ -58,6 +62,9 @@ export namespace GenericTypes {
       pack: RawTransaction;
       ooba: RawTransaction;
     };
+    [Program.Bose]: {
+      combined: BoseRawTransaction;
+    };
   };
   export type ProgramContracts = {
     [Program.Sky]: ["12195", "12196", "12176"];
@@ -80,6 +87,7 @@ export namespace GenericTypes {
       "12197",
       "12198"
     ];
+    [Program.Bose]: ["10058"];
   };
   export const programContracts: GenericTypes.ProgramContracts = {
     [GenericTypes.Program.Sky]: ["12195", "12196", "12176"],
@@ -102,6 +110,7 @@ export namespace GenericTypes {
       "12197",
       "12198",
     ],
+    [GenericTypes.Program.Bose]: ["10058"],
   };
   export interface QueryOptions<P extends GenericTypes.Program> {
     startOfDay: Date;
@@ -574,6 +583,58 @@ export namespace LibertyTypes {
       return RawTransactionQueryHandler.base(options)
         .andWhere("h.work_center_no = :wc", { wc: "AOBA" })
         .getMany();
+    }
+  }
+}
+export namespace BoseTypes {
+  export class RawTransactionQueryHandler {
+    static async getCombinedTransactions(
+      options: GenericTypes.QueryOptions<GenericTypes.Program.Bose>
+    ): Promise<BoseRawTransaction[]> {
+      const queryRunner = SideDataSources.mssql.createQueryRunner();
+      try {
+        // -- AND wosh.Iteration = 1
+        const result: BoseRawTransaction[] = await queryRunner.query(
+          `
+          SELECT
+            wosh.ID AS id,
+            MAX(u.Username) AS username,
+            MAX(woh.PartNo) AS partNo,
+            MAX(woh.SerialNo) AS serialNo,
+            MAX(ws.Code) AS workStationDesc,
+            MAX(wosh.LastActivityDate) AS lastActivityDate,
+            MAX(CASE WHEN ROHA.Value = 'REPAIR' THEN ROHA.Value ELSE 'REMAN' END) AS processType,
+            ISNULL(UPPER(MAX(PNA.Value)), 'NULL') AS family
+          FROM pls.WOHeader woh
+          INNER JOIN pls.WOStationHistory wosh ON woh.ID = wosh.WOHeaderID
+          INNER JOIN pls.[User] u ON woh.UserID = CAST(u.ID AS INT)
+          LEFT JOIN pls.CodeWorkStationCustomDescription ws 
+                 ON ws.CodeWorkStationID = wosh.WorkStationID 
+                AND ws.RepairTypeID = woh.RepairTypeID 
+                AND ws.ProgramID = woh.ProgramID
+          LEFT JOIN pls.PartSerial PS 
+                 ON woh.ID = PS.WOHeaderID 
+                AND woh.ProgramID = PS.ProgramID
+          LEFT JOIN pls.ROHeaderAttribute ROHA 
+                 ON PS.ROHeaderID = ROHA.ROHeaderID 
+                AND ROHA.AttributeID = '986'
+          LEFT JOIN pls.PartNoAttribute PNA 
+                 ON PNA.PartNo = woh.PartNo 
+                AND PNA.AttributeID = '1005'
+          WHERE woh.ProgramID IN ('10058')
+            AND wosh.LastActivityDate >= @0
+            AND wosh.LastActivityDate < @1
+          GROUP BY wosh.ID
+          HAVING MAX(CASE WHEN ROHA.Value = 'REPAIR' THEN ROHA.Value ELSE 'REMAN' END) = 'REPAIR'
+          ORDER BY wosh.ID ASC
+          `,
+          [options.startOfDay, options.endOfDay]
+        );
+
+        return result;
+      } finally {
+        await queryRunner.release();
+      }
     }
   }
 }

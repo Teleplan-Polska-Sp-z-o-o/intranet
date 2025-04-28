@@ -36,7 +36,9 @@ const loading = ref<false | "primary-container">("primary-container");
  */
 watch(
   () => unref(analyticRawTransactionsStore.getItemsData(unref(rawIdentification))),
-  async (newRawTransactions: CommonAnalyticTypes.IAnalyticModelResponse) => {
+  async (
+    newRawTransactions: CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>
+  ) => {
     // rawTransactions.value = newRawTransactions.raw;
     items.value = newRawTransactions.processed;
     missingCacheItems.value = newRawTransactions.missingCache;

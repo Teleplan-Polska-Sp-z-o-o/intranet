@@ -1,12 +1,12 @@
 import { IProcessedUnit } from "./ModelsTypes";
-import { Ingenico, Lenovo, Liberty, SKY } from "./TouchTime";
+import { Bose, Ingenico, Lenovo, Liberty, SKY } from "./TouchTime";
 
 /**
  * A generic model cache and processor that provides time tracking (TT) data for parts.
  * It supports either accessing a direct property on the model or using a custom function
  * to determine TT based on part number.
  */
-export class Models<T extends SKY.TTS | Liberty.TTS | Ingenico.TTS | Lenovo.TTS> {
+export class Models<T extends SKY.TTS | Liberty.TTS | Ingenico.TTS | Lenovo.TTS | Bose.TTS> {
   cache: Map<string, T> = new Map();
   ttKey: keyof T;
   averageKey?: string;

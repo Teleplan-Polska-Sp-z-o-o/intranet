@@ -24,7 +24,7 @@ import { IProcessedEmployee } from "./Models/employee/EmployeeTypes";
 // import { RawTransaction } from "../../../orm/sideEntity/postgres/RawTransactionsEntity";
 
 export namespace EfficiencyService {
-  export class PostgresHandler<
+  export class Handler<
     P extends GenericTypes.Program,
     C extends keyof GenericTypes.ProgramCategoryTransaction[P]
   > {
@@ -125,33 +125,28 @@ export namespace EfficiencyService {
         this.reports = [];
 
         console.error(
-          `getAnalyticFiles_2 at PackedService: ${error}. Returning empty arrays of analytic files.`
+          `getAnalyticFiles_2 at EfficiencyService: ${error}. Returning empty arrays of analytic files.`
         );
         return this;
       }
     }
 
     getJsObjects_2_2(): this {
-      const modelsLength = this.models.length;
-      if (!modelsLength) {
+      if (!this.models && this.models.length > 0) {
         console.error(
-          `getJsObjects_3 at PackedService: Retrieved 'models' file array evaluate to empty array.`
+          `getJsObjects_2_2 at EfficiencyService: Retrieved 'models' file array evaluate to empty array.`
         );
         return;
       }
-      const reportsLength = this.reports.length;
-      if (!reportsLength) {
-        console.error(
-          `getJsObjects_3 at PackedService: Retrieved 'reports' file array evaluate to empty array.`
-        );
-        return;
-      }
-
-      const modelsJsObjsParsed = JSON.parse(this.models.at(modelsLength - 1).jsObjectJson);
+      const modelsJsObjsParsed = JSON.parse(this.models.at(this.models.length - 1).jsObjectJson);
       this.modelsJsObjs = modelsJsObjsParsed[Object.keys(modelsJsObjsParsed)[0]];
 
-      const reportsJsObjsParsed = JSON.parse(this.reports.at(reportsLength - 1).jsObjectJson);
-      this.reportsJsObjs = reportsJsObjsParsed[Object.keys(reportsJsObjsParsed)[0]];
+      if (this.reports.at(0) !== undefined && this.reports.length > 0) {
+        const reportsJsObjsParsed = JSON.parse(
+          this.reports.at(this.reports.length - 1).jsObjectJson
+        );
+        this.reportsJsObjs = reportsJsObjsParsed[Object.keys(reportsJsObjsParsed)[0]];
+      }
 
       return this;
     }

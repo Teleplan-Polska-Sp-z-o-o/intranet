@@ -3,7 +3,9 @@ import { computed, ref } from "vue";
 import { CommonAnalyticTypes } from "../../components/views/tools/analytic/common/types";
 
 export const useAnalyticRawTableStore = defineStore("analytic-raw-lenovo-table", () => {
-  const itemsMap = ref<Map<string, CommonAnalyticTypes.IAnalyticModelResponse>>(new Map());
+  const itemsMap = ref<
+    Map<string, CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>>
+  >(new Map());
   const getItemsData = (id: string) => {
     return computed(() => {
       const items = itemsMap.value.get(id);
@@ -14,7 +16,10 @@ export const useAnalyticRawTableStore = defineStore("analytic-raw-lenovo-table",
       return items;
     });
   };
-  const setItemsData = (id: string, data: CommonAnalyticTypes.IAnalyticModelResponse) => {
+  const setItemsData = (
+    id: string,
+    data: CommonAnalyticTypes.IAnalyticModelResponse<CommonAnalyticTypes.IRawTransaction>
+  ) => {
     itemsMap.value.set(id, data);
   };
 

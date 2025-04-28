@@ -17,3 +17,50 @@ export const transactionsTableHeaders: object[] = [
   },
   { title: "Date", align: "start", key: "dated", value: "dated" },
 ];
+
+export const boseDellTransactionsTableHeaders: object[] = [
+  { title: "Id", align: "start", key: "id", value: "id" },
+  { title: "Contract", align: "start", key: "contract", value: "contract" },
+  { title: "Username", align: "start", key: "username", value: "username" },
+  { title: "Part No", align: "start", key: "partNo", value: "partNo" },
+  { title: "Serial No", align: "start", key: "serialNo", value: "serialNo" },
+  {
+    title: "Work Station Description",
+    align: "start",
+    key: "workStationDesc",
+    value: "workStationDesc",
+  },
+  {
+    title: "Next Work Station Description",
+    align: "start",
+    key: "nextWorkStationDesc",
+    value: "nextWorkStationDesc",
+  },
+  {
+    title: "Last Activity Date",
+    align: "start",
+    key: "lastActivityDate",
+    value: "lastActivityDate",
+  },
+];
+
+export const boseTransactionsTableHeaders: object[] = [
+  { title: "Id", align: "start", key: "id", value: "id" },
+  { title: "Username", align: "start", key: "username", value: "username" },
+  { title: "Part No", align: "start", key: "partNo", value: "partNo" },
+  { title: "Serial No", align: "start", key: "serialNo", value: "serialNo" },
+  {
+    title: "Work Station Description",
+    align: "start",
+    key: "workStationDesc",
+    value: "workStationDesc",
+  },
+  { title: "Process Type", align: "start", key: "processType", value: "processType" },
+  { title: "Family", align: "start", key: "family", value: "family" },
+  {
+    title: "Last Activity Date",
+    align: "start",
+    key: "lastActivityDate",
+    value: "lastActivityDate",
+  },
+];
