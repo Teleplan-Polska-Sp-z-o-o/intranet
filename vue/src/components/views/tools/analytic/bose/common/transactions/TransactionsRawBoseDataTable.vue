@@ -29,14 +29,13 @@ const abortController = ref<AbortController | null>(null);
 
 const searchTerm = ref<string>(""); // search input
 const searchBy = [
-  "contract",
+  "id",
   "username",
   "partNo",
   "serialNo",
-  // "workStationCode",
   "workStationDesc",
-  // "nextWorkStationCode",
-  "nextWorkStationDesc",
+  "processType",
+  "family",
   "lastActivityDate",
 ];
 const sortBy: { key: string; order: "asc" | "desc" }[] = [
@@ -81,9 +80,7 @@ const filteredItems = computed<
         return false;
       });
       // Get a set of matching transaction_ids from filtered raw
-      const validTransactionIds = new Set(
-        filtered.value.raw.map((item) => String(item.transaction_id))
-      );
+      const validTransactionIds = new Set(filtered.value.raw.map((item) => String(item.id)));
 
       // Filter PROCESSED based on whether any of its transaction_ids exist in raw
       filtered.value.processed = data.processed.filter((p) =>

@@ -602,41 +602,97 @@ export namespace BoseTypes {
     ): Promise<BoseRawTransaction[]> {
       const queryRunner = SideDataSources.mssql.createQueryRunner();
       try {
-        // -- AND wosh.Iteration = 1
+        // AND wosh.Iteration = 1
+        // LEFT JOIN pls.PartNoAttribute PNA
+        //          ON PNA.PartNo = woh.PartNo
+        //         AND PNA.AttributeID = '1005'
         const result: BoseRawTransaction[] = await queryRunner.query(
+          // `
+          // SELECT
+          //   wosh.ID AS id,
+          //   MAX(u.Username) AS username,
+          //   MAX(woh.PartNo) AS partNo,
+          //   MAX(woh.SerialNo) AS serialNo,
+          //   MAX(ws.Code) AS workStationDesc,
+          //   MAX(wosh.LastActivityDate) AS lastActivityDate,
+          //   MAX(CASE WHEN ROHA.Value = 'REPAIR' THEN ROHA.Value ELSE 'REMAN' END) AS processType,
+          //   ISNULL(UPPER(MAX(PNA.Value)), 'NULL') AS family
+          // FROM pls.WOHeader woh
+          // INNER JOIN pls.WOStationHistory wosh ON woh.ID = wosh.WOHeaderID
+          // INNER JOIN pls.[User] u ON woh.UserID = CAST(u.ID AS INT)
+          // LEFT JOIN pls.CodeWorkStationCustomDescription ws
+          //   ON ws.CodeWorkStationID = wosh.WorkStationID
+          //   AND ws.RepairTypeID = woh.RepairTypeID
+          //   AND ws.ProgramID = woh.ProgramID
+          // LEFT JOIN pls.PartSerial PS
+          //   ON woh.ID = PS.WOHeaderID
+          //   AND woh.ProgramID = PS.ProgramID
+          // LEFT JOIN pls.ROHeaderAttribute ROHA
+          //   ON PS.ROHeaderID = ROHA.ROHeaderID
+          //   AND ROHA.AttributeID = '986'
+          // LEFT JOIN pls.PartNoAttribute PNA
+          //   ON PNA.PartNo = woh.PartNo
+          //   AND PNA.AttributeID = '1005'
+          //   AND PNA.ProgramID = woh.ProgramID
+          // WHERE woh.ProgramID IN ('10058')
+          //   AND wosh.LastActivityDate >= @0
+          //   AND wosh.LastActivityDate < @1
+          // GROUP BY wosh.ID
+          // ORDER BY wosh.ID ASC
+          // `,
           `
-          SELECT
-            wosh.ID AS id,
-            MAX(u.Username) AS username,
-            MAX(woh.PartNo) AS partNo,
-            MAX(woh.SerialNo) AS serialNo,
-            MAX(ws.Code) AS workStationDesc,
-            MAX(wosh.LastActivityDate) AS lastActivityDate,
-            MAX(CASE WHEN ROHA.Value = 'REPAIR' THEN ROHA.Value ELSE 'REMAN' END) AS processType,
-            ISNULL(UPPER(MAX(PNA.Value)), 'NULL') AS family
-          FROM pls.WOHeader woh
-          INNER JOIN pls.WOStationHistory wosh ON woh.ID = wosh.WOHeaderID
-          INNER JOIN pls.[User] u ON woh.UserID = CAST(u.ID AS INT)
-          LEFT JOIN pls.CodeWorkStationCustomDescription ws 
-                 ON ws.CodeWorkStationID = wosh.WorkStationID 
-                AND ws.RepairTypeID = woh.RepairTypeID 
-                AND ws.ProgramID = woh.ProgramID
-          LEFT JOIN pls.PartSerial PS 
-                 ON woh.ID = PS.WOHeaderID 
-                AND woh.ProgramID = PS.ProgramID
-          LEFT JOIN pls.ROHeaderAttribute ROHA 
-                 ON PS.ROHeaderID = ROHA.ROHeaderID 
-                AND ROHA.AttributeID = '986'
-          LEFT JOIN pls.PartNoAttribute PNA 
-                 ON PNA.PartNo = woh.PartNo 
-                AND PNA.AttributeID = '1005'
-          WHERE woh.ProgramID IN ('10058')
-            AND wosh.LastActivityDate >= @0
-            AND wosh.LastActivityDate < @1
-          GROUP BY wosh.ID
-          HAVING MAX(CASE WHEN ROHA.Value = 'REPAIR' THEN ROHA.Value ELSE 'REMAN' END) = 'REPAIR'
-          ORDER BY wosh.ID ASC
-          `,
+          WITH RankedData AS (
+    SELECT
+	  woh.ID as wohid,
+      wosh.ID AS id,
+      u.Username,
+      woh.PartNo,
+      woh.SerialNo,
+      CASE
+        WHEN wosh.WorkStationId NOT IN (4, 5) AND wosh.WorkStationId IS NOT NULL AND wosh.toWorkstationID IS NULL THEN 'HOLD'
+        ELSE ws.Code
+      END AS WorkStationDesc,
+      wosh.LastActivityDate,
+      CASE
+        WHEN ROHA.Value = 'REPAIR' THEN ROHA.Value
+        ELSE 'REMAN'
+      END AS processType,
+      ISNULL(UPPER(PNA.Value), 'NULL') AS family,
+      ROW_NUMBER() OVER (PARTITION BY wosh.ID ORDER BY wosh.LastActivityDate DESC) AS rn
+    FROM pls.WOHeader woh
+    INNER JOIN pls.WOStationHistory wosh ON woh.ID = wosh.WOHeaderID
+    INNER JOIN pls.[User] u ON woh.UserID = CAST(u.ID AS INT)
+    LEFT JOIN pls.PartSerial PS
+          ON woh.ID = PS.WOHeaderID
+          AND woh.ProgramID = PS.ProgramID
+		  AND PS.StatusID not in ('32','18', '8', '21')
+	LEFT JOIN pls.CodeWorkStationCustomDescription ws
+          ON ws.CodeWorkStationID = wosh.WorkStationID
+          AND ws.RepairTypeID = wosh.RepairTypeID
+    LEFT JOIN pls.ROHeaderAttribute ROHA
+          ON PS.ROHeaderID = ROHA.ROHeaderID
+          AND ROHA.AttributeID = '986'
+    LEFT JOIN pls.PartNoAttribute PNA
+          ON PNA.PartNo = woh.PartNo
+          AND PNA.AttributeID = '1005'
+          AND PNA.ProgramID = woh.ProgramID
+    WHERE woh.ProgramID IN ('10058')
+      AND wosh.LastActivityDate >= @0
+      AND wosh.LastActivityDate < @1
+  )
+SELECT
+  id,
+  Username as username,
+  PartNo as partNo,
+  SerialNo as serialNo,
+  WorkStationDesc as workStationDesc,
+  LastActivityDate as lastActivityDate,
+  processType,
+  family
+FROM RankedData
+WHERE rn = 1
+ORDER BY id ASC;
+        `,
           [options.startOfDay, options.endOfDay]
         );
 

@@ -25,6 +25,9 @@ export namespace SideDataSources {
     password: process.env.SIDE_MSSQL_PASSWORD,
     database: process.env.SIDE_MSSQL_DB,
     options: { encrypt: true, trustServerCertificate: true },
+    extra: {
+      requestTimeout: 90000,
+    },
     entities: [`${__dirname}/../orm/sideEntity/mssql/**/*Entity.js`],
     synchronize: false, // No schema sync, just reading data
   };
