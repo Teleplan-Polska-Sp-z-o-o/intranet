@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import { dataSource } from "../../config/dataSource";
 import { User, User as UserEntity } from "../../orm/entity/user/UserEntity";
+import { MicrosoftTokenVerifier } from "../../models/user/MicrosoftTokenVerifier";
 import { LDAP } from "../../models/user/LDAP";
 import { UserPermission } from "../../orm/entity/user/UserPermissionEntity";
 import { UserSettings } from "../../orm/entity/user/UserSettingsEntity";
 import { adminsConfig } from "../../config/admins";
 import { HttpResponseMessage } from "../../enums/response";
 import { UserInfo } from "../../orm/entity/user/UserInfoEntity";
-import { PermissionGroups, StaticGroups } from "../../interfaces/user/UserTypes";
+import { ILogin, PermissionGroups, StaticGroups } from "../../interfaces/user/UserTypes";
 import { UserInformation } from "../../models/user/UserInformation";
 import { DataSource, EntityManager } from "typeorm";
 import { helperSetPermissionGroups } from "./permissionController";
@@ -126,8 +127,15 @@ const createUser = async (
 
 const userAuth = async (req: Request, res: Response) => {
   try {
-    let ldap = new LDAP(req.body);
-    ldap = await ldap.auth();
+    const loginData: ILogin = req.body;
+    const ldap = new LDAP(loginData);
+
+    if (loginData.azureIdToken) {
+      const verifier = new MicrosoftTokenVerifier();
+      await verifier.verifyToken(loginData.azureIdToken);
+    } else {
+      await ldap.auth();
+    }
 
     const admins = adminsConfig.admins;
     const isAdmin = admins.includes(ldap.username);

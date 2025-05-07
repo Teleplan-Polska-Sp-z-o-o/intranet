@@ -3,15 +3,18 @@ const plC = {
     default_layout: {
       auth: {
         rules: {
-          login_req: "Login jest wymagany",
-          login_format: "Proszę wpisać login w formacie: 'imię.nazwisko'",
+          username_req: "Nazwa użytkownika jest wymagana",
+          username_format: "Proszę wprowadzić nazwę użytkownika w formacie: 'imię.nazwisko'",
           domain_req: "Domena jest wymagana",
           password_req: "Hasło jest wymagane",
         },
         template: {
-          domain_label: "Domena logowania do komputera",
-          login_label: "Login do komputera",
-          password_label: "Hasło do komputera",
+          domain_label: "Domena",
+          username_label: "Nazwa użytkownika",
+          password_label: "Hasło",
+          microsoft_label: "Zaloguj się przez Microsoft",
+          microsoft_short_label: "Microsoft",
+          or: "Lub",
           password_massage: "Zapomniałeś hasła?",
           proceed: "Kontynuuj",
         },

@@ -112,5 +112,13 @@ export const useUserStore = defineStore("user", () => {
     }
   };
 
-  return { set, setToken, info, isEmptyState, getToken, verifyToken, refreshToken };
+  const clear = (): void => {
+    user.value = new UserEntity(); // reset to new empty UserEntity
+    userToken.value = "";
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+  };
+
+  return { clear, set, setToken, info, isEmptyState, getToken, verifyToken, refreshToken };
 });

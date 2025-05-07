@@ -6,12 +6,11 @@ interface ServerConfig {
   port: number;
 }
 
-const TEST_ORIGIN = "http://192.168.0.1"; //192.168.0.1; work // 192.168.0.45 home
-const ORIGIN = "https://bydintranet.reconext.com";
-
+// const TEST_ORIGIN = "http://192.168.0.1"; //192.168.0.1; work // 192.168.0.45 home
+// const ORIGIN = "https://bydintranet.reconext.com";
 const nodeConfig: ServerConfig = {
-  origin: window.location.origin === ORIGIN ? ORIGIN : TEST_ORIGIN, // window.location.origin,
-  production_origin: ORIGIN,
+  origin: window.location.origin, // window.location.origin,
+  production_origin: "https://bydintranet.reconext.com",
   port: 3000,
 };
 

@@ -12,7 +12,8 @@ interface Passport {
 }
 
 type ILogin = Passport & {
-  password: string;
+  password?: string;
+  azureIdToken?: string;
 };
 
 interface IUser {

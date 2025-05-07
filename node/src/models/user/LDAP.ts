@@ -1,10 +1,11 @@
 import { authenticate } from "ldap-authentication";
 import { ILogin } from "../../interfaces/user/UserTypes";
-import { getLDAPConfig } from "../../config/ldap";
+import { getLDAPConfig, ldapBaseDNs, USER_REQUIRED_GROUP } from "../../config/ldap";
 import { serverConfig } from "../../config/server";
 import { JwtPayload, Secret, SignOptions, sign, verify } from "jsonwebtoken";
 import { User } from "../../orm/entity/user/UserEntity";
 import { SimpleUser } from "./SimpleUser";
+import ldap from "ldapjs";
 
 class LDAP {
   username: string;
@@ -72,9 +73,67 @@ class LDAP {
       throw new Error(`Failed to retrieve LDAP configuration options for user: ${this.username}`);
     }
 
+    // Step 1: Authenticate (bind)
     await authenticate(options);
 
+    // Step 2: Enforce group membership
+    await this.checkGroupMembership(options, USER_REQUIRED_GROUP);
+
     return this;
+  };
+
+  /** 🔒 Check if user is in the required group */
+  private checkGroupMembership = async (
+    options: ReturnType<typeof getLDAPConfig>,
+    groupCN: string
+  ): Promise<void> => {
+    const client = ldap.createClient({ url: options.ldapOpts.url });
+
+    const searchBase = ldapBaseDNs[this.domain];
+    if (!searchBase) throw new Error("Unsupported domain for group search.");
+
+    return new Promise((resolve, reject) => {
+      client.bind(options.userDn, this.password, (err) => {
+        if (err) return reject(new Error("LDAP bind failed during group check"));
+
+        const opts = {
+          filter: `(sAMAccountName=${this.username})`,
+          scope: "sub",
+          attributes: ["physicalDeliveryOfficeName"],
+        };
+
+        client.search(searchBase, opts, (err, res) => {
+          if (err) return reject(err);
+
+          let inGroup = false;
+
+          res.on("searchEntry", (entry) => {
+            const office =
+              entry.attributes.find((attr) => attr.type === "physicalDeliveryOfficeName")
+                ?.values?.[0] || "";
+
+            if (office === "Bydgoszcz Site (PL)") {
+              resolve();
+            } else {
+              reject(new Error(`Access denied: User is not at the required site.`));
+            }
+          });
+
+          res.on("end", () => {
+            client.unbind();
+            if (!inGroup) {
+              return reject(new Error(`Access denied: User is not a member of group '${groupCN}'`));
+            }
+            resolve();
+          });
+
+          res.on("error", (err) => {
+            client.unbind();
+            reject(err);
+          });
+        });
+      });
+    });
   };
 
   public generateJwt = (

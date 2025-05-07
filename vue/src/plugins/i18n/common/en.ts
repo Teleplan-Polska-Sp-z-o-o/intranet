@@ -3,15 +3,18 @@ const enC = {
     default_layout: {
       auth: {
         rules: {
-          login_req: "Login is required",
-          login_format: "Please enter the login in the format: 'name.surname'",
+          username_req: "Username is required",
+          username_format: "Please enter the username in the format: 'name.surname'",
           domain_req: "Domain is required",
           password_req: "Password is required",
         },
         template: {
-          domain_label: "Computer Login Domain",
-          login_label: "Computer Login",
-          password_label: "Computer Password",
+          domain_label: "Domain",
+          username_label: "Username",
+          password_label: "Password",
+          microsoft_label: "Login with Microsoft",
+          microsoft_short_label: "Microsoft",
+          or: "Or",
           password_massage: "Forgot password?",
           proceed: "Proceed",
         },

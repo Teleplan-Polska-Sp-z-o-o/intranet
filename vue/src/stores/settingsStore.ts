@@ -35,5 +35,14 @@ export const useSettingsStore = defineStore("settings", () => {
     }
   };
 
-  return { set, info };
+  const clear = (): void => {
+    settings.value = {
+      id: null,
+      theme: "light",
+      language: "en",
+    };
+    localStorage.removeItem("settings");
+  };
+
+  return { clear, set, info };
 });
