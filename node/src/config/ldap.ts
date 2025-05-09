@@ -1,11 +1,14 @@
 import { AuthenticationOptions } from "ldap-authentication";
 import { ILogin } from "../interfaces/user/UserTypes";
 
-const allowedDomains: Record<string, string> = {
+export const allowedDomains: Record<string, string> = {
   "reconext.com": "dc=reconext,dc=com",
   "tgn.teleplan.com": "dc=tgn,dc=teleplan,dc=com",
 };
-export const ldapBaseDNs = allowedDomains;
+export const allowedPhysicalDeliveryOfficeNames: string[] = [
+  "Bydgoszcz Site (PL)",
+  "Prague Site (CZ)",
+];
 
 export const USER_REQUIRED_GROUP = "byd-intranet-useraccess";
 

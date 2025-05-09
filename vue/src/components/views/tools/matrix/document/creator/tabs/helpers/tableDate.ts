@@ -1,10 +1,10 @@
 import moment from "moment";
 import "moment-timezone";
 import { IDraftEntity } from "../../../../../../../../interfaces/document/creator/IDraftEntity";
-import { deepSafeParse } from "./deepSaveParse";
+import { ICache } from "../../../../../../../../models/document/creator/CreatorCacheManager";
 
-function tableDate(item: IDraftEntity, variant: "createdBy" | "lastUpdate") {
-  const tz = deepSafeParse<IDraftEntity>(item).stepper.tz;
+function tableDate(item: IDraftEntity | ICache, variant: "createdBy" | "lastUpdate") {
+  const tz = item.stepper.tz;
   if (variant === "createdBy") {
     const utcDate = item.createdBy.date;
     const tzDate = moment(utcDate).tz(tz).format("DD-MMM-YYYY");

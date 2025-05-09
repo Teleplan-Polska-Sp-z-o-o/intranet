@@ -1,10 +1,9 @@
 import { defineStore } from "pinia";
-import { ref, unref, watch } from "vue";
+import { ref, unref } from "vue";
 import { DocumentCreatorStepper } from "../../../components/views/tools/matrix/document/creator/tabs/new/StepperTypes";
 import { Router } from "vue-router";
-// import { deepSafeParse } from "../../../components/views/tools/matrix/document/creator/tabs/helpers/deepSaveParse";
-// import stringify from "safe-stable-stringify";
-import { CreatorCacheManager } from "../../../models/document/creator/CreatorCacheManager";
+import { CreatorCacheManager, ICache } from "../../../models/document/creator/CreatorCacheManager";
+import moment from "moment";
 
 export type FSetStepper = (options: {
   type: DocumentCreatorStepper.EStepperType;
@@ -31,21 +30,15 @@ export interface Status {
 
 export const useStepperStore = defineStore("document-creator-stepper", () => {
   const DOCUMENT_CONTROLLERS = ["anna.gandziarowska", "roma.kuberska", "sigrid.castillo"];
-  const cacheManager = new CreatorCacheManager();
-  // const STORAGE_KEY = "document-creator-stepper";
 
-  const stepper = ref<DocumentCreatorStepper.IStepper | null>(null);
+  const cacheManager = new CreatorCacheManager();
+
+  const stepper = ref<DocumentCreatorStepper.StepperClasses | null>(null);
 
   const status = ref<Status>({
     enum: EStatus.NULL,
     previous_enum: null,
     tick: 0,
-  });
-
-  const flags = ref({
-    isStorageLoaded: false,
-    isAutoSaveStarted: false,
-    autoSaveIntervalId: null as ReturnType<typeof setInterval> | null,
   });
 
   const setStatus = (newStatus: EStatus) => {
@@ -56,10 +49,17 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
     };
   };
 
+  const flags = ref({
+    isStorageLoaded: false,
+    isAutoSaveStarted: false,
+    autoSaveIntervalId: null as ReturnType<typeof setInterval> | null,
+    lastSavedAt: null as moment.Moment | null,
+  });
+
   const setStepper: FSetStepper = (options) => {
     const flags = { instantiated: false };
     if (options.stepper) {
-      const instantiated: DocumentCreatorStepper.IStepper =
+      const instantiated: DocumentCreatorStepper.StepperClasses =
         DocumentCreatorStepper.StepperFactory.createStepper(options.type, options.stepper);
 
       if (instantiated) {
@@ -86,103 +86,72 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
 
   const clearStepper = () => {
     stopAutoSave();
-    // clearStorage();
     stepper.value = null;
     setStatus(EStatus.NULL);
   };
 
-  // const saveToStorage = () => {
-  //   if (stepper.value) {
-  //     const steps: DocumentCreatorStepper.Header.TStepKey[] = [1, 2, 3];
-  //     for (const step of steps) {
-  //       const window = stepper.value.body.windows[step];
-  //       if (window && window.form) {
-  //         window.form = null;
-  //       }
-  //     }
-  //   }
-
-  //   const stringified = stringify({
-  //     stepper: stepper.value,
-  //     status: status.value,
-  //   });
-  //   if (stringified) {
-  //     localStorage.setItem(STORAGE_KEY, stringified);
-  //   }
-  // };
-
   const saveToServer = async () => {
     if (stepper.value) {
-      const steps: DocumentCreatorStepper.Header.TStepKey[] = [1, 2, 3];
-      for (const step of steps) {
-        const window = stepper.value.body.windows[step];
-        if (window && window.form) {
-          window.form = null;
-        }
-      }
+      stepper.value.beforeSave();
+
+      // const steps: DocumentCreatorStepper.Header.TStepKey[] = [1, 2, 3];
+      // for (const step of steps) {
+      //   const window = stepper.value.body.windows[step];
+      //   if (window && window.form) {
+      //     window.form = null;
+      //   }
+      // }
 
       try {
         await cacheManager.post(stepper.value);
+        flags.value.lastSavedAt = moment().utc();
       } catch (error) {
         console.error("Failed to save stepper state to server", error);
       }
     }
   };
 
-  // const loadFromStorage = (stored: string | null) => {
-  //   if (stored && !flags.value.isStorageLoaded) {
-  //     try {
-  //       const parsed = deepSafeParse<{
-  //         stepper: DocumentCreatorStepper.IStepper;
-  //         status: Status;
-  //       }>(stored);
-
-  //       setStepper({
-  //         type: parsed.stepper.type,
-  //         stepper: parsed.stepper,
-  //       });
-
-  //       flags.value.isStorageLoaded = true;
-  //     } catch (error) {
-  //       console.error("Failed to parse stepper state from storage", error);
-  //     }
-  //   }
-  // };
-
-  const loadFromServer = async () => {
+  type LoadParams =
+    | { id: number; cache?: never; navigation?: { router: Router; path: string } }
+    | { cache: ICache; id?: never; navigation?: { router: Router; path: string } };
+  const loadFromServer = async (params: LoadParams) => {
     try {
-      const response = await cacheManager.get();
+      let cachedEntry: ICache | undefined = undefined;
 
-      const cachedStepper = response?.cache?.[0]?.stepper;
+      if ("id" in params) {
+        const response = await cacheManager.get(params.id);
+        cachedEntry = response?.cache?.[0];
+      } else {
+        cachedEntry = params.cache;
+      }
 
-      if (cachedStepper && !flags.value.isStorageLoaded) {
+      const cachedStepper = cachedEntry?.stepper;
+
+      if (cachedStepper) {
         setStepper({
           type: cachedStepper.type,
           stepper: cachedStepper,
+          ...(params.navigation ? { navigation: params.navigation } : {}),
         });
 
-        flags.value.isStorageLoaded = true;
+        if (!flags.value.lastSavedAt) {
+          const timestamp = cachedEntry?.ormUpdateDate || cachedEntry?.ormCreateDate || null;
+          if (timestamp) {
+            flags.value.lastSavedAt = moment.utc(timestamp);
+          }
+        }
+
+        // flags.value.isStorageLoaded = true;
       }
     } catch (error) {
       console.error("Failed to load stepper state from server", error);
     }
   };
 
-  // const clearStorage = () => {
-  //   localStorage.removeItem(STORAGE_KEY);
-  // };
-
   const startAutoSave = () => {
     if (flags.value.isAutoSaveStarted || flags.value.autoSaveIntervalId !== null) return;
-
-    flags.value.autoSaveIntervalId = setInterval(() => {
-      // saveToStorage();
-      saveToServer();
-    }, 30 * 1000); // every 30 seconds
-
-    // window.addEventListener("beforeunload", saveToStorage);
+    flags.value.autoSaveIntervalId = setInterval(saveToServer, 30 * 1000);
     window.addEventListener("beforeunload", saveToServer);
-
     flags.value.isAutoSaveStarted = true;
   };
 
@@ -191,26 +160,11 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
       clearInterval(flags.value.autoSaveIntervalId);
       flags.value.autoSaveIntervalId = null;
       flags.value.isAutoSaveStarted = false;
+      flags.value.isStorageLoaded = false;
+      flags.value.lastSavedAt = null;
     }
-
-    // window.removeEventListener("beforeunload", saveToStorage);
     window.removeEventListener("beforeunload", saveToServer);
   };
-
-  watch(
-    stepper,
-    (currentStepper) => {
-      if (!flags.value.isStorageLoaded && currentStepper === null) {
-        // loadFromStorage(localStorage.getItem(STORAGE_KEY));
-        loadFromServer();
-      }
-
-      if (currentStepper !== null) {
-        startAutoSave();
-      }
-    },
-    { immediate: true }
-  );
 
   return {
     DOCUMENT_CONTROLLERS,
@@ -219,6 +173,8 @@ export const useStepperStore = defineStore("document-creator-stepper", () => {
     setStepper,
     clearStepper,
     flags,
+    loadFromServer,
+    startAutoSave,
     stopAutoSave,
   };
 });

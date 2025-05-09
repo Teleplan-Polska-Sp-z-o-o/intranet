@@ -51,3 +51,16 @@ repair - next dodac '1HL%' '1B%'
 ## BUGS
 
 ## THINGS TO CONSIDER
+
+## PATH NOTES
+
+- added new login option ms entra id (login with microsoft).
+- established new security measures of dynamic groups for ms login and change from domain check to rules of such groups for ldap login specifically.
+  - prg-intranet-useraccess
+  - byd-intranet-useraccess
+    As of now all restrictions of access will be under control and help of HelpDesk
+- changed limit of cached drafts from one (unique) to unlimited for each user (change of Cache to Draft will be determined by uuid of Draft object upon default save option)
+- added ui component for cache control of current unsaved work at create tab over stepper (Button to Enable Auto-cache with cancel option and last date of cached unsaved work)
+- added table for unsaved work on dachboard tab (edit and delete actions available)
+- done heavy load performance optimalizations for dashboard tab tables (Manage, My Drafts and My Unsaved Work) and released tab tables (Archived and Released)
+- small ui changes and fixes

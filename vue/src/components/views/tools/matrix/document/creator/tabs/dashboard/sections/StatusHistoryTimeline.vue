@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useStepperStore } from "../../../../../../../../../stores/documents/creator/useStepperStore";
 import { tableStatus } from "../../helpers/tableStatus";
-import { deepSafeParse } from "../../helpers/deepSaveParse";
 import { IDraftEntity } from "../../../../../../../../../interfaces/document/creator/IDraftEntity";
 import moment from "moment";
 import "moment-timezone";
@@ -16,8 +15,10 @@ const { t } = useI18n();
 // const tBase = "tools.tcd.drafts";
 
 function timelineDate(utcDate: string) {
-  const tz = deepSafeParse<IDraftEntity>(props.item).stepper.tz;
-  return moment(utcDate).tz(tz).format("DD-MMM-YYYY");
+  // const tz = deepSafeParse<IDraftEntity>(props.item).stepper.tz;
+  const tz = props.item?.stepper.tz;
+  if (tz) return moment(utcDate).tz(tz).format("DD-MMM-YYYY");
+  else return moment.utc(utcDate).format("DD-MMM-YYYY [UTC]");
 }
 
 // function tableStatus(item: IDraftEntity | DocumentCreatorStepper.EStepperStatus): {

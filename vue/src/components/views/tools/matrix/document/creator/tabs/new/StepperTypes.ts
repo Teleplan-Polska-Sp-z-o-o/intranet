@@ -483,8 +483,9 @@ export namespace DocumentCreatorStepper {
       }
     }
 
-    async save(name: string, route?: RouteLocationNormalizedLoaded): Promise<any> {
-      this._name = name;
+    beforeSave(name?: string): void {
+      if (name) this._name = name;
+
       const beforeModel = this.getWindow(2).model;
       this._documentTitle = beforeModel.title;
       this._documentIdRevision =
@@ -497,6 +498,24 @@ export namespace DocumentCreatorStepper {
           window.form = null;
         }
       }
+    }
+
+    async save(name: string, route?: RouteLocationNormalizedLoaded): Promise<any> {
+      // this._name = name;
+      // const beforeModel = this.getWindow(2).model;
+      // this._documentTitle = beforeModel.title;
+      // this._documentIdRevision =
+      //   beforeModel.id && beforeModel.revision ? `${beforeModel._id}-${beforeModel._revision}` : "";
+
+      // const steps: DocumentCreatorStepper.Header.TStepKey[] = [1, 2, 3];
+      // for (const step of steps) {
+      //   const window = this.body.windows[step];
+      //   if (window && window.form) {
+      //     window.form = null;
+      //   }
+      // }
+
+      this.beforeSave(name);
 
       const formData: FormData = new FormData();
       this.header.steps[3].editable = true;
@@ -521,8 +540,10 @@ export namespace DocumentCreatorStepper {
     }
   }
 
+  export type StepperClasses = InstructionStepper;
+
   export class StepperFactory {
-    static createStepper(type: EStepperType, stepperData?: IStepperProperties): IStepper {
+    static createStepper(type: EStepperType, stepperData?: IStepperProperties): StepperClasses {
       switch (type) {
         case EStepperType.INSTRUCTION:
           return new InstructionStepper(stepperData);

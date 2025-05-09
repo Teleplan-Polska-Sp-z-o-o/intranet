@@ -1,6 +1,5 @@
 import { IDraftEntity } from "../../../../../../../../interfaces/document/creator/IDraftEntity";
 import { DocumentCreatorStepper } from "../new/StepperTypes";
-import { deepSafeParse } from "./deepSaveParse";
 const tBase = "tools.tcd.drafts";
 
 function tableStatus(
@@ -11,8 +10,7 @@ function tableStatus(
   color: undefined | string;
   text: string;
 } {
-  const status =
-    typeof item === "number" ? item : deepSafeParse<IDraftEntity>(item).stepper._status;
+  const status = typeof item === "number" ? item : item.stepper._status;
   switch (status) {
     case DocumentCreatorStepper.EStepperStatus.DRAFT:
       return {

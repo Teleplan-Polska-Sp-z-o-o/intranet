@@ -35,50 +35,6 @@ const stepperStore = useStepperStore();
 const { t } = useI18n();
 const tBase = "tools.tcd.drafts";
 
-// function tableStatus(item: IDraftEntity | DocumentCreatorStepper.EStepperStatus): {
-//   enum: undefined | DocumentCreatorStepper.EStepperStatus;
-//   color: undefined | string;
-//   text: string;
-// } {
-//   const status =
-//     typeof item === "number" ? item : deepSafeParse<IDraftEntity>(item).stepper._status;
-//   switch (status) {
-//     case DocumentCreatorStepper.EStepperStatus.DRAFT:
-//       return {
-//         enum: DocumentCreatorStepper.EStepperStatus.DRAFT,
-//         color: "gray",
-//         text: t(`${tBase}.draftStatus.chip.draftOption`),
-//       };
-//     case DocumentCreatorStepper.EStepperStatus.FOR_RELEASE:
-//       return {
-//         enum: DocumentCreatorStepper.EStepperStatus.FOR_RELEASE,
-//         color: "amber",
-//         text: t(`${tBase}.draftStatus.chip.forReleaseOption`),
-//       };
-
-//     case DocumentCreatorStepper.EStepperStatus.RELEASED:
-//       return {
-//         enum: DocumentCreatorStepper.EStepperStatus.RELEASED,
-//         color: "blue",
-//         text: t(`${tBase}.draftStatus.chip.releasedOption`),
-//       };
-
-//     case DocumentCreatorStepper.EStepperStatus.LATEST_RELEASE:
-//       return {
-//         enum: DocumentCreatorStepper.EStepperStatus.LATEST_RELEASE,
-//         color: "green",
-//         text: t(`${tBase}.draftStatus.chip.archived`),
-//       };
-
-//     default:
-//       return {
-//         enum: undefined,
-//         color: undefined,
-//         text: t(`${tBase}.draftStatus.chip.unknown`),
-//       };
-//   }
-// }
-
 const headers = computed<object[]>(() => {
   return [
     // { title: t(`${tBase}.recordId`), align: "start", key: "id", value: "id" },
@@ -91,28 +47,12 @@ const headers = computed<object[]>(() => {
     {
       title: t(`${tBase}.documentTitle`),
       align: "start",
-      key: "title",
-      value: (item: IDraftEntity) => {
-        try {
-          return deepSafeParse<IDraftEntity>(item).stepper._documentTitle || "- - -";
-        } catch (error) {
-          console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
-          return "- - -";
-        }
-      },
+      key: "stepper._documentTitle",
     },
     {
       title: t(`${tBase}.documentIdRev`),
       align: "start",
-      key: "document_id_rev",
-      value: (item: IDraftEntity) => {
-        try {
-          return deepSafeParse<IDraftEntity>(item).stepper._documentIdRevision || "- - -";
-        } catch (error) {
-          console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
-          return "- - -";
-        }
-      },
+      key: "stepper._documentIdRevision",
     },
     {
       title: t(`${tBase}.created`),
@@ -128,7 +68,6 @@ const headers = computed<object[]>(() => {
       title: t(`${tBase}.actions`),
       align: "start",
       key: "actions",
-      value: "actions",
       sortable: false,
     },
   ];
@@ -137,7 +76,7 @@ const headers = computed<object[]>(() => {
 // const drafts = ref<IDraftEntity[]>([]);
 
 const editDraft = (item: IDraftEntity) => {
-  const stepper: DocumentCreatorStepper.IStepper = deepSafeParse<IDraftEntity>(item).stepper;
+  const stepper: DocumentCreatorStepper.IStepper = item.stepper;
   const type = stepper.type;
   if (!type) return;
 
@@ -174,8 +113,12 @@ const loadTable = async () => {
     );
 
     const drafts = await manager.get(formData);
-
-    return drafts;
+    return drafts.map((draft) => {
+      return {
+        ...draft,
+        stepper: deepSafeParse<IDraftEntity>(draft).stepper,
+      };
+    });
   } finally {
     loadingTable.value = false;
   }
@@ -291,14 +234,23 @@ watch(
   },
   { deep: true }
 );
+// watch(
+//   [() => route.params.functionality],
+//   async (functionality: [string | string[]]) => {
+//     if (functionality.includes("dashboard")) {
+//       draftsStore.controller[uuid].drafts = await loadTable();
+//     }
+//   },
+//   { immediate: true, deep: true }
+// );
 watch(
-  [() => route.params.functionality],
-  async (functionality: [string | string[]]) => {
-    if (functionality.includes("dashboard")) {
+  () => route.params.functionality,
+  async (functionality: string | string[] | undefined) => {
+    if (functionality && functionality.includes("dashboard")) {
       draftsStore.controller[uuid].drafts = await loadTable();
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true }
 );
 
 onUnmounted(() => {
@@ -348,7 +300,7 @@ onUnmounted(() => {
   </v-dialog>
 
   <v-dialog v-model="dialogDelete" max-width="500px">
-    <v-card class="rounded-xl elevation-2" :loading="loading ? 'secondary' : false">
+    <v-card class="rounded-xl elevation-2" :loading="loading">
       <!-- <v-card-title class="text-h5">{{ t(`${tBase}.deleteConfirmation`) }}</v-card-title> -->
       <v-card-title class="text-h5">{{ t(`${tBase}.deleteConfirmationTextTitle`) }}</v-card-title>
       <v-card-text>

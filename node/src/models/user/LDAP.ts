@@ -1,6 +1,11 @@
 import { authenticate } from "ldap-authentication";
 import { ILogin } from "../../interfaces/user/UserTypes";
-import { getLDAPConfig, ldapBaseDNs, USER_REQUIRED_GROUP } from "../../config/ldap";
+import {
+  getLDAPConfig,
+  allowedDomains,
+  allowedPhysicalDeliveryOfficeNames,
+  USER_REQUIRED_GROUP,
+} from "../../config/ldap";
 import { serverConfig } from "../../config/server";
 import { JwtPayload, Secret, SignOptions, sign, verify } from "jsonwebtoken";
 import { User } from "../../orm/entity/user/UserEntity";
@@ -89,7 +94,7 @@ class LDAP {
   ): Promise<void> => {
     const client = ldap.createClient({ url: options.ldapOpts.url });
 
-    const searchBase = ldapBaseDNs[this.domain];
+    const searchBase = allowedDomains[this.domain];
     if (!searchBase) throw new Error("Unsupported domain for group search.");
 
     return new Promise((resolve, reject) => {
@@ -112,7 +117,7 @@ class LDAP {
               entry.attributes.find((attr) => attr.type === "physicalDeliveryOfficeName")
                 ?.values?.[0] || "";
 
-            if (office === "Bydgoszcz Site (PL)") {
+            if (allowedPhysicalDeliveryOfficeNames.includes(office)) {
               resolve();
             } else {
               reject(new Error(`Access denied: User is not at the required site.`));

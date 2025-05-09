@@ -139,6 +139,15 @@ const uaT = {
         },
       },
       createNew: {
+        cache: {
+          preLastCachedText: "Ваша робота буде автоматично збережена кожні 30 секунд.",
+          lastCachedTextError: "Помилка: Неправильна дата.",
+          cancelTimerText: "Скасувати ({seconds}с)",
+          notAutoCacheText:
+            "Увімкнення автозбереження збереже чернетку в таблиці '{tableTitle}' на вашій панелі.",
+          cancelText: "Скасувати",
+          enableAutoCacheText: "Увімкнути автозбереження",
+        },
         stepper: {
           actions: {
             previous: "Попередній",
@@ -218,6 +227,7 @@ const uaT = {
           recordId: "Ідентифікатор запису",
           draftName: "Назва чернетки",
           myDrafts: "Мої чернетки",
+          myUnsavedWork: "Мої незбережені роботи",
           manage: "Керування документами",
           releasedDrafts: "Опубліковані чернетки",
           archivedDrafts: "Архівовані чернетки",
