@@ -1,97 +1,71 @@
 <script setup lang="ts">
-import { VForm } from "vuetify/lib/components/VForm/index.mjs";
 import { ref, computed } from "vue";
-import axios from "axios";
+import { useDisplay } from "vuetify";
+import { VForm } from "vuetify/components";
 import { useUserStore } from "../../stores/userStore";
-import { useRouter } from "vue-router";
-import { nodeConfig } from "../../config/env";
 import { useSettingsStore } from "../../stores/settingsStore";
-import { ResponseStatus } from "../../models/common/ResponseStatus";
-import { IResponseStatus } from "../../interfaces/common/IResponseStatus";
-import { UserEntity } from "../../models/user/UserEntity";
+import { useRouter } from "vue-router";
+// import { nodeConfig } from "../../config/env";
+// import { Endpoints } from "../../config/axios/Endpoints";
+import axios from "axios";
 import { Endpoints } from "../../config/axios/Endpoints";
-import Translate from "../../components/common/Translate.vue";
-import { useI18n } from "vue-i18n";
-import LanguageManager from "../../models/common/settings/LanguageManager";
 import staticResponseStatus from "../../components/common/StaticResponseStatus.vue";
+// import Translate from "../../components/common/Translate.vue";
+import LanguageManager from "../../models/common/settings/LanguageManager";
+import { UserEntity } from "../../models/user/UserEntity";
+import { ResponseStatus } from "../../models/common/ResponseStatus";
+import { useI18n } from "vue-i18n";
+import { useMsalStore } from "../../stores/msalStore";
 
-const smallScreen = ref<boolean>(window.innerWidth < 960);
-
-// Router
+const { t } = useI18n();
+const { xs } = useDisplay();
 const router = useRouter();
-
-// Stores
 const userStore = useUserStore();
 const settingsStore = useSettingsStore();
 const languageManager = new LanguageManager();
-
-// Form reference
-const login = ref<typeof VForm | null>(null);
-
-// Form loading animation
+const msalStore = useMsalStore();
+const formValidation = ref<boolean>(false);
 const loader = ref<boolean>(false);
-
-// Form data
-interface LoginData {
-  username: string;
-  domain: string;
-  password: string;
-}
-
-const data = ref<LoginData>({
-  username: "",
-  domain: "reconext.com",
-  password: "",
-});
-
-const responseStatus = ref<IResponseStatus | null>(null);
-
-// const loginError = ref<LoginError | null>(null);
-
-// Password
-const passwordVisibility = ref<boolean>(false);
-const passwordIcon = computed((): string => (passwordVisibility.value ? "mdi-eye" : "mdi-eye-off"));
-const passwordType = computed((): string => (passwordVisibility.value ? "text" : "password"));
-
-// Form Validation
-const { t } = useI18n();
-
-const validation = ref<boolean>(false);
-const nameRules = computed(() => [
-  (value: string) => !!value || t(`common.default_layout.auth.rules.login_req`),
-  (value: string) => {
-    if (/^[a-zA-Z]+\.[a-zA-Z]+\d*$/.test(value)) return true;
-    return t(`common.default_layout.auth.rules.login_format`);
-  },
-  // /^[a-zA-Z]+\.[a-zA-Z]+$/
-]);
-const domainRules = computed(() => [
-  (value: string) => !!value || t(`common.default_layout.auth.rules.domain_req`),
-]);
-
-const passwordRules = computed(() => [
-  (value: string) => !!value || t(`common.default_layout.auth.rules.password_req`),
-]);
-
-// Form Methods
-
-const reset = (): Promise<boolean> => login.value?.reset();
-
 const loading = (bool: boolean): boolean => {
   loader.value = bool;
   return loader.value;
 };
+const passwordVisibility = ref(false);
+const passwordIcon = computed<"mdi-eye" | "mdi-eye-off">(() =>
+  passwordVisibility.value ? "mdi-eye" : "mdi-eye-off"
+);
+const passwordType = computed<"text" | "password">(() =>
+  passwordVisibility.value ? "text" : "password"
+);
+const changeVisibility = () => {
+  passwordVisibility.value = !passwordVisibility;
+};
 
-const submitLogin = (): void => {
-  if (validation.value) {
+const responseStatus = ref<null | ResponseStatus>(null);
+const username = ref<string>("");
+const domain = ref<string>("reconext.com");
+const password = ref<string>("");
+
+const formComponent = ref<typeof VForm | null>(null);
+
+const login = (
+  endpoint: string,
+  data: {
+    username: string;
+    domain: string;
+    password?: string;
+    azureIdToken?: string;
+  }
+): void => {
+  if (formValidation) {
     responseStatus.value = null;
     loading(true);
-    const reqUrl: string = `${nodeConfig.origin}:${nodeConfig.port}${Endpoints.UserAuth}`;
-    data.value.username.toLowerCase();
-    const reqData: LoginData = data.value;
 
     axios
-      .post(reqUrl, reqData)
+      .create({
+        baseURL: `${window.location.origin}:${3000}`,
+      })
+      .post(endpoint, data)
       .then(function (response: any) {
         const user: UserEntity = response.data.userExist;
         userStore.set(new UserEntity().buildFromUserEntity(user));
@@ -101,34 +75,86 @@ const submitLogin = (): void => {
         router.push({ path: "/pages" });
       })
       .catch(function (error) {
-        console.log(error);
+        console.error(error);
 
-        loading(false);
-        reset();
+        // formComponent.value?.reset();
         responseStatus.value = new ResponseStatus({
           code: error.response.status,
           message: error.response.data.statusMessage,
         });
+      })
+      .finally(() => {
+        loading(false);
       });
   }
+};
+
+// const msal = new PublicClientApplication({
+//   auth: {
+//     clientId: "2d4d603d-f0bc-4727-9b23-40b08c2e6e63",
+//     authority: "https://login.microsoftonline.com/7e8ee4aa-dcc0-4745-ad28-2f942848ac88",
+//   },
+// });
+
+// const loginWithMicrosoft = (): void => {
+//   msal.loginRedirect({ scopes: ["openid", "profile", "email"] });
+// };
+
+const loginWithMicrosoft = async (): Promise<void> => {
+  try {
+    // await msalStore.init();
+    const msalResult = await msalStore.msalInstance.loginPopup({
+      scopes: ["openid", "profile", "email"],
+    });
+    if (msalResult?.idToken) {
+      const [username, domain] = msalResult.account.username.trim().toLowerCase().split("@");
+      login(Endpoints.UserAuth, {
+        username,
+        domain,
+        azureIdToken: msalResult.idToken,
+      });
+    }
+  } catch (error) {
+    console.error("Popup login failed:", error);
+  }
+};
+
+// onMounted(async () => {
+//   await msal.initialize();
+//   const msalResult: AuthenticationResult | null = await msal.handleRedirectPromise();
+//   if (msalResult?.idToken) {
+//     const [username, domain] = msalResult.account.username.trim().toLowerCase().split("@");
+//     login(Endpoints.UserAuth, {
+//       username,
+//       domain,
+//       azureIdToken: msalResult.idToken,
+//     });
+//   }
+// });
+
+const submitForm = async () => {
+  const isValid = await formComponent.value?.validate();
+  if (!isValid) return;
+
+  login(Endpoints.UserAuth, {
+    username: username.value,
+    domain: domain.value,
+    password: password.value,
+  });
 };
 </script>
 
 <template>
-  <v-container class="layout-view-container mb-0 bg-background">
-    <v-row>
-      <v-col class="h-screen ma-n2 d-flex flex-column justify-center">
+  <v-container class="layout-view-container bg-background mb-0 pa-0">
+    <v-row justify="center" align="center" class="w-100 h-screen">
+      <v-col class="reconext w-100 h-100" align-self="center" cols="12">
+        <div class="reconext-clouds"></div>
+        <div class="reconext-building"></div>
         <v-card
           id="auth-form"
           :loading="loader"
-          variant="flat"
-          :width="smallScreen ? '75%' : '40%'"
-          class="bg-surface-1 h-auto d-flex flex-column align-center mx-auto rounded-xl position-relative"
+          class="bg-surface-1 h-auto d-flex flex-column align-center mx-auto rounded-xl position-relative pa-0"
         >
-          <span id="speed-dial-anchor" class="position-absolute top-0 right-0 mr-10">
-            <translate variant="speed-dial" attach-speed-dial-to="speed-dial-anchor"></translate>
-          </span>
-
           <template v-slot:loader="{ isActive }">
             <v-progress-linear
               :active="isActive"
@@ -141,77 +167,214 @@ const submitLogin = (): void => {
           <v-card-title class="text-secondary text-h3 text-center mt-4 mb-2">Intranet</v-card-title>
           <v-card-text class="w-100">
             <v-form
-              ref="login"
+              ref="formComponent"
               class="d-flex flex-column"
-              v-model="validation"
-              @submit.prevent="submitLogin"
+              v-model="formValidation"
+              @submit.prevent="submitForm"
+              :disabled="loader"
             >
-              <v-container fluid>
-                <v-row>
-                  <v-select
-                    color="primary"
-                    :label="$t(`common.default_layout.auth.template.domain_label`)"
-                    v-model="data.domain"
-                    :items="['reconext.com', 'tgn.teleplan.com']"
-                    :rules="domainRules"
-                    required
-                    prepend-inner-icon="mdi-at"
-                  ></v-select>
+              <v-container fluid class="pa-0">
+                <v-row justify="center">
+                  <v-col align-self="center" sm="10" xs="12">
+                    <v-select
+                      color="primary"
+                      :label="t(`common.default_layout.auth.template.domain_label`)"
+                      v-model="domain"
+                      :items="['reconext.com', 'tgn.teleplan.com']"
+                      required
+                      prepend-inner-icon="mdi-at"
+                    ></v-select>
+                  </v-col>
                 </v-row>
 
-                <v-row>
-                  <v-text-field
-                    color="primary"
-                    class="mb-2"
-                    v-model="data.username"
-                    :rules="nameRules"
-                    :label="$t(`common.default_layout.auth.template.login_label`)"
-                    required
-                    prepend-inner-icon="mdi-account-outline"
-                    :suffix="`@${data.domain}`"
-                  ></v-text-field
-                ></v-row>
-
-                <v-row>
-                  <v-text-field
-                    color="primary"
-                    class="mb-2"
-                    v-model="data.password"
-                    :append-inner-icon="passwordIcon"
-                    @click:append-inner="passwordVisibility = !passwordVisibility"
-                    :label="$t(`common.default_layout.auth.template.password_label`)"
-                    :type="passwordType"
-                    required
-                    prepend-inner-icon="mdi-form-textbox-password"
-                    :rules="passwordRules"
-                  >
-                  </v-text-field>
+                <v-row justify="center">
+                  <v-col align-self="center" sm="10" xs="12">
+                    <v-text-field
+                      color="primary"
+                      v-model="username"
+                      :label="t(`common.default_layout.auth.template.username_label`)"
+                      required
+                      prepend-inner-icon="mdi-account-outline"
+                      :suffix="`@${domain}`"
+                      :rules="[
+                        (value: string) => !!value || t(`common.default_layout.auth.rules.username_req`),
+                        (value: string) => {
+                          if (/^[a-zA-Z]+\.[a-zA-Z]+\d*$/.test(value)) return true;
+                          return t(`common.default_layout.auth.rules.username_format`);
+                        },
+                      ]"
+                    ></v-text-field>
+                  </v-col>
                 </v-row>
-                <a
-                  class="text-caption text-decoration-none text-info d-block text-right"
-                  href="https://password.reconext.com/authorization.do"
-                  rel="noopener noreferrer"
-                  tabindex="-1"
-                  target="_blank"
-                >
-                  {{ $t(`common.default_layout.auth.template.password_massage`) }}</a
-                >
+
+                <v-row justify="center">
+                  <v-col align-self="center" sm="10" xs="12">
+                    <v-text-field
+                      color="primary"
+                      v-model="password"
+                      :append-inner-icon="passwordIcon"
+                      @click:append-inner="changeVisibility()"
+                      :label="t(`common.default_layout.auth.template.password_label`)"
+                      :type="passwordType"
+                      required
+                      prepend-inner-icon="mdi-form-textbox-password"
+                      :rules="[
+                        (value: string) => !!value || t(`common.default_layout.auth.rules.password_req`),
+                      ]"
+                    >
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row justify="center">
+                  <v-col align-self="end" sm="10" xs="12">
+                    <a
+                      class="text-caption text-decoration-none text-info d-block text-right"
+                      href="https://password.reconext.com/authorization.do"
+                      rel="noopener noreferrer"
+                      tabindex="-1"
+                      target="_blank"
+                    >
+                      {{ t(`common.default_layout.auth.template.password_massage`) }}</a
+                    >
+                  </v-col>
+                </v-row>
+                <v-row justify="center" class="mt-4">
+                  <v-col align-self="center" sm="10" xs="12" class="ga-4">
+                    <v-btn
+                      type="submit"
+                      color="primary"
+                      class="rounded-lg w-100"
+                      :text="t('common.default_layout.auth.template.proceed')"
+                      :disabled="!formComponent || !formComponent?.isValid || loader"
+                      @click="submitForm"
+                    />
+                    <v-divider class="my-4 w-50">
+                      {{ t("common.default_layout.auth.template.or") }}
+                    </v-divider>
+                    <v-btn
+                      color="tertiary"
+                      variant="tonal"
+                      class="rounded-lg w-100"
+                      :text="
+                        xs
+                          ? t('common.default_layout.auth.template.microsoft_short_label')
+                          : t('common.default_layout.auth.template.microsoft_label')
+                      "
+                      @click="loginWithMicrosoft"
+                    >
+                      <template #prepend>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 32 32"
+                          width="20"
+                          height="20"
+                        >
+                          <path d="M0 0h15.206v15.206H0z" fill="#f25022" />
+                          <path d="M16.794 0H32v15.206H16.794z" fill="#7fba00" />
+                          <path d="M0 16.794h15.206V32H0z" fill="#00a4ef" />
+                          <path d="M16.794 16.794H32V32H16.794z" fill="#ffb900" />
+                        </svg>
+                      </template>
+                    </v-btn>
+                  </v-col>
+                </v-row>
+
+                <v-row justify="center" class="mt-4">
+                  <v-col align-self="center" sm="10" xs="12" class="ga-4">
+                    <static-response-status
+                      class="rounded-xl w-100"
+                      :status="responseStatus"
+                      :persist="true"
+                    />
+                  </v-col>
+                </v-row>
               </v-container>
-              <v-btn
-                type="submit"
-                color="primary"
-                class="rounded-xl"
-                :text="$t(`common.default_layout.auth.template.proceed`)"
-              />
             </v-form>
-            <static-response-status
-              class="rounded-xl mt-2"
-              :status="responseStatus"
-              :persist="true"
-            />
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
 </template>
+
+<style scoped lang="scss">
+$animation-duration: 120s;
+$cloud-image: "../../../../../auth/clouds.svg";
+$building-image: "../../../../../auth/building.svg";
+
+.reconext {
+  position: relative;
+  left: 12px;
+  top: 12px;
+  overflow: hidden;
+
+  .reconext-clouds {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 400%;
+    height: 100%;
+    background: url(#{$cloud-image}) no-repeat left center;
+    // background-size: 100% auto;
+    background-size: cover;
+    animation: moveClouds $animation-duration linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .reconext-building {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url(#{$building-image}) no-repeat center center;
+    background-size: cover;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #auth-form {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    margin: 0 auto;
+    width: 80%;
+
+    @media (max-width: 599px) {
+      // xs
+
+      left: 0;
+      max-width: 400px;
+    }
+
+    @media (min-width: 600px) and (max-width: 959px) {
+      // sm
+      left: 0;
+      max-width: 400px;
+    }
+
+    @media (min-width: 960px) and (max-width: 1279px) {
+      // md
+      left: 0;
+      max-width: 400px;
+    }
+
+    @media (min-width: 1280px) {
+      // lg and up
+      left: 20%;
+      max-width: 500px;
+    }
+  }
+}
+
+@keyframes moveClouds {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-75%);
+  }
+}
+</style>

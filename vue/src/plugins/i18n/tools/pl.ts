@@ -139,6 +139,15 @@ const plT = {
         },
       },
       createNew: {
+        cache: {
+          preLastCachedText: "Twoja praca będzie automatycznie zapisywana co 30 sekund.",
+          lastCachedTextError: "Błąd: Nieprawidłowa data.",
+          cancelTimerText: "Anuluj ({seconds}s)",
+          notAutoCacheText:
+            "Włączenie auto-zapisu zapisze wersję roboczą w tabeli '{tableTitle}' na Twoim panelu.",
+          cancelText: "Anuluj",
+          enableAutoCacheText: "Włącz auto-zapis",
+        },
         stepper: {
           actions: {
             previous: "Poprzedni",
@@ -220,6 +229,7 @@ const plT = {
         recordId: "Identyfikator rekordu",
         draftName: "Nazwa szkicu",
         myDrafts: "Moje szkice",
+        myUnsavedWork: "Moje niezapisane prace",
         manage: "Zarządzanie dokumentami",
         releasedDrafts: "Wydane wersje robocze",
         archivedDrafts: "Zarchiwizowane wersje robocze",

@@ -28,7 +28,12 @@ import {
   getUsageLogs,
   postUsage,
 } from "../controllers/document/msTranslatorUsageController";
-import { getDraftCache, upsertDraftCache } from "../controllers/document/creatorCacheController";
+import {
+  deleteDraftCache,
+  getDraftCache,
+  getDraftCaches,
+  upsertDraftCache,
+} from "../controllers/document/creatorCacheController";
 
 const router = express.Router();
 const upload = multer({ dest: path.join(UPLOADS_PATH, DOCUMENTS_FOLDER) });
@@ -64,6 +69,8 @@ router.get("/creator/ms-translator-usage/getTotalUsage", getTotalUsage);
 router.post("/creator/ms-translator-usage/postUsage", postUsage);
 
 router.post("/creator/cache", creatorUpload.any(), upsertDraftCache);
-router.get("/creator/cache", getDraftCache);
+router.get("/creator/cache/:id", getDraftCache);
+router.get("/creator/cache", getDraftCaches);
+router.delete("/creator/cache/:id", deleteDraftCache);
 
 export { router as documentRoutes };

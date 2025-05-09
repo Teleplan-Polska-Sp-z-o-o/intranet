@@ -19,8 +19,7 @@ import { User } from "../../orm/entity/user/UserEntity";
 import archiver from "archiver";
 import { readFile } from "fs/promises";
 import { IEmailAttachment } from "../../interfaces/Email/IEmailAttachment";
-import { Mailer } from "../../models/docx/mail/Mailer";
-import { EEmailVariant } from "../../models/docx/mail/Options";
+import { DraftCache } from "../../orm/entity/document/creator/DraftCacheEntity";
 
 const postDraft = async (req: Request, res: Response) => {
   const body = req.body;
@@ -29,10 +28,17 @@ const postDraft = async (req: Request, res: Response) => {
     const issuer: SimpleUser = new SimpleUser().build(req.user);
 
     await dataSource.transaction(async (transactionalEntityManager) => {
-      const repo: Repository<Draft> = transactionalEntityManager.getRepository(Draft);
+      const repoDraft: Repository<Draft> = transactionalEntityManager.getRepository(Draft);
+      const repoDraftCache: Repository<DraftCache> =
+        transactionalEntityManager.getRepository(DraftCache);
+
+      // Check if a draft cache with the same UUID exists
+      const draftCacheExistingByUuid: DraftCache = await repoDraftCache.findOne({
+        where: { uuid: stepper.uuid },
+      });
 
       // Check if a draft with the same UUID already exists
-      const existingByUuid = await repo.findOne({
+      const existingByUuid = await repoDraft.findOne({
         where: { uuid: stepper.uuid },
       });
 
@@ -47,10 +53,15 @@ const postDraft = async (req: Request, res: Response) => {
       const draft: Draft = new Draft().build(stepper).setCreatedBy(issuer);
       draft.stepper._statusHistory.push(new StatusHistory(0, EStepperStatus.DRAFT, issuer, ""));
 
-      const savedDraft = await repo.save(draft);
+      const savedDraft = await repoDraft.save(draft);
+
+      if (savedDraft && draftCacheExistingByUuid) {
+        await repoDraftCache.remove(draftCacheExistingByUuid);
+      }
 
       return res.status(201).json({
         saved: [savedDraft],
+        deleted: [draftCacheExistingByUuid],
         message: `Draft added successfully`,
         statusMessage: HttpResponseMessage.POST_SUCCESS,
       });
@@ -58,6 +69,8 @@ const postDraft = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error adding draft: ", error);
     return res.status(500).json({
+      saved: [],
+      deleted: [],
       message: `Unknown error occurred. Failed to add draft.`,
       statusMessage: HttpResponseMessage.UNKNOWN,
     });

@@ -5,8 +5,7 @@ import { ToolTab } from "../../interfaces/common/ToolTabTypes";
 import Dashboard from "../../components/views/tools/matrix/document/creator/tabs/dashboard/Dashboard.vue";
 import CreateNew from "../../components/views/tools/matrix/document/creator/tabs/new/CreateNew.vue";
 import Released from "../../components/views/tools/matrix/document/creator/tabs/released/Released.vue";
-import { EStatus, useStepperStore } from "../../stores/documents/creator/useStepperStore";
-import { useI18n } from "vue-i18n";
+import { useStepperStore } from "../../stores/documents/creator/useStepperStore";
 import { useUserStore } from "../../stores/userStore";
 import { usePermissionStore } from "../../stores/permissionStore";
 
@@ -60,31 +59,30 @@ const route: RouteLocationNormalizedLoaded = useRoute();
 
 const store = useStepperStore();
 
-const { t } = useI18n();
-
 const functionality = computed(() => route.params.functionality);
 
-const title = computed(() => {
-  if (functionality.value === "new") {
-    if (!!route.params.id && store.stepper !== null && store.status.enum === EStatus.EDIT) {
-      return t(`tools.tcd.mainView.title.update`, {
-        name: store.stepper!.name,
-      });
-    } else if (
-      !!!route.params.id &&
-      store.stepper !== null &&
-      store.status.enum === EStatus.NEW_BASED
-    ) {
-      return t(`tools.tcd.mainView.title.basedOn`, {
-        name: `${store.stepper!.body.windows[2].model._id}-${
-          store.stepper!.body.windows[2].model._revision
-        }`,
-      });
-    } else {
-      return t(`tools.tcd.mainView.title.create`);
-    }
-  } else return;
-});
+// const { t } = useI18n();
+// const title = computed(() => {
+//   if (functionality.value === "new") {
+//     if (!!route.params.id && store.stepper !== null && store.status.enum === EStatus.EDIT) {
+//       return t(`tools.tcd.mainView.title.update`, {
+//         name: store.stepper!.name,
+//       });
+//     } else if (
+//       !!!route.params.id &&
+//       store.stepper !== null &&
+//       store.status.enum === EStatus.NEW_BASED
+//     ) {
+//       return t(`tools.tcd.mainView.title.basedOn`, {
+//         name: `${store.stepper!.body.windows[2].model._id}-${
+//           store.stepper!.body.windows[2].model._revision
+//         }`,
+//       });
+//     } else {
+//       return t(`tools.tcd.mainView.title.create`);
+//     }
+//   } else return;
+// });
 
 const push = (tabName: string) => {
   if (tabName === "new") {
@@ -128,7 +126,7 @@ const push = (tabName: string) => {
           </v-row>
           <v-row :class="showAsMobile ? 'mt-1' : 'w-75 ml-1 pl-0 mt-n3'">
             <v-col class="h-100">
-              <v-alert
+              <!-- <v-alert
                 v-if="title"
                 border="start"
                 border-color="primary"
@@ -137,7 +135,7 @@ const push = (tabName: string) => {
                 type="info"
                 variant="tonal"
               >
-              </v-alert>
+              </v-alert> -->
 
               <v-window v-model="functionality" class="w-100" :touch="false">
                 <v-window-item value="dashboard">

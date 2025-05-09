@@ -43,28 +43,28 @@ const headers = computed<object[]>(() => {
     {
       title: t(`${tBase}.documentTitle`),
       align: "start",
-      key: "title",
-      value: (item: IDraftEntity) => {
-        try {
-          return deepSafeParse<IDraftEntity>(item).stepper._documentTitle || "- - -";
-        } catch (error) {
-          console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
-          return "- - -";
-        }
-      },
+      key: "stepper._documentTitle",
+      // value: (item: IDraftEntity) => {
+      //   try {
+      //     return deepSafeParse<IDraftEntity>(item).stepper._documentTitle || "- - -";
+      //   } catch (error) {
+      //     console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
+      //     return "- - -";
+      //   }
+      // },
     },
     {
       title: t(`${tBase}.documentIdRev`),
       align: "start",
-      key: "document_id_rev",
-      value: (item: IDraftEntity) => {
-        try {
-          return deepSafeParse<IDraftEntity>(item).stepper._documentIdRevision || "- - -";
-        } catch (error) {
-          console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
-          return "- - -";
-        }
-      },
+      key: "stepper._documentIdRevision",
+      // value: (item: IDraftEntity) => {
+      //   try {
+      //     return deepSafeParse<IDraftEntity>(item).stepper._documentIdRevision || "- - -";
+      //   } catch (error) {
+      //     console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
+      //     return "- - -";
+      //   }
+      // },
     },
     {
       title: t(`${tBase}.created`),
@@ -101,8 +101,12 @@ const loadTable = async () => {
     );
 
     const drafts = await manager.get(formData);
-
-    return drafts;
+    return drafts.map((draft) => {
+      return {
+        ...draft,
+        stepper: deepSafeParse<IDraftEntity>(draft).stepper,
+      };
+    });
   } finally {
     loadingTable.value = false;
   }
@@ -203,14 +207,23 @@ watch(
   },
   { deep: true }
 );
+// watch(
+//   [() => route.params.functionality],
+//   async (functionality: [string | string[]]) => {
+//     if (functionality.includes("dashboard")) {
+//       draftsStore.controller[uuid].drafts = await loadTable();
+//     }
+//   },
+//   { immediate: true, deep: true }
+// );
 watch(
-  [() => route.params.functionality],
-  async (functionality: [string | string[]]) => {
-    if (functionality.includes("dashboard")) {
+  () => route.params.functionality,
+  async (functionality: string | string[] | undefined) => {
+    if (functionality && functionality.includes("dashboard")) {
       draftsStore.controller[uuid].drafts = await loadTable();
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true }
 );
 
 onUnmounted(() => {
@@ -220,7 +233,7 @@ onUnmounted(() => {
 
 <template>
   <v-dialog v-model="dialogChangeOfDraftStatus" max-width="500px">
-    <v-card class="rounded-xl elevation-2" :loading="loading ? 'secondary' : false">
+    <v-card class="rounded-xl elevation-2" :loading="loading">
       <v-card-title class="text-h5">{{
         t(`${tBase}.changeOfDraftStatusConfirmationTitle`)
       }}</v-card-title>

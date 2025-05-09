@@ -45,28 +45,28 @@ const headers = computed<object[]>(() => {
     {
       title: t(`${tBase}.documentTitle`),
       align: "start",
-      key: "title",
-      value: (item: IDraftEntity) => {
-        try {
-          return deepSafeParse<IDraftEntity>(item).stepper._documentTitle || "- - -";
-        } catch (error) {
-          console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
-          return "- - -";
-        }
-      },
+      key: "stepper._documentTitle",
+      // value: (item: IDraftEntity) => {
+      //   try {
+      //     return deepSafeParse<IDraftEntity>(item).stepper._documentTitle || "- - -";
+      //   } catch (error) {
+      //     console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
+      //     return "- - -";
+      //   }
+      // },
     },
     {
       title: t(`${tBase}.documentIdRev`),
       align: "start",
-      key: "document_id_rev",
-      value: (item: IDraftEntity) => {
-        try {
-          return deepSafeParse<IDraftEntity>(item).stepper._documentIdRevision || "- - -";
-        } catch (error) {
-          console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
-          return "- - -";
-        }
-      },
+      key: "stepper._documentIdRevision",
+      // value: (item: IDraftEntity) => {
+      //   try {
+      //     return deepSafeParse<IDraftEntity>(item).stepper._documentIdRevision || "- - -";
+      //   } catch (error) {
+      //     console.error(`Error at getting value of stepper title: ${error}. Returning "- - -"`);
+      //     return "- - -";
+      //   }
+      // },
     },
     {
       title: t(`${tBase}.created`),
@@ -82,7 +82,6 @@ const headers = computed<object[]>(() => {
       title: t(`${tBase}.actions`),
       align: "start",
       key: "actions",
-      value: "actions",
       sortable: false,
     },
   ];
@@ -91,7 +90,8 @@ const headers = computed<object[]>(() => {
 // const drafts = ref<IDraftEntity[]>([]);
 
 const newDraftBasedOn = (item: IDraftEntity) => {
-  const stepper: DocumentCreatorStepper.IStepper = deepSafeParse<IDraftEntity>(item).stepper;
+  // const stepper: DocumentCreatorStepper.IStepper = deepSafeParse<IDraftEntity>(item).stepper;
+  const stepper: DocumentCreatorStepper.IStepper = item.stepper;
   const type = stepper.type;
   if (!type) return;
 
@@ -160,7 +160,12 @@ const loadTable = async () => {
 
     const drafts = await manager.get(formData);
 
-    return drafts;
+    return drafts.map((draft) => {
+      return {
+        ...draft,
+        stepper: deepSafeParse<IDraftEntity>(draft).stepper,
+      };
+    });
   } finally {
     loadingTable.value = false;
   }

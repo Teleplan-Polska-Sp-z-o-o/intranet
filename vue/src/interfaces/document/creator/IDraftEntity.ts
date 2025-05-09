@@ -11,6 +11,8 @@ export interface IDraftEntity {
   uuid: string;
   name: string;
   stepper: DocumentCreatorStepper.IStepper;
+  ormCreateDate: string;
   createdBy: IOrmUserAction;
+  ormUpdateDate: string;
   updatedBy: IOrmUserAction[];
 }

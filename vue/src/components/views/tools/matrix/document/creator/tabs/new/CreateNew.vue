@@ -5,52 +5,16 @@ import InstructionStepperWindow from "./instruction/InstructionStepperWindow.vue
 import ChooseStepperType from "./ChooseStepperType.vue";
 // import { DocumentCreatorStepper } from "./StepperTypes";
 // import { computed } from "vue";
+import CacheSave from "./CacheSave.vue";
+import NewInfo from "./NewInfo.vue";
 
 const store = useStepperStore();
-
-// const selectStepperType = (type: DocumentCreatorStepper.EStepperType) => {
-//   store.setStepper({
-//     type,
-//   });
-// };
-
-// const getImagePath = computed(() => {
-//   return (type: string) => `/documents/${type}-doc-type.png`;
-// });
 </script>
 
 <template>
   <template v-if="store.stepper === null">
     <v-fade-transition hide-on-leave>
       <choose-stepper-type></choose-stepper-type>
-      <!-- <v-item-group
-        selected-class="bg-primary"
-        :key="store.stepper ? 'with-stepper' : 'without-stepper'"
-      >
-        <v-container>
-          <v-row>
-            <v-col
-              v-for="type in Object.values(DocumentCreatorStepper.EStepperType)"
-              :key="type"
-              cols="12"
-              md="4"
-            >
-              <v-item v-slot="{ selectedClass }">
-                <v-card
-                  :class="[
-                    'd-flex align-center rounded-xl bg-surface-2 elevation-2',
-                    selectedClass,
-                  ]"
-                  @click="() => selectStepperType(type)"
-                  :image="getImagePath(type)"
-                  height="300"
-                >
-                </v-card>
-              </v-item>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-item-group> -->
     </v-fade-transition>
   </template>
   <template v-else>
@@ -61,6 +25,8 @@ const store = useStepperStore();
         v-model="store.stepper!.currentStep"
         class="rounded-xl bg-surface-2 ma-1"
       >
+        <new-info></new-info>
+        <cache-save></cache-save>
         <v-stepper-header class="rounded-xl">
           <template
             v-for="([key, step], index) in Object.entries(store.stepper!.steps || {})"

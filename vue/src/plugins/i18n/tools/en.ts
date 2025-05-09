@@ -139,6 +139,15 @@ const enT = {
         },
       },
       createNew: {
+        cache: {
+          preLastCachedText: "Your work will be cached every 30 seconds.",
+          lastCachedTextError: "Error: Invalid date.",
+          cancelTimerText: "Cancel ({seconds}s)",
+          notAutoCacheText:
+            "Enabling auto-cache will store the draft in the '{tableTitle}' table on your dashboard.",
+          cancelText: "Cancel",
+          enableAutoCacheText: "Enable Auto-cache",
+        },
         stepper: {
           actions: {
             previous: "Previous",
@@ -219,6 +228,7 @@ const enT = {
         recordId: "Record Id",
         draftName: "Draft Name",
         myDrafts: "My Drafts",
+        myUnsavedWork: "My Unsaved Work",
         manage: "Document Control",
         releasedDrafts: "Released Drafts",
         archivedDrafts: "Archived Drafts",

@@ -8,7 +8,10 @@ export class DraftCache extends AbstractBaseOrmEntityWithUser {
   id: number;
 
   @Column()
-  userId: number;
+  uuid: string;
+
+  // @Column()
+  // userId: number;
 
   @Column({ type: "jsonb", nullable: false })
   stepper: TStepper;
@@ -17,8 +20,9 @@ export class DraftCache extends AbstractBaseOrmEntityWithUser {
     super();
   }
 
-  build(userId: number, stepper: TStepper): DraftCache {
-    this.userId = userId;
+  build(stepper: TStepper): DraftCache {
+    this.uuid = stepper.uuid;
+    // this.userId = userId;
     this.stepper = stepper;
 
     return this;
